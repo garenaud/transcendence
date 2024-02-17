@@ -1,15 +1,27 @@
 <!DOCTYPE html>
 <html>
-
-  <head>
-    <script data-require="three.js@0.0.0-r61" data-semver="0.0.0-r61" src="//cdnjs.cloudflare.com/ajax/libs/three.js/r61/three.min.js"></script>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-
-  <body>
-    <h3 id="scoreBoard"></h3>
-    <div id="container"></div>
-    <script src="pong.js"></script>
-  </body>
-
+	<link rel="stylesheet" type="text/css" href="styles.css">
+	<head lang="en">
+		<meta charset="utf-8">
+		<title>My first three.js app</title>
+		<style>
+			body { margin: 0; }
+		</style>
+		<!-- 
+			Import map is not available in all browsers.
+			This is necessary to serve the three path so that other imports can access it. 
+		-->
+		<script type="importmap">
+			{
+				"imports": {
+					"three": "./node_modules/three/build/three.module.js"
+				}
+			}
+		</script>
+	</head>
+	<body>
+		<!-- Canvas is necessary to hold a scene  -->
+		<canvas id="background"></canvas>
+		<script type="module" src="pong.js"></script>
+	</body>
 </html>

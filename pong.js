@@ -1,240 +1,110 @@
-/**
- * Copyright (c) 2013 Ben Lesh
- * Pong ThreeJS demo
- */
- 
-// console.clear();
+import * as THREE from 'three'
+import {LoadGLTFByPath} from './ModelHelper.js'
+import {OrbitControls} from '/node_modules/three/examples/jsm/controls/OrbitControls.js'
+import {RenderPass} from '/node_modules/three/examples/jsm/postprocessing/RenderPass.js'
+import {UnrealBloomPass} from '/node_modules/three/examples/jsm/postprocessing/UnrealBloomPass.js'
+import { EffectComposer } from '/node_modules/three/examples/jsm/postprocessing/EffectComposer.js'
 
-(function (window, document, THREE){
-  // "constants"... 
-  var WIDTH = 700,
-      HEIGHT = 500,
-      VIEW_ANGLE = 45,
-      ASPECT = WIDTH / HEIGHT,
-      NEAR = 0.1,
-      FAR = 10000,
-      FIELD_WIDTH = 1200,
-      FIELD_LENGTH = 3000,
-      BALL_RADIUS = 20,
-      PADDLE_WIDTH = 200,
-      PADDLE_HEIGHT = 30,
-      
-      //get the scoreboard element.
-      scoreBoard = document.getElementById('scoreBoard'),
-      
-      //declare members.
-      container, renderer, camera, mainLight,
-      scene, ball, paddle1, paddle2, field, running,
-      score = {
-        player1: 0,
-        player2: 0
-      };
-      
-  
-  function startBallMovement() {
-    var direction = Math.random() > 0.5 ? -1 : 1;
-    ball.$velocity = {
-      x: 0,
-      z: direction * 20
-    };
-    ball.$stopped = false;
-  }
-  
-  function processCpuPaddle() {
-    var ballPos = ball.position,
-        cpuPos = paddle2.position;
-    
-    if(cpuPos.x - 100 > ballPos.x) {
-      cpuPos.x -= Math.min(cpuPos.x - ballPos.x, 6);
-    }else if(cpuPos.x - 100 < ballPos.x) {
-      cpuPos.x += Math.min(ballPos.x - cpuPos.x, 6);
+//Renderer does the job of rendering the graphics
+let renderer = new THREE.WebGLRenderer({
+
+	//Defines the canvas component in the DOM that will be used
+	canvas: document.querySelector('#background'),
+  antialias: true,
+});
+
+
+const params = {
+	threshold: 0,
+	strength: 1,
+	radius: 0,
+	exposure: 1
+};
+
+renderer.setSize(window.innerWidth, window.innerHeight);
+
+//set up the renderer with the default settings for threejs.org/editor - revision r153
+renderer.shadows = true;
+renderer.castShadow = true;
+renderer.receiveShadow = true;
+renderer.shadowType = 1;
+renderer.shadowMap.enabled = true;
+renderer.setPixelRatio( window.devicePixelRatio );
+renderer.toneMapping = 0;
+renderer.toneMappingExposure = 1;
+renderer.useLegacyLights  = true;
+renderer.toneMapping = THREE.NoToneMapping;
+// renderer.setClearColor(0xffffff, 0);
+//make sure three/build/three.module.js is over r152 or this feature is not available. 
+renderer.outputColorSpace = THREE.SRGBColorSpace 
+
+
+const scene = new THREE.Scene();
+
+const dirLight = new THREE.DirectionalLight( 0xffffff, 1 );
+				dirLight.position.set( 0, 0, 10 );
+				dirLight.castShadow = true;
+				// dirLight.shadow.camera.top = 2;
+				// dirLight.shadow.camera.bottom = - 2;
+				// dirLight.shadow.camera.left = - 2;
+				// dirLight.shadow.camera.right = 2;
+				// dirLight.shadow.camera.near = 0.1;
+				// dirLight.shadow.camera.far = 40;
+scene.add( dirLight );
+
+let cameraList = [];
+
+let camera;
+
+// Load the GLTF model
+LoadGLTFByPath(scene)
+  .then(() => {
+    retrieveListOfCameras(scene);
+  })
+  .catch((error) => {
+    console.error('Error loading JSON scene:', error);
+  });
+
+//retrieve list of all cameras
+function retrieveListOfCameras(scene){
+  // Get a list of all cameras in the scene
+  scene.traverse(function (object) {
+    if (object.isCamera) {
+      cameraList.push(object);
     }
-  }
-  
-  function processBallMovement() {
-    if(!ball.$velocity) {
-      startBallMovement();
-    }
-    
-    if(ball.$stopped) {
-      return;
-    }
-    
-    updateBallPosition();
-    
-    if(isSideCollision()) {
-      ball.$velocity.x *= -1; 
-    }
-    
-    if(isPaddle1Collision()) {
-      hitBallBack(paddle1);
-    }
-    
-    if(isPaddle2Collision()) {
-      hitBallBack(paddle2);
-    }
-    
-    if(isPastPaddle1()) {
-      scoreBy('player2');
-    }
-    
-    if(isPastPaddle2()) {
-      scoreBy('player1');
-    }
-  }
-  
-  function isPastPaddle1() {
-    return ball.position.z > paddle1.position.z + 100;
-  }
-  
-  function isPastPaddle2() {
-    return ball.position.z < paddle2.position.z - 100;
-  }
-  
-  function updateBallPosition() {
-    var ballPos = ball.position;
-    
-    //update the ball's position.
-    ballPos.x += ball.$velocity.x;
-    ballPos.z += ball.$velocity.z;
-    
-    // add an arc to the ball's flight. Comment this out for boring, flat pong.
-    ballPos.y = -((ballPos.z - 1) * (ballPos.z - 1) / 5000) + 435;
-  }
-  
-  function isSideCollision() {
-    var ballX = ball.position.x,
-        halfFieldWidth = FIELD_WIDTH / 2;
-    return ballX - BALL_RADIUS < -halfFieldWidth || ballX + BALL_RADIUS > halfFieldWidth;
-  }
-  
-  function hitBallBack(paddle) {
-    ball.$velocity.x = (ball.position.x - paddle.position.x) / 5; 
-    ball.$velocity.z *= -1;
-  }
-  
-  function isPaddle2Collision() {
-    return ball.position.z - BALL_RADIUS <= paddle2.position.z && 
-        isBallAlignedWithPaddle(paddle2);
-  }
-  
-  function isPaddle1Collision() {
-    return ball.position.z + BALL_RADIUS >= paddle1.position.z && 
-        isBallAlignedWithPaddle(paddle1);
-  }
-  
-  function isBallAlignedWithPaddle(paddle) {
-    var halfPaddleWidth = PADDLE_WIDTH / 2,
-        paddleX = paddle.position.x,
-        ballX = ball.position.x;
-    return ballX > paddleX - halfPaddleWidth && 
-        ballX < paddleX + halfPaddleWidth;
-  }
-  
-  function scoreBy(playerName) {
-      addPoint(playerName);
-      updateScoreBoard();
-      stopBall();
-      setTimeout(reset, 2000);
-  }
-  
-  function updateScoreBoard() {
-      scoreBoard.innerHTML = 'Player 1: ' + score.player1 + ' Player 2: ' + 
-        score.player2;
-  }
-  
-  function stopBall(){ 
-    ball.$stopped = true;
-  }
-  
-  function addPoint(playerName){
-    score[playerName]++;
-    console.log(score);
-  }
-  
-  function startRender(){
-    running = true;
-    render();  
-  }
-  
-  function stopRender() {
-    running = false;
-  }
-  
-  function render() {
-    if(running) {
-      requestAnimationFrame(render);
-      
-      processBallMovement();
-      processCpuPaddle();
-      
-      renderer.render(scene, camera);
-    }
-  }
-  
-  function reset() {
-    ball.position.set(0,0,0);
-    ball.$velocity = null;
-  }
-  
-  function init() {
-    container = document.getElementById('container');
-    
-    renderer = new THREE.WebGLRenderer();
-    renderer.setSize(WIDTH, HEIGHT);
-    renderer.setClearColor(0x00000, 1);
-    container.appendChild(renderer.domElement);
-    
-    camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
-    camera.position.set(5000, 1000, FIELD_LENGTH / 2 + 500);
-    
-    scene = new THREE.Scene();
-    scene.add(camera);
-    
-    var fieldGeometry = new THREE.CubeGeometry(FIELD_WIDTH, 5, FIELD_LENGTH, 1, 1, 1),
-        fieldMaterial = new THREE.MeshLambertMaterial({ color: 0xffffff });
-    field = new THREE.Mesh(fieldGeometry, fieldMaterial);
-    field.position.set(0, -20, 0);
-    
-    scene.add(field);
-    paddle1 = addPaddle();
-    paddle1.position.z = FIELD_LENGTH / 2;
-    paddle2 = addPaddle();
-    paddle2.position.z = -FIELD_LENGTH / 2;
-    
-    var ballGeometry = new THREE.SphereGeometry(BALL_RADIUS, 16, 16),
-        ballMaterial = new THREE.MeshLambertMaterial({ color: 0xCC0000 });
-    ball = new THREE.Mesh(ballGeometry, ballMaterial);
-    scene.add(ball);
-    
-    camera.lookAt(ball.position);
-    
-    mainLight = new THREE.HemisphereLight(0xFFFFFF, 0x003300);
-    scene.add(mainLight);
-    camera.lookAt(ball.position);
-      
-    updateScoreBoard();
-    startRender();
-    
-    renderer.domElement.addEventListener('mousemove', containerMouseMove);
-	addEventListener('keypress', containerMouseMove);
-	// console.log("avant");
-    renderer.domElement.style.cursor = 'none';
-  }
-  
-  function addPaddle() {
-    var paddleGeometry = new THREE.CubeGeometry(PADDLE_WIDTH, PADDLE_HEIGHT, 10, 1, 1, 1),
-        paddleMaterial = new THREE.MeshLambertMaterial({ color: 0xCCCCCC }),
-        paddle = new THREE.Mesh(paddleGeometry, paddleMaterial);
-    scene.add(paddle);
-    return paddle;
-  }
-  
-  function containerMouseMove(e) {
-	//   console.log("keypress");
-    var mouseX = e.clientX;
-    camera.position.x = paddle1.position.x = -((WIDTH - mouseX) / WIDTH * FIELD_WIDTH) + (FIELD_WIDTH / 2);
-  }
-  
-  init();
-})(window, window.document, window.THREE);
+  });
+
+  //Set the camera to the first value in the list of cameras
+  camera = cameraList[0];
+
+  updateCameraAspect(camera);
+
+  // Start the animation loop after the model and cameras are loaded
+  animate();
+}
+
+// Set the camera aspect ratio to match the browser window dimensions
+function updateCameraAspect(camera) {
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+  camera.aspect = width / height;
+  camera.updateProjectionMatrix();
+}
+
+const renderScene = new RenderPass(scene, camera);
+const composer = new EffectComposer(renderer);
+composer.addPass(renderScene);
+
+const bloomPass = new UnrealBloomPass( new THREE.Vector2( window.innerWidth, window.innerHeight ), 50, 0.4, 0.1 );
+composer.addPass(bloomPass);
+			// bloomPass.threshold = params.threshold;
+			// bloomPass.strength = params.strength;
+			// bloomPass.radius = params.radius;
+
+//A method to be run each time a frame is generated
+function animate() {
+  requestAnimationFrame(animate);
+
+  renderer.render(scene, camera);
+};
+
