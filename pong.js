@@ -10,7 +10,7 @@ let renderer = new THREE.WebGLRenderer({
 
 	//Defines the canvas component in the DOM that will be used
 	canvas: document.querySelector('#background'),
-  antialias: true,
+	antialias: true,
 });
 
 
@@ -22,35 +22,36 @@ const params = {
 };
 
 renderer.setSize(window.innerWidth, window.innerHeight);
-
-//set up the renderer with the default settings for threejs.org/editor - revision r153
-renderer.shadows = true;
-renderer.castShadow = true;
-renderer.receiveShadow = true;
-renderer.shadowType = 1;
-renderer.shadowMap.enabled = true;
-renderer.setPixelRatio( window.devicePixelRatio );
-renderer.toneMapping = 0;
-renderer.toneMappingExposure = 1;
-renderer.useLegacyLights  = true;
-renderer.toneMapping = THREE.NoToneMapping;
+// //set up the renderer with the default settings for threejs.org/editor - revision r153
+// renderer.shadows = true;
+// renderer.castShadow = true;
+// renderer.receiveShadow = true;
+// renderer.shadowType = 1;
+// renderer.shadowMap.enabled = true;
+// // renderer.setPixelRatio( window.devicePixelRatio );
+// // renderer.toneMapping = 0;
+// // renderer.toneMappingExposure = 1;
+// // renderer.useLegacyLights  = true;
+// // renderer.toneMapping = THREE.NoToneMapping;
 // renderer.setClearColor(0xffffff, 0);
-//make sure three/build/three.module.js is over r152 or this feature is not available. 
-renderer.outputColorSpace = THREE.SRGBColorSpace 
+// // //make sure three/build/three.module.js is over r152 or this feature is not available. 
+// // renderer.outputColorSpace = THREE.SRGBColorSpace 
+
+
 
 
 const scene = new THREE.Scene();
 
-const dirLight = new THREE.DirectionalLight( 0xffffff, 1 );
-				dirLight.position.set( 0, 0, 10 );
-				dirLight.castShadow = true;
-				// dirLight.shadow.camera.top = 2;
-				// dirLight.shadow.camera.bottom = - 2;
-				// dirLight.shadow.camera.left = - 2;
-				// dirLight.shadow.camera.right = 2;
-				// dirLight.shadow.camera.near = 0.1;
-				// dirLight.shadow.camera.far = 40;
-scene.add( dirLight );
+// const dirLight = new THREE.DirectionalLight( 0xffffff, 1 );
+// dirLight.position.set( 0, 0, 10 );
+// dirLight.castShadow = true;
+// dirLight.shadow.camera.top = 2;
+// dirLight.shadow.camera.bottom = - 2;
+// dirLight.shadow.camera.left = - 2;
+// dirLight.shadow.camera.right = 2;
+// dirLight.shadow.camera.near = 0.1;
+// dirLight.shadow.camera.far = 40;
+// scene.add( dirLight );
 
 let cameraList = [];
 
@@ -58,37 +59,41 @@ let camera;
 
 // Load the GLTF model
 LoadGLTFByPath(scene)
-  .then(() => {
-    retrieveListOfCameras(scene);
-  })
-  .catch((error) => {
-    console.error('Error loading JSON scene:', error);
-  });
+.then(() => {
+	retrieveListOfCameras(scene);
+})
+.catch((error) => {
+	console.error('Error loading JSON scene:', error);
+});
 
 //retrieve list of all cameras
 function retrieveListOfCameras(scene){
-  // Get a list of all cameras in the scene
-  scene.traverse(function (object) {
-    if (object.isCamera) {
-      cameraList.push(object);
-    }
-  });
-
-  //Set the camera to the first value in the list of cameras
-  camera = cameraList[0];
-
-  updateCameraAspect(camera);
-
-  // Start the animation loop after the model and cameras are loaded
-  animate();
+	// Get a list of all cameras in the scene
+	scene.traverse(function (object) {
+		if (object.isCamera) {
+			cameraList.push(object);
+		}
+	});
+	
+	//Set the camera to the first value in the list of cameras
+	camera = cameraList[0];
+	
+	updateCameraAspect(camera);
+	
+	// Start the animation loop after the model and cameras are loaded
+	animate();
 }
 
 // Set the camera aspect ratio to match the browser window dimensions
 function updateCameraAspect(camera) {
-  const width = window.innerWidth;
-  const height = window.innerHeight;
-  camera.aspect = width / height;
-  camera.updateProjectionMatrix();
+	const width = window.innerWidth;
+	const height = window.innerHeight;
+	camera.aspect = width / height;
+	camera.updateProjectionMatrix();
+	const controls = new OrbitControls( camera, renderer.domElement );
+					controls.maxPolarAngle = Math.PI * 0.5;
+					controls.minDistance = 45;
+					controls.maxDistance = 69;
 }
 
 const renderScene = new RenderPass(scene, camera);
@@ -97,14 +102,14 @@ composer.addPass(renderScene);
 
 const bloomPass = new UnrealBloomPass( new THREE.Vector2( window.innerWidth, window.innerHeight ), 50, 0.4, 0.1 );
 composer.addPass(bloomPass);
-			// bloomPass.threshold = params.threshold;
-			// bloomPass.strength = params.strength;
-			// bloomPass.radius = params.radius;
+// bloomPass.threshold = params.threshold;
+// bloomPass.strength = params.strength;
+// bloomPass.radius = params.radius;
 
 //A method to be run each time a frame is generated
 function animate() {
-  requestAnimationFrame(animate);
-
-  renderer.render(scene, camera);
+	requestAnimationFrame(animate);
+	
+	renderer.render(scene, camera);
 };
 
