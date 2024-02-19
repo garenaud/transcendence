@@ -1,115 +1,164 @@
-import * as THREE from 'three'
-import {LoadGLTFByPath} from './ModelHelper.js'
-import {OrbitControls} from '/node_modules/three/examples/jsm/controls/OrbitControls.js'
-import {RenderPass} from '/node_modules/three/examples/jsm/postprocessing/RenderPass.js'
-import {UnrealBloomPass} from '/node_modules/three/examples/jsm/postprocessing/UnrealBloomPass.js'
-import { EffectComposer } from '/node_modules/three/examples/jsm/postprocessing/EffectComposer.js'
+import * as THREE from 'three';
+import { LoadGLTFByPath } from './ModelHelper.js';
+import { OrbitControls } from '/node_modules/three/examples/jsm/controls/OrbitControls.js';
+import { TextGeometry } from '/node_modules/three/examples/jsm/geometries/TextGeometry.js';
+import { RectAreaLightHelper } from '/node_modules/three/examples/jsm/helpers/RectAreaLightHelper.js';
+import { RenderPass } from '/node_modules/three/examples/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from '/node_modules/three/examples/jsm/postprocessing/UnrealBloomPass.js';
+import { EffectComposer } from '/node_modules/three/examples/jsm/postprocessing/EffectComposer.js';
 
-//Renderer does the job of rendering the graphics
-let renderer = new THREE.WebGLRenderer({
-
-	//Defines the canvas component in the DOM that will be used
-	canvas: document.querySelector('#background'),
-	antialias: true,
-});
-
-
-const params = {
-	threshold: 0,
-	strength: 1,
-	radius: 0,
-	exposure: 1
-};
-
-renderer.setSize(window.innerWidth, window.innerHeight);
-// //set up the renderer with the default settings for threejs.org/editor - revision r153
-// renderer.shadows = true;
-// renderer.castShadow = true;
-// renderer.receiveShadow = true;
-// renderer.shadowType = 1;
-// renderer.shadowMap.enabled = true;
-// // renderer.setPixelRatio( window.devicePixelRatio );
-// // renderer.toneMapping = 0;
-// // renderer.toneMappingExposure = 1;
-// // renderer.useLegacyLights  = true;
-// // renderer.toneMapping = THREE.NoToneMapping;
-// renderer.setClearColor(0xffffff, 0);
-// // //make sure three/build/three.module.js is over r152 or this feature is not available. 
-// // renderer.outputColorSpace = THREE.SRGBColorSpace 
-
-
-
-
-const scene = new THREE.Scene();
-
-// const dirLight = new THREE.DirectionalLight( 0xffffff, 1 );
-// dirLight.position.set( 0, 0, 10 );
-// dirLight.castShadow = true;
-// dirLight.shadow.camera.top = 2;
-// dirLight.shadow.camera.bottom = - 2;
-// dirLight.shadow.camera.left = - 2;
-// dirLight.shadow.camera.right = 2;
-// dirLight.shadow.camera.near = 0.1;
-// dirLight.shadow.camera.far = 40;
-// scene.add( dirLight );
-
-let cameraList = [];
-
+let renderer;
+let scene;
 let camera;
+let controls;
+let cameraList = [];
+let composer;
+let scoreText1, scoreText2;
+let player1Score = 0;
+let player2Score = 0;
 
-// Load the GLTF model
-LoadGLTFByPath(scene)
-.then(() => {
-	retrieveListOfCameras(scene);
-})
-.catch((error) => {
-	console.error('Error loading JSON scene:', error);
-});
-
-//retrieve list of all cameras
-function retrieveListOfCameras(scene){
-	// Get a list of all cameras in the scene
-	scene.traverse(function (object) {
-		if (object.isCamera) {
-			cameraList.push(object);
-		}
+function init() {
+	// Renderer
+	renderer = new THREE.WebGLRenderer({
+		canvas: document.querySelector('#background'),
+		antialias: true,
 	});
-	
-	//Set the camera to the first value in the list of cameras
-	camera = cameraList[0];
-	
-	updateCameraAspect(camera);
-	
-	// Start the animation loop after the model and cameras are loaded
+	renderer.setSize(window.innerWidth, window.innerHeight);
+
+	// Scene
+	scene = new THREE.Scene();
+
+	// Camera
+	camera = new THREE.PerspectiveCamera(25, window.innerWidth / window.innerHeight, 0.1, 1000);
+	camera.position.set(0, 5, 5);
+
+	// Controls
+	controls = initControls();
+
+	// Postprocessing
+	composer = initPostprocessing();
+
+	// Load the GLTF model and handle the ball
+	LoadGLTFByPath(scene)
+		.then(() => {
+			handleBall();
+			createScoreTexts();
+			// retrieveListOfCameras(scene);
+		})
+		.catch((error) => {
+			console.error('Error loading JSON scene:', error);
+		});
+
+	// Animation loop
 	animate();
 }
 
-// Set the camera aspect ratio to match the browser window dimensions
-function updateCameraAspect(camera) {
-	const width = window.innerWidth;
-	const height = window.innerHeight;
-	camera.aspect = width / height;
-	camera.updateProjectionMatrix();
-	const controls = new OrbitControls( camera, renderer.domElement );
-					controls.maxPolarAngle = Math.PI * 0.5;
-					controls.minDistance = 45;
-					controls.maxDistance = 69;
+function createScoreTexts() {
+	// Create a material for the text
+	const textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+
+	// Create text geometry for player 1's score
+	const scoreGeometry1 = new TextGeometry('Score: ' + player1Score, {
+		// Specify a font (you may need to load it),
+		size: 1,
+		height: 0.1,
+		curveSegments: 12,
+		bevelEnabled: false,
+		material: 0,
+		extrudeMaterial: 1,
+	});
+
+	// Create a mesh for player 1's score text
+	scoreText1 = new THREE.Mesh(scoreGeometry1, textMaterial);
+	scoreText1.position.set(-5, 5, -10); // Adjust position as needed
+	scene.add(scoreText1);
+
+	// Create text geometry for player 2's score
+	const scoreGeometry2 = new TextGeometry('Score: ' + player2Score, {
+		// Specify a font (you may need to load it),
+		size: 1,
+		height: 0.1,
+		curveSegments: 12,
+		bevelEnabled: false,
+		material: 1,
+		extrudeMaterial: 1,
+	});
+
+	// Create a mesh for player 2's score text
+	scoreText2 = new THREE.Mesh(scoreGeometry2, textMaterial);
+	scoreText2.position.set(5, 5, -10); // Adjust position as needed
+	scene.add(scoreText2);
 }
 
-const renderScene = new RenderPass(scene, camera);
-const composer = new EffectComposer(renderer);
-composer.addPass(renderScene);
+function updateScoreTexts() {
+	// Mettez à jour le texte des scores avec les scores actuels
+	scoreText1.geometry = new TextGeometry('Score: ' + player1Score, {
+		size: 1,
+		height: 0.1,
+		curveSegments: 12,
+		bevelEnabled: false,
+		material: 0,
+		extrudeMaterial: 1,
+	});
 
-const bloomPass = new UnrealBloomPass( new THREE.Vector2( window.innerWidth, window.innerHeight ), 50, 0.4, 0.1 );
-composer.addPass(bloomPass);
-// bloomPass.threshold = params.threshold;
-// bloomPass.strength = params.strength;
-// bloomPass.radius = params.radius;
+	scoreText2.geometry = new TextGeometry('Score: ' + player2Score, {
+		size: 1,
+		height: 0.1,
+		curveSegments: 12,
+		bevelEnabled: false,
+		material: 0,
+		extrudeMaterial: 1,
+	});
+}
 
-//A method to be run each time a frame is generated
+function updateCameraAspect(selectedCamera) {
+	const width = window.innerWidth;
+	const height = window.innerHeight;
+	selectedCamera.aspect = width / height;
+	selectedCamera.updateProjectionMatrix();
+}
+
+function initControls() {
+	const newControls = new OrbitControls(camera, renderer.domElement);
+	newControls.maxPolarAngle = Math.PI * 0.5;
+	newControls.minDistance = 45;
+	newControls.maxDistance = 69;
+
+	return newControls;
+}
+
+function initPostprocessing() {
+	const renderScene = new RenderPass(scene, camera);
+	const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
+	const newComposer = new EffectComposer(renderer);
+	newComposer.addPass(renderScene);
+	newComposer.addPass(bloomPass);
+
+	return newComposer;
+}
+
+function handleBall() {
+	const ballName = 'Ball';
+	const ball = scene.getObjectByName(ballName);
+
+	if (ball) {
+		document.addEventListener('keydown', (event) => {
+			if (event.code === 'KeyD') {
+				ball.position.x += 1;
+			}
+
+			// Ajoutez d'autres mouvements en fonction de vos besoins
+		});
+	} else {
+		console.log('La balle avec le nom', ballName, 'n\'a pas été trouvée dans la scène.');
+	}
+}
+
 function animate() {
 	requestAnimationFrame(animate);
-	
-	renderer.render(scene, camera);
-};
-
+	controls.update();
+	composer.render(scene, camera);
+}
+// console.log(camera.position);
+// Appel de la fonction d'initialisation
+init();
