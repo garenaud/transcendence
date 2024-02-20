@@ -51,75 +51,89 @@ function init() {
 		.then(() => {
 			// handlePaddleRight();
 			// handlePaddleLeft();
+			handleGround();
+			handleLight();
 			createScoreTexts();
 			// retrieveListOfCameras(scene);
 		})
 		.catch((error) => {
 			console.error('Error loading JSON scene:', error);
 		});
+	// scene.castShadow = true;
+	scene.receiveShadow = true;
+	console.log(scene);
 
 	// Animation loop
 	animate();
 }
 
-
-function createScoreTexts() {
-	// Create a material for the text
-	const textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
-	
-	// Create text geometry for player 1's score
-	const scoreGeometry1 = new TextGeometry('Score: ' + player1Score, {
-		// Specify a font (you may need to load it),
-		size: 1,
-		height: 0.1,
-		curveSegments: 12,
-		bevelEnabled: false,
-		material: 0,
-		extrudeMaterial: 1,
-	});
-	
-	// Create a mesh for player 1's score text
-	scoreText1 = new THREE.Mesh(scoreGeometry1, textMaterial);
-	scoreText1.position.set(-5, 5, -10); // Adjust position as needed
-	scene.add(scoreText1);
-	
-	// Create text geometry for player 2's score
-	const scoreGeometry2 = new TextGeometry('Score: ' + player2Score, {
-		// Specify a font (you may need to load it),
-		size: 1,
-		height: 0.1,
-		curveSegments: 12,
-		bevelEnabled: false,
-		material: 1,
-		extrudeMaterial: 1,
-	});
-	
-	// Create a mesh for player 2's score text
-	scoreText2 = new THREE.Mesh(scoreGeometry2, textMaterial);
-	scoreText2.position.set(5, 5, -10); // Adjust position as needed
-	scene.add(scoreText2);
+function handleLight() {
+	const LightName = 'PointLight';
+	const Light = scene.getObjectByName(LightName);
+	Light.intensity = 0.6;
+	Light.castShadow = true;
+	Light.frustumCulled = false;
+	// console.log(Light.castShadow);
+	console.log(Light);
 }
 
-function updateScoreTexts() {
-	// Mettez à jour le texte des scores avec les scores actuels
-	scoreText1.geometry = new TextGeometry('Score: ' + player1Score, {
-		size: 1,
-		height: 0.1,
-		curveSegments: 12,
-		bevelEnabled: false,
-		material: 0,
-		extrudeMaterial: 1,
-	});
+// function createScoreTexts() {
+// 	// Create a material for the text
+// 	const textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
 	
-	scoreText2.geometry = new TextGeometry('Score: ' + player2Score, {
-		size: 1,
-		height: 0.1,
-		curveSegments: 12,
-		bevelEnabled: false,
-		material: 0,
-		extrudeMaterial: 1,
-	});
-}
+// 	// Create text geometry for player 1's score
+// 	const scoreGeometry1 = new TextGeometry('Score: ' + player1Score, {
+// 		// Specify a font (you may need to load it),
+// 		size: 1,
+// 		height: 0.1,
+// 		curveSegments: 12,
+// 		bevelEnabled: false,
+// 		material: 0,
+// 		extrudeMaterial: 1,
+// 	});
+	
+// 	// Create a mesh for player 1's score text
+// 	scoreText1 = new THREE.Mesh(scoreGeometry1, textMaterial);
+// 	scoreText1.position.set(-5, 5, -10); // Adjust position as needed
+// 	scene.add(scoreText1);
+	
+// 	// Create text geometry for player 2's score
+// 	const scoreGeometry2 = new TextGeometry('Score: ' + player2Score, {
+// 		// Specify a font (you may need to load it),
+// 		size: 1,
+// 		height: 0.1,
+// 		curveSegments: 12,
+// 		bevelEnabled: false,
+// 		material: 1,
+// 		extrudeMaterial: 1,
+// 	});
+	
+// 	// Create a mesh for player 2's score text
+// 	scoreText2 = new THREE.Mesh(scoreGeometry2, textMaterial);
+// 	scoreText2.position.set(5, 5, -10); // Adjust position as needed
+// 	scene.add(scoreText2);
+// }
+
+// function updateScoreTexts() {
+// 	// Mettez à jour le texte des scores avec les scores actuels
+// 	scoreText1.geometry = new TextGeometry('Score: ' + player1Score, {
+// 		size: 1,
+// 		height: 0.1,
+// 		curveSegments: 12,
+// 		bevelEnabled: false,
+// 		material: 0,
+// 		extrudeMaterial: 1,
+// 	});
+	
+// 	scoreText2.geometry = new TextGeometry('Score: ' + player2Score, {
+// 		size: 1,
+// 		height: 0.1,
+// 		curveSegments: 12,
+// 		bevelEnabled: false,
+// 		material: 0,
+// 		extrudeMaterial: 1,
+// 	});
+// }
 
 function updateCameraAspect(selectedCamera) {
 	const width = window.innerWidth;
@@ -145,6 +159,14 @@ function initPostprocessing() {
 	newComposer.addPass(bloomPass);
 	
 	return newComposer;
+}
+
+function handleGround() {
+	const groundName = 'Ground';
+	const Ground = scene.getObjectByName(groundName);
+	Ground.roughness = 1.8;
+	console.log(Ground);
+	Ground.receiveShadow = true;
 }
 
 // Fonction pour gérer l'appui sur une touche
@@ -173,14 +195,11 @@ function handlePaddleRight() {
 			PaddleRight.position.z += mooveSpeed;
 		}	
 	}
-	else
-	console.log('La PaddleRight avec le nom', PaddleRight, 'n\'a pas été trouvée dans la scène.');
 }
 
 function handlePaddleLeft() {
 	const PaddleLeftName = 'LeftPaddle';
 	const PaddleLeft = scene.getObjectByName(PaddleLeftName);
-	PaddleLeft.castShadow = true;
 	
 	if (PaddleLeft) {
 		if (KeyState['KeyW']) {
@@ -189,9 +208,7 @@ function handlePaddleLeft() {
 		if (KeyState['KeyS']) {
 			PaddleLeft.position.z += mooveSpeed;
 		}
-	} else {
-		console.log('La PaddleLeft avec le nom', PaddleLeft, 'n\'a pas été trouvée dans la scène.');
-	}
+	} 
 }
 
 document.addEventListener('keydown', handleKeyDown);
