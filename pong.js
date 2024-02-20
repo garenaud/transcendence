@@ -16,6 +16,14 @@ let composer;
 let scoreText1, scoreText2;
 let player1Score = 0;
 let player2Score = 0;
+const mooveSpeed = 0.4;
+
+const KeyState = {
+	KeyW: false,
+	KeyS: false,
+	ArrowUp: false,
+	ArrowDown: false,
+};
 
 function init() {
 	// Renderer
@@ -38,10 +46,11 @@ function init() {
 	// Postprocessing
 	composer = initPostprocessing();
 
-	// Load the GLTF model and handle the ball
+	// Load the GLTF model and handle the PaddleRight
 	LoadGLTFByPath(scene)
 		.then(() => {
-			handleBall();
+			// handlePaddleRight();
+			// handlePaddleLeft();
 			createScoreTexts();
 			// retrieveListOfCameras(scene);
 		})
@@ -53,10 +62,11 @@ function init() {
 	animate();
 }
 
+
 function createScoreTexts() {
 	// Create a material for the text
 	const textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
-
+	
 	// Create text geometry for player 1's score
 	const scoreGeometry1 = new TextGeometry('Score: ' + player1Score, {
 		// Specify a font (you may need to load it),
@@ -67,12 +77,12 @@ function createScoreTexts() {
 		material: 0,
 		extrudeMaterial: 1,
 	});
-
+	
 	// Create a mesh for player 1's score text
 	scoreText1 = new THREE.Mesh(scoreGeometry1, textMaterial);
 	scoreText1.position.set(-5, 5, -10); // Adjust position as needed
 	scene.add(scoreText1);
-
+	
 	// Create text geometry for player 2's score
 	const scoreGeometry2 = new TextGeometry('Score: ' + player2Score, {
 		// Specify a font (you may need to load it),
@@ -83,7 +93,7 @@ function createScoreTexts() {
 		material: 1,
 		extrudeMaterial: 1,
 	});
-
+	
 	// Create a mesh for player 2's score text
 	scoreText2 = new THREE.Mesh(scoreGeometry2, textMaterial);
 	scoreText2.position.set(5, 5, -10); // Adjust position as needed
@@ -100,7 +110,7 @@ function updateScoreTexts() {
 		material: 0,
 		extrudeMaterial: 1,
 	});
-
+	
 	scoreText2.geometry = new TextGeometry('Score: ' + player2Score, {
 		size: 1,
 		height: 0.1,
@@ -123,7 +133,7 @@ function initControls() {
 	newControls.maxPolarAngle = Math.PI * 0.5;
 	newControls.minDistance = 45;
 	newControls.maxDistance = 69;
-
+	
 	return newControls;
 }
 
@@ -133,29 +143,65 @@ function initPostprocessing() {
 	const newComposer = new EffectComposer(renderer);
 	newComposer.addPass(renderScene);
 	newComposer.addPass(bloomPass);
-
+	
 	return newComposer;
 }
 
-function handleBall() {
-	const ballName = 'Ball';
-	const ball = scene.getObjectByName(ballName);
-
-	if (ball) {
-		document.addEventListener('keydown', (event) => {
-			if (event.code === 'KeyD') {
-				ball.position.x += 1;
-			}
-
-			// Ajoutez d'autres mouvements en fonction de vos besoins
-		});
-	} else {
-		console.log('La balle avec le nom', ballName, 'n\'a pas été trouvée dans la scène.');
+// Fonction pour gérer l'appui sur une touche
+function handleKeyDown(event) {
+	if (KeyState.hasOwnProperty(event.code)) {
+		KeyState[event.code] = true;
 	}
 }
 
+// Fonction pour gérer le relâchement d'une touche
+function handleKeyUp(event) {
+	if (KeyState.hasOwnProperty(event.code)) {
+		KeyState[event.code] = false;
+	}
+}
+
+function handlePaddleRight() {
+	const PaddleRightName = 'RightPaddle';
+	const PaddleRight = scene.getObjectByName(PaddleRightName);
+	
+	if (PaddleRight) {
+		if (KeyState['ArrowUp']) {
+			PaddleRight.position.z -= mooveSpeed;
+		}
+		if (KeyState['ArrowDown']) {
+			PaddleRight.position.z += mooveSpeed;
+		}	
+	}
+	else
+	console.log('La PaddleRight avec le nom', PaddleRight, 'n\'a pas été trouvée dans la scène.');
+}
+
+function handlePaddleLeft() {
+	const PaddleLeftName = 'LeftPaddle';
+	const PaddleLeft = scene.getObjectByName(PaddleLeftName);
+	PaddleLeft.castShadow = true;
+	
+	if (PaddleLeft) {
+		if (KeyState['KeyW']) {
+			PaddleLeft.position.z -= mooveSpeed;
+		}
+		if (KeyState['KeyS']) {
+			PaddleLeft.position.z += mooveSpeed;
+		}
+	} else {
+		console.log('La PaddleLeft avec le nom', PaddleLeft, 'n\'a pas été trouvée dans la scène.');
+	}
+}
+
+document.addEventListener('keydown', handleKeyDown);
+document.addEventListener('keyup', handleKeyUp);
+
+
 function animate() {
 	requestAnimationFrame(animate);
+	handlePaddleLeft();
+	handlePaddleRight();
 	controls.update();
 	composer.render(scene, camera);
 }
