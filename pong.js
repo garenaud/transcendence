@@ -21,6 +21,9 @@ const mooveSpeed = 0.1;
 const wallLimit = 6.5;
 const ballLimit = 8.5;
 const maxAngleAdjustment = 0.5;
+let font;
+let scoreLeft;
+let scoreRight;
 let PaddleRight;
 let PaddleLeft;
 let ball;
@@ -53,35 +56,17 @@ function init() {
 
 	// Postprocessing
 	composer = initPostprocessing();
-	const materialargs = {
-		color: 0xffffff,
-		specular: 0x050505,
-		shininess: 50,
-		emissive: 0x000000
-	};
 
-	const material = new THREE.MeshPhongMaterial( materialargs );
 	const loader = new FontLoader();
-	const font = loader.load('fonts/helvetiker_bold.typeface.json', function (font) {
+	font = loader.load('/node_modules/three/examples/fonts/helvetiker_bold.typeface.json', function (font) {
 		console.log(font);
-	})
-	const scoreGeometry1 = new TextGeometry('0', { font: font,
-		size: 100,
-		height: 100,
 	});
-	const scoreMesh1 = new THREE.Mesh(scoreGeometry1, material);
-	scoreMesh1.position.set(-10, 5, -10);  // Ajustez la position comme nécessaire
-	scene.add(scoreMesh1);
-
-	const scoreGeometry2 = new TextGeometry('0', {font: font});
-	const scoreMesh2 = new THREE.Mesh(scoreGeometry2, material);
-	scoreMesh2.position.set(10, 5, -10);  // Ajustez la position comme nécessaire
-	scene.add(scoreMesh2);
 	// Load the GLTF model and handle the PaddleRight
 	LoadGLTFByPath(scene)
 		.then(() => {
 			handleGround();
 			handleLight();
+			handleText();
 			// createScoreTexts();
 			handleBall();
 		})
@@ -90,9 +75,27 @@ function init() {
 		});
 		// scene.castShadow = true;
 		scene.receiveShadow = true;
+		console.log(scene);
 		
 		// Animation loop
 		animate();
+}
+
+function handleText() {
+	scoreLeft = scene.getObjectByName('Text');
+	scene.add(scoreLeft);
+	scoreRight = scene.getObjectByName('Text001');
+	scene.add(scoreRight);
+	// scoreLeft.index = 1111;
+	scene.remove(scoreLeft);
+	scoreLeft = new TextGeometry('aoisdjaidjoisdhjodihodhaoiiadhoasihdd 1', {
+		size: 100,
+		height: 5,
+	});
+	const newMesh = new THREE.Mesh(scoreLeft, scoreLeft.material);
+	newMesh.position.set(-8, 0, 0.1);
+	scene.add(newMesh);
+	console.log(scoreLeft);
 }
 
 function handleBall() {
@@ -109,11 +112,10 @@ function handleBall() {
 }
 
 function handleLight() {
-	const LightName = 'PointLight';
-	const Light = scene.getObjectByName(LightName);
-	Light.intensity = 0.6;
-	Light.castShadow = true;
-	Light.frustumCulled = false;
+	const light = new THREE.AmbientLight( 0x040404 , 0.2 ); // soft white light
+	light.castShadow = true;
+	// console.log(scene);
+	scene.add( light );
 }
 
 function updateCameraAspect(selectedCamera) {
@@ -134,8 +136,9 @@ function initControls() {
 
 function initPostprocessing() {
 	const renderScene = new RenderPass(scene, camera);
-	const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
+	const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.1, 0.1, 0.60);
 	const newComposer = new EffectComposer(renderer);
+	newComposer.castShadow = true;
 	newComposer.addPass(renderScene);
 	newComposer.addPass(bloomPass);
 	
