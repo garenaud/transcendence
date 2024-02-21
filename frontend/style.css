@@ -73,9 +73,12 @@ h1 {
     font-size: 1rem; 
   }
 
+.glowing-btn:hover span {
+    color: #fff !important;
+}
 
 .navbar-nav .nav-link {
-    padding: 0rem 0rem;s
+    padding: 0rem 0rem;
 }
 
 .nav-item {
@@ -99,7 +102,7 @@ h1 {
   padding: 0.35em 1em;
   border: 0.15em solid var(--glow-color);
   border-radius: 0.45em;
-  background: whitesmoke;
+  background: rgba(245, 245, 245, 1);
   perspective: 2em;
   font-family: "Fira Sans", sans-serif;
   font-size: 1.5em;

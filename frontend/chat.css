@@ -54,9 +54,9 @@ border-radius: 0 0 15px 15px !important;
     height: 60px !important;
     overflow-y: auto;
 }
-    .type_msg:focus{
-     box-shadow:none !important;
-   outline:0px !important;
+.type_msg:focus{
+    box-shadow:none !important;
+    outline:0px !important;
 }
 .attach_btn{
 border-radius: 15px 0 0 15px !important;
@@ -85,15 +85,21 @@ background-color: rgba(255, 255, 255, 0.3) !important;
 }
 .contacts li{
     width: 100% !important;
-    padding: 5px 10px;
-    margin-bottom: 15px !important;
+    padding: 2px 5px;
+    margin-bottom: 5px !important;
+    height: auto;
+    display: flex;
+    align-items: center;
+}
+.contacts li:hover {
+    background-color: rgba(255, 255, 255, 0.5);
 }
 .active{
-    background-color: rgba(255, 255, 255, 0.3);
+    background-color: rgba(255, 255, 255, 0.5);
 }
 .user_img{
-    height: 70px;
-    width: 70px;
+    height: 40px;
+    width: 40px;
     border:1.5px solid #f5f6fa;
 
 }
@@ -105,8 +111,8 @@ background-color: rgba(255, 255, 255, 0.3) !important;
 }
 .img_cont{
     position: relative;
-    height: 70px;
-    width: 70px;
+    height: 45px;
+    width: 45px;
 }
 .img_cont_msg{
     height: 40px;
@@ -139,14 +145,14 @@ font-size: 10px;
 color: #09061E;
 }
 .video_cam{
-margin-left: 50px;
+margin-left: 20px;
 margin-top: 5px;
 }
 .video_cam span{
 color: white;
 font-size: 20px;
 cursor: pointer;
-margin-right: 20px;
+margin-right: 10px;
 }
 .msg_cotainer{
 margin-top: auto;
@@ -220,6 +226,12 @@ padding-right: 10px;
 cursor: pointer;
 background-color: rgba(0,0,0,0.2);
 }
+/* .d-flex.bd-highlight {
+    height: auto;
+    display: flex;
+    align-items: center;
+} */
+
 @media(max-width: 576px){
 .contacts_card{
 margin-bottom: 15px !important;
