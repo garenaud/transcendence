@@ -1,3 +1,4 @@
+from typing import Any
 from django.db import models
 
 # Create your models here.
@@ -12,6 +13,9 @@ class Users(models.Model):
 	
 class Games(models.Model):
 	player1 = models.ForeignKey(Users, on_delete=models.CASCADE)
-	player2 = models.ForeignKey(Users, on_delete=models.CASCADE)
+	#player2 = models.ForeignKey(Users, on_delete=models.CASCADE)
 	code = models.CharField(max_length=10)
 	finished = models.BooleanField(default=False)
+
+	def __str__(self):
+		return self.code

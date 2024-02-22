@@ -1,13 +1,16 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+from .models import Users, Games
 
 # Create your views here.
 
-def render_index(request):
-	return HttpResponse("<h1>index of transcendence</h1>")
+def render_index(request, id):
+	try:
+		user = Users.objects.get(id=id)
+		return HttpResponse("<h1>%s</h1>" %user.login)
+	except:
+		return HttpResponse("<h1>%s</h1>" %id)
 
-def v1(request):
-	return HttpResponse("<h1>V1 view</h1>")
 
 
 
