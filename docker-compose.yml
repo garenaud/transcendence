@@ -1,0 +1,93 @@
+version: '3'
+
+services:
+  postgre:
+    container_name: postgre
+    image: postgre
+    volumes:
+      - sql:/var/lib/postgre
+    networks:
+      - transcendence
+    ports:
+      - "3306"
+    restart: on-failure
+    env_file:
+      - req/.env
+    build:
+      context: req/postgre
+      dockerfile: Dockerfile
+    healthcheck:
+      test: mysqladmin ping --silent
+      interval: 10s
+      timeout: 5s
+      start_period: 10s
+
+  pgadmin:
+    container_name: pgadmin
+    image: pgadmin:latest
+    volumes:
+      -
+    networks:
+      - transcendence
+    ports:
+      - ""
+    restart: on-failure
+    env_file:
+      - req/.env
+    depends_on:
+      - postgre
+    build:
+      context: req/pgadmin
+      dockerfile: Dockerfile
+
+  backend:
+    container_name: backend
+    image: backend
+    volumes:
+      - 
+    networks:
+      - transcendence
+    ports:
+      - ""
+    restart: on-failure
+    env_file:
+      - req/.env
+    build:
+      context: req/backend
+      dockerfile: Dockerfile
+
+  frontend:
+    container_name: frontend
+    image: frontend
+    volumes:
+      -
+    networks:
+      - transcendence
+    ports:
+      - ""
+    restart: on-failure
+    env_file:
+      - req/.env
+    build:
+      context: req/frontend
+      dockerfile: Dockerfile
+
+volumes:
+  files:
+    external: false
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: '/home/${USER}/data/transcendence/'
+  db:
+    external: false
+    driver: local
+    driver_opts:
+      type: none
+      o : bind;
+      device: '/home/${USER}/data/db'
+
+networks:
+  transcendence:
+    driver: bridge
