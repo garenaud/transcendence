@@ -125,7 +125,7 @@ function updateCameraAspect(selectedCamera) {
 function initControls() {
 	const newControls = new OrbitControls(camera, renderer.domElement);
 	newControls.maxPolarAngle = Math.PI * 0.5;
-	newControls.minDistance = 5;
+	newControls.minDistance = 45;
 	newControls.maxDistance = 69;
 	
 	return newControls;
@@ -194,6 +194,8 @@ function handlePaddleLeft() {
 	} 
 }
 
+
+// TODO: Reajuster l'angle de la balle.
 function handlePaddleCollision() {
 	const ballRadius = ball.geometry.boundingSphere.radius;
 	const PaddleSizeX = PaddleLeft.geometry.boundingBox.max.x;
