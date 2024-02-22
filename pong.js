@@ -57,10 +57,6 @@ function init() {
 	// Postprocessing
 	composer = initPostprocessing();
 
-	const loader = new FontLoader();
-	font = loader.load('/node_modules/three/examples/fonts/helvetiker_bold.typeface.json', function (font) {
-		console.log(font);
-	});
 	// Load the GLTF model and handle the PaddleRight
 	LoadGLTFByPath(scene)
 		.then(() => {
@@ -84,18 +80,19 @@ function init() {
 function handleText() {
 	scoreLeft = scene.getObjectByName('Text');
 	scene.add(scoreLeft);
+	scene.remove(scoreLeft);
 	scoreRight = scene.getObjectByName('Text001');
 	scene.add(scoreRight);
+	scene.remove(scoreRight);
 	// scoreLeft.index = 1111;
-	scene.remove(scoreLeft);
-	scoreLeft = new TextGeometry('aoisdjaidjoisdhjodihodhaoiiadhoasihdd 1', {
-		size: 100,
-		height: 5,
-	});
-	const newMesh = new THREE.Mesh(scoreLeft, scoreLeft.material);
-	newMesh.position.set(-8, 0, 0.1);
-	scene.add(newMesh);
-	console.log(scoreLeft);
+	// scoreLeft = new TextGeometry('aoisdjaidjoisdhjodihodhaoiiadhoasihdd 1', {
+	// 	size: 100,
+	// 	height: 5,
+	// });
+	// const newMesh = new THREE.Mesh(scoreLeft, scoreLeft.material);
+	// newMesh.position.set(-8, 0, 0.1);
+	// scene.add(newMesh);
+	// console.log(scoreLeft);
 }
 
 function handleBall() {
