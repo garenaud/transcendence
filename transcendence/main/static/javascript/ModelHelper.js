@@ -3,7 +3,7 @@ import { GLTFLoader } from './node_modules/three/examples/jsm/loaders/GLTFLoader
 
 // import {LoadGLTFByPath} from './ModelHelper.js'
 
-const scenePath = 'assets/scene.gltf'
+const scenePath = '/static/javascript//assets/scene.gltf'
 
 export const LoadGLTFByPath = (scene) => {
     return new Promise((resolve, reject) => {
