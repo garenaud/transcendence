@@ -11,6 +11,8 @@ def render_index(request, id):
 	except:
 		return HttpResponse("<h1>%s</h1>" %id)
 
+def render_pong(request):
+	return render(request, "main/test.html")
 
 
 
