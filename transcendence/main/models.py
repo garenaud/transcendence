@@ -12,8 +12,8 @@ class Users(models.Model):
 		return self.name
 	
 class Games(models.Model):
-	player1 = models.ForeignKey(Users, on_delete=models.CASCADE)
-	#player2 = models.ForeignKey(Users, on_delete=models.CASCADE)
+	player1 = models.ForeignKey(Users, on_delete=models.CASCADE, related_name="p1")
+	#player2 = models.ForeignKey(Users, on_delete=models.CASCADE, related_name="p2")
 	code = models.CharField(max_length=10)
 	finished = models.BooleanField(default=False)
 

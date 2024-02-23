@@ -1,9 +1,16 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from .models import Users, Games
+from .serializers import UsersSerializer
 
 
 # Create your views here.
+
+def users_list(request):
+	users = Users.objects.all()
+	serializer = UsersSerializer(users, many=True)
+	return JsonResponse(serializer.data, safe=False)
+
 
 def render_index(request):
 	user = Users.objects.all()
