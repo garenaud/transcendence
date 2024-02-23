@@ -1,11 +1,5 @@
-import { renderNavbar } from './components/navbar.js';
-import { renderHero } from './components/hero.js';
-import { renderGame } from './components/game.js';
-import { renderChat } from './components/chat.js';
+import { renderApp } from './components/stateManager.js';
+
 document.addEventListener('DOMContentLoaded', () => {
-    //renderChat();
-    //renderGame();
-    renderHero();
-    renderNavbar();
-    // Initialiser d'autres composants ici
+    renderApp(); // Cela rendra la vue initiale basée sur l'état actuel
 });
