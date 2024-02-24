@@ -1,5 +1,5 @@
 * {
-    margin: 0;
+    margin: 5;
     padding: 0;
     box-sizing: border-box;
 }
@@ -24,10 +24,149 @@ h1 {
     color: #F6428E;
 }
 
+/*-------------------------------- Modal --------------------------------*/
+.modal-title {
+    color: #F6428E;
+}
+/*-------------------------------- Navbar --------------------------------*/
 .navbar {
     background-color: #1A244D !important;
     margin-bottom: 5px;
+    padding-left: 50px;
+    padding-right: 50px;
 }
+
+.navbar * {
+    width: 100%;
+    /*position: fixed;*/
+    
+    height: 90px;
+    display: flex;
+    align-content: space-between;
+    align-items: center;
+    color: #F6428E;
+    text-decoration: none;
+    object-fit: contain;
+}
+
+.nav-glowing-btn {
+    height: 45px;
+    display: flex;
+    width: auto;
+}
+
+.nav-glowing-btn .glowing-btn {
+    width: auto;
+    height: 100%;
+    padding: 15px;
+    font-size: 1rem; 
+  }
+
+  .navbar-collapse {
+    display: flex;
+    width: 100%;
+    justify-content: flex-start;
+    align-items: center;
+    align-content: space-around;
+  }
+
+.nav-div-btn {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.navbar-logo img{
+  position: absolute;
+  top: -20px; /* Ajustez cette valeur selon la taille de votre logo */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  height: 200px;
+  width:100%;
+}
+
+.nav-user {
+  justify-self: flex-end;
+  height: 60px;
+  width: auto;
+}
+
+.nav-user-info {
+  width: auto;
+  padding-right: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end; /* Correction ici */
+  justify-content:baseline;
+}
+
+.nav-user-img {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: 90px; /* Hauteur de la navbar pour alignement vertical */
+}
+
+.img_cont_nav {
+  width: 70px; /* Largeur du conteneur de l'image */
+  height: 70px; /* Hauteur du conteneur de l'image */
+  border-radius: 50%;
+  overflow: hidden; /* Assure que l'image reste dans les limites du cercle */
+  object-fit: cover;
+}
+
+
+.user_img img {
+  width: 100%;
+  height: 100%; /* Garde le ratio de l'image intact */
+  border-radius: 50%; /* Rend l'image circulaire */
+  object-fit: cover;
+}
+
+/*-------------------------------- slotMachine --------------------------------*/
+
+#viewport {
+  overflow: hidden;
+  width: 100%;
+  display: block;
+}
+
+#viewport.mobile {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+#viewport.tablet {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+#viewport.desktop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+#content {
+  position: absolute;
+  width: 550px;
+  height: 430px;
+  left: 50%;
+  top: 100px;
+  margin-left: -275px;
+}
+
+canvas {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+}
+
 
 .game {
   width: 100%;
@@ -74,7 +213,7 @@ h1 {
 .lg-img img {
   max-width: 150%;
   max-height: 150%;
-  object-fit: contain;
+  object-fit: cover;
 }
 
 .main {
@@ -84,42 +223,13 @@ h1 {
     padding: 0;
 }
 
-.navbar * {
-    width: 100%;
-    /*position: fixed;*/
-    
-    height: 90px;
-    display: flex;
-    align-items: center;
-    color: #F6428E;
-    text-decoration: none;
-    object-fit: contain;
-}
-
-.navbar-logo {
-    width: 20%;
-}
-
-.nav-glowing-btn {
-    height: 45px;
-    display: flex;
-    align-items: center;
-}
-
-.nav-glowing-btn .glowing-btn {
-    width: auto;
-    height: 100%;
-    padding: 0 15px;
-    font-size: 1rem; 
-  }
-
 .glowing-btn:hover span {
     color: #fff !important;
 }
 
-.navbar-nav .nav-link {
+/*.navbar-nav .nav-link {
     padding: 0rem 0rem;
-}
+}*/
 
 .nav-item {
     color:#F6428E;
@@ -415,17 +525,10 @@ background-color: rgba(0,0,0,0.3) !important;
 .active{
     background-color: rgba(0,0,0,0.3);
 }
-.user_img{
-    height: 70px;
-    width: 70px;
-    border:1.5px solid #f5f6fa;
-
-}
 .user_img_msg{
     height: 40px;
     width: 40px;
     border:1.5px solid #f5f6fa;
-
 }
 .img_cont{
     position: relative;

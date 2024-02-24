@@ -3,6 +3,8 @@ import { renderNavbar } from './navbar.js'; // Ajustez le chemin selon l'organis
 import { renderHero } from './hero.js';
 import { renderGame } from './game.js';
 import { renderChat } from './chat.js';
+import { renderRoulette } from './roulette.js';
+//import { renderSlotMachine } from './slotMachine.js';
 
 let appState = {
     currentView: 'hero',
@@ -25,6 +27,8 @@ export function renderApp() {
             renderNavbar(); // Vous pouvez décider si Navbar doit être rendu avec chaque vue ou non
             break;
         case 'game':
+            renderRoulette();
+            //renderSlotMachine();
             renderGame();
             renderNavbar();
             break;
