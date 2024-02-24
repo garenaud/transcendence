@@ -28,6 +28,7 @@ h1 {
 .modal-title {
     color: #F6428E;
 }
+
 /*-------------------------------- Navbar --------------------------------*/
 .navbar {
     background-color: #1A244D !important;
@@ -59,6 +60,8 @@ h1 {
     width: auto;
     height: 100%;
     padding: 15px;
+    margin-right: 20px;
+
     font-size: 1rem; 
   }
 
@@ -73,7 +76,7 @@ h1 {
 .nav-div-btn {
   width: 100%;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
 }
 
 .navbar-logo img{
@@ -122,6 +125,18 @@ h1 {
   height: 100%; /* Garde le ratio de l'image intact */
   border-radius: 50%; /* Rend l'image circulaire */
   object-fit: cover;
+}
+
+.user-info-nav {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end; /* Correction ici */
+  justify-content:baseline;
+}
+
+.navbar-toggler {
+  color: #F6428E;
+  background-color: #F6428E;
 }
 
 /*-------------------------------- slotMachine --------------------------------*/
@@ -447,10 +462,15 @@ canvas {
     margin-top: auto;
     margin-bottom: auto;
 }
-.card{
-    height: 500px;
+.card {
     border-radius: 15px !important;
-    background-color: rgba(0,0,0,0.4) !important;
+    background-color: rgba(0,0,0,1) !important;
+}
+.login {
+  border-radius: 15px !important;
+}
+.card-body{
+    background-color: rgba(0,0,0,0.7) !important;
 }
 .contacts_body{
     padding:  0.75rem 0 !important;
@@ -651,4 +671,8 @@ background-color: rgba(0,0,0,0.2);
 .contacts_card{
 margin-bottom: 15px !important;
 }
+}
+
+.bg-dark {
+    background-color: #1A244D !important;
 }

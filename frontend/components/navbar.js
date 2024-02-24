@@ -1,3 +1,20 @@
+function displayUserInfo(user) {
+  const userInfoDiv = document.getElementById('nav-user');
+  if (userInfoDiv) {
+      userInfoDiv.innerHTML = `
+      <div class="nav-user-info">
+      <h4>${user.username}</h4>
+      <h6>${user.points} pts</h6>
+      </div>
+      <div class="nav-user-img">
+              <div class="img_cont_nav">
+                <img src="${user.profilePicture}" alt="User Image">
+              </div>
+      </div>
+      `;
+  }
+}
+
 export function renderNavbar() {
     const navbarHTML = `
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
@@ -15,21 +32,25 @@ export function renderNavbar() {
         </li>
       </ul>
     </div>
-    <a class="navbar-brand navbar-logo" href="#"><img src="Design/LogoTranscendance3.png" alt=""></a>
-      <div class="nav-user">
-        <div class="nav-user-info">
-          <h4>Grenaud-</h4>
-          <h6>1000pts</h6>
-        </div>
-        <div class="nav-user-img">
-								<div class="img_cont_nav">
-									<img src="Design/User/Max-R_Headshot (1).jpg">
-								</div>
+    <a class="collapse navbar-collapse navbar-brand navbar-logo" href="#"><img src="Design/LogoTranscendance3.png" alt=""></a>
+      <div class="nav-user" id="nav-user">
+
         </div>
       </div>
     </div>
   </nav>
     `;
-
     document.body.insertAdjacentHTML('afterbegin', navbarHTML);
+
+    // Charger les données utilisateur à partir de fakeUser.json
+    fetch('components/fakeUser.json') // Remplacez 'chemin/vers/fakeUser.json' par le chemin réel vers votre fichier JSON
+        .then(response => response.json())
+        .then(user => {
+            // Une fois les données récupérées, affichez les informations de l'utilisateur
+            displayUserInfo(user);
+        })
+        .catch(error => console.error('Erreur lors du chargement des données utilisateur:', error));
 }
+
+// Assurez-vous que cette fonction est appelée après que le DOM est complètement chargé
+document.addEventListener('DOMContentLoaded', renderNavbar);
