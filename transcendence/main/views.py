@@ -31,6 +31,8 @@ def register_form(request):
 	elif request.method == 'GET':
 		return render(request, "main/register.html")
 
+
+
 def get_user_list(request):
 	if request.method == 'GET':
 		users = Users.objects.all()
