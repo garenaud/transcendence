@@ -6,7 +6,8 @@
 
 <body> 
 
-	<form action="/userslist" method="post">
+	<form action="" method="POST">
+		{% csrf_token %}
 		<label for="name">Name: </label><br>
 		<input type="text" id="name" name="name"><br>
 		<label for="login">Login: </label><br>
@@ -14,6 +15,8 @@
 		<label for="password">Password: </label><br>
 		<input type="text" id="password" name="password"><br><br>
 		<input type="submit" value="Submit">
+{% comment %} 		{{form.as_p}} {% endcomment %}
+		<br>
 	  </form>
 
 
