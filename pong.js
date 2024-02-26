@@ -17,11 +17,12 @@ let composer;
 let scoreText1, scoreText2;
 let player1Score = 0;
 let player2Score = 0;
+const initialAngle = 0;
+const speed = 0.25;
 const mooveSpeed = 0.1;
 const wallLimit = 6.5;
 const ballLimit = 8.5;
 const maxAngleAdjustment = 0.5;
-let font;
 let scoreLeft;
 let scoreRight;
 let PaddleRight;
@@ -69,7 +70,7 @@ function init() {
 		.catch((error) => {
 			console.error('Error loading JSON scene:', error);
 		});
-		// scene.castShadow = true;
+		scene.castShadow = true;
 		scene.receiveShadow = true;
 		console.log(scene);
 		
@@ -84,15 +85,6 @@ function handleText() {
 	scoreRight = scene.getObjectByName('Text001');
 	scene.add(scoreRight);
 	scene.remove(scoreRight);
-	// scoreLeft.index = 1111;
-	// scoreLeft = new TextGeometry('aoisdjaidjoisdhjodihodhaoiiadhoasihdd 1', {
-	// 	size: 100,
-	// 	height: 5,
-	// });
-	// const newMesh = new THREE.Mesh(scoreLeft, scoreLeft.material);
-	// newMesh.position.set(-8, 0, 0.1);
-	// scene.add(newMesh);
-	// console.log(scoreLeft);
 }
 
 function handleBall() {
@@ -100,19 +92,30 @@ function handleBall() {
 	ball = scene.getObjectByName(ballName);
 	if (ball) {
 		ball.position.set(0, 0, 0);
-		const initialAngle = Math.random() * Math.PI * 2;
-		const speed = 0.25;
 		ballVelocity = new THREE.Vector3(Math.cos(initialAngle) * speed, 0, Math.sin(initialAngle) * speed);
+		console.log(ballVelocity)
 	} else {
 		console.error('Ball not found');
 	}
 }
 
 function handleLight() {
-	const light = new THREE.AmbientLight( 0xFFFFFFF , 1 ); // soft white light
+	const light = new THREE.AmbientLight( 0xFFFFFFF , 0.4 ); // soft white light
 	light.castShadow = true;
-	// console.log(scene);
+	const directionalLight = new THREE.DirectionalLight( 0xFFFFFFF, 1.1 );
 	scene.add( light );
+	scene.add( directionalLight );
+	const width = 38;
+	const height = 5;
+	const intensity = 1.9;
+	const rectLightDown = new THREE.RectAreaLight( 0xffffff, intensity,  width, height );
+	const rectLightUp = new THREE.RectAreaLight( 0xffffff, intensity,  width, height );
+	rectLightDown.position.set( 0, 0, 8.7 );
+	rectLightUp.position.set( 0, 0, -8.7 );
+	rectLightDown.lookAt( 0, 0, 0 );
+	rectLightUp.lookAt( 0, 0, 0 );
+	scene.add( rectLightDown );
+	scene.add( rectLightUp );
 }
 
 function updateCameraAspect(selectedCamera) {
@@ -242,6 +245,7 @@ function handleWallColision() {
 		ballVelocity.z *= -1;
 	} else if (ball.position.x > 18 || ball.position.x < -18) {
 		ball.position.set(0, 0, 0);
+		ballVelocity = new THREE.Vector3(Math.cos(initialAngle) * speed, 0, Math.sin(initialAngle) * speed);
 	}
 }
 		
