@@ -44,6 +44,9 @@ def render_user_login(request, id):
 def render_pong(request):
 	return render(request, "main/test.html")
 
+def render_form(request):
+	return render(request, "main/form.html")
+
 
 
 
