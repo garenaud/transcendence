@@ -1,12 +1,12 @@
 import * as THREE from 'three';
 import { LoadGLTFByPath } from './ModelHelper.js';
-import { OrbitControls } from '/node_modules/three/examples/jsm/controls/OrbitControls.js';
-import { TextGeometry } from '/node_modules/three/examples/jsm/geometries/TextGeometry.js';
-import { FontLoader } from '/node_modules/three/examples/jsm/loaders/FontLoader.js';
-import { RectAreaLightHelper } from '/node_modules/three/examples/jsm/helpers/RectAreaLightHelper.js';
-import { RenderPass } from '/node_modules/three/examples/jsm/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from '/node_modules/three/examples/jsm/postprocessing/UnrealBloomPass.js';
-import { EffectComposer } from '/node_modules/three/examples/jsm/postprocessing/EffectComposer.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+import { FontLoader } from 'three/addons/loaders/FontLoader.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+// import { RectAreaLightHelper } from 'three/addons/helpers/RectAreaLightHelper.js';
 
 let renderer;
 let scene;
@@ -109,7 +109,7 @@ function handleBall() {
 }
 
 function handleLight() {
-	const light = new THREE.AmbientLight( 0x040404 , 0.2 ); // soft white light
+	const light = new THREE.AmbientLight( 0xFFFFFFF , 1 ); // soft white light
 	light.castShadow = true;
 	// console.log(scene);
 	scene.add( light );
@@ -133,7 +133,7 @@ function initControls() {
 
 function initPostprocessing() {
 	const renderScene = new RenderPass(scene, camera);
-	const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.1, 0.1, 0.60);
+	const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.1, 1, 0.60);
 	const newComposer = new EffectComposer(renderer);
 	newComposer.castShadow = true;
 	newComposer.addPass(renderScene);
