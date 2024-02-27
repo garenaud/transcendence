@@ -11,6 +11,22 @@ from django.contrib import messages, auth
 def render_index(request):
 	return render(request, "login/index.html")
 
+def login_from_form(request):
+	if request.method == 'POST':
+		login = request.POST['login']
+		password = request.POST['password']
+		queryset = Users.objects.filter(login=login)
+		if queryset.exists():
+			user = queryset[0]
+			if user.password == password:
+				return HttpResponse("Welcome, " + login + " you are now logged in", status=status.HTTP_200_OK)
+			else:
+				return HttpResponse("No user:password matches, please try again", status=status.HTTP_404_NOT_FOUND)
+		else:
+			return HttpResponse("No user:password matches, please try again", status=status.HTTP_404_NOT_FOUND)
+	else:
+		return HttpResponse("Method not allowed", status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
 #Render the register form from templates/login/register.html
 def render_register_form(request):
 	return render(request, "login/register.html")
