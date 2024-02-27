@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
-from main.models import Users, Games
-from main.serializers import UsersSerializer, CreateUserSerializer
+from database.models import Users, Games
+from database.serializers import UsersSerializer, CreateUserSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -15,13 +15,17 @@ from django.shortcuts import render
 
 def get_user_list(request):
 	if (request.method == 'GET'):
-		pass
+		users = Users.objects.all()
+		serializer = UsersSerializer(users, many=True)
+		return JsonResponse({'Users' : serializer.data})
 	else:
-		pass
+		return Response("Unauthorized method", status=status.HTTP_401_UNAUTHORIZED)
 
-def user_by_id(request):
+def user_by_id(request, id):
 	if (request.method == 'GET'):
-		pass
+		user = Users.objects.get(id=id)
+		serializer = UsersSerializer(user)
+		return JsonResponse({'User' : serializer.data})
 	elif (request.method == 'PUT'):
 		pass
 	else:
