@@ -27,7 +27,7 @@ def user_by_id(request, id):
 	if (request.method == 'GET'):
 		user = Users.objects.get(id=id)
 		serializer = UsersSerializer(user)
-		return Response(serializer.data)
+		return Response(serializer.data, status=status.HTTP_200_OK)
 	elif (request.method == 'PUT'):
 		queryset = Users.objects.filter(id=id)
 		serializer = UsersSerializer(data=request.data)
@@ -37,7 +37,7 @@ def user_by_id(request, id):
 			user.login = serializer.data['login']
 			user.password = serializer.data['password']
 			user.save(update_fields=['name', 'login', 'password'])
-			return Response(serializer.data)
+			return Response(serializer.data, status=status.HTTP_200_OK)
 	else:
 		return Response("Method not allowed", status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
@@ -58,11 +58,18 @@ def create_new_user(request):
 	else:
 		return Response("Method not allowed", status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-def delete_user_by_id(request):
+@api_view(['DELETE'])
+def delete_user_by_id(request, id):
 	if request.method == "DELETE":
-		pass
+		queryset = Users.objects.filter(id=id)
+		if queryset.exists():
+			user = queryset[0]
+			user.delete()
+			return Response("User with id " + str(id) + " was successfuly deleted from the database", status=status.HTTP_200_OK)
+		else:
+			return Response("User with id " + str(id) + " was not found in the database", status=status.HTTP_404_NOT_FOUND)
 	else:
-		pass
+		return Response("Method not allowed", status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
 #GET:
