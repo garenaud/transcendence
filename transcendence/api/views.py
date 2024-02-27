@@ -12,30 +12,51 @@ from django.contrib import messages, auth
 from django.shortcuts import render
 
 # Create your views here.
-
+@api_view(['GET'])
 def get_user_list(request):
 	if (request.method == 'GET'):
 		users = Users.objects.all()
 		serializer = UsersSerializer(users, many=True)
-		return JsonResponse({'Users' : serializer.data})
+		return Response(serializer.data)
 	else:
 		return Response("Unauthorized method", status=status.HTTP_401_UNAUTHORIZED)
 
+
+@api_view(['GET', 'PUT'])
 def user_by_id(request, id):
 	if (request.method == 'GET'):
 		user = Users.objects.get(id=id)
 		serializer = UsersSerializer(user)
-		return JsonResponse({'User' : serializer.data})
+		return Response(serializer.data)
 	elif (request.method == 'PUT'):
-		pass
+		queryset = Users.objects.filter(id=id)
+		serializer = UsersSerializer(data=request.data)
+		if serializer.is_valid():
+			user = queryset[0]
+			user.name = serializer.data['name']
+			user.login = serializer.data['login']
+			user.password = serializer.data['password']
+			user.save(update_fields=['name', 'login', 'password'])
+			return Response(serializer.data)
 	else:
-		pass
+		return Response("Method not allowed", status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
+@api_view(['POST'])
 def create_new_user(request):
 	if request.method == 'POST':
-		pass
+		serializer = UsersSerializer(data=request.data)
+		if serializer.is_valid():
+			user = Users.objects.filter(login=serializer.data['login'])
+			if not user.exists():
+				user = Users(name=serializer.data['name'], login=serializer.data['login'], password=serializer.data['password'])
+				user.save()
+				return Response("User " + serializer.data['login'] + " has been added to database", status=status.HTTP_201_CREATED)
+			else:
+				return Response("User with login " + serializer.data['login'] + " already exists in the database", status=status.HTTP_409_CONFLICT)
+		else:
+			return Response("Data of new user is not valid", status=status.HTTP_400_BAD_REQUEST)
 	else:
-		pass
+		return Response("Method not allowed", status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 def delete_user_by_id(request):
 	if request.method == "DELETE":
