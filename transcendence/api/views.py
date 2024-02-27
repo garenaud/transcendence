@@ -11,7 +11,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages, auth
 from django.shortcuts import render
 
-# Create your views here.
+#Returns all user in the database
 @api_view(['GET'])
 def get_user_list(request):
 	if (request.method == 'GET'):
@@ -22,6 +22,7 @@ def get_user_list(request):
 		return Response("Unauthorized method", status=status.HTTP_401_UNAUTHORIZED)
 
 
+#Either returns the user with the specified id or update the user specified by id in the database
 @api_view(['GET', 'PUT'])
 def user_by_id(request, id):
 	if (request.method == 'GET'):
@@ -41,6 +42,7 @@ def user_by_id(request, id):
 	else:
 		return Response("Method not allowed", status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
+#Create a new user in the database with the attributes specified in the form
 @api_view(['POST'])
 def create_new_user(request):
 	if request.method == 'POST':
@@ -58,6 +60,7 @@ def create_new_user(request):
 	else:
 		return Response("Method not allowed", status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
+#Delete user with specified id from the database
 @api_view(['DELETE'])
 def delete_user_by_id(request, id):
 	if request.method == "DELETE":
@@ -72,23 +75,3 @@ def delete_user_by_id(request, id):
 		return Response("Method not allowed", status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
-#GET:
-#	/userlist = renvoie tout les users de la DB
-#	/user/id = renvoie le user avec l'id spécifié, sinon renvoie une page d'erreur appropriée
-#
-#POST:
-#	/user/create = creer un nouveau user et le stocke dans la DB, sinon renvoie une page d'erreur appropriée
-#
-#PUT:
-#	/user/id = update le user avec l'id sécpifiéé et le stocke dans la DB
-#
-#DELETE:
-#	/user/id = supprime le user avec l'id spécifié de la DB, si le user n'existe pas, renvoyer une erreure approprié
-#
-#
-#
-#
-#
-#
-#
-#
