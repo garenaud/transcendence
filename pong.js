@@ -23,6 +23,7 @@ const mooveSpeed = 0.1;
 const wallLimit = 6.5;
 const ballLimit = 8.5;
 const maxAngleAdjustment = 0.5;
+const deltaTime = 30;
 let scoreLeft;
 let scoreRight;
 let PaddleRight;
@@ -187,6 +188,7 @@ function handlePaddleLeft() {
 	PaddleLeft = scene.getObjectByName(PaddleLeftName);
 	// console.log(PaddleLeft);
 	
+	// TODO condition si 2player alors mouvement, sinon IA;
 	if (PaddleLeft) {
 		if (KeyState['KeyW'] && PaddleLeft.position.z - mooveSpeed > -wallLimit) {
 			PaddleLeft.position.z -= mooveSpeed;
@@ -257,11 +259,64 @@ function updateBall() {
 		handleWallColision();
 	}
 }
-		
+
+// Fonction pour gérer le mouvement du paddle de l'IA
+function handleAIPaddle() {
+
+    // Déclaration des variables locales
+    // const PaddleLeftName = 'LeftPaddle';
+    // const PaddleLeft = scene.getObjectByName(PaddleLeftName);
+    const direction = new THREE.Vector3(0, 0, 0);
+
+    // Calcul de la direction une seule fois par frame
+    if (PaddleLeft) {
+        direction.subVectors(ball.position, PaddleLeft.position).normalize();
+    }
+	direction.x = 0;
+    // Mouvement fluide du paddle
+    if (PaddleLeft) {
+        const newPosition = PaddleLeft.position.clone().addScaledVector(direction, mooveSpeed * deltaTime);
+        PaddleLeft.position.lerp(newPosition, 0.1);
+    }
+
+    // Limiter la position du paddle
+    if (PaddleLeft) {
+        const paddleLimit = wallLimit - 1;
+        PaddleLeft.position.z += direction.z * mooveSpeed * deltaTime;
+    }
+}
+
+function handleAIPaddleRight() {
+
+    // Déclaration des variables locales
+    // const PaddleLeftName = 'LeftPaddle';
+    // const PaddleLeft = scene.getObjectByName(PaddleLeftName);
+    const direction = new THREE.Vector3(0, 0, 0);
+
+    // Calcul de la direction une seule fois par frame
+    if (PaddleRight) {
+        direction.subVectors(ball.position, PaddleRight.position).normalize();
+    }
+	direction.x = 0;
+    // Mouvement fluide du paddle
+    if (PaddleRight) {
+        const newPosition = PaddleRight.position.clone().addScaledVector(direction, mooveSpeed * deltaTime);
+        PaddleRight.position.lerp(newPosition, 0.1);
+    }
+
+    // Limiter la position du paddle
+    if (PaddleRight) {
+        const paddleLimit = wallLimit - 1;
+        PaddleRight.position.z += direction.z * mooveSpeed * deltaTime;
+    }
+}
+
 function animate() {
 	requestAnimationFrame(animate);
 	handlePaddleLeft();
 	handlePaddleRight();
+	handleAIPaddle();
+	// handleAIPaddleRight();
 	updateBall();
 	controls.update();
 	composer.render(scene, camera);
