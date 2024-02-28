@@ -45,9 +45,11 @@ function init() {
 		antialias: true,
 	});
 	renderer.setSize(window.innerWidth, window.innerHeight);
+	renderer.shadowMap.enabled = true;
 
 	// Scene
 	scene = new THREE.Scene();
+	scene.background = new THREE.Color('purple');
 
 	// Camera
 	camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight);
@@ -73,8 +75,7 @@ function init() {
 		});
 		scene.castShadow = true;
 		scene.receiveShadow = true;
-		console.log(scene);
-		
+
 		// Animation loop
 		animate();
 }
@@ -92,6 +93,8 @@ function handleBall() {
 	const ballName = 'Ball';
 	ball = scene.getObjectByName(ballName);
 	if (ball) {
+	ball.castShadow = true;
+	ball.receiveShadow = true;
 		ball.position.set(0, 0, 0);
 		ballVelocity = new THREE.Vector3(Math.cos(initialAngle) * speed, 0, Math.sin(initialAngle) * speed);
 		console.log(ballVelocity)
@@ -102,11 +105,18 @@ function handleBall() {
 
 function handleLight() {
 	const light = new THREE.AmbientLight( 0xFFFFFFF , 0.4 ); // soft white light
-	light.castShadow = true;
-	const directionalLight = new THREE.DirectionalLight( 0xFFFFFFF, 1.1 );
+	const dLight = new THREE.DirectionalLight( 0xFFFFFFF, 1.1 );
+	dLight.castShadow = true;
+	dLight.shadow.mapSize.width = 4096;
+	dLight.shadow.mapSize.height = 4096;
+	const d = 35;
+	dLight.shadow.camera.left = - d;
+	dLight.shadow.camera.right = d;
+	dLight.shadow.camera.top = d;
+	dLight.shadow.camera.bottom = - d;
 	scene.add( light );
-	scene.add( directionalLight );
-	const width = 38;
+	scene.add( dLight );
+	const width = 35;
 	const height = 5;
 	const intensity = 1.9;
 	const rectLightDown = new THREE.RectAreaLight( 0xffffff, intensity,  width, height );
@@ -129,9 +139,8 @@ function updateCameraAspect(selectedCamera) {
 function initControls() {
 	const newControls = new OrbitControls(camera, renderer.domElement);
 	newControls.maxPolarAngle = Math.PI * 0.5;
-	newControls.minDistance = 45;
-	newControls.maxDistance = 69;
-	
+	newControls.minDistance = 25;
+	newControls.maxDistance = 45;
 	return newControls;
 }
 
@@ -149,7 +158,8 @@ function initPostprocessing() {
 function handleGround() {
 	const groundName = 'Ground';
 	const Ground = scene.getObjectByName(groundName);
-	Ground.roughness = 1.8;
+	Ground.position.y = -1.9;
+	// Ground.roughness = 1.8;
 	Ground.receiveShadow = true;
 }
 
@@ -170,10 +180,13 @@ function handleKeyUp(event) {
 function handlePaddleRight() {
 	const PaddleRightName = 'RightPaddle';
 	PaddleRight = scene.getObjectByName(PaddleRightName);
+	
 	// console.log(PaddleRight);4
 	// x === 15
 	
 	if (PaddleRight) {
+		PaddleRight.castShadow = true;
+		PaddleRight.receiveShadow = true;
 		if (KeyState['ArrowUp'] && PaddleRight.position.z - mooveSpeed > -wallLimit) {
 			PaddleRight.position.z -= mooveSpeed;
 		}
@@ -190,6 +203,8 @@ function handlePaddleLeft() {
 	
 	// TODO condition si 2player alors mouvement, sinon IA;
 	if (PaddleLeft) {
+		PaddleLeft.castShadow = true;
+		PaddleLeft.receiveShadow = true;
 		if (KeyState['KeyW'] && PaddleLeft.position.z - mooveSpeed > -wallLimit) {
 			PaddleLeft.position.z -= mooveSpeed;
 		}
@@ -311,11 +326,28 @@ function handleAIPaddleRight() {
     }
 }
 
+function handleBackground() {
+	// scene.background += new THREE.Color(Math.random() % 21);
+	const time = performance.now() * 0.001; // Utilisez le temps pour créer une animation fluide
+
+    // Modifiez ici les valeurs pour ajuster la couleur et le mouvement
+    const hue = (time * 10) % 360; // Changement de teinte
+    const saturation = 100; // Intensité de la couleur
+    const lightness = 50; // Luminosité
+
+    // Convertissez HSL en couleur RVB
+    const color = new THREE.Color().setHSL(hue / 360, saturation / 100, lightness / 100);
+
+    // Appliquez la couleur au fond de la scène
+    scene.background = color;
+}
+
 function animate() {
 	requestAnimationFrame(animate);
 	handlePaddleLeft();
 	handlePaddleRight();
 	handleAIPaddle();
+	handleBackground();
 	// handleAIPaddleRight();
 	updateBall();
 	controls.update();
