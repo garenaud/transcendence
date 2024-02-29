@@ -1,7 +1,10 @@
+[
 {
-    "id": "1",
-    "username": "fauxUser",
-    "email": "fauxuser@example.com",
-    "points": 100,
-    "profilePicture": "Design/User/hsUser1.jpg"
-  }
+  "id": 36,
+  "name": "Gaëtan",
+  "login": "grenaud",
+  "password": "renaud",
+  "points": 100,
+  "profilePicture": "Design/User/hsUser2.jpg"
+}
+]
