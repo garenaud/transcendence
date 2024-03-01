@@ -7,7 +7,7 @@ import { RectAreaLightHelper } from './node_modules/three/examples/jsm/helpers/R
 import { RenderPass } from './node_modules/three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from './node_modules/three/examples/jsm/postprocessing/UnrealBloomPass.js';
 import { EffectComposer } from './node_modules/three/examples/jsm/postprocessing/EffectComposer.js';
-
+console.log("salut mec je suis la pitie affiche toi")
 let renderer;
 let scene;
 let camera;
@@ -266,24 +266,5 @@ function animate() {
 document.addEventListener('keydown', handleKeyDown);
 document.addEventListener('keyup', handleKeyUp);
 
-function run() {
- 
-    // Creating Our XMLHttpRequest object 
-    let xhr = new XMLHttpRequest();
- 
-    // Making our connection  
-    let url = 'http://localhost:8000/user/3';
-    xhr.open("GET", url, true);
- 
-    // function execute after request is successful 
-    xhr.onreadystatechange = function () {
-        if (this.readyState == 4 && this.status == 200) {
-            console.log(this.responseText);
-        }
-    }
-    // Sending our request 
-    xhr.send();
-}
-run();
 // Appel de la fonction d'initialisation
 init();

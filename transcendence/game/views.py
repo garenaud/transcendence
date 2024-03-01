@@ -19,3 +19,30 @@ def update_pos(request):
 
 def render_pong(request):
 	return render(request, 'game/test.html')
+
+# Définir les positions initiales des joueurs et de la balle
+player1_position = {'x': 0, 'y': 0}
+player2_position = {'x': 0, 'y': 0}
+ball_position = {'x': 0, 'y': 0}
+
+# Logique de mise à jour des positions
+def update_positions():
+    # Mettre à jour les positions des joueurs et de la balle ici
+    # Exemple simple : Incrémentation de la position de la balle
+    ball_position['x'] += 0
+    ball_position['y'] += 0
+
+# Endpoint API pour récupérer les positions
+def get_positions(request):
+    # Mettre à jour les positions avant de les envoyer
+    update_positions()
+    
+    # Créer un dictionnaire contenant les positions actuelles
+    positions = {
+        'player1': player1_position,
+        'player2': player2_position,
+        'ball': ball_position
+    }
+    
+    # Envoyer les positions sous forme de réponse JSON
+    return JsonResponse(positions)
