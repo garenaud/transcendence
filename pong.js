@@ -62,6 +62,7 @@ function init() {
 	composer = initPostprocessing();
 
 	// Load the GLTF model and handle the PaddleRight
+	// TODO waiting room;
 	LoadGLTFByPath(scene)
 		.then(() => {
 			handleGround();
@@ -94,10 +95,9 @@ function handleBall() {
 	ball = scene.getObjectByName(ballName);
 	if (ball) {
 	ball.castShadow = true;
-	ball.receiveShadow = true;
+	// ball.receiveShadow = true;
 		ball.position.set(0, 0, 0);
 		ballVelocity = new THREE.Vector3(Math.cos(initialAngle) * speed, 0, Math.sin(initialAngle) * speed);
-		console.log(ballVelocity)
 	} else {
 		console.error('Ball not found');
 	}
@@ -186,7 +186,7 @@ function handlePaddleRight() {
 	
 	if (PaddleRight) {
 		PaddleRight.castShadow = true;
-		PaddleRight.receiveShadow = true;
+		// PaddleRight.receiveShadow = true;
 		if (KeyState['ArrowUp'] && PaddleRight.position.z - mooveSpeed > -wallLimit) {
 			PaddleRight.position.z -= mooveSpeed;
 		}
@@ -204,7 +204,7 @@ function handlePaddleLeft() {
 	// TODO condition si 2player alors mouvement, sinon IA;
 	if (PaddleLeft) {
 		PaddleLeft.castShadow = true;
-		PaddleLeft.receiveShadow = true;
+		// PaddleLeft.receiveShadow = true;
 		if (KeyState['KeyW'] && PaddleLeft.position.z - mooveSpeed > -wallLimit) {
 			PaddleLeft.position.z -= mooveSpeed;
 		}
@@ -214,6 +214,7 @@ function handlePaddleLeft() {
 	} 
 }
 
+let speedIncreaseFactor = 1.1; // Facteur d'augmentation de la vitesse
 
 // TODO: Reajuster l'angle de la balle.
 function handlePaddleCollision() {
@@ -231,13 +232,14 @@ function handlePaddleCollision() {
 			ball.position.z + ballRadius > PaddleLeft.position.z - PaddleSizeZ / 2 &&
 			ball.position.z - ballRadius < PaddleLeft.position.z + PaddleSizeZ / 2
 			) {
-			const relativePosition = (ball.position.z - PaddleLeft.position.z) / PaddleSizeZ;
-			const angleAdjustment = (relativePosition - 0.5) * (maxAngleAdjustment - minAngleAdjustment) * 0.6;
-
-			// Ajuster la direction de la balle en fonction de l'angle
-			const angle = Math.PI / 4 + angleAdjustment; // ou toute autre formule d'ajustement
-			ballVelocity.x = Math.cos(angle) * 0.2;
-			ballVelocity.z = Math.sin(angle) * 0.2;
+				const relativePosition = (ball.position.z - PaddleLeft.position.z) / PaddleSizeZ;
+				const angleAdjustment = (relativePosition - 0.5) * (maxAngleAdjustment - minAngleAdjustment) * 0.6;
+				
+				// Ajuster la direction de la balle en fonction de l'angle
+				const angle = Math.PI / 4 + angleAdjustment; // ou toute autre formule d'ajustement
+				ballVelocity.x = Math.cos(angle) * (0.2 * speedIncreaseFactor);
+				ballVelocity.z = Math.sin(angle) * (0.2 * speedIncreaseFactor);
+				speedIncreaseFactor += 0.1;
 			}
 			// Vérifier la collision avec le paddle droit
 			if (
@@ -248,65 +250,68 @@ function handlePaddleCollision() {
 				) {
 					const relativePosition = (ball.position.z - PaddleRight.position.z) / PaddleSizeZ;
 					const angleAdjustment = (relativePosition - 0.5) * (maxAngleAdjustment - minAngleAdjustment) * 0.3;
-		
+					
 					// Ajuster la direction de la balle en fonction de l'angle
 					const angle = -Math.PI / 4 - angleAdjustment; // ou toute autre formule d'ajustement
-					ballVelocity.x = -Math.cos(angle) * 0.2;
-					ballVelocity.z = -Math.sin(angle) * 0.2;
-			}
+					ballVelocity.x = -Math.cos(angle) * (0.2 * speedIncreaseFactor);
+					ballVelocity.z = -Math.sin(angle) * (0.2 * speedIncreaseFactor);
+					speedIncreaseFactor += 0.1;
+				}
+		}
 	}
-}
+	
+	function handleWallColision() {
+		if (ball.position.z > ballLimit || ball.position.z < -ballLimit) {
+			ballVelocity.z *= -1;
+		} else if (ball.position.x > 18 || ball.position.x < -18) {
+			ball.position.set(0, 0, 0);
+			speedIncreaseFactor = 1.1;
+			ballVelocity = new THREE.Vector3(Math.cos(initialAngle) * speed, 0, Math.sin(initialAngle) * speed);
+		}
+	}
+	
+	function updateBall() {
+		if (ball) {
+			ball.position.z += ballVelocity.z;
+			ball.position.x += ballVelocity.x;
+			console.log(speedIncreaseFactor);
+			handlePaddleCollision();
+			handleWallColision();
+		}
+	}
+	
+	// Fonction pour gérer le mouvement du paddle de l'IA
+	function handleAIPaddle() {
 		
-function handleWallColision() {
-	if (ball.position.z > ballLimit || ball.position.z < -ballLimit) {
-		ballVelocity.z *= -1;
-	} else if (ball.position.x > 18 || ball.position.x < -18) {
-		ball.position.set(0, 0, 0);
-		ballVelocity = new THREE.Vector3(Math.cos(initialAngle) * speed, 0, Math.sin(initialAngle) * speed);
-	}
-}
+		// Déclaration des variables locales
+		// const PaddleLeftName = 'LeftPaddle';
+		// const PaddleLeft = scene.getObjectByName(PaddleLeftName);
+		const direction = new THREE.Vector3(0, 0, 0);
 		
-function updateBall() {
-	if (ball) {
-		ball.position.z += ballVelocity.z;
-		ball.position.x += ballVelocity.x;
-		handlePaddleCollision();
-		handleWallColision();
+		// Calcul de la direction une seule fois par frame
+		if (PaddleLeft) {
+			direction.subVectors(ball.position, PaddleLeft.position).normalize();
+		}
+		direction.x = 0;
+		// Mouvement fluide du paddle
+		if (PaddleLeft) {
+			const newPosition = PaddleLeft.position.clone().addScaledVector(direction, mooveSpeed * deltaTime);
+			PaddleLeft.position.lerp(newPosition, 0.1);
+		}
+		
+		// Limiter la position du paddle
+		if (PaddleLeft) {
+			const paddleLimit = wallLimit - 1;
+			PaddleLeft.position.z += direction.z * mooveSpeed * deltaTime;
+		}
 	}
-}
-
-// Fonction pour gérer le mouvement du paddle de l'IA
-function handleAIPaddle() {
-
-    // Déclaration des variables locales
-    // const PaddleLeftName = 'LeftPaddle';
-    // const PaddleLeft = scene.getObjectByName(PaddleLeftName);
-    const direction = new THREE.Vector3(0, 0, 0);
-
-    // Calcul de la direction une seule fois par frame
-    if (PaddleLeft) {
-        direction.subVectors(ball.position, PaddleLeft.position).normalize();
-    }
-	direction.x = 0;
-    // Mouvement fluide du paddle
-    if (PaddleLeft) {
-        const newPosition = PaddleLeft.position.clone().addScaledVector(direction, mooveSpeed * deltaTime);
-        PaddleLeft.position.lerp(newPosition, 0.1);
-    }
-
-    // Limiter la position du paddle
-    if (PaddleLeft) {
-        const paddleLimit = wallLimit - 1;
-        PaddleLeft.position.z += direction.z * mooveSpeed * deltaTime;
-    }
-}
-
-function handleAIPaddleRight() {
-
-    // Déclaration des variables locales
-    // const PaddleLeftName = 'LeftPaddle';
-    // const PaddleLeft = scene.getObjectByName(PaddleLeftName);
-    const direction = new THREE.Vector3(0, 0, 0);
+	
+	function handleAIPaddleRight() {
+		
+		// Déclaration des variables locales
+		// const PaddleLeftName = 'LeftPaddle';
+		// const PaddleLeft = scene.getObjectByName(PaddleLeftName);
+		const direction = new THREE.Vector3(0, 0, 0);
 
     // Calcul de la direction une seule fois par frame
     if (PaddleRight) {
