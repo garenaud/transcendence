@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html>
-
-{% load static %}
-
+	{% load static %}
 	<link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
 	<head lang="en">
 		<meta charset="utf-8">
@@ -17,7 +15,8 @@
 		<script type="importmap">
 			{
 				"imports": {
-					"three": "{% static 'javascript/node_modules/three/build/three.module.js' %}"
+					"three": "https://unpkg.com/three@<0.161.0/build/three.module.js",
+						"three/addons/": "https://unpkg.com/three@0.161.0/examples/jsm/"
 				}
 			}
 		</script>

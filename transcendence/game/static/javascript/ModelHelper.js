@@ -1,7 +1,7 @@
 import * as THREE from 'three'
-import { GLTFLoader } from './node_modules/three/examples/jsm/loaders/GLTFLoader.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-// import {LoadGLTFByPath} from './ModelHelper.js'
+//import {LoadGLTFByPath} from './ModelHelper.js'
 
 const scenePath = '/static/javascript//assets/scene.gltf'
 
