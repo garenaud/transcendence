@@ -30,6 +30,7 @@ let PaddleRight;
 let PaddleLeft;
 let ball;
 let ballVelocity;
+// const socket = new WebSocket('ws://localhost:3000');
 
 const KeyState = {
 	KeyW: false,
@@ -78,8 +79,32 @@ function init() {
 		scene.receiveShadow = true;
 
 		// Animation loop
+		console.log(socket);
 		animate();
 }
+
+// socket.addEventListener('open', (event) => {
+//     console.log('WebSocket connection opened:', event);
+// });
+
+// socket.addEventListener('close', (event) => {
+//     console.log('WebSocket connection closed:', event);
+// });
+
+// socket.addEventListener('message', (event) => {
+//     const data = JSON.parse(event.data);
+//     console.log('Received message from server:', data);
+
+//     // Traitez les données reçues du serveur ici
+//     // Exemple : mettre à jour l'affichage en fonction des données du jeu
+// });
+
+// // Vous pouvez envoyer des données au serveur comme ceci
+// const dataToSend = {
+//     // Vos données ici
+// };
+
+// socket.send(JSON.stringify(dataToSend));
 
 function handleText() {
 	scoreLeft = scene.getObjectByName('Text');
@@ -274,7 +299,7 @@ function handlePaddleCollision() {
 		if (ball) {
 			ball.position.z += ballVelocity.z;
 			ball.position.x += ballVelocity.x;
-			console.log(speedIncreaseFactor);
+			// console.log(speedIncreaseFactor);
 			handlePaddleCollision();
 			handleWallColision();
 		}
