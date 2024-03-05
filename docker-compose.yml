@@ -1,0 +1,108 @@
+version: '3'
+
+services:
+  postgre:
+    container_name: postgre
+    image: postgre
+    volumes:
+      - db:/var/lib/postgresql/data
+    networks:
+      - transcendence
+    ports:
+      - "5432"
+    restart: on-failure
+    # restart: always
+    env_file:
+      - req/.env
+    build:
+      context: postgre
+      dockerfile: Dockerfile
+    # environment:
+      # POSTGRES_DB: transcendence
+      # POSTGRES_USER: postgres
+      # POSTGRES_PASSWORD: Admlocal1
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # pgadmin:
+  #   container_name: pgadmin
+  #   image: pgadmin:latest
+  #   volumes:
+  #     -
+  #   networks:
+  #     - transcendence
+  #   ports:
+  #     - ""
+  #   restart: on-failure
+  #   env_file:
+  #     - req/.env
+  #   depends_on:
+  #     - postgre
+  #   build:
+  #     context: req/pgadmin
+  #     dockerfile: Dockerfile
+
+  backend:
+    container_name: backend
+    image: backend
+    volumes:
+      - backend:/code
+    networks:
+      - transcendence
+    ports:
+      - "8000"
+    restart: on-failure
+    env_file:
+      - req/.env
+    build:
+      context: backend
+      dockerfile: Dockerfile
+    depends_on:
+      - postgre
+
+  frontend:
+    container_name: frontend
+    image: frontend
+    volumes:
+      - frontend:/var/www/html
+    networks:
+      - transcendence
+    ports:
+      - "443:443"
+      - "80:80"
+    restart: on-failure
+    env_file:
+      - req/.env
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+
+volumes:
+  backend:
+    external: false
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: '/home/${USER}/data/back/'
+  db:
+    external: false
+    driver: local
+    driver_opts:
+      type: none
+      o : bind
+      device: '/home/${USER}/data/db'
+  frontend:
+    external: false
+    driver: local
+    driver_opts:
+      type: none
+      o : bind
+      device: '/home/${USER}/data/front'
+
+networks:
+  transcendence:
+    driver: bridge
