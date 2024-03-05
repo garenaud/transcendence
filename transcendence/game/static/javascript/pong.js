@@ -101,6 +101,7 @@ function handleBall() {
 	} else {
 		console.error('Ball not found');
 	}
+	console.log(typeof(ball.position))
 }
 
 function handleLight() {
@@ -274,7 +275,11 @@ function handlePaddleCollision() {
 		if (ball) {
 			ball.position.z += ballVelocity.z;
 			ball.position.x += ballVelocity.x;
-			console.log(speedIncreaseFactor);
+			console.log(ball.position.x);
+			console.log(ball.position.z);
+			console.log(ballVelocity.x);
+			console.log(ballVelocity.z);
+			//console.log(speedIncreaseFactor);
 			handlePaddleCollision();
 			handleWallColision();
 		}

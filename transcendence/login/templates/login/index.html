@@ -1,21 +1,24 @@
 <!DOCTYPE html>
 <html>
 	<title> Index </title>
-<head> Welcome to login page, please sign in with the form below, if you dont have an account, follow the appropriate link </head>
+<h3> Welcome to login page, please sign in with the form below,<br> if you dont have an account click on the link to create one </h3>
+<br>
+{% for message in messages%}
+	{{message}}
+{% endfor %}
 {% load static %}
 	<body>
-		<br>
-		<form action="/login/sign-in" method="POST">
+		<form action="/auth/" method="POST">
 			{% csrf_token %}
 			<label for="login">Login: </label><br>
 			<input type="text" id="login" name="login"> <br>
 			<label for="password">Password: </label><br>
-			<input type="text" id="password" name="password"><br><br>
+			<input type="password" id="password" name="password"><br><br>
 			<input type="submit" value="Submit">
 	{% comment %} 		{{form.as_p}} {% endcomment %}
 			<br>
 		  </form>
 		  <br>
-		<a href="{% url 'render_register_form' %}">Register Form</a>
+		<p> Create a new account <a href="{% url 'register_form' %}">here</a></p>
 	</body>
 </html>
