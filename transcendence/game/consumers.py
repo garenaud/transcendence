@@ -9,7 +9,7 @@ class ChatConsumer(WebsocketConsumer):
         'ball_position_x' : 0.0,
         'ball_position_z' : 0.0,
         'ball_velocity_x' : 0.0,
-        'ball_velocity_z' : 6.9,
+        'ball_velocity_z' : 0.0,
         'paddleleft_position_x' : 0.0,
         'paddleleft_position_z' : 0.0,
         'paddleright_position_x' : 0.0,
@@ -25,6 +25,10 @@ class ChatConsumer(WebsocketConsumer):
     def receive(self, text_data):
         text_data_json = json.loads(text_data)
         message = text_data_json["message"]
+        if message == 'Up arrow pressed':
+            self.game_values['ball_velocity_z'] += 1
+        elif message == 'Down arrow pressed':
+            self.game_values['ball_velocity_z'] -= 1
         self.send(text_data=json.dumps(self.game_values))
 
         
