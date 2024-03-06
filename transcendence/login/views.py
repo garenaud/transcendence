@@ -6,6 +6,7 @@ from rest_framework import status
 from database.serializers import UsersSerializer
 from django.http import	HttpResponse
 from django.contrib import messages, auth
+from django.contrib.auth import authenticate
 
 def home_page(request):
 	return render(request, "login/home.html")
@@ -20,7 +21,11 @@ def login_form(request):
 		if queryset.exists():
 			user = queryset[0]
 			if user.password == password:
-				return redirect("home_page")
+				user = authenticate(username=login, password=password)
+				if user is not None:
+					return redirect("home_page")
+				else:
+					return HttpResponse("no")
 			else:
 				messages.info(request, "No User:Password matches, please try again")
 				return redirect("login_form")

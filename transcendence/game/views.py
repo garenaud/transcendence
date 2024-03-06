@@ -46,3 +46,6 @@ def get_positions(request):
     
     # Envoyer les positions sous forme de réponse JSON
     return JsonResponse(positions)
+
+def render_websocket(request):
+      return render(request, "game/websocket.html", {"room_name" : 'chatcool'})
