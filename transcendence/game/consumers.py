@@ -68,7 +68,7 @@ class GameConsumer(WebsocketConsumer):
         text_data_json = json.loads(text_data)
         message = text_data_json["message"]
         self.update_right_paddle(message)
-        self.send(self.game_values)
+        self.send(text_data=json.dumps(self.game_values))
         
     # finished = False
     # scoreleft = 0

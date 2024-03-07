@@ -8,6 +8,7 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 // import { RectAreaLightHelper } from 'three/addons/helpers/RectAreaLightHelper.js';
 
+let game_data;
 let renderer;
 let scene;
 let camera;
@@ -109,7 +110,7 @@ function handleBall() {
 	} else {
 		console.error('Ball not found');
 	}
-	console.log(typeof(ball.position))
+	
 }
 
 function handleLight() {
@@ -186,49 +187,20 @@ function handleKeyUp(event) {
 	}
 }
 
-function handlePaddleRight() {
-	// const PaddleRightName = 'RightPaddle';
-	// PaddleRight = scene.getObjectByName(PaddleRightName);
-	
-	// // console.log(PaddleRight);4
-	// // x === 15
-	
-	// if (PaddleRight) {
-	// 	PaddleRight.castShadow = true;
-	// 	// PaddleRight.receiveShadow = true;
-	// 	if (KeyState['ArrowUp'] && PaddleRight.position.z - mooveSpeed > -wallLimit) {
-	// 		PaddleRight.position.z -= mooveSpeed;
-	// 	}
-	// 	if (KeyState['ArrowDown'] && PaddleRight.position.z + mooveSpeed < wallLimit) {
-	// 		PaddleRight.position.z += mooveSpeed;
-	// 	}	
-	// }
-}
-
-chatSocket.onmessage = function(e) {
-	const PaddleRightName = 'RightPaddle';
-	PaddleRight = scene.getObjectByName(PaddleRightName);
-	data = JSON.parse(e.data);
-
-	if (PaddleRight){
-		PaddleRight.position.z = data.paddleright_position_z;
-	}
-};
-
 document.addEventListener('keydown', function(e){
 	if (e.key == 'ArrowUp')
 	{
-		chatSocket.send(JSON.stringify({
+		gameSocket.send(JSON.stringify({
 			'message' : 'Up'
 		}));
 	}
 	else if (e.key == 'ArrowDown')
 	{
-		chatSocket.send(JSON.stringify({
+		gameSocket.send(JSON.stringify({
 			'message' : 'Down'
 		}));
 	}
-})
+});
 
 
 function handlePaddleLeft() {
@@ -309,10 +281,7 @@ function handlePaddleCollision() {
 		if (ball) {
 			ball.position.z += ballVelocity.z;
 			ball.position.x += ballVelocity.x;
-			// console.log(ball.position.x);
-			// console.log(ball.position.z);
-			// console.log(ballVelocity.x);
-			// console.log(ballVelocity.z);
+
 			//console.log(speedIncreaseFactor);
 			handlePaddleCollision();
 			handleWallColision();
@@ -386,6 +355,16 @@ function handleBackground() {
     scene.background = color;
 }
 
+gameSocket.onmessage = function(e) {
+	const PaddleRightName = 'RightPaddle';
+	PaddleRight = scene.getObjectByName(PaddleRightName);
+	game_data = JSON.parse(e.data);
+
+	if (PaddleRight){
+		PaddleRight.position.z = game_data.paddleright_position_z;
+	}
+};
+
 function animate() {
 	requestAnimationFrame(animate);
 	handlePaddleLeft();
@@ -394,6 +373,10 @@ function animate() {
 	handleBackground();
 	// handleAIPaddleRight();
 	updateBall();
+	// console.log(ball.position.x);
+	// console.log(ball.position.z);
+	// console.log(ballVelocity.x);
+	// console.log(ballVelocity.z);
 	controls.update();
 	composer.render(scene, camera);
 }
