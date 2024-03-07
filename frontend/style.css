@@ -93,8 +93,9 @@ h1 {
     height: 100%;
     padding: 15px;
     margin-right: 20px;
-
     font-size: 1rem; 
+    position: relative;
+    z-index: 11;
   }
 
   .navbar-collapse {
@@ -109,6 +110,15 @@ h1 {
   width: 100%;
   display: flex;
   justify-content: flex-start;
+}
+
+.navbar-logo {
+  width: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+
 }
 
 .navbar-logo img{
@@ -489,8 +499,8 @@ canvas {
 }
 
 .game-div {
-  margin-left: 120px;
-  margin-right: 120px;
+/*   margin-left: 120px;
+  margin-right: 120px; */
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -737,10 +747,18 @@ margin-bottom: 15px !important;
 
 .card-game-component {
   position: relative;
-  background-color: rgba(255, 255, 255, 0.7);
+  background-color: rgba(255, 255, 255, 0.9);
   border-radius: 15px; /* Pour les coins arrondis */
   color: #1A244D; /* Couleur du texte à l'intérieur de la carte */
-  max-width: 400px;
+/*   max-width: 400px; */
+}
+
+.game-div {
+  display: flex;
+  margin-left: 100px;
+  margin-right: 100px;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .card card-game-component {
@@ -764,8 +782,9 @@ margin-bottom: 15px !important;
 
 .container-div-game {
   height: 100%;
-  margin-left: 100px;
-  margin-right: 100px;
+  margin: 10px;
+/*   margin-left: 100px;
+  margin-right: 100px; */
 }
 
 .card-body {

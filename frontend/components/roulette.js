@@ -2,6 +2,10 @@ export function spinWheel() {
   document.querySelector(".winner").textContent = "";
   document.querySelector("#winnerMsg").textContent = ``;
 
+  const randInt = (min, max) => {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  };
+
   const winAngle = randInt(1800, 3600);
   ballAnim.setAttribute("values", `0 50 50; ${winAngle} 50 50`);
 
@@ -68,11 +72,13 @@ export function spinWheel() {
     checkWinner(two2one[2], two2oneNums[2], 3);
     
     document.querySelector(".winner").textContent = winNumber;
+    console.log("fin de spinwheel");
   });
 }
 
 export function renderRoulette() {
   console.log('rendering roulette');
+  //spinWheel();
     const rouletteHTML = `
     <div class="container-div-game">
     <div class="card-game-component glowing">
@@ -488,24 +494,38 @@ export function renderRoulette() {
 </div>
 </div>
     `;
+
     const rouletteElement = document.createElement('div');
     rouletteElement.innerHTML = rouletteHTML;
+    console.log("juste apres le html");
+
+    //setupRoulette();
     
     console.log('je suis dans roulette.js')
-
+    
     const roll = rouletteElement.querySelector(".roll");
     const wheel = rouletteElement.querySelector("#rouletteWheel");
-
+    
     roll.addEventListener("click", spinWheel);
     wheel.addEventListener("click", spinWheel);
-
-    setTimeout(setupRoulette, 0);
+    
+    document.addEventListener('DOMContentLoaded', (event) => {
+      console.log('DOM fully loaded and parsed');
+      const ballAnim = document.querySelector(".ballAnim");
+      console.log(document.querySelector(".winner")); // Doit retourner l'élément, pas null
+      console.log(document.querySelector("#winnerMsg")); // Doit retourner l'élément, pas null
+      console.log(document.querySelector(".ballAnim")); // Doit retourner l'élément, pas null
+      setupRoulette();
+      spinWheel();
+  });
+    //setTimeout(setupRoulette, 0);
     
     return rouletteElement;
   }
 
 export function setupRoulette() {
   console.log("Setting up roulette");
+  spinWheel();
       let nums = ["00", 27,10,25,29,12,8,19,31,18,6,21,33,16,4,23,35,14,2,0,28,9,26,30,11,7,20,32,17,5,22,34,15,3,24,36,13,1];
       let two2oneNums = [
         [3,6,9,12,15,18,21,24,27,30,33,36],
@@ -574,5 +594,6 @@ export function setupRoulette() {
       roll.addEventListener("click", spinWheel);
       
       wheel.addEventListener("click", spinWheel);
+      console.log("fin de setupRoulette");
     }
     

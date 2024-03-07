@@ -10,7 +10,7 @@ import { renderBlackJack } from './BlackJack.js';
 
 let appState = {
     currentView: 'login',
-    user: null, // Ajout d'un nouvel état pour l'utilisateur
+    user: null,
 };
 
 function renderDiv(components, className) {
@@ -23,9 +23,17 @@ function renderDiv(components, className) {
 }
 
 export function changeView(newView) {
+    history.pushState({ view: newView }, "", newView);
     appState.currentView = newView;
     renderApp();
 }
+
+window.addEventListener("popstate", function(event) {
+    if (event.state) {
+        appState.currentView = event.state.view;
+        renderApp();
+    }
+});
 
 export function getCurrentView() {
     return appState.currentView;
@@ -48,11 +56,15 @@ export async function renderApp() {
             const game = await renderGame();
             const roulette = await renderRoulette();
             const BlackJack = await renderBlackJack();
-            await renderDiv([roulette, BlackJack, game], 'game-div');
+            const test = await renderBlackJack();
+            const test2 = await renderRoulette();
+            const test3 = await renderRoulette();
+            await renderDiv([roulette, BlackJack, test, test2, test3], 'game-div');
             renderNavbar();
             break;
         case 'chat':
-            await renderChat();
+            const chat = await renderChat();
+            await renderDiv([chat], 'chat-div');
             renderNavbar(); 
             break;
     }

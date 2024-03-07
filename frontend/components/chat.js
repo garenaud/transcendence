@@ -210,14 +210,8 @@ export function renderChat() {
 		</div>
     </div>
     `;
-    /*const chatElement = document.createElement('div');
-    chatElement.innerHTML = chatHtml;
+    const chatElement = document.createElement('div');
+    chatElement.innerHTML = chatHTML;
 
-    const game = document.querySelector('.navbar');
-    const nextSibling = game.nextSibling;
-    const parent = game.parentNode;
-
-    parent.insertBefore(chatElement, nextSibling);*/
-
-    document.body.insertAdjacentHTML('afterbegin', chatHTML);
+    return chatElement;
 }
