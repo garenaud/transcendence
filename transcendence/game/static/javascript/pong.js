@@ -38,6 +38,14 @@ const KeyState = {
 	ArrowDown: false,
 };
 
+const gameSocket = new WebSocket(
+	'ws://'
+	+ window.location.host
+	+ '/ws/'
+	+ 'game'
+	+ '/'
+);
+
 function init() {
 	// Renderer
 	renderer = new THREE.WebGLRenderer({
@@ -179,23 +187,49 @@ function handleKeyUp(event) {
 }
 
 function handlePaddleRight() {
+	// const PaddleRightName = 'RightPaddle';
+	// PaddleRight = scene.getObjectByName(PaddleRightName);
+	
+	// // console.log(PaddleRight);4
+	// // x === 15
+	
+	// if (PaddleRight) {
+	// 	PaddleRight.castShadow = true;
+	// 	// PaddleRight.receiveShadow = true;
+	// 	if (KeyState['ArrowUp'] && PaddleRight.position.z - mooveSpeed > -wallLimit) {
+	// 		PaddleRight.position.z -= mooveSpeed;
+	// 	}
+	// 	if (KeyState['ArrowDown'] && PaddleRight.position.z + mooveSpeed < wallLimit) {
+	// 		PaddleRight.position.z += mooveSpeed;
+	// 	}	
+	// }
+}
+
+chatSocket.onmessage = function(e) {
 	const PaddleRightName = 'RightPaddle';
 	PaddleRight = scene.getObjectByName(PaddleRightName);
-	
-	// console.log(PaddleRight);4
-	// x === 15
-	
-	if (PaddleRight) {
-		PaddleRight.castShadow = true;
-		// PaddleRight.receiveShadow = true;
-		if (KeyState['ArrowUp'] && PaddleRight.position.z - mooveSpeed > -wallLimit) {
-			PaddleRight.position.z -= mooveSpeed;
-		}
-		if (KeyState['ArrowDown'] && PaddleRight.position.z + mooveSpeed < wallLimit) {
-			PaddleRight.position.z += mooveSpeed;
-		}	
+	data = JSON.parse(e.data);
+
+	if (PaddleRight){
+		PaddleRight.position.z = data.paddleright_position_z;
 	}
-}
+};
+
+document.addEventListener('keydown', function(e){
+	if (e.key == 'ArrowUp')
+	{
+		chatSocket.send(JSON.stringify({
+			'message' : 'Up'
+		}));
+	}
+	else if (e.key == 'ArrowDown')
+	{
+		chatSocket.send(JSON.stringify({
+			'message' : 'Down'
+		}));
+	}
+})
+
 
 function handlePaddleLeft() {
 	const PaddleLeftName = 'LeftPaddle';
@@ -355,7 +389,7 @@ function handleBackground() {
 function animate() {
 	requestAnimationFrame(animate);
 	handlePaddleLeft();
-	handlePaddleRight();
+	//handlePaddleRight();
 	handleAIPaddle();
 	handleBackground();
 	// handleAIPaddleRight();

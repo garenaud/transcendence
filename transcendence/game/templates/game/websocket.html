@@ -57,7 +57,7 @@
 					'message' : 'Left arrow pressed'
 				}));
 			}
-			else if (event.keyCode == 38)
+			else if (event.key == 'ArrowUp')
 			{
 				console.log('Up arrow pressed');
 				chatSocket.send(JSON.stringify({
