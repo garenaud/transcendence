@@ -48,8 +48,8 @@
             }));
             messageInputDom.value = '';
         };
-		document.addEventListener('keydown', function(event){
-			//console.log(event);
+		document.addEventListener('keyup', function(event){
+			console.log(event);
 			if (event.keyCode == 37)
 			{
 				console.log('Left arrow pressed');

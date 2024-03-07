@@ -175,8 +175,20 @@ function handleGround() {
 
 // Fonction pour gérer l'appui sur une touche
 function handleKeyDown(event) {
+	console.log(event.code);
 	if (KeyState.hasOwnProperty(event.code)) {
-		KeyState[event.code] = true;
+		if (event.code == 'ArrowUp')
+		{
+			gameSocket.send(JSON.stringify({
+			'message' : 'Up'
+			}));
+		}
+		else if (event.code == 'ArrowDown')
+		{
+			gameSocket.send(JSON.stringify({
+			'message' : 'Down'
+			}));
+		}
 	}
 }
 
@@ -187,21 +199,39 @@ function handleKeyUp(event) {
 	}
 }
 
-document.addEventListener('keydown', function(e){
-	if (e.key == 'ArrowUp')
-	{
-		gameSocket.send(JSON.stringify({
-			'message' : 'Up'
-		}));
-	}
-	else if (e.key == 'ArrowDown')
-	{
-		gameSocket.send(JSON.stringify({
-			'message' : 'Down'
-		}));
-	}
-});
+// document.addEventListener('keydown', function(e){
+// 	if (e.key == 'ArrowUp')
+// 	{
+// 		gameSocket.send(JSON.stringify({
+// 			'message' : 'Up'
+// 		}));
+// 	}
+// 	else if (e.key == 'ArrowDown')
+// 	{
+// 		gameSocket.send(JSON.stringify({
+// 			'message' : 'Down'
+// 		}));
+// 	}
+// });
 
+function handlePaddleRight() {
+	const PaddleRightName = 'RightPaddle';
+	PaddleRight = scene.getObjectByName(PaddleRightName);
+	
+	// console.log(PaddleRight);4
+	// x === 15
+	
+	if (PaddleRight) {
+		PaddleRight.castShadow = true;
+		// PaddleRight.receiveShadow = true;
+		if (KeyState['ArrowUp'] && PaddleRight.position.z - mooveSpeed > -wallLimit) {
+			PaddleRight.position.z -= mooveSpeed;
+		}
+		if (KeyState['ArrowDown'] && PaddleRight.position.z + mooveSpeed < wallLimit) {
+			PaddleRight.position.z += mooveSpeed;
+		}	
+	}
+}
 
 function handlePaddleLeft() {
 	const PaddleLeftName = 'LeftPaddle';
@@ -356,14 +386,17 @@ function handleBackground() {
 }
 
 gameSocket.onmessage = function(e) {
+	game_data = JSON.parse(e.data);
+	update_game_data();
+};
+
+function update_game_data() {
 	const PaddleRightName = 'RightPaddle';
 	PaddleRight = scene.getObjectByName(PaddleRightName);
-	game_data = JSON.parse(e.data);
-
-	if (PaddleRight){
-		PaddleRight.position.z = game_data.paddleright_position_z;
-	}
-};
+	PaddleRight.position.z = game_data.paddleright_position_z;
+	ball.position.x += game_data.ball_velocity_x;
+	ball.position.z += game_data.ball_velocity_z;
+}
 
 function animate() {
 	requestAnimationFrame(animate);
@@ -372,11 +405,9 @@ function animate() {
 	handleAIPaddle();
 	handleBackground();
 	// handleAIPaddleRight();
-	updateBall();
+	//updateBall();
 	// console.log(ball.position.x);
 	// console.log(ball.position.z);
-	// console.log(ballVelocity.x);
-	// console.log(ballVelocity.z);
 	controls.update();
 	composer.render(scene, camera);
 }
