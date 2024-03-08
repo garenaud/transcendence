@@ -267,7 +267,6 @@ function handlePaddleCollision() {
 	const PaddleSizeZ = PaddleLeft.geometry.boundingBox.max.z + 0.6;
 	const maxAngleAdjustment = Math.PI / 6; // Angle maximal d'ajustement
 	const minAngleAdjustment = -Math.PI / 6; // Angle minimal d'ajustement
-
 	if (PaddleLeft && PaddleRight) {
 		// Vérifier la collision avec le paddle gauche
 		if (
@@ -285,22 +284,22 @@ function handlePaddleCollision() {
 				ballVelocity.z = Math.sin(angle) * (0.2 * speedIncreaseFactor);
 				speedIncreaseFactor += 0.1;
 			}
-			// Vérifier la collision avec le paddle droit
-			if (
-				ball.position.x - ballRadius < PaddleRight.position.x + PaddleSizeX / 2 &&
-				ball.position.x + ballRadius > PaddleRight.position.x - PaddleSizeX / 2 &&
-				ball.position.z + ballRadius > PaddleRight.position.z - PaddleSizeZ / 2 &&
-				ball.position.z - ballRadius < PaddleRight.position.z + PaddleSizeZ / 2
-				) {
-					const relativePosition = (ball.position.z - PaddleRight.position.z) / PaddleSizeZ;
-					const angleAdjustment = (relativePosition - 0.5) * (maxAngleAdjustment - minAngleAdjustment) * 0.3;
-					
-					// Ajuster la direction de la balle en fonction de l'angle
-					const angle = -Math.PI / 4 - angleAdjustment; // ou toute autre formule d'ajustement
-					ballVelocity.x = -Math.cos(angle) * (0.2 * speedIncreaseFactor);
-					ballVelocity.z = -Math.sin(angle) * (0.2 * speedIncreaseFactor);
-					speedIncreaseFactor += 0.1;
-				}
+		// Vérifier la collision avec le paddle droit
+		if (
+			ball.position.x - ballRadius < PaddleRight.position.x + PaddleSizeX / 2 &&
+			ball.position.x + ballRadius > PaddleRight.position.x - PaddleSizeX / 2 &&
+			ball.position.z + ballRadius > PaddleRight.position.z - PaddleSizeZ / 2 &&
+			ball.position.z - ballRadius < PaddleRight.position.z + PaddleSizeZ / 2
+			) {
+				const relativePosition = (ball.position.z - PaddleRight.position.z) / PaddleSizeZ;
+				const angleAdjustment = (relativePosition - 0.5) * (maxAngleAdjustment - minAngleAdjustment) * 0.3;
+				
+				// Ajuster la direction de la balle en fonction de l'angle
+				const angle = -Math.PI / 4 - angleAdjustment; // ou toute autre formule d'ajustement
+				ballVelocity.x = -Math.cos(angle) * (0.2 * speedIncreaseFactor);
+				ballVelocity.z = -Math.sin(angle) * (0.2 * speedIncreaseFactor);
+				speedIncreaseFactor += 0.1;
+			}
 		}
 	}
 	
@@ -308,7 +307,10 @@ function handlePaddleCollision() {
 		if (ball.position.z > ballLimit || ball.position.z < -ballLimit) {
 			ballVelocity.z *= -1;
 		} else if (ball.position.x > 18 || ball.position.x < -18) {
-			ball.position.set(0, 0, 0);
+			ball.position.x = 0;
+			ball.position.y = 0;
+			ball.position.z = 0;
+			console.log('youpi');
 			speedIncreaseFactor = 1.1;
 			ballVelocity = new THREE.Vector3(Math.cos(initialAngle) * speed, 0, Math.sin(initialAngle) * speed);
 		}
@@ -316,8 +318,8 @@ function handlePaddleCollision() {
 	
 	function updateBall() {
 		if (ball) {
-			ball.position.z += ballVelocity.z;
-			ball.position.x += ballVelocity.x;
+			// ball.position.z += ballVelocity.z;
+			// ball.position.x += ballVelocity.x;
 
 			//console.log(speedIncreaseFactor);
 			handlePaddleCollision();
@@ -394,21 +396,27 @@ function handleBackground() {
 
 gameSocket.onmessage = function(e) {
 	game_data = JSON.parse(e.data);
-	update_game_data();
 };
 
 function update_game_data() {
 	const PaddleRightName = 'RightPaddle';
+	const PaddleLeftName = 'LeftPaddle';
 	ball = scene.getObjectByName('Ball');
 	PaddleRight = scene.getObjectByName(PaddleRightName);
-	PaddleRight.position.z = game_data.paddleright_position_z;
-	ball.position.x += game_data.ball_velocity_x;
-	ball.position.z += game_data.ball_velocity_z;
+	PaddleLeft = scene.getObjectByName(PaddleLeftName);
+	console.log(PaddleRight);
+	console.log(ball);
+	PaddleRight.position.z = parseFloat(game_data.paddleright_position_z);
+	PaddleLeft.position.z = parseFloat(game_data.paddleleft_position_z);
+	ball.position.x += parseFloat(game_data.ball_velocity_x);
+	ball.position.z += parseFloat(game_data.ball_velocity_z);
+	
 }
 
 function animate() {
 	requestAnimationFrame(animate);
-	handlePaddleLeft();
+	update_game_data();
+	//handlePaddleLeft();
 	//handlePaddleRight();
 	handleAIPaddle();
 	handleBackground();
