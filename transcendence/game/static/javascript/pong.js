@@ -396,6 +396,7 @@ function handleBackground() {
 
 gameSocket.onmessage = function(e) {
 	game_data = JSON.parse(e.data);
+	update_game_data()
 };
 
 function update_game_data() {
@@ -408,14 +409,14 @@ function update_game_data() {
 	console.log(ball);
 	PaddleRight.position.z = parseFloat(game_data.paddleright_position_z);
 	PaddleLeft.position.z = parseFloat(game_data.paddleleft_position_z);
-	ball.position.x += parseFloat(game_data.ball_velocity_x);
-	ball.position.z += parseFloat(game_data.ball_velocity_z);
+	ball.position.x = parseFloat(game_data.ball_position_x);
+	ball.position.z = parseFloat(game_data.ball_position_z);
 	
 }
 
 function animate() {
+	//update_game_data();
 	requestAnimationFrame(animate);
-	update_game_data();
 	//handlePaddleLeft();
 	//handlePaddleRight();
 	handleAIPaddle();

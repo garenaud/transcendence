@@ -65,16 +65,18 @@ class GameConsumer(WebsocketConsumer):
         'speed_increase_factor' : 1.1
     }
 
-    ball_velocity = introcs.Vector3(math.cos(0) * 0.1, 0, math.sin(0) * 0.1)
+    ball_velocity = introcs.Vector3(math.cos(0) * 0.25, 0, math.sin(0) * 0.25)
 
     def handle_wall_collision(self):
         balllimit = 8.5
         if self.game_values['ball_position_z'] > balllimit or self.game_values['ball_position_z'] < -balllimit:
             self.ball_velocity.z *= -1
+            # print("mur")
         elif self.game_values['ball_position_x'] > 18 or self.game_values['ball_position_x'] < -18:
-            self.game_values['ball_position_x'] = 0
-            self.game_values['ball_position_z'] = 0
-            ball_velocity = introcs.Vector3(math.cos(0) * 0.1, 0, math.sin(0) * 0.1)
+            self.game_values['ball_position_x'] = 0.0
+            self.game_values['ball_position_z'] = 0.0
+            ball_velocity = introcs.Vector3(math.cos(0) * 0.25, 0, math.sin(0) * 0.25)
+            # print("but")
     
     def handle_paddle_collision(self):
         ball_radius = self.game_values['ball_radius']
@@ -95,7 +97,7 @@ class GameConsumer(WebsocketConsumer):
             self.ball_velocity.x = math.cos(angle) * (0.2 * self.game_values['speed_increase_factor'])
             self.ball_velocity.z = math.sin(angle) * (0.2 * self.game_values['speed_increase_factor'])
             self.game_values['speed_increase_factor'] += 0.1
-            print("collision detectee a gauche")
+            # print("collision detectee a gauche")
         #verifier la collision avec le paddle droit
         if (self.game_values['ball_position_x'] - ball_radius < self.game_values['paddleright_position_x'] + paddle_size_x / 2 and
             self.game_values['ball_position_x'] + ball_radius > self.game_values['paddleright_position_x'] - paddle_size_x / 2 and
@@ -109,18 +111,19 @@ class GameConsumer(WebsocketConsumer):
             self.ball_velocity.x = (math.cos(angle) * -1) * (0.2 * self.game_values['speed_increase_factor'])
             self.ball_velocity.z = (math.sin(angle) * -1) * (0.2 * self.game_values['speed_increase_factor'])
             self.game_values['speed_increase_factor'] += 0.1
-            print("collision detectee a droite")
+            # print("collision detectee a droite")
 
     def update_ball_pos(self):
         print("enter update ball pos")
         while self.game_values['finished'] == False:
-            time.sleep(0.02)
+            time.sleep(0.05)
+            self.handle_paddle_collision()
+            self.handle_wall_collision()
             self.game_values['ball_velocity_x'] = self.ball_velocity.x
             self.game_values['ball_velocity_z'] = self.ball_velocity.z
             self.game_values['ball_position_x'] += self.game_values['ball_velocity_x']
             self.game_values['ball_position_z'] += self.game_values['ball_velocity_z']
-            self.handle_paddle_collision()
-            self.handle_wall_collision()
+            # print(self.game_values['ball_position_x'])
             self.send(text_data=json.dumps(self.game_values))
 
     def update_right_paddle_pos(self, message):
