@@ -331,8 +331,8 @@ function handlePaddleCollision() {
 	function handleAIPaddle() {
 		
 		// Déclaration des variables locales
-		// const PaddleLeftName = 'LeftPaddle';
-		// const PaddleLeft = scene.getObjectByName(PaddleLeftName);
+		const PaddleLeftName = 'LeftPaddle';
+		const PaddleLeft = scene.getObjectByName(PaddleLeftName);
 		const direction = new THREE.Vector3(0, 0, 0);
 		
 		// Calcul de la direction une seule fois par frame
@@ -407,11 +407,16 @@ function update_game_data() {
 	PaddleLeft = scene.getObjectByName(PaddleLeftName);
 	console.log(PaddleRight);
 	console.log(ball);
+	PaddleRight.position.x = parseFloat(game_data.paddleright_position_x);
 	PaddleRight.position.z = parseFloat(game_data.paddleright_position_z);
-	PaddleLeft.position.z = parseFloat(game_data.paddleleft_position_z);
+	PaddleLeft.position.x = parseFloat(game_data.paddleleft_position_x);
+	//PaddleLeft.position.z = parseFloat(game_data.paddleleft_position_z);
 	ball.position.x = parseFloat(game_data.ball_position_x);
 	ball.position.z = parseFloat(game_data.ball_position_z);
-	
+	gameSocket.send(JSON.stringify({
+		'message' : 'IA',
+		'pos' : PaddleLeft.position.z
+	}));
 }
 
 function animate() {
