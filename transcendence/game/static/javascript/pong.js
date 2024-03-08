@@ -37,6 +37,7 @@ const KeyState = {
 	KeyS: false,
 	ArrowUp: false,
 	ArrowDown: false,
+	Escape: false,
 };
 
 const gameSocket = new WebSocket(
@@ -175,8 +176,8 @@ function handleGround() {
 
 // Fonction pour gérer l'appui sur une touche
 function handleKeyDown(event) {
-	console.log(event.code);
-	if (KeyState.hasOwnProperty(event.code)) {
+	//console.log(event.code);
+	//if (KeyState.hasOwnProperty(event.code)) {
 		if (event.code == 'ArrowUp')
 		{
 			gameSocket.send(JSON.stringify({
@@ -189,7 +190,13 @@ function handleKeyDown(event) {
 			'message' : 'Down'
 			}));
 		}
-	}
+		else if (event.code == 'Escape')
+		{
+			gameSocket.send(JSON.stringify({
+			'message' : 'Stop'
+			}));
+		}
+	//}
 }
 
 // Fonction pour gérer le relâchement d'une touche
@@ -392,6 +399,7 @@ gameSocket.onmessage = function(e) {
 
 function update_game_data() {
 	const PaddleRightName = 'RightPaddle';
+	ball = scene.getObjectByName('Ball');
 	PaddleRight = scene.getObjectByName(PaddleRightName);
 	PaddleRight.position.z = game_data.paddleright_position_z;
 	ball.position.x += game_data.ball_velocity_x;
