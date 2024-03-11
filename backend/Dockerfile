@@ -25,16 +25,12 @@ RUN pip3 install --upgrade pip
 # copy whole project to your docker home directory. 
 COPY . $DockerHOME  
 # run this command to install all dependencies  
-RUN pip3 install -r ./tools/requirements.txt  
-
+RUN pip3 install -r requirements.txt  
 # port where the Django app runs  
 EXPOSE 8000
 
-# start server 
-# CMD python3 manage.py runserver
-CMD ["sh", "-c", "python3 manage.py makemigrations && python3 manage.py migrate --run-syncdb && python3 manage.py runserver 0.0.0.0:8000"]
-# CMD [ "./tools/start.sh" ]
 # RUN python3 manage.py makemigrations
 # RUN python3 manage.py migrate --run-syncdb
 
-# CMD python3 manage.py runserver
+# start server 
+CMD python3 manage.py runserver
