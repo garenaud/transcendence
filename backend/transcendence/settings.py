@@ -44,7 +44,8 @@ INSTALLED_APPS = [
 	'database.apps.DatabaseConfig',
 	'login',
 	'main',
-	'api'
+	'api',
+	'game'
 	
 ]
 

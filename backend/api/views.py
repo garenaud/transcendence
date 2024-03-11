@@ -11,56 +11,67 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages, auth
 from django.shortcuts import render
 
-# Create your views here.
-
+#Returns all user in the database
+@api_view(['GET'])
 def get_user_list(request):
 	if (request.method == 'GET'):
 		users = Users.objects.all()
 		serializer = UsersSerializer(users, many=True)
-		return JsonResponse({'Users' : serializer.data})
+		return Response(serializer.data)
 	else:
 		return Response("Unauthorized method", status=status.HTTP_401_UNAUTHORIZED)
 
+
+#Either returns the user with the specified id or update the user specified by id in the database
+@api_view(['GET', 'PUT'])
 def user_by_id(request, id):
 	if (request.method == 'GET'):
 		user = Users.objects.get(id=id)
 		serializer = UsersSerializer(user)
-		return JsonResponse({'User' : serializer.data})
+		return Response(serializer.data, status=status.HTTP_200_OK)
 	elif (request.method == 'PUT'):
-		pass
+		queryset = Users.objects.filter(id=id)
+		serializer = UsersSerializer(data=request.data)
+		if serializer.is_valid():
+			user = queryset[0]
+			user.name = serializer.data['name']
+			user.login = serializer.data['login']
+			user.password = serializer.data['password']
+			user.save(update_fields=['name', 'login', 'password'])
+			return Response(serializer.data, status=status.HTTP_200_OK)
 	else:
-		pass
+		return Response("Method not allowed", status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
+#Create a new user in the database with the attributes specified in the form
+@api_view(['POST'])
 def create_new_user(request):
 	if request.method == 'POST':
-		pass
+		serializer = UsersSerializer(data=request.data)
+		if serializer.is_valid():
+			user = Users.objects.filter(login=serializer.data['login'])
+			if not user.exists():
+				user = Users(name=serializer.data['name'], login=serializer.data['login'], password=serializer.data['password'])
+				user.save()
+				return Response("User " + serializer.data['login'] + " has been added to database", status=status.HTTP_201_CREATED)
+			else:
+				return Response("User with login " + serializer.data['login'] + " already exists in the database", status=status.HTTP_409_CONFLICT)
+		else:
+			return Response("Data of new user is not valid", status=status.HTTP_400_BAD_REQUEST)
 	else:
-		pass
+		return Response("Method not allowed", status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-def delete_user_by_id(request):
+#Delete user with specified id from the database
+@api_view(['DELETE'])
+def delete_user_by_id(request, id):
 	if request.method == "DELETE":
-		pass
+		queryset = Users.objects.filter(id=id)
+		if queryset.exists():
+			user = queryset[0]
+			user.delete()
+			return Response("User with id " + str(id) + " was successfuly deleted from the database", status=status.HTTP_200_OK)
+		else:
+			return Response("User with id " + str(id) + " was not found in the database", status=status.HTTP_404_NOT_FOUND)
 	else:
-		pass
+		return Response("Method not allowed", status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
-#GET:
-#	/userlist = renvoie tout les users de la DB
-#	/user/id = renvoie le user avec l'id spécifié, sinon renvoie une page d'erreur appropriée
-#
-#POST:
-#	/user/create = creer un nouveau user et le stocke dans la DB, sinon renvoie une page d'erreur appropriée
-#
-#PUT:
-#	/user/id = update le user avec l'id sécpifiéé et le stocke dans la DB
-#
-#DELETE:
-#	/user/id = supprime le user avec l'id spécifié de la DB, si le user n'existe pas, renvoyer une erreure approprié
-#
-#
-#
-#
-#
-#
-#
-#

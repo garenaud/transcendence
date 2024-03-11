@@ -29,8 +29,5 @@ RUN pip3 install -r requirements.txt
 # port where the Django app runs  
 EXPOSE 8000
 
-# RUN python3 manage.py makemigrations
-# RUN python3 manage.py migrate --run-syncdb
-
 # start server 
-CMD python3 manage.py runserver
+CMD ["sh", "-c", "python3 manage.py makemigrations && python3 manage.py migrate --run-syncdb && python3 manage.py runserver 0.0.0.0:8000"]
