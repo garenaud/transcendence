@@ -79,7 +79,6 @@ function init() {
 			handleLight();
 			handleText();
 			// createScoreTexts();
-			handleBall();
 		})
 		.catch((error) => {
 			console.error('Error loading JSON scene:', error);
@@ -221,111 +220,111 @@ function handleKeyUp(event) {
 // 	}
 // });
 
-function handlePaddleRight() {
-	const PaddleRightName = 'RightPaddle';
-	PaddleRight = scene.getObjectByName(PaddleRightName);
+// function handlePaddleRight() {
+// 	const PaddleRightName = 'RightPaddle';
+// 	PaddleRight = scene.getObjectByName(PaddleRightName);
 	
-	// console.log(PaddleRight);4
-	// x === 15
+// 	// console.log(PaddleRight);4
+// 	// x === 15
 	
-	if (PaddleRight) {
-		PaddleRight.castShadow = true;
-		// PaddleRight.receiveShadow = true;
-		if (KeyState['ArrowUp'] && PaddleRight.position.z - mooveSpeed > -wallLimit) {
-			PaddleRight.position.z -= mooveSpeed;
-		}
-		if (KeyState['ArrowDown'] && PaddleRight.position.z + mooveSpeed < wallLimit) {
-			PaddleRight.position.z += mooveSpeed;
-		}	
-	}
-}
+// 	if (PaddleRight) {
+// 		PaddleRight.castShadow = true;
+// 		// PaddleRight.receiveShadow = true;
+// 		if (KeyState['ArrowUp'] && PaddleRight.position.z - mooveSpeed > -wallLimit) {
+// 			PaddleRight.position.z -= mooveSpeed;
+// 		}
+// 		if (KeyState['ArrowDown'] && PaddleRight.position.z + mooveSpeed < wallLimit) {
+// 			PaddleRight.position.z += mooveSpeed;
+// 		}	
+// 	}
+// }
 
-function handlePaddleLeft() {
-	const PaddleLeftName = 'LeftPaddle';
-	PaddleLeft = scene.getObjectByName(PaddleLeftName);
-	// console.log(PaddleLeft);
+// function handlePaddleLeft() {
+// 	const PaddleLeftName = 'LeftPaddle';
+// 	PaddleLeft = scene.getObjectByName(PaddleLeftName);
+// 	// console.log(PaddleLeft);
 	
-	// TODO condition si 2player alors mouvement, sinon IA;
-	if (PaddleLeft) {
-		PaddleLeft.castShadow = true;
-		// PaddleLeft.receiveShadow = true;
-		if (KeyState['KeyW'] && PaddleLeft.position.z - mooveSpeed > -wallLimit) {
-			PaddleLeft.position.z -= mooveSpeed;
-		}
-		if (KeyState['KeyS'] && PaddleLeft.position.z + mooveSpeed < wallLimit) {
-			PaddleLeft.position.z += mooveSpeed;
-		}
-	} 
-}
+// 	// TODO condition si 2player alors mouvement, sinon IA;
+// 	if (PaddleLeft) {
+// 		PaddleLeft.castShadow = true;
+// 		// PaddleLeft.receiveShadow = true;
+// 		if (KeyState['KeyW'] && PaddleLeft.position.z - mooveSpeed > -wallLimit) {
+// 			PaddleLeft.position.z -= mooveSpeed;
+// 		}
+// 		if (KeyState['KeyS'] && PaddleLeft.position.z + mooveSpeed < wallLimit) {
+// 			PaddleLeft.position.z += mooveSpeed;
+// 		}
+// 	} 
+// }
 
-let speedIncreaseFactor = 1.1; // Facteur d'augmentation de la vitesse
+// let speedIncreaseFactor = 1.1; // Facteur d'augmentation de la vitesse
 
-// TODO: Reajuster l'angle de la balle.
-function handlePaddleCollision() {
-	const ballRadius = ball.geometry.boundingSphere.radius;
-	const PaddleSizeX = PaddleLeft.geometry.boundingBox.max.x;
-	const PaddleSizeZ = PaddleLeft.geometry.boundingBox.max.z + 0.6;
-	const maxAngleAdjustment = Math.PI / 6; // Angle maximal d'ajustement
-	const minAngleAdjustment = -Math.PI / 6; // Angle minimal d'ajustement
-	if (PaddleLeft && PaddleRight) {
-		// Vérifier la collision avec le paddle gauche
-		if (
-			ball.position.x - ballRadius < PaddleLeft.position.x + PaddleSizeX / 2 &&
-			ball.position.x + ballRadius > PaddleLeft.position.x - PaddleSizeX / 2 &&
-			ball.position.z + ballRadius > PaddleLeft.position.z - PaddleSizeZ / 2 &&
-			ball.position.z - ballRadius < PaddleLeft.position.z + PaddleSizeZ / 2
-			) {
-				const relativePosition = (ball.position.z - PaddleLeft.position.z) / PaddleSizeZ;
-				const angleAdjustment = (relativePosition - 0.5) * (maxAngleAdjustment - minAngleAdjustment) * 0.6;
+// // TODO: Reajuster l'angle de la balle.
+// function handlePaddleCollision() {
+// 	const ballRadius = ball.geometry.boundingSphere.radius;
+// 	const PaddleSizeX = PaddleLeft.geometry.boundingBox.max.x;
+// 	const PaddleSizeZ = PaddleLeft.geometry.boundingBox.max.z + 0.6;
+// 	const maxAngleAdjustment = Math.PI / 6; // Angle maximal d'ajustement
+// 	const minAngleAdjustment = -Math.PI / 6; // Angle minimal d'ajustement
+// 	if (PaddleLeft && PaddleRight) {
+// 		// Vérifier la collision avec le paddle gauche
+// 		if (
+// 			ball.position.x - ballRadius < PaddleLeft.position.x + PaddleSizeX / 2 &&
+// 			ball.position.x + ballRadius > PaddleLeft.position.x - PaddleSizeX / 2 &&
+// 			ball.position.z + ballRadius > PaddleLeft.position.z - PaddleSizeZ / 2 &&
+// 			ball.position.z - ballRadius < PaddleLeft.position.z + PaddleSizeZ / 2
+// 			) {
+// 				const relativePosition = (ball.position.z - PaddleLeft.position.z) / PaddleSizeZ;
+// 				const angleAdjustment = (relativePosition - 0.5) * (maxAngleAdjustment - minAngleAdjustment) * 0.6;
 				
-				// Ajuster la direction de la balle en fonction de l'angle
-				const angle = Math.PI / 4 + angleAdjustment; // ou toute autre formule d'ajustement
-				ballVelocity.x = Math.cos(angle) * (0.2 * speedIncreaseFactor);
-				ballVelocity.z = Math.sin(angle) * (0.2 * speedIncreaseFactor);
-				speedIncreaseFactor += 0.1;
-			}
-		// Vérifier la collision avec le paddle droit
-		if (
-			ball.position.x - ballRadius < PaddleRight.position.x + PaddleSizeX / 2 &&
-			ball.position.x + ballRadius > PaddleRight.position.x - PaddleSizeX / 2 &&
-			ball.position.z + ballRadius > PaddleRight.position.z - PaddleSizeZ / 2 &&
-			ball.position.z - ballRadius < PaddleRight.position.z + PaddleSizeZ / 2
-			) {
-				const relativePosition = (ball.position.z - PaddleRight.position.z) / PaddleSizeZ;
-				const angleAdjustment = (relativePosition - 0.5) * (maxAngleAdjustment - minAngleAdjustment) * 0.3;
+// 				// Ajuster la direction de la balle en fonction de l'angle
+// 				const angle = Math.PI / 4 + angleAdjustment; // ou toute autre formule d'ajustement
+// 				ballVelocity.x = Math.cos(angle) * (0.2 * speedIncreaseFactor);
+// 				ballVelocity.z = Math.sin(angle) * (0.2 * speedIncreaseFactor);
+// 				speedIncreaseFactor += 0.1;
+// 			}
+// 		// Vérifier la collision avec le paddle droit
+// 		if (
+// 			ball.position.x - ballRadius < PaddleRight.position.x + PaddleSizeX / 2 &&
+// 			ball.position.x + ballRadius > PaddleRight.position.x - PaddleSizeX / 2 &&
+// 			ball.position.z + ballRadius > PaddleRight.position.z - PaddleSizeZ / 2 &&
+// 			ball.position.z - ballRadius < PaddleRight.position.z + PaddleSizeZ / 2
+// 			) {
+// 				const relativePosition = (ball.position.z - PaddleRight.position.z) / PaddleSizeZ;
+// 				const angleAdjustment = (relativePosition - 0.5) * (maxAngleAdjustment - minAngleAdjustment) * 0.3;
 				
-				// Ajuster la direction de la balle en fonction de l'angle
-				const angle = -Math.PI / 4 - angleAdjustment; // ou toute autre formule d'ajustement
-				ballVelocity.x = -Math.cos(angle) * (0.2 * speedIncreaseFactor);
-				ballVelocity.z = -Math.sin(angle) * (0.2 * speedIncreaseFactor);
-				speedIncreaseFactor += 0.1;
-			}
-		}
-	}
+// 				// Ajuster la direction de la balle en fonction de l'angle
+// 				const angle = -Math.PI / 4 - angleAdjustment; // ou toute autre formule d'ajustement
+// 				ballVelocity.x = -Math.cos(angle) * (0.2 * speedIncreaseFactor);
+// 				ballVelocity.z = -Math.sin(angle) * (0.2 * speedIncreaseFactor);
+// 				speedIncreaseFactor += 0.1;
+// 			}
+// 		}
+// 	}
 	
-	function handleWallColision() {
-		if (ball.position.z > ballLimit || ball.position.z < -ballLimit) {
-			ballVelocity.z *= -1;
-		} else if (ball.position.x > 18 || ball.position.x < -18) {
-			ball.position.x = 0;
-			ball.position.y = 0;
-			ball.position.z = 0;
-			console.log('youpi');
-			speedIncreaseFactor = 1.1;
-			ballVelocity = new THREE.Vector3(Math.cos(initialAngle) * speed, 0, Math.sin(initialAngle) * speed);
-		}
-	}
+// 	function handleWallColision() {
+// 		if (ball.position.z > ballLimit || ball.position.z < -ballLimit) {
+// 			ballVelocity.z *= -1;
+// 		} else if (ball.position.x > 18 || ball.position.x < -18) {
+// 			ball.position.x = 0;
+// 			ball.position.y = 0;
+// 			ball.position.z = 0;
+// 			console.log('youpi');
+// 			speedIncreaseFactor = 1.1;
+// 			ballVelocity = new THREE.Vector3(Math.cos(initialAngle) * speed, 0, Math.sin(initialAngle) * speed);
+// 		}
+// 	}
 	
-	function updateBall() {
-		if (ball) {
-			// ball.position.z += ballVelocity.z;
-			// ball.position.x += ballVelocity.x;
+// 	function updateBall() {
+// 		if (ball) {
+// 			// ball.position.z += ballVelocity.z;
+// 			// ball.position.x += ballVelocity.x;
 
-			//console.log(speedIncreaseFactor);
-			handlePaddleCollision();
-			handleWallColision();
-		}
-	}
+// 			//console.log(speedIncreaseFactor);
+// 			handlePaddleCollision();
+// 			handleWallColision();
+// 		}
+// 	}
 	
 	// Fonction pour gérer le mouvement du paddle de l'IA
 	function handleAIPaddle() {

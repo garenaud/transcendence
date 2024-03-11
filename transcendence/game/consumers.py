@@ -61,7 +61,7 @@ class GameConsumer(WebsocketConsumer):
         'paddleleft_position_z' : 0.0,
         'paddleright_position_x' : 15.0,
         'paddleright_position_z' : 0.0,
-        'move_speed' : 0.1,
+        'move_speed' : 0.25,
         'speed_increase_factor' : 1.1
     }
 
@@ -79,6 +79,7 @@ class GameConsumer(WebsocketConsumer):
                 self.game_values['scoreright'] += 1
             self.game_values['ball_position_x'] = 0.0
             self.game_values['ball_position_z'] = 0.0
+            self.game_values['speed_increase_factor'] = 1.1
             ball_velocity = introcs.Vector3(math.cos(0) * 0.25, 0, math.sin(0) * 0.25)
     
     def handle_paddle_collision(self):
@@ -117,9 +118,8 @@ class GameConsumer(WebsocketConsumer):
             # print("collision detectee a droite")
 
     def update_ball_pos(self):
-        print("enter update ball pos")
         while self.game_values['finished'] == False:
-            time.sleep(0.1)
+            time.sleep(0.02)
             self.handle_paddle_collision()
             self.handle_wall_collision()
             self.game_values['ball_velocity_x'] = self.ball_velocity.x
@@ -130,9 +130,9 @@ class GameConsumer(WebsocketConsumer):
             self.send(text_data=json.dumps(self.game_values))
 
     def update_right_paddle_pos(self, message):
-        if message == 'Up':
+        if message == 'Up' and self.game_values['paddleright_position_z'] - self.game_values['move_speed'] < -6.5:
             self.game_values['paddleright_position_z'] -= self.game_values['move_speed']
-        elif message == 'Down':
+        elif message == 'Down' and self.game_values['paddleright_position_z'] + self.game_values['move_speed'] > -6.5:
             self.game_values['paddleright_position_z'] += self.game_values['move_speed']
 
     def connect(self):
