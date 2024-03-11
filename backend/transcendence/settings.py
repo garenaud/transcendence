@@ -84,6 +84,7 @@ WSGI_APPLICATION = 'transcendence.wsgi.application'
 
 DATABASES = {
     'default': {
+		# 'ENGINE': 'django.db.backends.postgresql',
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': os.environ["POSTGRES_DB"],
 		'USER' : os.environ["POSTGRES_USER"],
@@ -92,10 +93,6 @@ DATABASES = {
         'PORT': '5432',
     }
 }
-
-# print("USER: ", os.environ["POSTGRES_USER"])
-# print("DB: ", os.environ["POSTGRES_DB"])
-# print("PASSWORD: ", os.environ["POSTGRES_PASSWORD"])
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
