@@ -6,13 +6,14 @@
 #    By: vgroux <vgroux@student.42lausanne.ch>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/02/22 11:53:18 by vgroux            #+#    #+#              #
-#    Updated: 2024/02/22 11:58:47 by vgroux           ###   ########.fr        #
+#    Updated: 2024/03/11 16:20:31 by vgroux           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 all:
 	@mkdir -p ~/data/db
-	@mkdir -p ~/data/files
+	@mkdir -p ~/data/back
+	@mkdir -p ~/data/front
 	docker-compose -f ./docker-compose.yml up -d --build
 
 down:
