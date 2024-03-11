@@ -6,15 +6,20 @@
 #    By: vgroux <vgroux@student.42lausanne.ch>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/02/22 11:53:18 by vgroux            #+#    #+#              #
-#    Updated: 2024/03/11 16:20:31 by vgroux           ###   ########.fr        #
+#    Updated: 2024/03/11 19:03:12 by vgroux           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-all:
+RUST_SOURCE = cli/src/main.rs
+
+all: cli
 	@mkdir -p ~/data/db
 	@mkdir -p ~/data/back
 	@mkdir -p ~/data/front
 	docker-compose -f ./docker-compose.yml up -d --build
+
+cli: ${RUST_SOURCE}
+	cargo build --manifest-path=cli/Cargo.toml
 
 down:
 	docker-compose -f ./docker-compose.yml down
@@ -32,6 +37,7 @@ look:
 	docker network ls
 
 clean:
+	cargo clean --manifest-path=cli/Cargo.toml
 	docker image prune -a
 	docker-compose -f ./docker-compose.yml down
 
@@ -44,4 +50,4 @@ vol:
 re: fclean
 	docker-compose -f ./docker-compose.yml up -d --build
 	
-.PHONY: all down re clean fclean vol debug look
+.PHONY: all down re clean fclean vol debug look $(RUST_SOURCE)
