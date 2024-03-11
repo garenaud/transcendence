@@ -82,21 +82,21 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: '/home/${USER}/data/back/'
+      device: '~/data/back/'
   db:
     external: false
     driver: local
     driver_opts:
       type: none
       o : bind
-      device: '/home/${USER}/data/db'
+      device: '~/data/db'
   frontend:
     external: false
     driver: local
     driver_opts:
       type: none
       o : bind
-      device: '/home/${USER}/data/front'
+      device: '~/data/front'
 
 networks:
   transcendence:
