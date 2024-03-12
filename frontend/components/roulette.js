@@ -72,12 +72,10 @@ export function spinWheel() {
     checkWinner(two2one[2], two2oneNums[2], 3);
     
     document.querySelector(".winner").textContent = winNumber;
-    console.log("fin de spinwheel");
   });
 }
 
 export function renderRoulette() {
-  console.log('rendering roulette');
   //spinWheel();
     const rouletteHTML = `
     <div class="container-div-game">
@@ -497,12 +495,9 @@ export function renderRoulette() {
 
     const rouletteElement = document.createElement('div');
     rouletteElement.innerHTML = rouletteHTML;
-    console.log("juste apres le html");
 
     //setupRoulette();
-    
-    console.log('je suis dans roulette.js')
-    
+        
     const roll = rouletteElement.querySelector(".roll");
     const wheel = rouletteElement.querySelector("#rouletteWheel");
     
@@ -524,7 +519,6 @@ export function renderRoulette() {
   }
 
 export function setupRoulette() {
-  console.log("Setting up roulette");
   spinWheel();
       let nums = ["00", 27,10,25,29,12,8,19,31,18,6,21,33,16,4,23,35,14,2,0,28,9,26,30,11,7,20,32,17,5,22,34,15,3,24,36,13,1];
       let two2oneNums = [
@@ -594,6 +588,5 @@ export function setupRoulette() {
       roll.addEventListener("click", spinWheel);
       
       wheel.addEventListener("click", spinWheel);
-      console.log("fin de setupRoulette");
     }
     

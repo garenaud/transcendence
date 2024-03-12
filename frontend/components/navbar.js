@@ -1,34 +1,51 @@
-import { loadUser, getUser } from './userManager.js';
 import { changeView } from './stateManager.js';
 
-export function renderNavbar(){
-  console.log('renderNavbar');
-    const user = getUser();
-    console.log(user);
-    if (!user) {
-      console.error('Aucun utilisateur n\'a été trouvé');
-      return;
-    }
-
-    function displayUserInfo(user) {
-        console.log('on commence les user info');
-        console.log(user);
-        let currentUser = user[0];
-        const userInfoDiv = document.getElementById('nav-user');
-        if (userInfoDiv) {
-            userInfoDiv.innerHTML = `
-            <div class="nav-user-info">
-            <h4>${currentUser.name}</h4>
-            <h6>${currentUser.points} pts</h6>
-            </div>
-            <div class="nav-user-img">
-                    <div class="img_cont_nav">
-                    <img src="${currentUser.profilePicture}" alt="User Image">
-                    </div>
-            </div>
-            `;
-        }
-    }
+export function renderNavbar(user){
+  //const user = getUser();
+  if (!user) {
+    console.error('Aucun utilisateur n\'a été trouvé');
+    return;
+  }  
+  
+  function displayUserInfo(user) {
+      let currentUser = user[0];
+      const userInfoDiv = document.getElementById('nav-user');
+      if (userInfoDiv) {
+          userInfoDiv.innerHTML = `
+          <div class="nav-user-info">
+          <h4>${currentUser.name}</h4>
+          <h6>${currentUser.points} pts</h6>
+          </div>
+          <div id="user-menu-button" class="nav-user-img">
+                  <div id="user-menu-button" class="img_cont_nav">
+                  <img src="${currentUser.profilePicture}" alt="User Image">
+                  </div>
+          </div>
+          `;
+      }
+  }
+  
+    function renderUserMenu(user) {
+      const userMenuHTML = `
+          <div id="user-menu" class="user-menu-hidden">
+              <div class="user-menu-img">
+                  <img src="${user.profilePicture}" alt="User Image">
+                  <button type="button" class="close close-menu-button" aria-label="Close"> <span aria-hidden="true">&times;</span> </button>
+              </div>
+              <div class="user-menu-title">
+              <h2>${user.name}</h2>
+              <h4>${user.points} pts</h4>
+              </div>
+              <div class="user-menu-info">
+                  <li class="active">
+                    <h2 class="fas fa-user-plus">    add a friend</h2>
+                  </li>
+                  </div>
+              </div>
+          </div>
+      `;    
+      document.body.insertAdjacentHTML('beforeend', userMenuHTML);
+  }    
 
     function insertNavbarHTML() {
         const navbarHTML = `
@@ -56,21 +73,29 @@ export function renderNavbar(){
   </nav>
     `;
     document.body.insertAdjacentHTML('afterbegin', navbarHTML);
-    console.log('je viens de faire la navbar html');
-    console.log(user);
-    //displayUserInfo(user);
     }
     insertNavbarHTML();
-    console.log(document.getElementById('nav-user'))
     displayUserInfo(user);
+    renderUserMenu(user[0]);
     setupButtonListener();
 }
 
 function    setupButtonListener() {
   document.getElementById('navChatBtn').addEventListener('click', function() {
-      changeView('chat');
+      changeView('hero');
   });
   document.getElementById('navGameBtn').addEventListener('click', function() {
       changeView('game');
+  });
+  document.getElementById('user-menu-button').addEventListener('click', function() {
+    const userMenu = document.getElementById('user-menu');
+    if (userMenu.style.display === 'block') {
+      userMenu.style.display = 'none';
+    } else {
+      userMenu.style.display = 'block';
+    }
+  });
+  document.querySelector('.close-menu-button').addEventListener('click', function() {
+    document.getElementById('user-menu').style.display = 'none';
   });
 }

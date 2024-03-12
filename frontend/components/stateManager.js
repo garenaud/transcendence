@@ -1,11 +1,12 @@
 import { getUser, loadUser } from './userManager.js';
-import { renderNavbar } from './navbar.js'; // Ajustez le chemin selon l'organisation de vos fichiers
+import { renderNavbar } from './navbar.js'; 
 import { renderHero } from './hero.js';
 import { renderGame } from './game.js';
 import { renderChat } from './chat.js';
 import { renderRoulette, setupRoulette } from './roulette.js';
 import { renderLogin } from './login.js';
 import { renderBlackJack } from './BlackJack.js';
+import { renderUserMenu } from './userMenu.js';
 //import { renderSlotMachine } from './slotMachine.js';
 
 let appState = {
@@ -39,9 +40,13 @@ export function getCurrentView() {
     return appState.currentView;
 }
 
-export async function renderApp() {
-    await loadUser();
+loadUser().then(() => {
     appState.user = getUser();
+    renderApp();
+});
+
+export async function renderApp() {
+    const user = appState.user;
     document.body.innerHTML = '';
     switch(appState.currentView) {
         case 'login':
@@ -50,7 +55,7 @@ export async function renderApp() {
         case 'hero':
             renderRoulette();
             await renderHero();
-            renderNavbar();
+            renderNavbar(user);
             break;
         case 'game':
             const game = await renderGame();
@@ -60,14 +65,14 @@ export async function renderApp() {
             const test2 = await renderRoulette();
             const test3 = await renderRoulette();
             await renderDiv([roulette, BlackJack, test, test2, test3], 'game-div');
-            renderNavbar();
+            renderNavbar(user);
             break;
         case 'chat':
             const chat = await renderChat();
             await renderDiv([chat], 'chat-div');
-            renderNavbar(); 
+            renderNavbar(user); 
             break;
     }
 }
 
-renderApp(); // Cela rendra la vue initiale basée sur l'état actuel
+renderApp();

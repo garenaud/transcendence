@@ -2,6 +2,7 @@
     margin: 5;
     padding: 0;
     box-sizing: border-box;
+    font-family:  "Fira Sans", sans-serif;
 }
 
 body {
@@ -10,12 +11,12 @@ body {
     background-repeat: no-repeat;
     background-position: center center;
     background-attachment: fixed;
-    font-family:  "Fira Sans", sans-serif;
+
 }
 
 h1 {
-    font-family: "Fira Sans", sans-serif;
-    font-weight: 900;
+/*     font-family: "Fira Sans", sans-serif;
+ */    font-weight: 900;
     font-style: normal;
     color: #F6428E;
 }
@@ -65,8 +66,8 @@ h1 {
 .navbar {
     background-color: #1A244D !important;
     margin-bottom: 100px;
-    padding-left: 50px;
-    padding-right: 50px;
+    padding-left: 100px;
+    padding-right: 100px;
 }
 
 .navbar * {
@@ -135,6 +136,7 @@ h1 {
   justify-self: flex-end;
   height: 60px;
   width: auto;
+  z-index: 11;
 }
 
 .nav-user-info {
@@ -144,6 +146,7 @@ h1 {
   flex-direction: column;
   align-items: flex-end; /* Correction ici */
   justify-content:baseline;
+  z-index: 11;
 }
 
 .nav-user-img {
@@ -151,6 +154,7 @@ h1 {
   align-items: center;
   justify-content: flex-end;
   height: 90px; /* Hauteur de la navbar pour alignement vertical */
+  z-index: 11;
 }
 
 .img_cont_nav {
@@ -1287,4 +1291,64 @@ background-size: 70px 120px;
   z-index: 1000;
   background: #fff;
   transform: rotateX(0deg) rotateY(0deg);
+}
+
+/*-------------------------------- User-menu --------------------------------*/
+#user-menu {
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 300px;
+  height: 100%;
+  background-color: #1A244D;
+  color: #F6428E;
+  display: none;
+  z-index: 1000;
+}
+
+.user-menu-img {
+  position: relative; /* Ajoutez cette ligne */
+}
+
+.user-menu-img img {
+  max-width: 100%;
+  max-height: 100%;
+  position: relative; /* Ajoutez cette ligne */
+  top: 0; /* Ajoutez cette ligne */
+  right: 0; /* Ajoutez cette ligne */
+}
+
+.user-menu-title {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  margin-top: 10px;
+}
+
+.close-menu-button {
+  background: none;
+  border: none;
+  position: absolute;
+  color: white;
+  top: 10px;
+  right: 10px;
+}
+
+#user-menu .active {
+  background-color: #F6428E !important;
+  color: #1A244D;
+}
+
+.user-menu-info {
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+
+}
+
+.user-menu-info > * {
+  padding-left: 10px;
+  padding-right: 10px;
 }

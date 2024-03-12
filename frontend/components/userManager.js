@@ -5,11 +5,11 @@ let appState = {
 };
 
 function setUser(user) {
-    appState.user = user; // Définit l'utilisateur dans l'état de l'application
+    appState.user = user; 
 }
 
 function getUser() {
-    return appState.user; // Renvoie l'utilisateur actuel
+    return appState.user;
 }
 
 function setUserPoints(pts){
@@ -17,7 +17,6 @@ function setUserPoints(pts){
 }
 
 export function loadUser() {
-    console.log("je load les user");
     return fetch('components/fakeUser.json')
         .then(response => response.json())
         .then(user => {
@@ -26,10 +25,8 @@ export function loadUser() {
         })
         .catch(error => {
             console.error('Erreur lors du chargement des données utilisateur:', error);
-            console.log('Données utilisateur:', appState.user); // Ajoutez cette ligne
+            console.log('Données utilisateur:', appState.user);
         });
 }
-
-//loadUser(); // Chargez l'utilisateur au démarrage de l'application
 
 export { getUser, setUser  };

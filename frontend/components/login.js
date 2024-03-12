@@ -51,6 +51,27 @@ export function renderLogin() {
 
 function    setupButtonListener() {
     document.getElementById('loginBtn').addEventListener('click', function() {
-        changeView('hero');
-    });
+        const email = document.getElementById('typeEmailX').value;
+		const password = document.getElementById('typePasswordX').value;
+
+		fetch('https://jsonplaceholder.typicode.com/posts', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ email, password }),
+    })
+	.then(response => response.json())
+	.then(data => {
+		console.log('Success:', data);
+		if (data.success) {
+			changeView('hero');
+		} else {
+			changeView('hero');
+		}
+	})
+	.catch((error) => {
+		console.error('Error:', error);
+	});
+});
 }
