@@ -3,7 +3,7 @@ from database.models import Users, Games
 from django.shortcuts import render, redirect
 from rest_framework.response import Response
 from rest_framework import status
-from database.serializers import UsersSerializer
+from database.serializers import UsersSerializer, UserSerializer
 from django.http import	HttpResponse
 from django.contrib import messages, auth
 from django.contrib.auth import authenticate, login, logout
@@ -53,7 +53,7 @@ def login_form(request):
 		
 def logout_form(request):
 	auth.logout(request)
-
+	print(request)
 	return redirect("home_page")
 
 
@@ -65,7 +65,8 @@ def test(request):
 		user = authenticate(request, username=username, password=password)
 		if user is not None:
 			auth.login(request, user)
-			return JsonResponse({"message" : "OK"})
+			user = User.objects.get(username=username)
+			return JsonResponse({"id" : user.id, "username" : user.username, "first_name" : user.first_name, "last_name" : user.last_name, "email" : user.email, "password" : user.password, "logged_in" : user.is_authenticated}, safe=False)
 		else:
 			return JsonResponse({"message" : "KO"})
 	else:
