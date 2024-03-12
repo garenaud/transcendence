@@ -66,7 +66,7 @@ def test(request):
 		if user is not None:
 			auth.login(request, user)
 			user = User.objects.get(username=username)
-			return JsonResponse({"id" : user.id, "username" : user.username, "first_name" : user.first_name, "last_name" : user.last_name, "email" : user.email, "password" : user.password, "logged_in" : user.is_authenticated}, safe=False)
+			return JsonResponse({"message" : "OK","id" : user.id, "username" : user.username, "first_name" : user.first_name, "last_name" : user.last_name, "email" : user.email, "password" : user.password, "logged_in" : user.is_authenticated}, safe=False)
 		else:
 			return JsonResponse({"message" : "KO"})
 	else:

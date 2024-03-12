@@ -65,7 +65,7 @@ function    setupButtonListener() {
     .then(response => response.json())
     .then(data => {
         console.log('Success:', data);
-        if (data['message'] == "OK") {
+        if (data['message'] == 'OK') {
             changeView('hero');
         } else if (data['message'] == "KO"){
             
