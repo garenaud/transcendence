@@ -44,7 +44,8 @@ INSTALLED_APPS = [
 	'login',
 	'main',
 	'api',
-	'game'
+	'game',
+	'frontend'
 	
 ]
 

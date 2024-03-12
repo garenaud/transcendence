@@ -25,4 +25,5 @@ urlpatterns = [
 	path('api/', include('api.urls')),
 	path('auth/', include('login.urls')),
 	path('game/', include('game.urls')),
+	path('frontend/', include('frontend.urls'))
 ]

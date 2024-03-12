@@ -37,9 +37,9 @@ class ChatConsumer(WebsocketConsumer):
     def receive(self, text_data):
         text_data_json = json.loads(text_data)
         message = text_data_json["message"]
-        if message == 'Up arrow pressed':
+        if message == 'Up':
             self.game_values['ball_velocity_z'] += 1
-        elif message == 'Down arrow pressed':
+        elif message == 'Down':
             self.game_values['ball_velocity_z'] -= 1
         self.send(text_data=json.dumps(self.game_values))
     
@@ -130,7 +130,7 @@ class GameConsumer(WebsocketConsumer):
             self.send(text_data=json.dumps(self.game_values))
 
     def update_right_paddle_pos(self, message):
-        if message == 'Up' and self.game_values['paddleright_position_z'] - self.game_values['move_speed'] < -6.5:
+        if message == 'Up' and self.game_values['paddleright_position_z'] - self.game_values['move_speed'] < 6.5:
             self.game_values['paddleright_position_z'] -= self.game_values['move_speed']
         elif message == 'Down' and self.game_values['paddleright_position_z'] + self.game_values['move_speed'] > -6.5:
             self.game_values['paddleright_position_z'] += self.game_values['move_speed']
