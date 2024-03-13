@@ -25,7 +25,7 @@ fn main() {
 					break;
 				},
 				_ => {
-					println!("Veuillez entrer un nombre valide !");
+					println!("Veuillez entrer un choix valide !");
 					continue;
 				}
 			},
@@ -49,7 +49,7 @@ fn plus_or_minus() {
 			.read_line(&mut supposition)
 			.expect("Échec de la lecture de l'entrée utilisateur");
 	
-		let supposition_int: u32 = match supposition.trim().parse() {
+		let supposition: u32 = match supposition.trim().parse() {
 			Ok(num) => num,
 			Err(_) => {
 				println!("Veuillez entrer un nombre !");
@@ -57,7 +57,7 @@ fn plus_or_minus() {
 			}
 		};
 		
-		match supposition_int.cmp(&to_find) {
+		match supposition.cmp(&to_find) {
 			Ordering::Less => println!("C'est plus !"),
 			Ordering::Greater => println!("C'est moins !"),
 			Ordering::Equal => {
