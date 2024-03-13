@@ -6,7 +6,7 @@
 #    By: vgroux <vgroux@student.42lausanne.ch>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/02/22 11:53:18 by vgroux            #+#    #+#              #
-#    Updated: 2024/03/11 16:20:31 by vgroux           ###   ########.fr        #
+#    Updated: 2024/03/13 14:17:04 by vgroux           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -39,7 +39,8 @@ fclean: clean
 	docker system prune -a --volumes
 
 vol:
-	docker volume rm $$(docker volume ls)
+	# docker volume rm $$(docker volume ls)
+	sudo rm -rf ~/data
 
 re: fclean
 	docker-compose -f ./docker-compose.yml up -d --build
