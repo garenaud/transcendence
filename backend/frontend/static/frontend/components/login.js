@@ -68,7 +68,7 @@ function    setupButtonListener() {
         if (data['message'] == 'OK') {
             changeView('hero');
         } else if (data['message'] == "KO"){
-            
+            changeView('hero');
         }
     })
     .catch((error) => {

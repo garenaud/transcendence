@@ -4,7 +4,7 @@ export function renderBlackJack() {
     const rouletteHTML = `
     <div class="container-div-game">
     <div class="card-game-component glowing">
-        <img class="card-img-top" src="Design/blackJackImgPres.webp" alt="Card image cap">
+        <img class="card-img-top" src="../static/frontend/Design/blackJackImgPres.webp" alt="Card image cap">
         <div class="card-body">
           <h4 class="card-title">Black Jack</h4>
           <p class="card-text">
