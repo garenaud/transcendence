@@ -1,13 +1,19 @@
 use rand::Rng;
 use std::cmp::Ordering;
 
+// Personnal code
+mod temperature;// use temperature::choose_converter;
+mod fibonnaci;// use fibonnaci::fibonnaci;
+
 fn main() {
 	println!("Welcome user");
 	
 	let mut choice: String = String::new();
 	loop {
 		println!("1: Devinez le nombre");
-		println!("2: Quitter");
+		println!("2: Convertir des températures");
+		println!("3: Quel est le xieme nombre de la suite de Fibonnaci");
+		println!("42: Quitter");
 
 		choice.clear();
 		std::io::stdin()
@@ -21,6 +27,14 @@ fn main() {
 					continue;
 				},
 				2 => {
+					temperature::choose_converter();
+					continue;
+				},
+				3 => {
+					fibonnaci::fibonnaci();
+					continue;
+				},
+				42 => {
 					println!("Au revoir !");
 					break;
 				},
@@ -68,3 +82,4 @@ fn plus_or_minus() {
 		println!("Veuillez entrer un nombre.");
 	}
 }
+
