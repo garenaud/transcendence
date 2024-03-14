@@ -6,13 +6,14 @@
 #    By: ppotier <ppotier@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/02/22 11:53:18 by vgroux            #+#    #+#              #
-#    Updated: 2024/03/14 12:56:38 by ppotier          ###   ########.fr        #
+#    Updated: 2024/03/14 13:09:37 by ppotier          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 all:
 	@mkdir -p ~/data/db
-	@mkdir -p ~/data/files
+	@mkdir -p ~/data/back
+	@mkdir -p ~/data/front
 	docker-compose -f ./docker-compose.yml up -d --build
 
 down:
@@ -38,7 +39,8 @@ fclean: clean
 	docker system prune -a --volumes
 
 vol:
-	docker volume rm $$(docker volume ls)
+	# docker volume rm $$(docker volume ls)
+	sudo rm -rf ~/data
 
 re: fclean
 	docker-compose -f ./docker-compose.yml up -d --build
