@@ -3,17 +3,16 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: vgroux <vgroux@student.42lausanne.ch>      +#+  +:+       +#+         #
+#    By: ppotier <ppotier@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/02/22 11:53:18 by vgroux            #+#    #+#              #
-#    Updated: 2024/03/05 16:17:35 by vgroux           ###   ########.fr        #
+#    Updated: 2024/03/14 12:56:38 by ppotier          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 all:
 	@mkdir -p ~/data/db
-	@mkdir -p ~/data/back
-	@mkdir -p ~/data/front
+	@mkdir -p ~/data/files
 	docker-compose -f ./docker-compose.yml up -d --build
 
 down:
