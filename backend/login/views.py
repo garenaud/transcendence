@@ -62,13 +62,13 @@ def test(request):
 		data = json.load(request)
 		username = data['email']
 		password = data['password']
-		user = authenticate(request, username=username, password=password)
+		user = authenticate(username=username, password=password)
 		if user is not None:
 			auth.login(request, user)
 			user = User.objects.get(username=username)
 			return JsonResponse({"message" : "OK","id" : user.id, "username" : user.username, "first_name" : user.first_name, "last_name" : user.last_name, "email" : user.email, "password" : user.password, "logged_in" : user.is_authenticated}, safe=False)
 		else:
-			return JsonResponse({"message" : "KO"})
+			return JsonResponse({"message" : str(username) + str(password)})
 	else:
 		return JsonResponse({"message" : "KO"})
 
@@ -92,18 +92,3 @@ def test(request):
 #
 #
 #
-
-def test(request):
-	if request.method == 'GET':
-		data = json.load(request)
-		username = data['email']
-		password = data['password']
-		user = authenticate(request, username=username, password=password)
-		if user is not None:
-			auth.login(request, user)
-			user = User.objects.get(username=username)
-			return JsonResponse({"message" : "OK","id" : user.id, "username" : user.username, "first_name" : user.first_name, "last_name" : user.last_name, "email" : user.email, "password" : user.password, "logged_in" : user.is_authenticated}, safe=False)
-		else:
-			return JsonResponse({"message" : "KO in get"})
-	else:
-		return JsonResponse({"message" : "KO"})

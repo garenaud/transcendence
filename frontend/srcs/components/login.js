@@ -53,14 +53,15 @@ function    setupButtonListener() {
 	document.getElementById('loginBtn').addEventListener('click', function() {
 		const email = document.getElementById('typeEmailX').value;
 		const password = document.getElementById('typePasswordX').value;
-
+		let csrf = getCookie("csrftoken");
 		fetch('/auth/test/', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
-				"X-CSRFToken": getCookie("csrftoken"),
+				'X-CSRFToken': csrf,
 			},
 			body: JSON.stringify({ email, password }),
+			credentials: 'same-origin' 
 		})
 		.then(response => response.json())
 		.then(data => {
