@@ -3,8 +3,8 @@ from database.models import Users, Games
 from django.shortcuts import render, redirect
 from rest_framework.response import Response
 from rest_framework import status
-from database.serializers import UsersSerializer, UserSerializer
-from django.http import	HttpResponse
+from database.serializers import UsersSerializer
+from django.http import	HttpResponse, JsonResponse
 from django.contrib import messages, auth
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
@@ -92,3 +92,18 @@ def test(request):
 #
 #
 #
+
+def test(request):
+	if request.method == 'GET':
+		data = json.load(request)
+		username = data['email']
+		password = data['password']
+		user = authenticate(request, username=username, password=password)
+		if user is not None:
+			auth.login(request, user)
+			user = User.objects.get(username=username)
+			return JsonResponse({"message" : "OK","id" : user.id, "username" : user.username, "first_name" : user.first_name, "last_name" : user.last_name, "email" : user.email, "password" : user.password, "logged_in" : user.is_authenticated}, safe=False)
+		else:
+			return JsonResponse({"message" : "KO in get"})
+	else:
+		return JsonResponse({"message" : "KO"})

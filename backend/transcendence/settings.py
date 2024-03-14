@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 import os
 
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -26,13 +28,16 @@ SECRET_KEY = 'django-insecure-t9ip_b^g9epp0tadwc1d3#bz_88zutbmxc-3&hr9rl-g3r(q3%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+	'backend',
+	'localhost',
+	'https://localhost'
+]
 
 
 # Application definition
 
 INSTALLED_APPS = [
-	'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -77,7 +82,6 @@ TEMPLATES = [
     },
 ]
 
-ASGI_APPLICATION = 'transcendence.asgi.application'
 WSGI_APPLICATION = 'transcendence.wsgi.application'
 
 
@@ -86,15 +90,18 @@ WSGI_APPLICATION = 'transcendence.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'transcendence',
-		'USER' : 'postgres',
-		'PASSWORD' : '123',
-		'HOST': '127.0.0.1', 
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': os.environ["POSTGRES_DB"],
+		'USER' : os.environ["POSTGRES_USER"],
+		'PASSWORD' : os.environ["POSTGRES_PASSWORD"],
+		'HOST': 'postgre', 
         'PORT': '5432',
     }
 }
 
+# print("USER: ", os.environ["POSTGRES_USER"])
+# print("DB: ", os.environ["POSTGRES_DB"])
+# print("PASSWORD: ", os.environ["POSTGRES_PASSWORD"])
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
