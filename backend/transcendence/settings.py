@@ -94,10 +94,6 @@ DATABASES = {
     }
 }
 
-# print("USER: ", os.environ["POSTGRES_USER"])
-# print("DB: ", os.environ["POSTGRES_DB"])
-# print("PASSWORD: ", os.environ["POSTGRES_PASSWORD"])
-
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 

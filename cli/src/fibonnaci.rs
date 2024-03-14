@@ -32,8 +32,7 @@ pub fn fibonnaci() {
 	}
 }
 
-fn fibo(num: u32) -> u32
-{
+fn fibo(num: u32) -> u32 {
 	let mut n0 = 0;
 	let mut n1 = 1;
 	let mut n2 = 0;
