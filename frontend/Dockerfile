@@ -8,8 +8,11 @@ RUN openssl req -x509 -nodes -days 365 -newkey rsa:4096 -keyout /etc/ssl/private
 
 RUN mkdir -p /var/www/html && chmod 755 /var/www/html
 
+COPY srcs/ /var/www/html/
+
 COPY ./tools/nginx.conf /etc/nginx/conf.d/default.conf
 
+WORKDIR /var/www/html
 EXPOSE 443
 
 CMD ["nginx", "-g", "daemon off;"]

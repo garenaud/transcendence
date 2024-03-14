@@ -1,0 +1,183 @@
+
+  .modal-content {
+    background-image: url(Design/ModalBg.webp);
+}
+  .container {
+    display: flex;
+  }
+  .box1, .box2 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      -webkit-box-sizing: border-box;
+  }
+  .box1 {
+    flex-basis: 100%;
+  }
+  .box2 {
+    flex-basis: 100%;
+  }
+  
+  @media screen and (max-width: 768px) {
+    .container {
+      flex-direction: column;
+      height: auto;
+    }
+    .box1, .box2 {
+      flex-basis: 50%;
+      height: auto;
+      margin-bottom: 10px;
+    }
+  }
+  
+  @media screen and (min-width: 769px) {
+    .container {
+      flex-direction: row;
+      height: 100%;
+    }
+    .box1 {
+      flex-basis: 30%;
+      height: 100%;
+    }
+    .box2 {
+      flex-basis: 70%;
+      height: 100%;
+    }
+  }
+  #rouletteWheel {
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+  }
+  
+  .roll {
+    /*position: fixed;
+    bottom: 20px;*/
+    margin-right: 20px;
+    height: 60px;
+    width: 60px;
+    border-radius: 50%;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.8);
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    background: #d1cfe2;
+    /*z-index: 100;*/
+  }
+  .roll:hover {
+    transform: translateY(-2px);
+    box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.6);
+    border: 2px solid #0dcaf0;
+  }
+  .roll:active {
+    transform: translateY(-2px);
+    box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.6);
+    border: 8px solid #0dcaf0;
+  }
+  .winners {
+    position: fixed;
+    display: flex;
+    /*bottom: 30px;
+    left: 20px;*/
+    width: 100%;
+  }
+  .winner2{
+    font-size: 1.5em;
+    padding-left: 20px;
+    color:#fff;
+    float: center;
+    
+  }
+  .total_money {
+    display: flex;
+    flex-direction: column;
+    width: auto;
+    bottom: 10px;
+    left: 10px;
+    color: #F6428E;
+  }
+  .money_title {
+    background-color: #F6428E;
+    color: #fff;
+    padding: 5px;
+    border-radius: 5px;
+  }
+  .money_info {
+    align-self: center;
+  }
+  text {
+    user-select: none;
+    pointer-events: none;
+    font-family: 'Roboto', sans-serif;
+  }
+  button{
+    cursor: pointer;
+  }
+  .redBet {
+    background: red !important;
+    color: #fff;
+  }
+  .blackBet {
+    background: #000 !important;
+    color: #fff;
+  }
+  .red.active {
+    box-shadow: 0px 0px 3px #ffc107;
+  }
+  .active {
+    background: #ffc107 !important;
+    font-weight: bold;
+    
+  }
+  .betPlacement {
+    width: 95%;
+    height: 100%;
+  }
+  .placeBet:hover > rect {
+    fill: rgba(255, 215, 0, 0.3);
+  }
+  .placeBet.active > rect {
+    rx: 5;
+    stroke: #ffc107;
+    fill: rgba(255, 215, 0, 0.5);
+  }
+  .placeBet {
+    cursor: url(Design/CasinoChip.png), auto;
+  }
+  .placeBet.circle {
+    user-select: none;
+    pointer-events: none;
+  }
+  .money {
+    position: fixed;
+    flex-direction: row;
+    align-items: flex-end;
+    /*bottom: 10px;
+    left: 10px;*/
+    color: #F6428E;
+    font-weight: bold;
+    font-size: large;
+  }
+  .confetti {
+    position: fixed;
+    user-select: none;
+    pointer-events: none;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+  }
+  .modal-dialog.modal-xl {
+    max-width: 90%;  /* Largeur maximale de 90% */
+    height: 80%;     /* Hauteur de 80% */
+    margin: auto;    /* Centrer la modale */
+}
+
+.modal-content {
+    height: 100%;    /* Hauteur de 100% pour le contenu de la modale */
+}
+  .two2one {
+  /*  dispay: none;
+    opacity: 0; */
+  }
