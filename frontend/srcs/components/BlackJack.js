@@ -1,6 +1,5 @@
 
 export function renderBlackJack() {
-  console.log('rendering roulette');
     const rouletteHTML = `
     <div class="container-div-game">
     <div class="card-game-component glowing">
