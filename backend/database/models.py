@@ -19,13 +19,5 @@ class Games(models.Model):
 	finished = models.BooleanField(default=False)
 	scoreleft = models.IntegerField(default=0)
 	scoreright = models.IntegerField(default=0)
-	ball_position_x = models.FloatField(default=0.0)
-	ball_position_z = models.FloatField(default=0.0)
-	ball_velocity_x = models.FloatField(default=0.0)
-	ball_velocity_z = models.FloatField(default=0.0)
-	paddleleft_position_x = models.FloatField(default=0.0)
-	paddleleft_position_z = models.FloatField(default=0.0)
-	paddleright_position_x = models.FloatField(default=0.0)
-	paddleright_position_z = models.FloatField(default=0.0)
 	def __str__(self):
 		return self.code
