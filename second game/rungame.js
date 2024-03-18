@@ -1,8 +1,6 @@
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.118/build/three.module.js';
-
-import {FBXLoader} from 'https://cdn.jsdelivr.net/npm/three@0.118.1/examples/jsm/loaders/FBXLoader.js';
-import {GLTFLoader} from 'https://cdn.jsdelivr.net/npm/three@0.118.1/examples/jsm/loaders/GLTFLoader.js';
-import {OrbitControls} from 'https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/controls/OrbitControls.js';
+import * as THREE from 'three';
+import {FBXLoader} from 'three/addons/loaders/FBXLoader.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 
 class BasicCharacterControls {
@@ -241,18 +239,19 @@ class LoadModelDemo {
 
       const anim = new FBXLoader();
       anim.setPath('./models/');
-      anim.load('Idle.fbx', (anim) => {
+      anim.load('Twerk.fbx', (anim) => {
         let m = new THREE.AnimationMixer(fbx);
         this._mixers.push(m);
         const idle = m.clipAction(anim.animations[0]);
+		console.log(anim.animations[0]);
         idle.play();
       });
-	  anim.load('Run.fbx', (anim) => {
-			let m = new THREE.AnimationMixer(fbx);
-			this._mixers.push(m);
-			const idle = m.clipAction(anim.animations[1]);
-			idle.play();
-	  });
+	//   anim.load('Run.fbx', (anim) => {
+	// 		let m = new THREE.AnimationMixer(fbx);
+	// 		this._mixers.push(m);
+	// 		const idle = m.clipAction(anim.animations[1]);
+	// 		// idle.play();
+	//   });
       this._scene.add(fbx);
     });
   }
