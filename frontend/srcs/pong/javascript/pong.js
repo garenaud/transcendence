@@ -30,7 +30,14 @@ let PaddleRight;
 let PaddleLeft;
 let ball;
 let ballVelocity;
-// const socket = new WebSocket('ws://localhost:3000');
+const gameSocket = new WebSocket(
+    'ws://'
+    + window.location.host
+    + '/ws/'
+    + 'game'
+    + '/'
+);
+console.log(gameSocket);
 
 const KeyState = {
 	KeyW: false,
