@@ -3,16 +3,17 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: vgroux <vgroux@student.42lausanne.ch>      +#+  +:+       +#+         #
+#    By: kistod <kistod@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/02/22 11:53:18 by vgroux            #+#    #+#              #
-#    Updated: 2024/02/22 11:58:47 by vgroux           ###   ########.fr        #
+#    Updated: 2024/03/14 13:06:40 by kistod           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 all:
 	@mkdir -p ~/data/db
-	@mkdir -p ~/data/files
+	@mkdir -p ~/data/back
+	@mkdir -p ~/data/front
 	docker-compose -f ./docker-compose.yml up -d --build
 
 down:
@@ -36,9 +37,12 @@ clean:
 
 fclean: clean
 	docker system prune -a --volumes
-
+	
 vol:
-	docker volume rm $$(docker volume ls)
+	docker volume rm web42_backend
+	docker volume rm web42_db
+	docker volume rm web42_frontend
+	sudo rm -rf ~/data
 
 re: fclean
 	docker-compose -f ./docker-compose.yml up -d --build

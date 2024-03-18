@@ -495,9 +495,7 @@ export function renderRoulette() {
 
     const rouletteElement = document.createElement('div');
     rouletteElement.innerHTML = rouletteHTML;
-
-    //setupRoulette();
-        
+          
     const roll = rouletteElement.querySelector(".roll");
     const wheel = rouletteElement.querySelector("#rouletteWheel");
     
