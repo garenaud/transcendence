@@ -20,4 +20,4 @@ class CreateUserSerializer(serializers.ModelField):
 class GamesSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Games
-		fields = ['player1', 'player2', 'finished', 'scoreleft', 'scoreright', 'ball_position_x', 'ball_position_z', 'ball_velocity_x', 'ball_velocity_z', 'paddleleft_position_x', 'paddleleft_position_z', 'paddleright_position_x', 'paddleright_position_z']
+		fields = ['id', 'player1', 'player2', 'finished', 'p1_score', 'p2_score']
