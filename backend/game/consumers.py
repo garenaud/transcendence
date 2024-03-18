@@ -5,9 +5,13 @@ import introcs
 import asyncio
 import time
 import threading
+from database.models import Games
+from django.contrib.auth.models import User
 
 class ChatConsumer(WebsocketConsumer):
     game_values = {
+        'p1_id' : 1,
+        'p2_id' : -1,
         'finished' : False,
         'scoreleft' : 0,
         'scoreright' : 0,
@@ -46,8 +50,11 @@ class ChatConsumer(WebsocketConsumer):
 
         
 class GameConsumer(WebsocketConsumer):
-    
+
+
     game_values = {
+        'p1_id' : 1,
+        'p2_id' : -1,
         'finished' : False,
         'scoreleft' : 0,
         'scoreright' : 0,
@@ -140,6 +147,8 @@ class GameConsumer(WebsocketConsumer):
         threading.Thread(target=self.update_ball_pos).start()
 
     def disconnect(self, close_code):
+        game = Games(player1=User.objects.get(id=self.game_values['p1_id']), p1_score=self.game_values['scoreleft'], p2_score=self.game_values['scoreright'])
+        game.save()
         pass
 
     def receive(self, text_data):

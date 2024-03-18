@@ -19,5 +19,7 @@ class Games(models.Model):
 	finished = models.BooleanField(default=False)
 	scoreleft = models.IntegerField(default=0)
 	scoreright = models.IntegerField(default=0)
+	p1_score = models.IntegerField(default=0)
+	p2_score = models.IntegerField(default=0)
 	def __str__(self):
 		return self.code
