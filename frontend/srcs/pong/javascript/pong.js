@@ -6,13 +6,11 @@ import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-// import { RectAreaLightHelper } from 'three/addons/helpers/RectAreaLightHelper.js';
-// game
+
 let scene;
 let renderer;
 let camera;
 let controls;
-let cameraList = [];
 let composer;
 let scoreText1, scoreText2;
 let player1Score = 0;
@@ -22,8 +20,6 @@ const speed = 0.25;
 const mooveSpeed = 0.15;
 const wallLimit = 6.5;
 const ballLimit = 8.5;
-const maxAngleAdjustment = 0.5;
-// const deltaTime = 30;
 let scoreLeft;
 let scoreRight;
 let PaddleRight;
@@ -86,32 +82,8 @@ function init() {
 		scene.receiveShadow = true;
 
 		// Animation loop
-		// console.log(socket);
 		animate();
 }
-
-// socket.addEventListener('open', (event) => {
-//     console.log('WebSocket connection opened:', event);
-// });
-
-// socket.addEventListener('close', (event) => {
-//     console.log('WebSocket connection closed:', event);
-// });
-
-// socket.addEventListener('message', (event) => {
-//     const data = JSON.parse(event.data);
-//     console.log('Received message from server:', data);
-
-//     // Traitez les données reçues du serveur ici
-//     // Exemple : mettre à jour l'affichage en fonction des données du jeu
-// });
-
-// // Vous pouvez envoyer des données au serveur comme ceci
-// const dataToSend = {
-//     // Vos données ici
-// };
-
-// socket.send(JSON.stringify(dataToSend));
 
 function handleText() {
 	scoreLeft = scene.getObjectByName('Text');
@@ -127,7 +99,6 @@ function handleBall() {
 	ball = scene.getObjectByName(ballName);
 	if (ball) {
 	ball.castShadow = true;
-	// ball.receiveShadow = true;
 		ball.position.set(0, 0, 0);
 		ballVelocity = new THREE.Vector3(Math.cos(initialAngle) * speed, 0, Math.sin(initialAngle) * speed);
 	} else {
@@ -191,7 +162,6 @@ function handleGround() {
 	const groundName = 'Ground';
 	const Ground = scene.getObjectByName(groundName);
 	Ground.position.y = -1.9;
-	// Ground.roughness = 1.8;
 	Ground.receiveShadow = true;
 }
 
@@ -212,10 +182,7 @@ function handleKeyUp(event) {
 function handlePaddleRight() {
 	const PaddleRightName = 'RightPaddle';
 	PaddleRight = scene.getObjectByName(PaddleRightName);
-	
-	// console.log(PaddleRight.position);
-	// x === 15
-	
+
 	if (PaddleRight) {
 		PaddleRight.castShadow = true;
 		// PaddleRight.receiveShadow = true;
@@ -231,7 +198,6 @@ function handlePaddleRight() {
 function handlePaddleLeft() {
 	const PaddleLeftName = 'LeftPaddle';
 	PaddleLeft = scene.getObjectByName(PaddleLeftName);
-	// console.log(PaddleLeft);
 	
 	// TODO condition si 2player alors mouvement, sinon IA;
 	if (PaddleLeft) {
@@ -303,50 +269,7 @@ function handleWallColision() {
 			handleWallColision();
 		}
 	}
-	
-// let previousTime = 0;
-// 	// Fonction pour gérer le mouvement du paddle de l'IA
-// function handleAIPaddle() {
-// 		const direction = new THREE.Vector3(0, 0, 0);
-// 		let currentTime = performance.now();
-// 		let deltaTime = (currentTime - previousTime) / 1000;
-// 		previousTime = currentTime;
-// 		// Calcul de la direction une seule fois par frame
-// 		if (PaddleLeft) {
-// 			direction.subVectors(ball.position, PaddleLeft.position).normalize();
-// 		}
-// 		// Mouvement fluide du paddle
-// 		// if (PaddleLeft) {
-// 		// 	PaddleLeft.position.addScaledVector(direction, mooveSpeed);
-// 		// }
-// 		// Limiter la position du paddle
-// 		if (PaddleLeft) {
-// 			const paddleLimit = wallLimit - 1;
-// 			PaddleLeft.position.z = Math.min(Math.max(PaddleLeft.position.z, -paddleLimit), paddleLimit);
-// 			PaddleLeft.position.z += direction.z * mooveSpeed * deltaTime;
-// 		}
-// 	}
-	
-// function handleAIPaddleRight() {	
-// 	const direction = new THREE.Vector3(0, 0, 0);
 
-//     // Calcul de la direction une seule fois par frame
-//     if (PaddleRight) {
-//         direction.subVectors(ball.position, PaddleRight.position).normalize();
-//     }
-// 	direction.x = 0;
-//     // Mouvement fluide du paddle
-//     if (PaddleRight) {
-//         const newPosition = PaddleRight.position.clone().addScaledVector(direction, mooveSpeed * deltaTime);
-//         PaddleRight.position.lerp(newPosition, 0.1);
-//     }
-
-//     // Limiter la position du paddle
-//     if (PaddleRight) {
-//         const paddleLimit = wallLimit - 1;
-//         PaddleRight.position.z += direction.z * mooveSpeed * deltaTime;
-//     }
-// }
 
 function handleBackground() {
 	// scene.background += new THREE.Color(Math.random() % 21);

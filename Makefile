@@ -6,7 +6,7 @@
 #    By: ppotier <ppotier@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/02/22 11:53:18 by vgroux            #+#    #+#              #
-#    Updated: 2024/03/18 15:09:57 by ppotier          ###   ########.fr        #
+#    Updated: 2024/03/18 15:58:42 by ppotier          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -42,7 +42,7 @@ vol:
 	docker volume rm ft_transcendence_backend
 	docker volume rm ft_transcendence_db
 	docker volume rm ft_transcendence_frontend
-	sudo rm -rf ~/data
+	rm -rf ~/data
 
 re: fclean
 	docker-compose -f ./docker-compose.yml up -d --build

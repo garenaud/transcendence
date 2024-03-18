@@ -184,7 +184,6 @@ function handleGround() {
 	const groundName = 'Ground';
 	const Ground = scene.getObjectByName(groundName);
 	Ground.position.y = -1.9;
-	// Ground.roughness = 1.8;
 	Ground.receiveShadow = true;
 }
 
@@ -297,49 +296,6 @@ function handleWallColision() {
 		}
 	}
 	
-// let previousTime = 0;
-// 	// Fonction pour gérer le mouvement du paddle de l'IA
-// function handleAIPaddle() {
-// 		const direction = new THREE.Vector3(0, 0, 0);
-// 		let currentTime = performance.now();
-// 		let deltaTime = (currentTime - previousTime) / 1000;
-// 		previousTime = currentTime;
-// 		// Calcul de la direction une seule fois par frame
-// 		if (PaddleLeft) {
-// 			direction.subVectors(ball.position, PaddleLeft.position).normalize();
-// 		}
-// 		// Mouvement fluide du paddle
-// 		// if (PaddleLeft) {
-// 		// 	PaddleLeft.position.addScaledVector(direction, mooveSpeed);
-// 		// }
-// 		// Limiter la position du paddle
-// 		if (PaddleLeft) {
-// 			const paddleLimit = wallLimit - 1;
-// 			PaddleLeft.position.z = Math.min(Math.max(PaddleLeft.position.z, -paddleLimit), paddleLimit);
-// 			PaddleLeft.position.z += direction.z * mooveSpeed * deltaTime;
-// 		}
-// 	}
-	
-// function handleAIPaddleRight() {	
-// 	const direction = new THREE.Vector3(0, 0, 0);
-
-//     // Calcul de la direction une seule fois par frame
-//     if (PaddleRight) {
-//         direction.subVectors(ball.position, PaddleRight.position).normalize();
-//     }
-// 	direction.x = 0;
-//     // Mouvement fluide du paddle
-//     if (PaddleRight) {
-//         const newPosition = PaddleRight.position.clone().addScaledVector(direction, mooveSpeed * deltaTime);
-//         PaddleRight.position.lerp(newPosition, 0.1);
-//     }
-
-//     // Limiter la position du paddle
-//     if (PaddleRight) {
-//         const paddleLimit = wallLimit - 1;
-//         PaddleRight.position.z += direction.z * mooveSpeed * deltaTime;
-//     }
-// }
 
 function handleBackground() {
 	// scene.background += new THREE.Color(Math.random() % 21);
