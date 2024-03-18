@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 from database.models import Users, Games
-from database.serializers import UsersSerializer, CreateUserSerializer
+from database.serializers import UsersSerializer, CreateUserSerializer, UserSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -10,13 +10,14 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages, auth
 from django.shortcuts import render
+from django.contrib.auth.models import User
 
 #Returns all user in the database
 @api_view(['GET'])
 def get_user_list(request):
 	if (request.method == 'GET'):
-		users = Users.objects.all()
-		serializer = UsersSerializer(users, many=True)
+		users = User.objects.all()
+		serializer = UserSerializer(users, many=True)
 		return Response(serializer.data)
 	else:
 		return Response("Unauthorized method", status=status.HTTP_401_UNAUTHORIZED)

@@ -4,7 +4,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 // import {LoadGLTFByPath} from './ModelHelper.js'
 // game
 
-const scenePath = 'assets/scene.gltf'
+const scenePath = '/pong/javascript/assets/scene.gltf'
 
 export const LoadGLTFByPath = (scene) => {
     return new Promise((resolve, reject) => {

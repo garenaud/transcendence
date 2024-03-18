@@ -51,6 +51,34 @@ export function renderLogin() {
 
 function    setupButtonListener() {
     document.getElementById('loginBtn').addEventListener('click', function() {
-        changeView('hero');
+        const email = document.getElementById('typeEmailX').value;
+        const password = document.getElementById('typePasswordX').value;
+
+        fetch('http://localhost:8000/auth/test/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+				"X-CSRFToken": getCookie("csrftoken"),
+                },
+                body: JSON.stringify({ email, password }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Success:', data);
+        if (data['message'] == 'OK') {
+            changeView('hero');
+        } else if (data['message'] == "KO"){
+            changeView('hero');
+        }
+    })
+    .catch((error) => {
+        console.error('Error:', error);
     });
+});
+}
+
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
 }
