@@ -11,3 +11,4 @@ echo	"ALTER DATABASE $POSTGRES_DB REFRESH COLLATION VERSION;" >> postgres.sql
 
 psql -v ON_ERROR_STOP=1 -U $POSTGRES_USER -dbname $POSTGRES_DB -f postgres.sql
 rm postgres.sql
+su postgres

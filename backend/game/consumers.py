@@ -5,9 +5,13 @@ import introcs
 import asyncio
 import time
 import threading
+from database.models import Games
+from django.contrib.auth.models import User
 
 class ChatConsumer(WebsocketConsumer):
     game_values = {
+        'p1_id' : 1,
+        'p2_id' : -1,
         'finished' : False,
         'scoreleft' : 0,
         'scoreright' : 0,
@@ -37,17 +41,20 @@ class ChatConsumer(WebsocketConsumer):
     def receive(self, text_data):
         text_data_json = json.loads(text_data)
         message = text_data_json["message"]
-        if message == 'Up arrow pressed':
+        if message == 'Up':
             self.game_values['ball_velocity_z'] += 1
-        elif message == 'Down arrow pressed':
+        elif message == 'Down':
             self.game_values['ball_velocity_z'] -= 1
         self.send(text_data=json.dumps(self.game_values))
     
 
         
 class GameConsumer(WebsocketConsumer):
-    
+
+
     game_values = {
+        'p1_id' : 1,
+        'p2_id' : -1,
         'finished' : False,
         'scoreleft' : 0,
         'scoreright' : 0,
@@ -130,9 +137,9 @@ class GameConsumer(WebsocketConsumer):
             self.send(text_data=json.dumps(self.game_values))
 
     def update_right_paddle_pos(self, message):
-        if message == 'Up' and self.game_values['paddleright_position_z'] - self.game_values['move_speed'] < -6.5:
+        if message == 'Up' and self.game_values['paddleright_position_z'] - self.game_values['move_speed'] > -6.5:
             self.game_values['paddleright_position_z'] -= self.game_values['move_speed']
-        elif message == 'Down' and self.game_values['paddleright_position_z'] + self.game_values['move_speed'] > -6.5:
+        elif message == 'Down' and self.game_values['paddleright_position_z'] + self.game_values['move_speed'] < 6.5:
             self.game_values['paddleright_position_z'] += self.game_values['move_speed']
 
     def connect(self):
@@ -140,6 +147,8 @@ class GameConsumer(WebsocketConsumer):
         threading.Thread(target=self.update_ball_pos).start()
 
     def disconnect(self, close_code):
+        game = Games(player1=User.objects.get(id=self.game_values['p1_id']), p1_score=self.game_values['scoreleft'], p2_score=self.game_values['scoreright'])
+        game.save()
         pass
 
     def receive(self, text_data):

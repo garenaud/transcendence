@@ -28,12 +28,17 @@ SECRET_KEY = 'django-insecure-t9ip_b^g9epp0tadwc1d3#bz_88zutbmxc-3&hr9rl-g3r(q3%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+	'backend',
+	'localhost',
+	'https://localhost'
+]
 
 
 # Application definition
 
 INSTALLED_APPS = [
+	'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -45,7 +50,8 @@ INSTALLED_APPS = [
 	'login',
 	'main',
 	'api',
-	'game'
+	'game',
+	'frontend'
 	
 ]
 
@@ -58,6 +64,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+CSRF_TRUSTED_ORIGINS = ['https://localhost']
 
 ROOT_URLCONF = 'transcendence.urls'
 
@@ -77,6 +85,7 @@ TEMPLATES = [
     },
 ]
 
+ASGI_APPLICATION = 'transcendence.asgi.application'
 WSGI_APPLICATION = 'transcendence.wsgi.application'
 
 

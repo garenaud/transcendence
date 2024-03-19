@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html>
 
-{% load static %}
 
-	<link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
+	<link rel="stylesheet" type="text/css" href="css/styles.css">
 	<head lang="en">
 		<meta charset="utf-8">
 		<title>My first three.js app</title>
@@ -17,7 +16,8 @@
 		<script type="importmap">
 			{
 				"imports": {
-					"three": "{% static 'javascript/node_modules/three/build/three.module.js' %}"
+					"three": "https://unpkg.com/three@<0.161.0/build/three.module.js",
+						"three/addons/": "https://unpkg.com/three@0.161.0/examples/jsm/"
 				}
 			}
 		</script>
@@ -25,6 +25,6 @@
 	<body>
 		<!-- Canvas is necessary to hold a scene  -->
 		<canvas id="background"></canvas>
-		<script type="module" src="{% static 'javascript/pong.js' %}"></script>
+		<script type="module" src="javascript/pong.js"></script>
 	</body>
 </html>

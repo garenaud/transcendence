@@ -82,7 +82,7 @@ export function renderRoulette() {
     const rouletteHTML = `
     <div class="container-div-game">
     <div class="card-game-component glowing">
-        <img class="card-img-top" src="Design/RoulettePresImg.webp" alt="Card image cap">
+        <img class="card-img-top" src="../static/frontend/Design/RoulettePresImg.webp" alt="Card image cap">
         <div class="card-body">
           <h4 class="card-title">Roulette</h4>
           <p class="card-text">

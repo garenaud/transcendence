@@ -48,7 +48,7 @@ services:
     networks:
       - transcendence
     ports:
-      - "8000:8000"
+      - "8000"
     restart: on-failure
     env_file:
       - req/.env
@@ -58,22 +58,22 @@ services:
     depends_on:
       - postgre
 
-  # frontend:
-  #   container_name: frontend
-  #   image: frontend
-  #   volumes:
-  #     - frontend:/var/www/html
-  #   networks:
-  #     - transcendence
-  #   ports:
-  #     - "443:443"
-  #     - "80:80"
-  #   restart: on-failure
-  #   env_file:
-  #     - req/.env
-  #   build:
-  #     context: frontend
-  #     dockerfile: Dockerfile
+  frontend:
+    container_name: frontend
+    image: frontend
+    volumes:
+      - frontend:/var/www/html
+    networks:
+      - transcendence
+    ports:
+      - "443:443"
+      - "80:80"
+    restart: on-failure
+    env_file:
+      - req/.env
+    build:
+      context: frontend
+      dockerfile: Dockerfile
 
 volumes:
   backend:

@@ -1,15 +1,3 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: vgroux <vgroux@student.42lausanne.ch>      +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2024/02/22 11:53:18 by vgroux            #+#    #+#              #
-#    Updated: 2024/03/13 11:52:42 by vgroux           ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
-
 RUST_SOURCE = cli/src/main.rs
 
 all:
@@ -43,9 +31,12 @@ clean:
 
 fclean: clean
 	docker system prune -a --volumes
-
+	
 vol:
-	docker volume rm $$(docker volume ls)
+	docker volume rm web42_backend
+	docker volume rm web42_db
+	docker volume rm web42_frontend
+	sudo rm -rf ~/data
 
 re: fclean
 	docker-compose -f ./docker-compose.yml up -d --build
