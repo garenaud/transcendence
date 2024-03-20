@@ -1,7 +1,12 @@
 use ncurses::*;
 use std::{thread, time};
+use websocket::sync::Client;
 
 pub fn game() {
+	let websocket: ClientBuilder = ClientBuilder::new("ws://localhost/ws/game/")
+		.unwrap()
+		.connect_insecure()
+		.unwrap();
 	thread_userinput();
 	loop {
 		render();
@@ -37,7 +42,7 @@ fn thread_userinput() {
 		noecho();
 		loop {
 			let ch = getch();
-			if ch == 27 {
+			if ch == 27 { // 27 == ascii code for ESC
 				endwin();
 				break;
 			}
