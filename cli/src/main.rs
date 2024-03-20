@@ -12,7 +12,7 @@ fn main() {
 		println!("Please enter the server IP (or URL):");
 		io::stdin().read_line(&mut srv).expect("Failed to read line");
 		if srv.len() > 0 {
-			// PING THE SERVER (just to check if it's up)
+			// todo!("ping the server to know if it's up");
 			break;
 		}
 	}
@@ -20,7 +20,8 @@ fn main() {
 	if login::login() {
 		println!("user's login successfuly saved");
 	} else {
-		println!("ERROR");
+		eprintln!("user's login failed, exiting...");
+		return ;
 	}
 	pong::game();
 }
