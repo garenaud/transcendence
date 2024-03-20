@@ -1,7 +1,7 @@
 mod pong;
 mod login;
 use std::io;
-// use console::Term;
+use tokio;
 
 fn main() {
 	println!("Welcome to T_BOOL TRANSCENDENCE !");
@@ -16,9 +16,9 @@ fn main() {
 			break;
 		}
 	}
-	
+
 	if login::login() {
-		println!("user is logged");
+		println!("user's login successfuly saved");
 	} else {
 		println!("ERROR");
 	}

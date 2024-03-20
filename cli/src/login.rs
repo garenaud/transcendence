@@ -18,7 +18,7 @@ pub fn login() -> bool {
 	match password {
 		Ok(str) => hashed_pw = String::from(str),
 		Err(_) => {
-			println!("ERREUR LORS DU HASHAGE DU MOT DE PASSE");
+			eprintln!("ERREUR LORS DU HASHAGE DU MOT DE PASSE");
 			return false;
 		}
 	};
@@ -26,5 +26,6 @@ pub fn login() -> bool {
 }
 
 fn connection(login: String, password: String) -> bool {
+	// todo!("connection to the server");
 	true
 }
