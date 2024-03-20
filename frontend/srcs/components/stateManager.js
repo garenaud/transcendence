@@ -9,9 +9,10 @@ import { renderBlackJack } from './BlackJack.js';
 import { renderUserMenu } from './userMenu.js';
 //import { renderSlotMachine } from './slotMachine.js';
 
-let appState = {
+export let appState = {
     currentView: 'login',
     user: null,
+    users: [],
 };
 
 function renderDiv(components, className) {
@@ -40,37 +41,42 @@ export function getCurrentView() {
     return appState.currentView;
 }
 
-loadUser().then(() => {
-    appState.user = getUser();
+/* loadUser().then(() => {
     renderApp();
-});
+}); */
 
 export async function renderApp() {
-    const user = appState.user;
     document.body.innerHTML = '';
     switch(appState.currentView) {
         case 'login':
             renderLogin();
+            console.log('appState.user after login:', appState.user);
             break;
-        case 'hero':
-            renderRoulette();
-            await renderHero();
-            renderNavbar(user);
-            break;
-        case 'game':
-            const game = await renderGame();
-            const roulette = await renderRoulette();
-            const BlackJack = await renderBlackJack();
-            const test = await renderBlackJack();
-            const test2 = await renderRoulette();
-            const test3 = await renderRoulette();
-            await renderDiv([roulette, BlackJack, test, test2, test3], 'game-div');
-            renderNavbar(user);
-            break;
-        case 'chat':
-            const chat = await renderChat();
-            await renderDiv([chat], 'chat-div');
-            renderNavbar(user); 
+        default:
+            await loadUser();
+            switch(appState.currentView) {
+                case 'hero':
+                    renderRoulette();
+                    await renderHero();
+                    console.log('appState.user:', appState.user);
+                    renderNavbar(appState.user);
+                    break;
+                case 'game':
+                    const game = await renderGame();
+                    const roulette = await renderRoulette();
+                    const BlackJack = await renderBlackJack();
+                    const test = await renderBlackJack();
+                    const test2 = await renderRoulette();
+                    const test3 = await renderRoulette();
+                    await renderDiv([roulette, BlackJack, test, test2, test3], 'game-div');
+                    renderNavbar(appState.user);
+                    break;
+                case 'chat':
+                    const chat = await renderChat();
+                    await renderDiv([chat], 'chat-div');
+                    renderNavbar(appState.user); 
+                    break;
+            }
             break;
     }
 }

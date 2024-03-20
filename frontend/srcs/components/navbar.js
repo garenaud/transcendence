@@ -1,24 +1,26 @@
-import { changeView } from './stateManager.js';
+import { changeView, appState } from './stateManager.js';
 
 export function renderNavbar(user){
   //const user = getUser();
+  console.log('username:', user.username);
+  console.log('appState.user:', appState.user);
   if (!user) {
     console.error('Aucun utilisateur n\'a été trouvé');
     return;
   }  
   
   function displayUserInfo(user) {
-      let currentUser = user[0];
+      //let currentUser = user[0];
       const userInfoDiv = document.getElementById('nav-user');
       if (userInfoDiv) {
           userInfoDiv.innerHTML = `
           <div class="nav-user-info">
-          <h4>${currentUser.name}</h4>
-          <h6>${currentUser.points} pts</h6>
+          <h4>${appState.user.username}</h4>
+          <h6>${appState.user.pts} pts</h6>
           </div>
           <div id="user-menu-button" class="nav-user-img">
                   <div id="user-menu-button" class="img_cont_nav">
-                  <img src="${currentUser.profilePicture}" alt="User Image">
+                  <img src="${appState.user.profilePicture}" alt="User Image">
                   </div>
           </div>
           `;
@@ -29,12 +31,12 @@ export function renderNavbar(user){
       const userMenuHTML = `
           <div id="user-menu" class="user-menu-hidden">
               <div class="user-menu-img">
-                  <img src="${user.profilePicture}" alt="User Image">
+                  <img src="${appState.user.profilePicture}" alt="User Image">
                   <button type="button" class="close close-menu-button" aria-label="Close"> <span aria-hidden="true">&times;</span> </button>
               </div>
               <div class="user-menu-title">
-              <h2>${user.name}</h2>
-              <h4>${user.points} pts</h4>
+              <h2>${appState.user.username}</h2>
+              <h4>${appState.user.pts} pts</h4>
               </div>
               <div class="user-menu-info">
                   <li class="active">
@@ -73,7 +75,8 @@ export function renderNavbar(user){
   </nav>
     `;
     document.body.insertAdjacentHTML('afterbegin', navbarHTML);
-    }
+  }
+  console.log('youhouhou');
     insertNavbarHTML();
     displayUserInfo(user);
     renderUserMenu(user[0]);

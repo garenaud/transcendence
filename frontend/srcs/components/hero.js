@@ -6,7 +6,7 @@ export function renderHero() {
 		<div class="row">
 			<div class="col-hero">
 				<div class="hero col-md-6">
-					<h1>Transcendez le jeu, devenez légende.</h1>
+					<h1>Transcendez le jeu, devenez légende!</h1>
 					<button id='heroGameBtn' class='glowing-btn'><span class='glowing-txt'>J<span class='faulty-letter'>O</span>UER</span></button>
 				</div>
 				<div class="lg-img col-md-4"><img src="Design/cyberUnicorn2.webp" alt=""></div>

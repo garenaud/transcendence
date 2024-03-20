@@ -62,7 +62,7 @@ services:
     container_name: frontend
     image: frontend
     volumes:
-      - frontend:/var/www/html
+      - /Users/grenaud-/projet42/ft_transcendence/frontend/srcs:/var/www/html
     networks:
       - transcendence
     ports:
@@ -90,13 +90,13 @@ volumes:
       type: none
       o : bind
       device: '~/data/db'
-  frontend:
-    external: false
-    driver: local
-    driver_opts:
-      type: none
-      o : bind
-      device: '~/data/front'
+#  frontend:
+#    external: false
+#    driver: local
+#    driver_opts:
+#      type: none
+#      o : bind
+#      device: '~/data/front'
 
 networks:
   transcendence:

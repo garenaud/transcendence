@@ -1352,3 +1352,12 @@ background-size: 70px 120px;
   padding-left: 10px;
   padding-right: 10px;
 }
+
+/*-------------------------------- login --------------------------------*/
+.login-form {
+  display: block;
+}
+
+.signup {
+  display: none;
+}
