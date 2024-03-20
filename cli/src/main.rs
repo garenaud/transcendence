@@ -1,50 +1,26 @@
 mod pong;
 mod login;
-
-// fn main() {
-// 	if login::login() {
-// 		println!("user is logged");
-// 	} else {
-// 		println!("ERROR");
-// 	}
-
-// 	loop {
-// 		pong::game();
-// 	}
-// }
-
-
 use std::io;
-use std::io::Read;
-use std::str::from_utf8;
-use std::sync::mpsc;
-use std::sync::mpsc::Receiver;
-use std::sync::mpsc::TryRecvError;
-use std::{thread, time};
+// use console::Term;
 
 fn main() {
-	let stdin_channel = spawn_stdin_channel();
+	println!("Welcome to T_BOOL TRANSCENDENCE !");
+	let mut srv: String = String::new();
+
 	loop {
-		match stdin_channel.try_recv() {
-			Ok(key) => println!("Received: {}", key),
-			Err(TryRecvError::Empty) => println!("Channel empty"),
-			Err(TryRecvError::Disconnected) => panic!("Channel disconnected"),
+		srv.clear();
+		println!("Please enter the server IP (or URL):");
+		io::stdin().read_line(&mut srv).expect("Failed to read line");
+		if srv.len() > 0 {
+			// PING THE SERVER (just to check if it's up)
+			break;
 		}
-		sleep(500);
 	}
-}
-
-fn spawn_stdin_channel() -> Receiver<String> {
-	let (tx, rx) = mpsc::channel::<String>();
-	thread::spawn(move || loop {
-		let mut buffer: &[u8] = &[];
-		io::stdin().read(&mut buffer).unwrap();
-		tx.send(from_utf8(&mut buffer).unwrap().to_string());
-	});
-	rx
-}
-
-fn sleep(millis: u64) {
-	let duration = time::Duration::from_millis(millis);
-	thread::sleep(duration);
+	
+	if login::login() {
+		println!("user is logged");
+	} else {
+		println!("ERROR");
+	}
+	pong::game();
 }

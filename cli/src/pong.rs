@@ -1,6 +1,11 @@
+use ncurses::*;
+use std::{thread, time};
+
 pub fn game() {
-	render();
-	
+	thread_userinput();
+	loop {
+		render();
+	}
 }
 
 struct Console {
@@ -22,4 +27,21 @@ fn render() {
 		return ;
 	}
 	println!("hauteur={}\tlargeur={}", term.width, term.height);
+}
+
+fn thread_userinput() {
+	thread::spawn(move || {
+		initscr();
+		raw();
+		keypad(stdscr(), true);
+		noecho();
+		loop {
+			let ch = getch();
+			if ch == 27 {
+				endwin();
+				break;
+			}
+			println!("Received: {}", ch);
+		}
+	});
 }
