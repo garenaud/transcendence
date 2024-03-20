@@ -1,20 +1,16 @@
 import * as THREE from 'three';
 import { LoadGLTFByPath } from './ModelHelper.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
-import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-// import { RectAreaLightHelper } from 'three/addons/helpers/RectAreaLightHelper.js';
+
 // main
 let scene;
 let renderer;
 let camera;
 let controls;
-let cameraList = [];
 let composer;
-let scoreText1, scoreText2;
 let player1Score = 0;
 let player2Score = 0;
 const initialAngle = 0.45;
@@ -69,7 +65,6 @@ function init() {
 			handleGround();
 			handleLight();
 			handleText();
-			// createScoreTexts();
 			handleBall();
 		})
 		.catch((error) => {
@@ -82,29 +77,6 @@ function init() {
 		// console.log(socket);
 		animate();
 }
-
-// socket.addEventListener('open', (event) => {
-//     console.log('WebSocket connection opened:', event);
-// });
-
-// socket.addEventListener('close', (event) => {
-//     console.log('WebSocket connection closed:', event);
-// });
-
-// socket.addEventListener('message', (event) => {
-//     const data = JSON.parse(event.data);
-//     console.log('Received message from server:', data);
-
-//     // Traitez les données reçues du serveur ici
-//     // Exemple : mettre à jour l'affichage en fonction des données du jeu
-// });
-
-// // Vous pouvez envoyer des données au serveur comme ceci
-// const dataToSend = {
-//     // Vos données ici
-// };
-
-// socket.send(JSON.stringify(dataToSend));
 
 function handleText() {
 	scoreLeft = scene.getObjectByName('Text');
@@ -204,8 +176,6 @@ function handleKeyUp(event) {
 function handlePaddleRight() {
 	const PaddleRightName = 'RightPaddle';
 	PaddleRight = scene.getObjectByName(PaddleRightName);
-	
-	// console.log(PaddleRight.position);
 	// x === 15
 	
 	if (PaddleRight) {
@@ -223,7 +193,6 @@ function handlePaddleRight() {
 function handlePaddleLeft() {
 	const PaddleLeftName = 'LeftPaddle';
 	PaddleLeft = scene.getObjectByName(PaddleLeftName);
-	// console.log(PaddleLeft);
 	
 	// TODO condition si 2player alors mouvement, sinon IA;
 	if (PaddleLeft) {
@@ -243,8 +212,7 @@ let speedIncreaseFactor = 1; // Facteur d'augmentation de la vitesse
 // TODO: Reajuster l'angle de la balle.
 function handlePaddleCollision() {
 	const ballRadius = ball.geometry.boundingSphere.radius;
-	// console.log(PaddleLeft.geometry);
-	const PaddleSizeX = PaddleLeft.geometry.boundingBox.max.x;
+	const PaddleSizeX = 0;
 	const PaddleSizeZ = PaddleLeft.geometry.boundingBox.max.z + 3;
 	let isColliding = false;
 	// console.log(PaddleSizeZ);
@@ -317,9 +285,7 @@ function animate() {
 	requestAnimationFrame(animate);
 	handlePaddleLeft();
 	handlePaddleRight();
-	// handleAIPaddle();
 	handleBackground();
-	// handleAIPaddleRight();
 	updateBall();
 	controls.update();
 	composer.render(scene, camera);

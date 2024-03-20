@@ -261,7 +261,7 @@ class LoadModelDemo {
 	const Walkanim = new FBXLoader();
 	console.log('allo');
 	Walkanim.setPath('./models/');
-	Walkanim.load('Run.fbx', (Walkanim) => {
+	Walkanim.load('Twerk.fbx', (Walkanim) => {
 		let RunAction = new THREE.AnimationMixer(fbx);
 		this._mixers.push(RunAction);
 		Run = RunAction.clipAction(Walkanim.animations[0]);
