@@ -8,6 +8,7 @@ edition = "2021"
 [dependencies]
 clearscreen="2.0.1"
 ncurses = "5.101.0"
+openssl-sys = "0.9.101"
 pwhash="1.0.0"
 rpassword = "7.3.1"
 term_size="0.3.2"

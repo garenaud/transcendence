@@ -1,9 +1,9 @@
 use ncurses::*;
-use std::{thread, time};
-use websocket::sync::Client;
+use std::thread;
+use websocket::*;
 
 pub fn game() {
-	let websocket: ClientBuilder = ClientBuilder::new("ws://localhost/ws/game/")
+	let websocket = ClientBuilder::new("ws://localhost/ws/game/")
 		.unwrap()
 		.connect_insecure()
 		.unwrap();
