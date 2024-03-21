@@ -3,8 +3,10 @@ import {FBXLoader} from 'three/addons/loaders/FBXLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 
-var Run = [];
-var Idle = [];
+var MexicanRun = [];
+var MexicanIdle = [];
+var BossIdle = [];
+var BossRun = [];
 
 class BasicCharacterControls {
   constructor(params) {
@@ -14,10 +16,10 @@ class BasicCharacterControls {
   _Init(params) {
     this._params = params;
     this._move = {
-      forward: false,
-      backward: false,
-      left: false,
-      right: false,
+		forward: false,
+		Bossforward: false,
+		backward: false,
+		Bossbackward: false,
     };
     this._decceleration = new THREE.Vector3(-0.0005, -0.0001, -5.0);
     this._acceleration = new THREE.Vector3(1, 0.25, 50.0);
@@ -28,36 +30,53 @@ class BasicCharacterControls {
   }
 
   _onKeyDown(event) {
-    switch (event.keyCode) {
-      case 87: // w
-        this._move.forward = true;
-		if (Run) Run.play();
-        break;
-      case 83: // s
-        this._move.backward = true;
-		if (Run) Run.play();
-        break;
-      case 38: // up
-      case 40: // down
-        break;
-    }
-  }
-
-  _onKeyUp(event) {
+	  switch (event.keyCode) {
+		  case 87: // w
+		  this._move.forward = true;
+		  if (MexicanRun) MexicanRun.play();
+		  if (MexicanIdle) MexicanIdle.stop();
+		  break;
+		  case 83: // s
+		  this._move.backward = true;
+		  if (MexicanRun) MexicanRun.play();
+		  if (MexicanIdle) MexicanIdle.stop();
+		  break;
+		  case 38: // up
+		  this._move.Bossforward = true;
+		  if (BossRun) BossRun.play();
+		  if (BossIdle) BossIdle.stop();
+		  break ;
+		  case 40: // down
+		  this._move.Bossbackward = true;
+		  if (BossRun) BossRun.play();
+		  if (BossIdle) BossIdle.stop();
+		  break ;
+		  
+		}
+	}
+	
+	_onKeyUp(event) {
     switch(event.keyCode) {
       case 87: // w
-        this._move.forward = false;
-		if (Run) Run.stop();
-        break;
+	  this._move.forward = false;
+	  if (MexicanIdle) MexicanIdle.play();
+	  if (MexicanRun) MexicanRun.stop();
+	  break ;
       case 83: // s
-        this._move.backward = false;
-		if (Run) Run.stop();
-        break;
+	  this._move.backward = false;
+	  if (MexicanIdle) MexicanIdle.play();
+	  if (MexicanRun) MexicanRun.stop();
+	  break ;
       case 38: // up
-      case 37: // left
+	  this._move.Bossforward = false;
+	  if (BossIdle) BossIdle.play();
+	  if (BossRun) BossRun.stop();
+	  break ;
       case 40: // down
-      case 39: // right
-        break;
+	  this._move.Bossbackward = false;
+	  if (BossIdle) BossIdle.play();
+	  if (BossRun) BossRun.stop();
+	  break ;
     }
   }
 
@@ -213,21 +232,18 @@ class LoadModelDemo {
 
 	  const anim = new FBXLoader();
       anim.setPath('./models/');
-      anim.load('DwarfIdle.fbx', (anim) => {
+      anim.load('DrunkIdle.fbx', (anim) => {
         let m = new THREE.AnimationMixer(fbx);
         this._mixers.push(m);
-        Idle = m.clipAction(anim.animations[0]);
-		console.log(anim.animations[0]);
-		Idle.play();
+        BossIdle = m.clipAction(anim.animations[0]);
+		BossIdle.play();
 	});
 	const Walkanim = new FBXLoader();
-	console.log('allo');
 	Walkanim.setPath('./models/');
-	Walkanim.load('Run.fbx', (Walkanim) => {
+	Walkanim.load('DrunkRunForward.fbx', (Walkanim) => {
 		let RunAction = new THREE.AnimationMixer(fbx);
 		this._mixers.push(RunAction);
-		Run = RunAction.clipAction(Walkanim.animations[0]);
-		console.log(Walkanim.animations[0]);
+		BossRun = RunAction.clipAction(Walkanim.animations[0]);
 	});
       	this._scene.add(fbx);
     });
@@ -254,18 +270,15 @@ class LoadModelDemo {
       anim.load('DwarfIdle.fbx', (anim) => {
         let m = new THREE.AnimationMixer(fbx);
         this._mixers.push(m);
-        Idle = m.clipAction(anim.animations[0]);
-		console.log(anim.animations[0]);
-		Idle.play();
+        MexicanIdle = m.clipAction(anim.animations[0]);
+		MexicanIdle.play();
 	});
 	const Walkanim = new FBXLoader();
-	console.log('allo');
 	Walkanim.setPath('./models/');
-	Walkanim.load('Twerk.fbx', (Walkanim) => {
+	Walkanim.load('Run.fbx', (Walkanim) => {
 		let RunAction = new THREE.AnimationMixer(fbx);
 		this._mixers.push(RunAction);
-		Run = RunAction.clipAction(Walkanim.animations[0]);
-		console.log(Walkanim.animations[0]);
+		MexicanRun = RunAction.clipAction(Walkanim.animations[0]);
 	});
       	this._scene.add(fbx);
     });
