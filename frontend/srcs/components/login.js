@@ -80,6 +80,8 @@ export function renderLogin() {
 		  			<input type="password" id="signupPassword2" class="form-control form-control-lg" />
 		  			<label class="form-label" for="signupPassword2">Password</label>
 		  		</div>
+				<div id="error-message" class="alert alert-danger" role="alert"></div>
+				<div id="success-message" class="alert alert-success" role="alert"></div>
 
 			<p class="small mb-3 pb-lg-2"><a class="text-white-50" href="#!">Forgot password?</a></p>
 
@@ -110,7 +112,6 @@ function    setupButtonListener() {
 		const email = document.getElementById('typeEmailX').value;
 		const password = document.getElementById('typePasswordX').value;
 		let csrf = getCookie("csrftoken");
-		console.log(csrf);
 		fetch('/auth/test/', {
 			method: 'POST',
 			headers: {
@@ -149,8 +150,6 @@ function    setupButtonListener() {
 		
 		loginElement.style.display = 'none';
 		signupElement.style.display = 'block';
-		console.log('loginElement display:', loginElement.style.display);
-		console.log('signupElement display:', signupElement.style.display);
 	});
 	document.getElementById('login-btn-form').addEventListener('click', function() {
 		const loginElement = document.querySelector('.login-form');
@@ -158,8 +157,6 @@ function    setupButtonListener() {
 		
 		loginElement.style.display = 'block';
 		signupElement.style.display = 'none';
-		console.log('loginElement display:', loginElement.style.display);
-		console.log('signupElement display:', signupElement.style.display);
 	});
 
 	document.getElementById('signupBtn').addEventListener('click', function() {
@@ -201,8 +198,12 @@ function    setupButtonListener() {
 			console.log('Signup Success:', data);
 			if (data.message === "Error") {
 				console.log('Signup Error:', data.errors);
-			} else if (data.message === "OK") {
+				document.getElementById('error-message').textContent = data.errors.join(', ');
+				} 
+				else if (data.message === "OK") 
+				{
 				console.log('Signup Success:', data);
+				document.getElementById('success-message').textContent = "Your account has been created successfully";
 				changeView('hero');
 			}
 		})
@@ -220,8 +221,6 @@ function getCookie(name) {
 
 document.body.addEventListener('keydown', function(event) {
     if (event.key === 'Enter') {
-		console.log(document.querySelector('.login-form'));
-		console.log(document.querySelector('.signup'));
         const activeElement = document.activeElement; // L'élément qui a le focus
         const loginForm = document.querySelector('.login-form');
         const signupForm = document.querySelector('.signup');

@@ -50,7 +50,6 @@ export async function renderApp() {
     switch(appState.currentView) {
         case 'login':
             renderLogin();
-            console.log('appState.user after login:', appState.user);
             break;
         default:
             await loadUser();
@@ -58,8 +57,8 @@ export async function renderApp() {
                 case 'hero':
                     renderRoulette();
                     await renderHero();
-                    console.log('appState.user:', appState.user);
-                    renderNavbar(appState.user);
+                    console.log('appState.user hero:', getUser());
+                    renderNavbar(getUser());
                     break;
                 case 'game':
                     const game = await renderGame();
@@ -68,16 +67,17 @@ export async function renderApp() {
                     const test = await renderBlackJack();
                     const test2 = await renderRoulette();
                     const test3 = await renderRoulette();
-                    await renderDiv([roulette, BlackJack, test, test2, test3], 'game-div');
-                    renderNavbar(appState.user);
+                    await renderDiv([roulette, BlackJack, test, test2], 'game-div');
+                    console.log('appState.user game:', getUser());
+                    renderNavbar(getUser());
                     break;
                 case 'chat':
                     const chat = await renderChat();
                     await renderDiv([chat], 'chat-div');
-                    renderNavbar(appState.user); 
+                    renderNavbar(getUser());
                     break;
             }
-            break;
+        break;
     }
 }
 

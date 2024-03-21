@@ -1336,6 +1336,15 @@ background-size: 70px 120px;
   right: 10px;
 }
 
+.edit-menu-button {
+  background: none;
+  border: none;
+  position: absolute;
+  color: white;
+  top: 10px;
+  left: 10px; 
+}
+
 #user-menu .active {
   background-color: #F6428E !important;
   color: #1A244D;
@@ -1351,6 +1360,12 @@ background-size: 70px 120px;
 .user-menu-info > * {
   padding-left: 10px;
   padding-right: 10px;
+}
+
+/* modale pour changer les informations de l'utilisateur */
+#preview {
+  max-width: 100%;
+  height: auto;
 }
 
 /*-------------------------------- login --------------------------------*/
