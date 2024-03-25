@@ -409,6 +409,7 @@ function handleBackground() {
 
 gameSocket.onmessage = function(e) {
 	game_data = JSON.parse(e.data);
+	console.log(`hello from room ${game_data.room_name} in group ${game_data.room_group_name}`);
 	update_game_data()
 };
 
