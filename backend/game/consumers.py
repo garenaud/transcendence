@@ -14,6 +14,8 @@ import random
 channel_layer = channels.layers.get_channel_layer()
 
 class ChatConsumer(WebsocketConsumer):
+    lolmessage = "superlol"
+    mdrmessage = "superlolmdr"
     def connect(self):
         self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
         self.room_group_name = "chat_%s" % self.room_name
@@ -24,6 +26,15 @@ class ChatConsumer(WebsocketConsumer):
         )
 
         self.accept()
+        threading.Thread(target=self.loop).start()
+
+
+    def loop(self):
+        while True:
+            time.sleep(1)
+            async_to_sync(channel_layer.group_send)(
+                self.room_group_name, {"type": "chat_message", "message": self.lolmessage}
+            )
 
     def disconnect(self, close_code):
         # Leave room group
@@ -38,7 +49,7 @@ class ChatConsumer(WebsocketConsumer):
 
         # Send message to room group
         async_to_sync(channel_layer.group_send)(
-            self.room_group_name, {"type": "chat_message", "message": message}
+            self.room_group_name, {"type": "chat_message", "message": self.mdrmessage}
         )
 
     # Receive message from room group
@@ -52,27 +63,27 @@ class ChatConsumer(WebsocketConsumer):
         
 class GameConsumer(WebsocketConsumer):
 
-    game_values = {
-        'p1_id' : 1,
-        'p2_id' : -1,
-        'finished' : False,
-        'scoreleft' : 0,
-        'scoreright' : 0,
-        'initial_angle' : 0.0,
-        'ball_radius' : 0.5196152629183178,
-        'ball_position_x' : 0.0,
-        'ball_position_z' : 0.0,
-        'ball_velocity_x' : 0.0,
-        'ball_velocity_z' : 0.0,
-        'paddleleft_position_x' : -15.0,
-        'paddleleft_position_z' : 0.0,
-        'paddleright_position_x' : 15.0,
-        'paddleright_position_z' : 0.0,
-        'move_speed' : 0.25,
-        'speed_increase_factor' : 1.1,
-        'room_name' : "",
-        'room_group_name' : ""
-    }
+    game_values = {}
+    #     'p1_id' : 1,
+    #     'p2_id' : -1,
+    #     'finished' : False,
+    #     'scoreleft' : 0,
+    #     'scoreright' : 0,
+    #     'initial_angle' : 0.0,
+    #     'ball_radius' : 0.5196152629183178,
+    #     'ball_position_x' : 0.0,
+    #     'ball_position_z' : 0.0,
+    #     'ball_velocity_x' : 0.0,
+    #     'ball_velocity_z' : 0.0,
+    #     'paddleleft_position_x' : -15.0,
+    #     'paddleleft_position_z' : 0.0,
+    #     'paddleright_position_x' : 15.0,
+    #     'paddleright_position_z' : 0.0,
+    #     'move_speed' : 0.25,
+    #     'speed_increase_factor' : 1.1,
+    #     'room_name' : "",
+    #     'room_group_name' : ""
+    # }
 
     ball_velocity = introcs.Vector3(math.cos(0) * 0.25, 0, math.sin(0) * 0.25)
 
@@ -151,23 +162,41 @@ class GameConsumer(WebsocketConsumer):
     def connect(self):
         self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
         self.room_group_name = "chat_%s" % self.room_name
-
+        self.game_values = {
+            'p1_id' : 1,
+            'p2_id' : -1,
+            'finished' : False,
+            'scoreleft' : 0,
+            'scoreright' : 0,
+            'initial_angle' : 0.0,
+            'ball_radius' : 0.5196152629183178,
+            'ball_position_x' : 0.0,
+            'ball_position_z' : 0.0,
+            'ball_velocity_x' : 0.0,
+            'ball_velocity_z' : 0.0,
+            'paddleleft_position_x' : -15.0,
+            'paddleleft_position_z' : 0.0,
+            'paddleright_position_x' : 15.0,
+            'paddleright_position_z' : 0.0,
+            'move_speed' : 0.25,
+            'speed_increase_factor' : 1.1
+        }
         self.game_values['room_name'] = self.room_name
         self.game_values['room_group_name'] = self.room_group_name
         # Join room group
         async_to_sync(channel_layer.group_add)(
         self.room_group_name, self.channel_name
         )
-        # threading.Thread(target=self.update_ball_pos).start()
+        threading.Thread(target=self.update_ball_pos).start()
         self.accept()
 
 
     def disconnect(self, close_code):
-        game = Games(player1=User.objects.get(id=self.game_values['p1_id']), p1_score=self.game_values['scoreleft'], p2_score=self.game_values['scoreright'])
-        game.save()
         async_to_sync(channel_layer.group_discard)(
             self.room_group_name, self.channel_name
         )
+        # game = Games(player1=User.objects.get(id=self.game_values['p1_id']), p1_score=self.game_values['scoreleft'], p2_score=self.game_values['scoreright'])
+        # game.save()
         #async_to_sync(self.channel_layer.group_add)(self.randname), self.channel_name)
         pass
 
@@ -182,9 +211,9 @@ class GameConsumer(WebsocketConsumer):
             pos = text_data_json['pos']
             self.game_values['paddleleft_position_z'] = float(pos)
         self.update_right_paddle_pos(message)
-        async_to_sync(channel_layer.group_send)(
-            self.room_group_name, {"type": "chat_message", "message": self.game_values}
-        )
+        # async_to_sync(channel_layer.group_send)(
+        #     self.room_group_name, {"type": "chat_message", "message": self.game_values}
+        # )
     
     def chat_message(self, event):
         data = event["message"]
