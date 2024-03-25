@@ -62,8 +62,6 @@ class ChatConsumer(WebsocketConsumer):
 
         
 class GameConsumer(WebsocketConsumer):
-
-    game_values = {}
     #     'p1_id' : 1,
     #     'p2_id' : -1,
     #     'finished' : False,
@@ -210,7 +208,8 @@ class GameConsumer(WebsocketConsumer):
         elif message == 'IA':
             pos = text_data_json['pos']
             self.game_values['paddleleft_position_z'] = float(pos)
-        self.update_right_paddle_pos(message)
+        else:
+            self.update_right_paddle_pos(message)
         # async_to_sync(channel_layer.group_send)(
         #     self.room_group_name, {"type": "chat_message", "message": self.game_values}
         # )
