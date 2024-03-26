@@ -58,7 +58,7 @@ const gameSocket = new WebSocket(
 	+ '/ws/'
 	+ 'game'
 	+ '/'
-	+ makeid(5)
+	+ 'salut'
 	+ '/'
 );
 
