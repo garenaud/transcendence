@@ -11,6 +11,7 @@ var BossRun = [];
 class BasicCharacterControls {
   constructor(params) {
     this._Init(params);
+	this._initialePosition = params.target.position.clone();
   }
 
   _Init(params) {
@@ -100,9 +101,9 @@ class BasicCharacterControls {
 
     if (this._move.forward) {		
 		velocity.z += this._acceleration.z * timeInSeconds;
-    }
+	}
     if (this._move.backward) {
-      velocity.z -= this._acceleration.z * timeInSeconds;
+		velocity.z -= this._acceleration.z * timeInSeconds;
     }
 
     controlObject.quaternion.copy(_R);
@@ -123,8 +124,9 @@ class BasicCharacterControls {
 
     controlObject.position.add(forward);
     controlObject.position.add(sideways);
+	// controlObject.position.set(this._initialePosition);
 
-    oldPosition.copy(controlObject.position);
+    // oldPosition.copy(controlObject.position);
   }
 }
 
@@ -149,14 +151,14 @@ class LoadModelDemo {
       this._OnWindowResize();
     }, false);
 
-    const fov = 60;
+    const fov = 50;
     const aspect = 1920 / 1080;
     const near = 1.0;
     const far = 1000.0;
     this._camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-    this._camera.position.set(75, 20, 0);
-
+    this._camera.position.set(75, 70, -244);
     this._scene = new THREE.Scene();
+
 
     let light = new THREE.DirectionalLight(0xFFFFFF, 1.4);
     light.position.set(20, 100, 10);
@@ -196,19 +198,26 @@ class LoadModelDemo {
 
 	
 
-    const plane = new THREE.Mesh(
-        new THREE.PlaneGeometry(100, 100, 10, 10),
-        new THREE.MeshStandardMaterial({
-            color: 0x202020,
-          }));
-    plane.castShadow = false;
-    plane.receiveShadow = true;
-    plane.rotation.x = -Math.PI / 2;
-    this._scene.add(plane);
+	const textureLoader = new THREE.TextureLoader();
+	textureLoader.load( './skybox/Field.png', (texture) => {
+		const material = new THREE.MeshStandardMaterial({
+			map: texture, // Application de la texture au matériau
+		});
+		const plane = new THREE.Mesh(
+			new THREE.PlaneGeometry(100, 300, 10),
+			material
+			);
+			plane.castShadow = false;
+			plane.receiveShadow = true;
+			plane.rotation.x = -Math.PI / 2;
+	
+			// Ajout du plan à la scène
+			this._scene.add(plane);
+		},
+	);
+	
 
     this._mixers = [];
-    this._previousRAF = null;
-
     this._LoadTheBoss();
 	this._LoadTheCatch();
     this._RAF();
@@ -222,7 +231,7 @@ class LoadModelDemo {
       fbx.traverse(c => {
         c.castShadow = true;
       });
-	  const offset = new THREE.Vector3(0, 0, 0);
+	  const offset = new THREE.Vector3(-17, -1.8, -140);
 	  fbx.position.copy(offset);
       const params = {
         target: fbx,
@@ -257,7 +266,7 @@ class LoadModelDemo {
       fbx.traverse(c => {
         c.castShadow = true;
       });
-	  const offset = new THREE.Vector3(20, -1, 0);
+	  const offset = new THREE.Vector3(22, -2.5, -140);
 	  fbx.position.copy(offset);
       const params = {
         target: fbx,
