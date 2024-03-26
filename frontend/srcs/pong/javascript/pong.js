@@ -409,8 +409,9 @@ function handleBackground() {
 
 gameSocket.onmessage = function(e) {
 	game_data = JSON.parse(e.data);
-	console.log(`hello from room ${game_data.room_name} in group ${game_data.room_group_name}`);
-	update_game_data()
+	//console.log(`hello from room ${game_data.room_name} in group ${game_data.room_group_name}`);
+	console.log(`received: ${game_data.scoreleft}`);
+	update_game_data();
 };
 
 function update_game_data() {
@@ -438,7 +439,7 @@ function animate() {
 	requestAnimationFrame(animate);
 	//handlePaddleLeft();
 	//handlePaddleRight();
-	handleAIPaddle();
+	//handleAIPaddle();
 	handleBackground();
 	// handleAIPaddleRight();
 	//updateBall();
