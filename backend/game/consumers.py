@@ -108,13 +108,60 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
 
     def loop(self):
         while True:
-            time.sleep(1)
+            time.sleep(0.2)
+            ball_radius = self.game_values['ball_radius']
+            paddle_size_x = 0.20000000298023224
+            paddle_size_z = 3.1
+            max_angle_adjustment = math.pi / 6
+            min_angle_adjustment = (math.pi * -1) / 6
+            #verifier la collision avec le paddle gauche
+            if (self.game_values['ball_position_x'] - ball_radius < self.game_values['paddleleft_position_x'] + paddle_size_x / 2 and
+                self.game_values['ball_position_x'] + ball_radius > self.game_values['paddleleft_position_x'] - paddle_size_x / 2 and
+                self.game_values['ball_position_z'] + ball_radius > self.game_values['paddleleft_position_z'] - paddle_size_z / 2 and
+                self.game_values['ball_position_z'] - ball_radius < self.game_values['paddleleft_position_z'] + paddle_size_z / 2
+                ):
+                relative_position = (self.game_values['ball_position_z'] - self.game_values['paddleleft_position_z']) / paddle_size_z
+                angleadjustment = (relative_position - 0.5) * (max_angle_adjustment - min_angle_adjustment) * 0.6
+                # Ajuster la direction de la balle en fonction de l'angle
+                angle = math.pi / 4 + angleadjustment
+                self.ball_velocity.x = math.cos(angle) * (0.2 * self.game_values['speed_increase_factor'])
+                self.ball_velocity.z = math.sin(angle) * (0.2 * self.game_values['speed_increase_factor'])
+                self.game_values['speed_increase_factor'] += 0.1
+                # print("collision detectee a gauche")
+            #verifier la collision avec le paddle droit
+            if (self.game_values['ball_position_x'] - ball_radius < self.game_values['paddleright_position_x'] + paddle_size_x / 2 and
+                self.game_values['ball_position_x'] + ball_radius > self.game_values['paddleright_position_x'] - paddle_size_x / 2 and
+                self.game_values['ball_position_z'] + ball_radius > self.game_values['paddleright_position_z'] - paddle_size_z / 2 and
+                self.game_values['ball_position_z'] - ball_radius < self.game_values['paddleright_position_z'] + paddle_size_z / 2
+                ):
+                relative_position = (self.game_values['ball_position_z'] - self.game_values['paddleright_position_z']) / paddle_size_z
+                angleadjustment = (relative_position - 0.5) * (max_angle_adjustment - min_angle_adjustment) * 0.3
+                # Ajuster la direction de la balle en fonction de l'angle
+                angle = (math.pi * -1) / 4 - angleadjustment
+                self.ball_velocity.x = (math.cos(angle) * -1) * (0.2 * self.game_values['speed_increase_factor'])
+                self.ball_velocity.z = (math.sin(angle) * -1) * (0.2 * self.game_values['speed_increase_factor'])
+                self.game_values['speed_increase_factor'] += 0.1
+                # print("collision detectee a droite")
+
+            balllimit = 8.5
+            if self.game_values['ball_position_z'] > balllimit or self.game_values['ball_position_z'] < -balllimit:
+                self.ball_velocity.z *= -1
+                # print("mur")
+            elif self.game_values['ball_position_x'] > 18 or self.game_values['ball_position_x'] < -18:
+                if self.game_values['ball_position_x'] > 18:
+                    self.game_values['scoreleft'] += 1
+                elif self.game_values['ball_position_x'] < -18:
+                    self.game_values['scoreright'] += 1
+                self.game_values['ball_position_x'] = 0.0
+                self.game_values['ball_position_z'] = 0.0
+                self.game_values['speed_increase_factor'] = 1.1
+                self.ball_velocity = introcs.Vector3(math.cos(0) * 0.25, 0, math.sin(0) * 0.25)
 
 
-
-
-
-
+            self.game_values['ball_velocity_x'] = self.ball_velocity.x
+            self.game_values['ball_velocity_z'] = self.ball_velocity.z
+            self.game_values['ball_position_x'] += self.game_values['ball_velocity_x']
+            self.game_values['ball_position_z'] += self.game_values['ball_velocity_z']
 
 
 
