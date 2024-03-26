@@ -95,15 +95,14 @@ class BasicCharacterControls {
     velocity.add(frameDecceleration);
 
     const controlObject = this._params.target;
-    const _Q = new THREE.Quaternion();
-    const _A = new THREE.Vector3();
     const _R = controlObject.quaternion.clone();
 
-    if (this._move.forward) {		
-		velocity.z += this._acceleration.z * timeInSeconds;
-	}
-    if (this._move.backward) {
-		velocity.z -= this._acceleration.z * timeInSeconds;
+    // Déplacer le personnage vers l'avant
+    if (this._move.forward) {
+        velocity.z += this._acceleration.z * timeInSeconds;
+    }    
+	if (this._move.Bossforward) {
+        velocity.z += this._acceleration.z * timeInSeconds;
     }
 
     controlObject.quaternion.copy(_R);
@@ -111,25 +110,14 @@ class BasicCharacterControls {
     const oldPosition = new THREE.Vector3();
     oldPosition.copy(controlObject.position);
 
-    const forward = new THREE.Vector3(0, 0, 0);
+    const forward = new THREE.Vector3(0, 0, 1);
     forward.applyQuaternion(controlObject.quaternion);
     forward.normalize();
-
-    const sideways = new THREE.Vector3(0, 0, 0);
-    sideways.applyQuaternion(controlObject.quaternion);
-    sideways.normalize();
-
-    sideways.multiplyScalar(velocity.x * timeInSeconds);
     forward.multiplyScalar(velocity.z * timeInSeconds);
 
     controlObject.position.add(forward);
-    controlObject.position.add(sideways);
-	// controlObject.position.set(this._initialePosition);
-
-    // oldPosition.copy(controlObject.position);
-  }
+	}
 }
-
 
 class LoadModelDemo {
   constructor() {
@@ -182,6 +170,8 @@ class LoadModelDemo {
 
     const controls = new OrbitControls(
       this._camera, this._threejs.domElement);
+	controls.minDistance = 10;
+	controls.maxDistance = 244;
     controls.target.set(0, 20, 0);
     controls.update();
 
@@ -226,23 +216,23 @@ class LoadModelDemo {
   _LoadTheBoss() {
     const loader = new FBXLoader();
     loader.setPath('./models/');
-    loader.load('TheBoss.fbx', (fbx) => {
-      fbx.scale.setScalar(0.1);
-      fbx.traverse(c => {
+    loader.load('TheBoss.fbx', (fbxBoss) => {
+      fbxBoss.scale.setScalar(0.1);
+      fbxBoss.traverse(c => {
         c.castShadow = true;
       });
 	  const offset = new THREE.Vector3(-17, -1.8, -140);
-	  fbx.position.copy(offset);
-      const params = {
-        target: fbx,
+	  fbxBoss.position.copy(offset);
+      const paramsBoss = {
+        target: fbxBoss,
         camera: this._camera,
       }
-      this._controls = new BasicCharacterControls(params);
+      this._controlsBoss = new BasicCharacterControls(paramsBoss);
 
 	  const anim = new FBXLoader();
       anim.setPath('./models/');
       anim.load('DrunkIdle.fbx', (anim) => {
-        let m = new THREE.AnimationMixer(fbx);
+        let m = new THREE.AnimationMixer(fbxBoss);
         this._mixers.push(m);
         BossIdle = m.clipAction(anim.animations[0]);
 		BossIdle.play();
@@ -250,34 +240,34 @@ class LoadModelDemo {
 	const Walkanim = new FBXLoader();
 	Walkanim.setPath('./models/');
 	Walkanim.load('DrunkRunForward.fbx', (Walkanim) => {
-		let RunAction = new THREE.AnimationMixer(fbx);
+		let RunAction = new THREE.AnimationMixer(fbxBoss);
 		this._mixers.push(RunAction);
 		BossRun = RunAction.clipAction(Walkanim.animations[0]);
 	});
-      	this._scene.add(fbx);
+      	this._scene.add(fbxBoss);
     });
   }
 
   _LoadTheCatch() {
     const loader = new FBXLoader();
     loader.setPath('./models/');
-    loader.load('Catch.fbx', (fbx) => {
-      fbx.scale.setScalar(0.1);
-      fbx.traverse(c => {
+    loader.load('Catch.fbx', (fbxCatch) => {
+      fbxCatch.scale.setScalar(0.1);
+      fbxCatch.traverse(c => {
         c.castShadow = true;
       });
 	  const offset = new THREE.Vector3(22, -2.5, -140);
-	  fbx.position.copy(offset);
-      const params = {
-        target: fbx,
+	  fbxCatch.position.copy(offset);
+      const paramsCatch = {
+        target: fbxCatch,
         camera: this._camera,
       }
-      this._controls = new BasicCharacterControls(params);
+      this._controlsCatch = new BasicCharacterControls(paramsCatch);
 
 	  const anim = new FBXLoader();
       anim.setPath('./models/');
       anim.load('DwarfIdle.fbx', (anim) => {
-        let m = new THREE.AnimationMixer(fbx);
+        let m = new THREE.AnimationMixer(fbxCatch);
         this._mixers.push(m);
         MexicanIdle = m.clipAction(anim.animations[0]);
 		MexicanIdle.play();
@@ -285,11 +275,11 @@ class LoadModelDemo {
 	const Walkanim = new FBXLoader();
 	Walkanim.setPath('./models/');
 	Walkanim.load('Run.fbx', (Walkanim) => {
-		let RunAction = new THREE.AnimationMixer(fbx);
+		let RunAction = new THREE.AnimationMixer(fbxCatch);
 		this._mixers.push(RunAction);
 		MexicanRun = RunAction.clipAction(Walkanim.animations[0]);
 	});
-      	this._scene.add(fbx);
+      	this._scene.add(fbxCatch);
     });
   }
 
@@ -319,9 +309,12 @@ class LoadModelDemo {
       this._mixers.map(m => m.update(timeElapsedS));
     }
 
-    if (this._controls) {
-      this._controls.Update(timeElapsedS);
-    }
+    if (this._controlsBoss) {
+		this._controlsBoss.Update(timeElapsedS);
+	}    
+	if (this._controlsCatch) {
+		this._controlsCatch.Update(timeElapsedS);
+	}
   }
 }
 
