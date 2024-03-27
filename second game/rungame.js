@@ -2,11 +2,8 @@ import * as THREE from 'three';
 import {FBXLoader} from 'three/addons/loaders/FBXLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-
-var MexicanRun = [];
-var MexicanIdle = [];
-var BossIdle = [];
-var BossRun = [];
+var BossAnimation = [];
+var MexicanAnimation = [];
 let LeftId;
 let RightId;
 let KeypressLeft = 0.1;
@@ -39,13 +36,13 @@ class BasicCharacterControls {
 	  switch (event.keyCode) {
 		  case 87: // w
 		  this._move.forward = true;
-		  if (MexicanRun) MexicanRun.play();
-		  if (MexicanIdle) MexicanIdle.stop();
+		  if (MexicanAnimation.Run) MexicanAnimation.Run.play();
+		  if (MexicanAnimation.Idle) MexicanAnimation.Idle.stop();
 		  break;
 		  case 38: // up
 		  this._move.Bossforward = true;
-		  if (BossRun) BossRun.play();
-		  if (BossIdle) BossIdle.stop();
+		  if (BossAnimation.Run) BossAnimation.Run.play();
+		  if (BossAnimation.Idle) BossAnimation.Idle.stop();
 		  break ;
 		  case 40: // down
 		  this._move.Bossbackward = true;
@@ -58,8 +55,8 @@ class BasicCharacterControls {
     switch(event.keyCode) {
       case 87: // w
 	  this._move.forward = false;
-	  if (MexicanIdle) MexicanIdle.play();
-	  if (MexicanRun) MexicanRun.stop();
+	  if (MexicanAnimation.Idle) MexicanAnimation.Idle.play();
+	  if (MexicanAnimation.Run) MexicanAnimation.Run.stop();
 	  KeypressLeft += 0.1;
 	  break ;
       case 83: // s
@@ -67,8 +64,8 @@ class BasicCharacterControls {
 	  break ;
       case 38: // up
 	  this._move.Bossforward = false;
-	  if (BossIdle) BossIdle.play();
-	  if (BossRun) BossRun.stop();
+	  if (BossAnimation.Idle) BossAnimation.Idle.play();
+	  if (BossAnimation.Run) BossAnimation.Run.stop();
 	  KeypressRight += 0.1;
 	  break ;
       case 40: // down
@@ -101,7 +98,29 @@ class BasicCharacterControls {
 	if (this.id === RightId && this._move.Bossforward) {
         velocity.z += this._acceleration.z * timeInSeconds + KeypressRight;
     }
+    if (controlObject.position.z >= 500 && this.id === LeftId) {
+        // Arrêter toutes les animations en cours
+        if (BossAnimation.Idle) BossAnimation.Idle.stop();
+        if (MexicanAnimation.Idle) MexicanAnimation.Idle.stop();
+        if (BossAnimation.Run) BossAnimation.Run.stop();
+        if (MexicanAnimation.Run) MexicanAnimation.Run.stop();
 
+        // Jouer une animation de victoire
+        if (MexicanAnimation.Win) MexicanAnimation.Win.play();
+		if (BossAnimation.Loose) BossAnimation.Loose.play();
+    }
+
+	if (controlObject.position.z >= 500 && this.id === RightId) {
+        // Arrêter toutes les animations en cours
+        if (BossAnimation.Idle) BossAnimation.Idle.stop();
+        if (MexicanAnimation.Idle) MexicanAnimation.Idle.stop();
+        if (BossAnimation.Run) BossAnimation.Run.stop();
+        if (MexicanAnimation.Run) MexicanAnimation.Run.stop();
+
+        // Jouer une animation de victoire
+        if (BossAnimation.Win) BossAnimation.Win.play();
+		if (MexicanAnimation.Loose) MexicanAnimation.Loose.play();
+    }
     controlObject.quaternion.copy(_R);
 
     const oldPosition = new THREE.Vector3(0, 0, 0);
@@ -226,38 +245,62 @@ class LoadModelDemo {
     const loader = new FBXLoader();
     loader.setPath('./models/');
     loader.load('TheBoss.fbx', (fbxBoss) => {
-      fbxBoss.scale.setScalar(0.1);
-      fbxBoss.traverse(c => {
-        c.castShadow = true;
-      });
-	  const offset = new THREE.Vector3(-17, -1.8, -740);
-	  fbxBoss.position.copy(offset);
-	  RightId = fbxBoss.id;
-      const paramsBoss = {
-        target: fbxBoss,
-		name: "boss",
-        camera: this._camera,
-      }
-      this._controlsBoss = new BasicCharacterControls(paramsBoss);
+        fbxBoss.scale.setScalar(0.1);
+        fbxBoss.traverse(c => {
+            c.castShadow = true;
+        });
+        const offset = new THREE.Vector3(-17, -1.8, -740);
+        fbxBoss.position.copy(offset);
+        RightId = fbxBoss.id;
+        const paramsBoss = {
+            target: fbxBoss,
+            name: "boss",
+            camera: this._camera,
+        }
+        this._controlsBoss = new BasicCharacterControls(paramsBoss);
 
-	  const anim = new FBXLoader();
-      anim.setPath('./models/');
-      anim.load('DrunkIdle.fbx', (anim) => {
-        let m = new THREE.AnimationMixer(fbxBoss);
-        this._mixers.push(m);
-        BossIdle = m.clipAction(anim.animations[0]);
-		BossIdle.play();
-	});
-	const Walkanim = new FBXLoader();
-	Walkanim.setPath('./models/');
-	Walkanim.load('DrunkRunForward.fbx', (Walkanim) => {
-		let RunAction = new THREE.AnimationMixer(fbxBoss);
-		this._mixers.push(RunAction);
-		BossRun = RunAction.clipAction(Walkanim.animations[0]);
-	});
-      	this._scene.add(fbxBoss);
+        const animationsLoader = new FBXLoader();
+        animationsLoader.setPath('./models/');
+
+        // Charger toutes les animations nécessaires dans une variable
+        animationsLoader.load('DrunkIdle.fbx', (animations) => {
+            let mixer = new THREE.AnimationMixer(fbxBoss);
+            this._mixers.push(mixer);
+            BossAnimation = {
+                Idle: mixer.clipAction(animations.animations[0]),
+                Run: null,
+                Win: null,
+                Loose: null
+            };
+            BossAnimation.Idle.play();
+        });
+
+        animationsLoader.load('DrunkRunForward.fbx', (animations) => {
+            let mixer = new THREE.AnimationMixer(fbxBoss);
+            this._mixers.push(mixer);
+            BossAnimation.Run = mixer.clipAction(animations.animations[0]);
+        });
+
+        animationsLoader.load('Twerk.fbx', (animations) => {
+            let mixer = new THREE.AnimationMixer(fbxBoss);
+            this._mixers.push(mixer);
+            BossAnimation.Win = mixer.clipAction(animations.animations[0]);
+        });
+
+        animationsLoader.load('LooseBoss.fbx', (animations) => {
+            let mixer = new THREE.AnimationMixer(fbxBoss);
+            this._mixers.push(mixer);
+            BossAnimation.Lose = mixer.clipAction(animations.animations[0]);
+            BossAnimation.Lose.setLoop(THREE.LoopOnce);
+            BossAnimation.Lose.timeScale = 1;
+            BossAnimation.Lose.loop = THREE.LoopOnce;
+            BossAnimation.Lose.clampWhenFinished = true;
+        });
+
+        this._scene.add(fbxBoss);
     });
-  }
+}
+
 
   _LoadTheCatch() {
     const loader = new FBXLoader();
@@ -275,26 +318,48 @@ class LoadModelDemo {
 		name: "chupa",
         camera: this._camera,
       }
-      this._controlsCatch = new BasicCharacterControls(paramsCatch);
+    this._controlsCatch = new BasicCharacterControls(paramsCatch);
+	const animationsLoader = new FBXLoader();
+	animationsLoader.setPath('./models/');
 
-	  const anim = new FBXLoader();
-      anim.setPath('./models/');
-      anim.load('DwarfIdle.fbx', (anim) => {
-        let m = new THREE.AnimationMixer(fbxCatch);
-        this._mixers.push(m);
-        MexicanIdle = m.clipAction(anim.animations[0]);
-		MexicanIdle.play();
+	// Charger toutes les animations nécessaires dans une variable
+	animationsLoader.load('DrunkIdle.fbx', (animations) => {
+		let mixer = new THREE.AnimationMixer(fbxCatch);
+		this._mixers.push(mixer);
+		MexicanAnimation = {
+			Idle: mixer.clipAction(animations.animations[0]),
+			Run: null,
+			Win: null,
+			Loose: null
+		};
+		MexicanAnimation.Idle.play();
 	});
-	const Walkanim = new FBXLoader();
-	Walkanim.setPath('./models/');
-	Walkanim.load('Run.fbx', (Walkanim) => {
-		let RunAction = new THREE.AnimationMixer(fbxCatch);
-		this._mixers.push(RunAction);
-		MexicanRun = RunAction.clipAction(Walkanim.animations[0]);
+
+	animationsLoader.load('DrunkRunForward.fbx', (animations) => {
+		let mixer = new THREE.AnimationMixer(fbxCatch);
+		this._mixers.push(mixer);
+		MexicanAnimation.Run = mixer.clipAction(animations.animations[0]);
 	});
-      	this._scene.add(fbxCatch);
-    });
-  }
+
+	animationsLoader.load('Twerk.fbx', (animations) => {
+		let mixer = new THREE.AnimationMixer(fbxCatch);
+		this._mixers.push(mixer);
+		MexicanAnimation.Win = mixer.clipAction(animations.animations[0]);
+	});
+
+	animationsLoader.load('Failing.fbx', (animations) => {
+		let mixer = new THREE.AnimationMixer(fbxCatch);
+		this._mixers.push(mixer);
+		MexicanAnimation.Loose = mixer.clipAction(animations.animations[0]);
+		MexicanAnimation.Loose.setLoop(THREE.LoopOnce);
+		MexicanAnimation.Loose.timeScale = 1;
+		MexicanAnimation.Loose.loop = THREE.LoopOnce;
+		MexicanAnimation.Loose.clampWhenFinished = true;
+	});
+
+	this._scene.add(fbxCatch);
+	});
+}
 
   _OnWindowResize() {
     this._camera.aspect = window.innerWidth / window.innerHeight;
