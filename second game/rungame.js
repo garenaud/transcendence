@@ -49,8 +49,6 @@ class BasicCharacterControls {
 		  break ;
 		  case 40: // down
 		  this._move.Bossbackward = true;
-		  if (BossRun) BossRun.play();
-		  if (BossIdle) BossIdle.stop();
 		  break ;
 		  
 		}
@@ -65,7 +63,6 @@ class BasicCharacterControls {
 	  KeypressLeft += 0.1;
 	  break ;
       case 83: // s
-	  console.log('DOWN');
 	  KeypressLeft += 0.1;
 	  break ;
       case 38: // up
@@ -75,9 +72,6 @@ class BasicCharacterControls {
 	  KeypressRight += 0.1;
 	  break ;
       case 40: // down
-	  this._move.Bossbackward = false;
-	  if (BossIdle) BossIdle.play();
-	  if (BossRun) BossRun.stop();
 	  KeypressRight += 0.1;
 	  break ;
     }
@@ -182,14 +176,13 @@ class LoadModelDemo {
 
     const controls = new OrbitControls(
       this._camera, this._threejs.domElement);
-	controls.listenToKeyEvents(this._threejs.domElement);
 	controls.minDistance = 10;
 	controls.maxDistance = 244;
     controls.target.set(0, 20, 0);
     controls.update();
 
     const loader = new THREE.CubeTextureLoader();
-    const texture = loader.load([
+    const backgroundtexture = loader.load([
         './skybox/posx.jpg',
         './skybox/negx.jpg',
         './skybox/posy.jpg',
@@ -197,19 +190,22 @@ class LoadModelDemo {
         './skybox/posz.jpg',
         './skybox/negz.jpg',
     ]);
-    this._scene.background = texture;
+
+	// const cubeMaterial = new THREE.MeshStandardMaterial({
+		// map: backgroundtexture,
+	// });
+
+	// const cubeGeometry = new THREE.BoxGeometry(2000, 2000, 2000);
+	// const cubeMesh = new THREE.Mesh(cubeGeometry, cubeMaterial);
+	// this._scene.add(cubeMesh);
+    this._scene.background = backgroundtexture;
 
 	
 
 	const textureLoader = new THREE.TextureLoader();
 	textureLoader.load( './skybox/Field.png', (texture) => {
-		const material = new THREE.MeshStandardMaterial({
-			map: texture, // Application de la texture au matériau
-		});
-		const plane = new THREE.Mesh(
-			new THREE.PlaneGeometry(100, 300, 10),
-			material
-			);
+		const material = new THREE.MeshStandardMaterial({ map: texture, });
+		const plane = new THREE.Mesh( new THREE.PlaneGeometry(100, 1500, 10), material);
 			plane.castShadow = false;
 			plane.receiveShadow = true;
 			plane.rotation.x = -Math.PI / 2;
@@ -234,7 +230,7 @@ class LoadModelDemo {
       fbxBoss.traverse(c => {
         c.castShadow = true;
       });
-	  const offset = new THREE.Vector3(-17, -1.8, -140);
+	  const offset = new THREE.Vector3(-17, -1.8, -740);
 	  fbxBoss.position.copy(offset);
 	  RightId = fbxBoss.id;
       const paramsBoss = {
@@ -271,7 +267,7 @@ class LoadModelDemo {
       fbxCatch.traverse(c => {
         c.castShadow = true;
       });
-	  const offset = new THREE.Vector3(22, -2.5, -140);
+	  const offset = new THREE.Vector3(22, -2.5, -740);
 	  fbxCatch.position.copy(offset);
 	  LeftId = fbxCatch.id;
       const paramsCatch = {
