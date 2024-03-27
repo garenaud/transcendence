@@ -1,7 +1,7 @@
 mod pong;
 mod login;
 use std::io;
-use tokio;
+// use tokio;
 
 fn main() {
 	println!("Welcome to T_BOOL TRANSCENDENCE !");
@@ -23,5 +23,5 @@ fn main() {
 		eprintln!("user's login failed, exiting...");
 		return ;
 	}
-	pong::game();
+	// pong::game();
 }

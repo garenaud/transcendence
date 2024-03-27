@@ -1,12 +1,8 @@
-// Use to handle the user's input in an other thread
-use std::thread;
 use ncurses::*;
 
-use tokio_native_tls::TlsConnector;
-// Use to handle the websocket
+// use tokio_native_tls::TlsConnector;	
 // use url::Url;
-use tokio_tungstenite::tungstenite::{connect, Message};
-use websocket::*;
+// use tokio_tungstenite::tungstenite::{connect, Message};
 
 /*
 ** TAILLE ELEMENTS:
@@ -35,19 +31,16 @@ pub fn game() {
 	// 	}
 	// }
 
-
 	/* SERVER NOT OK WITH THAT (Request seems to be crypted) */
-	let connector = native_tls::TlsConnector::new().unwrap();
-	let websocket = match ClientBuilder::new("ws://localhost/ws/game/").unwrap().connect_secure(Some(connector)) {
-		Ok(s) => s,
-		Err(e) => {
-			eprintln!("{}", e);
-			return ;
-		}
-	};
+	// let connector = native_tls::TlsConnector::new().unwrap();
+	// let websocket = match ClientBuilder::new("ws://localhost/ws/game/").unwrap().connect_secure(Some(connector)) {
+	// 	Ok(s) => s,
+	// 	Err(e) => {
+	// 		eprintln!("{}", e);
+	// 		return ;
+	// 	}
+	// };
 	// let (mut receiver, mut sender) = websocket.split().unwrap();
-
-
 
 
 	// Read from command line and send messages
