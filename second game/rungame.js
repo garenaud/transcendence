@@ -341,7 +341,7 @@ class LoadModelDemo {
 		MexicanAnimation.Run = mixer.clipAction(animations.animations[0]);
 	});
 
-	animationsLoader.load('Twerk.fbx', (animations) => {
+	animationsLoader.load('Breakdance.fbx', (animations) => {
 		let mixer = new THREE.AnimationMixer(fbxCatch);
 		this._mixers.push(mixer);
 		MexicanAnimation.Win = mixer.clipAction(animations.animations[0]);
