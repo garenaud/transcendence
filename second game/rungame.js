@@ -12,6 +12,7 @@ class BasicCharacterControls {
   constructor(params) {
     this._Init(params);
 	this._initialePosition = params.target.position.clone();
+	this.id = params.target.id;
   }
 
   _Init(params) {
@@ -95,19 +96,20 @@ class BasicCharacterControls {
     velocity.add(frameDecceleration);
 
     const controlObject = this._params.target;
+	console.log(controlObject);
     const _R = controlObject.quaternion.clone();
 
     // Déplacer le personnage vers l'avant
-    if (this._move.forward) {
+    if (this.id === 844 && this._move.forward) {
         velocity.z += this._acceleration.z * timeInSeconds;
     }    
-	if (this._move.Bossforward) {
+	if (this.id === 17 && this._move.Bossforward) {
         velocity.z += this._acceleration.z * timeInSeconds;
     }
 
     controlObject.quaternion.copy(_R);
 
-    const oldPosition = new THREE.Vector3();
+    const oldPosition = new THREE.Vector3(0, 0, 0);
     oldPosition.copy(controlObject.position);
 
     const forward = new THREE.Vector3(0, 0, 1);
@@ -115,7 +117,16 @@ class BasicCharacterControls {
     forward.normalize();
     forward.multiplyScalar(velocity.z * timeInSeconds);
 
+	const oldPositionBoss = new THREE.Vector3(0, 0, 0);
+    oldPositionBoss.copy(controlObject.position);
+
+    const Bossforward = new THREE.Vector3(0, 0, 1);
+    Bossforward.applyQuaternion(controlObject.quaternion);
+    Bossforward.normalize();
+    Bossforward.multiplyScalar(velocity.z * timeInSeconds);
+
     controlObject.position.add(forward);
+    controlObject.position.add(Bossforward);
 	}
 }
 
@@ -225,6 +236,7 @@ class LoadModelDemo {
 	  fbxBoss.position.copy(offset);
       const paramsBoss = {
         target: fbxBoss,
+		name: "boss",
         camera: this._camera,
       }
       this._controlsBoss = new BasicCharacterControls(paramsBoss);
@@ -260,6 +272,7 @@ class LoadModelDemo {
 	  fbxCatch.position.copy(offset);
       const paramsCatch = {
         target: fbxCatch,
+		name: "chupa",
         camera: this._camera,
       }
       this._controlsCatch = new BasicCharacterControls(paramsCatch);
