@@ -7,6 +7,10 @@ var MexicanRun = [];
 var MexicanIdle = [];
 var BossIdle = [];
 var BossRun = [];
+let LeftId;
+let RightId;
+let KeypressLeft = 0.1;
+let KeypressRight = 0.1;
 
 class BasicCharacterControls {
   constructor(params) {
@@ -38,11 +42,6 @@ class BasicCharacterControls {
 		  if (MexicanRun) MexicanRun.play();
 		  if (MexicanIdle) MexicanIdle.stop();
 		  break;
-		  case 83: // s
-		  this._move.backward = true;
-		  if (MexicanRun) MexicanRun.play();
-		  if (MexicanIdle) MexicanIdle.stop();
-		  break;
 		  case 38: // up
 		  this._move.Bossforward = true;
 		  if (BossRun) BossRun.play();
@@ -63,21 +62,23 @@ class BasicCharacterControls {
 	  this._move.forward = false;
 	  if (MexicanIdle) MexicanIdle.play();
 	  if (MexicanRun) MexicanRun.stop();
+	  KeypressLeft += 0.1;
 	  break ;
       case 83: // s
-	  this._move.backward = false;
-	  if (MexicanIdle) MexicanIdle.play();
-	  if (MexicanRun) MexicanRun.stop();
+	  console.log('DOWN');
+	  KeypressLeft += 0.1;
 	  break ;
       case 38: // up
 	  this._move.Bossforward = false;
 	  if (BossIdle) BossIdle.play();
 	  if (BossRun) BossRun.stop();
+	  KeypressRight += 0.1;
 	  break ;
       case 40: // down
 	  this._move.Bossbackward = false;
 	  if (BossIdle) BossIdle.play();
 	  if (BossRun) BossRun.stop();
+	  KeypressRight += 0.1;
 	  break ;
     }
   }
@@ -96,15 +97,15 @@ class BasicCharacterControls {
     velocity.add(frameDecceleration);
 
     const controlObject = this._params.target;
-	console.log(controlObject);
+		// console.log(controlObject.id);
     const _R = controlObject.quaternion.clone();
 
     // Déplacer le personnage vers l'avant
-    if (this.id === 844 && this._move.forward) {
-        velocity.z += this._acceleration.z * timeInSeconds;
+    if (this.id === LeftId && this._move.forward) {
+        velocity.z += this._acceleration.z * timeInSeconds + KeypressLeft;
     }    
-	if (this.id === 17 && this._move.Bossforward) {
-        velocity.z += this._acceleration.z * timeInSeconds;
+	if (this.id === RightId && this._move.Bossforward) {
+        velocity.z += this._acceleration.z * timeInSeconds + KeypressRight;
     }
 
     controlObject.quaternion.copy(_R);
@@ -181,6 +182,7 @@ class LoadModelDemo {
 
     const controls = new OrbitControls(
       this._camera, this._threejs.domElement);
+	controls.listenToKeyEvents(this._threejs.domElement);
 	controls.minDistance = 10;
 	controls.maxDistance = 244;
     controls.target.set(0, 20, 0);
@@ -234,6 +236,7 @@ class LoadModelDemo {
       });
 	  const offset = new THREE.Vector3(-17, -1.8, -140);
 	  fbxBoss.position.copy(offset);
+	  RightId = fbxBoss.id;
       const paramsBoss = {
         target: fbxBoss,
 		name: "boss",
@@ -270,6 +273,7 @@ class LoadModelDemo {
       });
 	  const offset = new THREE.Vector3(22, -2.5, -140);
 	  fbxCatch.position.copy(offset);
+	  LeftId = fbxCatch.id;
       const paramsCatch = {
         target: fbxCatch,
 		name: "chupa",
