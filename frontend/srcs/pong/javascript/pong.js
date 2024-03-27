@@ -58,7 +58,7 @@ const gameSocket = new WebSocket(
 	+ '/ws/'
 	+ 'game'
 	+ '/'
-	+ 'salut'
+	+ makeid(5)
 	+ '/'
 );
 
@@ -207,6 +207,18 @@ function handleKeyDown(event) {
 		{
 			gameSocket.send(JSON.stringify({
 			'message' : 'Stop'
+			}));
+		}
+		else if (event.code == 'KeyW')
+		{
+			gameSocket.send(JSON.stringify({
+			'message' : 'W'
+			}));
+		}
+		else if (event.code == 'KeyS')
+		{
+			gameSocket.send(JSON.stringify({
+			'message' : 'S'
 			}));
 		}
 	//}
@@ -425,6 +437,7 @@ function update_game_data() {
 	PaddleRight.position.x = parseFloat(game_data.paddleright_position_x);
 	PaddleRight.position.z = parseFloat(game_data.paddleright_position_z);
 	PaddleLeft.position.x = parseFloat(game_data.paddleleft_position_x);
+	PaddleLeft.position.z = parseFloat(game_data.paddleleft_position_z);
 	//PaddleLeft.position.z = parseFloat(game_data.paddleleft_position_z);
 	ball.position.x = parseFloat(game_data.ball_position_x);
 	ball.position.z = parseFloat(game_data.ball_position_z);

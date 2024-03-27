@@ -21,5 +21,6 @@ class Games(models.Model):
 	scoreright = models.IntegerField(default=0)
 	p1_score = models.IntegerField(default=0)
 	p2_score = models.IntegerField(default=0)
+	room_group_name = models.CharField(max_length=20, default="")
 	def __str__(self):
 		return self.code

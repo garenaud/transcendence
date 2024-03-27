@@ -8,8 +8,9 @@ import threading
 from database.models import Games
 from django.contrib.auth.models import User
 import channels.layers
-from asgiref.sync import async_to_sync
+from asgiref.sync import async_to_sync, sync_to_async
 import random
+from channels.db import database_sync_to_async
 
 channel_layer = channels.layers.get_channel_layer()
 
@@ -73,14 +74,30 @@ class ChatConsumer(WebsocketConsumer):
 
 class AsyncGameConsumer(AsyncWebsocketConsumer):
     
+    def getGame(self):
+        return Games.objects.filter(id=1).count()
+
     async def connect(self):
-        self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
-        self.room_group_name = f"game_{self.room_name}"
+        game = await sync_to_async(self.getGame)()
+        await sync_to_async(print)(game)
+        if game == 0:
+            print("ratio")
+            self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
+            self.room_group_name = f"game_{self.room_name}"
+            game = async_to_sync(Games)(room_group_name=self.room_group_name)
+            sync_to_async(game.save)()
+            self.playernb = 1
+        else:
+            game = await sync_to_async(Games.objects.get)(id=1)
+            self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
+            self.room_group_name = game.room_group_name
+            self.playernb = 2
+
+
         await self.channel_layer.group_add(
             self.room_group_name,
             self.channel_name
         )
-
         self.game_values = {
             'p1_id' : 1,
             'p2_id' : -1,
@@ -104,7 +121,8 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
         }
         self.ball_velocity = introcs.Vector3(math.cos(0) * 0.25, 0, math.sin(0) * 0.25)
         await self.accept()
-        threading.Thread(target=self.loop).start()
+        if self.playernb == 1:
+            threading.Thread(target=self.loop).start()
 
     def loop(self):
         while True:
@@ -176,6 +194,7 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
         self.channel_layer.group_discard(
             self.room_group_name, self.channel_name
         )
+        self.game_values = {}
 
     async def receive(self, text_data):
         jsondata = json.loads(text_data)
@@ -184,6 +203,10 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             self.game_values['paddleright_position_z'] -= self.game_values['move_speed']
         elif message == 'Down' and self.game_values['paddleright_position_z'] + self.game_values['move_speed'] < 6.5:
             self.game_values['paddleright_position_z'] += self.game_values['move_speed']
+        if message == 'W' and self.game_values['paddleleft_position_z'] - self.game_values['move_speed'] > -6.5:
+            self.game_values['paddleleft_position_z'] -= self.game_values['move_speed']
+        elif message == 'S' and self.game_values['paddleleft_position_z'] + self.game_values['move_speed'] < 6.5:
+            self.game_values['paddleleft_position_z'] += self.game_values['move_speed']
         await self.channel_layer.group_send(
             self.room_group_name,
             {"type": "update", "message": self.game_values}
