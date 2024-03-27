@@ -108,7 +108,7 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
 
     def loop(self):
         while True:
-            time.sleep(0.2)
+            time.sleep(0.02)
             ball_radius = self.game_values['ball_radius']
             paddle_size_x = 0.20000000298023224
             paddle_size_z = 3.1

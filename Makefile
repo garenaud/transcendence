@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: kistod <kistod@student.42.fr>              +#+  +:+       +#+         #
+#    By: afrigger <afrigger@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/02/22 11:53:18 by vgroux            #+#    #+#              #
-#    Updated: 2024/03/26 13:51:37 by kistod           ###   ########.fr        #
+#    Updated: 2024/03/27 12:08:10 by afrigger         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -35,14 +35,14 @@ clean:
 	docker image prune -a
 	docker-compose -f ./docker-compose.yml down
 
-fclean: clean
+fclean: clean vol
 	docker system prune -a --volumes
 	
 vol:
-	docker volume rm web42_backend
-	docker volume rm web42_db
-	docker volume rm web42_frontend
-	sudo rm -rf ~/data
+	docker volume rm ft_transcendence_backend
+	docker volume rm ft_transcendence_db
+	docker volume rm ft_transcendence_frontend
+	rm -rf ~/data
 
 re: fclean
 	docker-compose -f ./docker-compose.yml up -d --build
