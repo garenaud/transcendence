@@ -7,6 +7,7 @@ var MexicanAnimation = [];
 let LeftId;
 let RightId;
 let KeypressLeft = 0.1;
+let finished = false;
 let KeypressRight = 0.1;
 
 class BasicCharacterControls {
@@ -33,6 +34,7 @@ class BasicCharacterControls {
   }
 
   _onKeyDown(event) {
+	if (!finished) {
 	  switch (event.keyCode) {
 		  case 87: // w
 		  this._move.forward = true;
@@ -50,29 +52,32 @@ class BasicCharacterControls {
 		  
 		}
 	}
+}
 	
 	_onKeyUp(event) {
-    switch(event.keyCode) {
-      case 87: // w
-	  this._move.forward = false;
-	  if (MexicanAnimation.Idle) MexicanAnimation.Idle.play();
-	  if (MexicanAnimation.Run) MexicanAnimation.Run.stop();
-	  KeypressLeft += 0.1;
-	  break ;
-      case 83: // s
-	  KeypressLeft += 0.1;
-	  break ;
-      case 38: // up
-	  this._move.Bossforward = false;
-	  if (BossAnimation.Idle) BossAnimation.Idle.play();
-	  if (BossAnimation.Run) BossAnimation.Run.stop();
-	  KeypressRight += 0.1;
-	  break ;
-      case 40: // down
-	  KeypressRight += 0.1;
-	  break ;
-    }
-  }
+	if (!finished) {
+		switch(event.keyCode) {
+		case 87: // w
+		this._move.forward = false;
+		if (MexicanAnimation.Idle) MexicanAnimation.Idle.play();
+		if (MexicanAnimation.Run) MexicanAnimation.Run.stop();
+		KeypressLeft += 0.1;
+		break ;
+		case 83: // s
+		KeypressLeft += 0.1;
+		break ;
+		case 38: // up
+		this._move.Bossforward = false;
+		if (BossAnimation.Idle) BossAnimation.Idle.play();
+		if (BossAnimation.Run) BossAnimation.Run.stop();
+		KeypressRight += 0.1;
+		break ;
+		case 40: // down
+		KeypressRight += 0.1;
+		break ;
+    	}
+	}
+}
 
   Update(timeInSeconds) {
     const velocity = this._velocity;
@@ -92,13 +97,13 @@ class BasicCharacterControls {
     const _R = controlObject.quaternion.clone();
 
     // Déplacer le personnage vers l'avant
-    if (this.id === LeftId && this._move.forward) {
+    if (this.id === LeftId && this._move.forward && controlObject.position.z < 500) {
         velocity.z += this._acceleration.z * timeInSeconds + KeypressLeft;
     }    
-	if (this.id === RightId && this._move.Bossforward) {
+	if (this.id === RightId && this._move.Bossforward && controlObject.position.z < 500) {
         velocity.z += this._acceleration.z * timeInSeconds + KeypressRight;
     }
-    if (controlObject.position.z >= 500 && this.id === LeftId) {
+    if (controlObject.position.z >= 500 && this.id === LeftId && finished === false) {
         // Arrêter toutes les animations en cours
         if (BossAnimation.Idle) BossAnimation.Idle.stop();
         if (MexicanAnimation.Idle) MexicanAnimation.Idle.stop();
@@ -108,9 +113,10 @@ class BasicCharacterControls {
         // Jouer une animation de victoire
         if (MexicanAnimation.Win) MexicanAnimation.Win.play();
 		if (BossAnimation.Loose) BossAnimation.Loose.play();
+		finished = true;
     }
 
-	if (controlObject.position.z >= 500 && this.id === RightId) {
+	if (controlObject.position.z >= 500 && this.id === RightId && finished === false) {
         // Arrêter toutes les animations en cours
         if (BossAnimation.Idle) BossAnimation.Idle.stop();
         if (MexicanAnimation.Idle) MexicanAnimation.Idle.stop();
@@ -120,6 +126,7 @@ class BasicCharacterControls {
         // Jouer une animation de victoire
         if (BossAnimation.Win) BossAnimation.Win.play();
 		if (MexicanAnimation.Loose) MexicanAnimation.Loose.play();
+		finished = true;
     }
     controlObject.quaternion.copy(_R);
 
@@ -193,12 +200,12 @@ class LoadModelDemo {
     light = new THREE.AmbientLight(0xFFFFFF, 1.6);
     this._scene.add(light);
 
-    const controls = new OrbitControls(
-      this._camera, this._threejs.domElement);
-	controls.minDistance = 10;
-	controls.maxDistance = 244;
-    controls.target.set(0, 20, 0);
-    controls.update();
+    // const controls = new OrbitControls(
+    //   this._camera, this._threejs.domElement);
+	// controls.minDistance = 10;
+	// controls.maxDistance = 244;
+    // controls.target.set(0, 20, 0);
+    // controls.update();
 
     const loader = new THREE.CubeTextureLoader();
     const backgroundtexture = loader.load([
@@ -209,14 +216,6 @@ class LoadModelDemo {
         './skybox/posz.jpg',
         './skybox/negz.jpg',
     ]);
-
-	// const cubeMaterial = new THREE.MeshStandardMaterial({
-		// map: backgroundtexture,
-	// });
-
-	// const cubeGeometry = new THREE.BoxGeometry(2000, 2000, 2000);
-	// const cubeMesh = new THREE.Mesh(cubeGeometry, cubeMaterial);
-	// this._scene.add(cubeMesh);
     this._scene.background = backgroundtexture;
 
 	
@@ -290,11 +289,11 @@ class LoadModelDemo {
         animationsLoader.load('LooseBoss.fbx', (animations) => {
             let mixer = new THREE.AnimationMixer(fbxBoss);
             this._mixers.push(mixer);
-            BossAnimation.Lose = mixer.clipAction(animations.animations[0]);
-            BossAnimation.Lose.setLoop(THREE.LoopOnce);
-            BossAnimation.Lose.timeScale = 1;
-            BossAnimation.Lose.loop = THREE.LoopOnce;
-            BossAnimation.Lose.clampWhenFinished = true;
+            BossAnimation.Loose = mixer.clipAction(animations.animations[0]);
+            BossAnimation.Loose.setLoop(THREE.LoopOnce);
+            BossAnimation.Loose.timeScale = 1;
+            BossAnimation.Loose.loop = THREE.LoopOnce;
+            BossAnimation.Loose.clampWhenFinished = true;
         });
 
         this._scene.add(fbxBoss);
@@ -393,6 +392,27 @@ class LoadModelDemo {
 	if (this._controlsCatch) {
 		this._controlsCatch.Update(timeElapsedS);
 	}
+	let targetPosition = new THREE.Vector3();
+
+	if (this._controlsCatch && this._controlsBoss) {
+		// Calculer la moyenne des positions des deux personnages
+		targetPosition.addVectors(this._controlsCatch._params.target.position, this._controlsBoss._params.target.position);
+		targetPosition.divideScalar(2); // Diviser par 2 pour obtenir la moyenne
+	} else if (this._controlsCatch) {
+		targetPosition.copy(this._controlsCatch._params.target.position); // Utiliser la position du personnage de gauche
+	} else if (this._controlsBoss) {
+		targetPosition.copy(this._controlsBoss._params.target.position); // Utiliser la position du personnage de droite
+	}
+
+	// Définir l'offset de la caméra par rapport à la position moyenne des personnages
+	const cameraOffset = new THREE.Vector3(0, 100, -200);
+
+	// Calculer la nouvelle position de la caméra en ajoutant l'offset à la position cible moyenne des personnages
+	const newCameraPosition = targetPosition.clone().add(cameraOffset);
+
+	// Définir la position et l'orientation de la caméra
+	this._camera.position.copy(newCameraPosition);
+	this._camera.lookAt(targetPosition);
   }
 }
 
