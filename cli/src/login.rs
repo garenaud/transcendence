@@ -3,7 +3,7 @@ use std::io::Write;
 // use websocket::sync::Client;	
 use std::time::Duration;
 
-pub fn login() -> bool {
+pub fn login(srv: String) -> bool {
 	print!("Login: ");
 	let _ = std::io::stdout().flush();
 
@@ -25,10 +25,10 @@ pub fn login() -> bool {
 	// 		return false;
 	// 	}
 	// };
-	return connection(login, password);
+	return connection(srv, login, password);
 }
 
-fn connection(login: String, password: String) -> bool {
+fn connection(srv: String, login: String, password: String) -> bool {
 	// todo!("connection to the server");
 	let client = reqwest::blocking::Client::builder()
 		.danger_accept_invalid_certs(true)
@@ -41,23 +41,65 @@ fn connection(login: String, password: String) -> bool {
 			return false;
 		}
 	};
-
-	let req = client
-		.post("https://localhost/auth/test")
+	let crsf = client.get("https://{server}/api/userlist".replace("{server}", &srv))
 		.header("User-Agent", "cli_rust")
 		.header("Accept", "application/json")
-		.body("email={email}&password={password}".replace("{email}", &login).replace("{password}", &password))
+		.header("csrftoken", "Fetch")
 		.timeout(Duration::from_secs(3));
 
-	// let req = match res.build
-	let res = client.execute(req.build().expect("ERROR WHILE BUILDING THE REQUEST"));
+	let crsf = crsf.build();
+	println!("Request = {:?}", crsf);
+
+	let res_csrf = client.execute(crsf.expect("ERROR WHILE BUILDING THE REQUEST"));
+	let csrf = match res_csrf {
+		Ok(res) => {
+			if res.status().is_success() {
+				
+				println!("Repond is: {:#?}", res);
+				// println!("Headers: {:#?}", res.headers());
+				// println!("Cookies: {:#?}", res.cookies());
+				println!("Body: {:#?}", res.text());
+
+				// if res.headers().get("X-CSRF-Token").is_none() {
+				// 	eprintln!("No CSRF-Token in the header");
+				// 	return false;
+				// }
+				// let csrf = res.headers().get("X-CSRF-Token").unwrap();
+				// csrf.to_str().unwrap().to_string()
+			} else {
+				eprintln!("Respond status code: {:#?}", res.status());
+				return false;
+			}
+		},
+		Err(err) => {
+			eprintln!("Error in respond: {:#?}", err);
+			return false;
+		}
+	};
+	println!("CSRF = {:?}", csrf);
+
+
+	let req = client
+		.post(("https://{server}/auth/test/").replace("{server}", &srv))
+		// .get(("https://{server}/api/userlist").replace("{server}", &srv))
+		.header("User-Agent", "cli_rust")
+		.header("Accept", "application/json")
+		.body(("email={email}&password={password}").replace("{email}", &login).replace("{password}", &password))
+		.timeout(Duration::from_secs(3));
+
+	let req = req.build().expect("ERROR WHILE BUILDING THE REQUEST");
+	let res = client.execute(req);
 
 	match res {
 		Ok(res) => {
-			println!("Repond is: {:?}", res);
+			println!("Repond is: {:#?}", res);
+			if !res.status().is_success() {
+				eprintln!("Respond status code: {:#?}", res.status());
+				return false;
+			}
 		},
 		Err(err) => {
-			eprintln!("Error in respond: {:?}", err);
+			eprintln!("Error in respond: {:#?}", err);
 			return false;
 		}
 	}
