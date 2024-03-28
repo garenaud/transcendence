@@ -3,7 +3,7 @@ import { renderNavbar } from './navbar.js';
 import { renderHero } from './hero.js';
 import { renderGame } from './game.js';
 import { renderChat } from './chat.js';
-import { renderRoulette, setupRoulette } from './roulette.js';
+import { renderRoulette, setupRoulette, runRoulette } from './roulette.js';
 import { renderLogin } from './login.js';
 import { renderBlackJack } from './BlackJack.js';
 import { renderUserMenu } from './userMenu.js';
@@ -13,6 +13,7 @@ export let appState = {
     currentView: 'login',
     user: null,
     users: [],
+    renderedComponents: {},
 };
 
 function renderDiv(components, className) {
@@ -25,60 +26,75 @@ function renderDiv(components, className) {
 }
 
 export function changeView(newView) {
-    history.pushState({ view: newView }, "", newView);
+    location.hash = newView;
     appState.currentView = newView;
+    localStorage.setItem('appState', JSON.stringify(appState));
     renderApp();
 }
 
-window.addEventListener("popstate", function(event) {
-    if (event.state) {
-        appState.currentView = event.state.view;
-        renderApp();
-    }
+window.addEventListener("hashchange", function() {
+    appState.currentView = location.hash.substring(1);
+    renderApp();
 });
 
 export function getCurrentView() {
     return appState.currentView;
 }
 
-/* loadUser().then(() => {
-    renderApp();
-}); */
-
 export async function renderApp() {
+    const savedState = localStorage.getItem('appState');
+    if (savedState) {
+        appState = JSON.parse(savedState);
+    } else {
+        const view = window.location.pathname.substring(1);
+        appState.currentView = ['login', 'hero', 'game', 'chat'].includes(view) ? view : 'login';
+    }
+    if (!appState.renderedComponents) {
+        appState.renderedComponents = {};
+    }
     document.body.innerHTML = '';
     switch(appState.currentView) {
         case 'login':
             renderLogin();
             break;
         default:
-            await loadUser();
+            if (!appState.user) {
+                await loadUser();
+            }
             switch(appState.currentView) {
                 case 'hero':
-                    renderRoulette();
-                    await renderHero();
-                    console.log('appState.user hero:', getUser());
-                    renderNavbar(getUser());
+                    if (!appState.renderedComponents.hero) {
+                        await renderHero();
+                        appState.renderedComponents.hero = true;
+                    }
+                    if (!appState.renderedComponents.navbar) {
+                        renderNavbar(appState.user);
+                        appState.renderedComponents.navbar = true;
+                    }
                     break;
                 case 'game':
                     const game = await renderGame();
+                    const game2 = await renderGame();
                     const roulette = await renderRoulette();
                     const BlackJack = await renderBlackJack();
                     const test = await renderBlackJack();
                     const test2 = await renderRoulette();
                     const test3 = await renderRoulette();
-                    await renderDiv([roulette, BlackJack, test, test2], 'game-div');
-                    console.log('appState.user game:', getUser());
-                    renderNavbar(getUser());
+                    await renderDiv([roulette, BlackJack, test, test2, game, game2], 'row');
+                    //await renderDiv([game, game2], 'row');
+                    //console.log('appState.user game:', getUser());
+                    renderNavbar(appState.user);
                     break;
                 case 'chat':
                     const chat = await renderChat();
                     await renderDiv([chat], 'chat-div');
-                    renderNavbar(getUser());
+                    renderNavbar(appState.user);
                     break;
             }
         break;
     }
 }
 
-renderApp();
+loadUser().then(() => {
+    renderApp();
+});

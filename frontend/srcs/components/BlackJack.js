@@ -1,19 +1,13 @@
 
 export function renderBlackJack() {
-    const rouletteHTML = `
-    <div class="container-div-game">
-    <div class="card-game-component glowing">
-        <img class="card-img-top" src="Design/blackJackImgPres.webp" alt="Card image cap">
-        <div class="card-body">
-          <h4 class="card-title">Black Jack</h4>
-          <p class="card-text">
-
-            Lancez-vous dans une aventure palpitante avec notre roulette de casino virtuelle! C'est le moment de vibrer, de défier la 
-            chance et de viser les étoiles. Notre roulette vous transporte dans l'univers excitant des casinos sans bouger de votre canapé. 
-            Prêts pour le frisson? Tournez la roue et que la fortune soit avec vous!
-          </p>
-            <button type="button" class="btn btn-primary glowing-btn center mx-auto d-block" data-toggle="modal" data-target="#blackjack">
-    
+    const blackJackHTML = `
+    <div class="card-game-wrapper glowing">
+        <div class="card-game-test" style="background-image: url(Design/blackJackImgPres.webp);">
+			<div class="goldTitle">
+			<div class="bg">BlackJack</div>
+			<div class="fg">BlackJack</div>
+		</div>
+        <button type="button" class="btn btn-primary glowing-btn center mx-auto d-block" data-toggle="modal" data-target="#blackjack">
         <span class='glowing-txt'>J<span class='faulty-letter'>O</span>UER</span></button>
           
           <!-- Modal -->
@@ -23,13 +17,13 @@ export function renderBlackJack() {
                 <div class="modal-header">
                   <h5 class="modal-title" id="exampleModalLabel">Black Jack</h5>
                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                	<span aria-hidden="true">&times;</span>
                   </button>
                 </div>
                 <div class="modal-body">
                     <div class="container">
-                    <div class="pack casino"></div>
-                      <div class="deck"></div>
+                    	<div class="pack casino"></div>
+                      		<div class="deck"></div>
 
                       <div class="pack player-hand"></div>
 
@@ -54,8 +48,6 @@ export function renderBlackJack() {
                         </div>
                 </div>
                 </div>
-                    <div>
-                    </div>
                     <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary">Save changes</button>
@@ -65,10 +57,10 @@ export function renderBlackJack() {
     </div>
 </div>
 </div>
-</div>
     `;
     const blackJackElement = document.createElement('div');
-    blackJackElement.innerHTML = rouletteHTML;    
+	blackJackElement.classList.add('col-12', 'col-md-3');
+    blackJackElement.innerHTML = blackJackHTML;    
     return blackJackElement;
   }
 
