@@ -1,8 +1,9 @@
 use std::io::Write;
-// use pwhash::sha256_crypt;
-// use websocket::sync::Client;	
+use pwhash::sha256_crypt;
 use std::time::Duration;
+use reqwest::blocking::Client;
 
+// Ask the user for login and password, and then return the connection status
 pub fn login(srv: String) -> bool {
 	print!("Login: ");
 	let _ = std::io::stdout().flush();
@@ -28,12 +29,12 @@ pub fn login(srv: String) -> bool {
 	return connection(srv, login, password);
 }
 
+// Use the provide login and password to connect to the server
 fn connection(srv: String, login: String, password: String) -> bool {
-	// todo!("connection to the server");
 	let client = reqwest::blocking::Client::builder()
 		.danger_accept_invalid_certs(true)
+		// .cookie_store(true)
 		.build();
-
 	let client = match client {
 		Ok(client) => client,
 		Err(err) => {
@@ -41,31 +42,22 @@ fn connection(srv: String, login: String, password: String) -> bool {
 			return false;
 		}
 	};
-	let crsf = client.get("https://{server}/api/userlist".replace("{server}", &srv))
+
+	let crsf = client.get("https://{server}/auth/".replace("{server}", &srv))
 		.header("User-Agent", "cli_rust")
 		.header("Accept", "application/json")
-		.header("csrftoken", "Fetch")
 		.timeout(Duration::from_secs(3));
-
 	let crsf = crsf.build();
-	println!("Request = {:?}", crsf);
-
 	let res_csrf = client.execute(crsf.expect("ERROR WHILE BUILDING THE REQUEST"));
 	let csrf = match res_csrf {
 		Ok(res) => {
 			if res.status().is_success() {
-				
-				println!("Repond is: {:#?}", res);
-				// println!("Headers: {:#?}", res.headers());
-				// println!("Cookies: {:#?}", res.cookies());
-				println!("Body: {:#?}", res.text());
-
-				// if res.headers().get("X-CSRF-Token").is_none() {
-				// 	eprintln!("No CSRF-Token in the header");
-				// 	return false;
-				// }
-				// let csrf = res.headers().get("X-CSRF-Token").unwrap();
-				// csrf.to_str().unwrap().to_string()
+				if res.headers().get("set-cookie").is_none() {
+					eprintln!("No CSRF-Token in the header");
+					return false;
+				}
+				let csrf = res.headers().get("set-cookie").unwrap();
+				csrf.to_str().unwrap().to_string()
 			} else {
 				eprintln!("Respond status code: {:#?}", res.status());
 				return false;
@@ -76,17 +68,18 @@ fn connection(srv: String, login: String, password: String) -> bool {
 			return false;
 		}
 	};
-	println!("CSRF = {:?}", csrf);
-
+	let csrf: Vec<&str> = csrf.split(';').collect();
+	let csrf_token = csrf[0].split('=').nth(1).unwrap().to_string();
 
 	let req = client
 		.post(("https://{server}/auth/test/").replace("{server}", &srv))
-		// .get(("https://{server}/api/userlist").replace("{server}", &srv))
 		.header("User-Agent", "cli_rust")
 		.header("Accept", "application/json")
+		.header("csrf", csrf_token)
 		.body(("email={email}&password={password}").replace("{email}", &login).replace("{password}", &password))
 		.timeout(Duration::from_secs(3));
 
+	println!("Request was: {:#?}", req);
 	let req = req.build().expect("ERROR WHILE BUILDING THE REQUEST");
 	let res = client.execute(req);
 
@@ -103,43 +96,5 @@ fn connection(srv: String, login: String, password: String) -> bool {
 			return false;
 		}
 	}
-	// println!("Respond = {:?}", res);
-	// res = match res.request {
-	// 	Ok(str) => str,
-	// 	Err(_) => 
-	// };
-	// println!("{:?}", res);
-
-
-	/*
-	use std::net::TcpStream;
-	use http::{Request, Response};
-
-	if let Ok(stream) = TcpStream::connect("localhost:443") {
-		println!("Connected to the server!");
-
-		let req = Request::builder()
-			.method("POST")
-			.uri(url)
-			.header("User-Agent", "cli_rust")
-			.body("email={email}&password={password}".replace("{email}", &login).replace("{password}", &password))
-			.unwrap();
-		println!("{:?}", req);
-		
-
-		// stream.write(req.as_bytes()).unwrap();
-		// req.into().write(stream);
-		
-		// stream.write(req.as_bytes()).unwrap();
-		// stream.flush().unwrap();
-
-
-	} else {
-		println!("Couldn't connect to server...");
-	}
-*/
-	// let request = Request::get(url)
-	// 	.body("email={email}&password={password}".replace("{email}", &login).replace("{password}", &password))
-	// 	.expect("Failed to create request");
 	true
 }

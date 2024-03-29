@@ -3,7 +3,6 @@ mod login;
 use std::io;
 use std::io::Write;
 use std::error::Error;
-// use tokio;
 
 fn main() {
 	println!("Welcome to T_BOOL TRANSCENDENCE !");
