@@ -181,10 +181,10 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             self.game_values['ball_position_x'] += self.game_values['ball_velocity_x']
             self.game_values['ball_position_z'] += self.game_values['ball_velocity_z']
             
-            async_to_sync(self.channel_layer.group_send)(
-                self.room_group_name,
-                {"type": "update", "message": {'action' : 'game', 'bx' : self.game_values['ball_position_x'], 'bz' : self.game_values['ball_position_z']}}
-            )
+            # async_to_sync(self.channel_layer.group_send)(
+            #     self.room_group_name,
+            #     {"type": "update", "message": {'action' : 'game', 'bx' : self.game_values['ball_position_x'], 'bz' : self.game_values['ball_position_z']}}
+            # )
 
     async def disconnect(self, close_code):
         self.channel_layer.group_discard(
@@ -200,6 +200,11 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
                 self.game_values['paddleright_position_z'] -= self.game_values['move_speed']
             elif message == 'Down' and self.game_values['paddleright_position_z'] + self.game_values['move_speed'] < 6.5:
                 self.game_values['paddleright_position_z'] += self.game_values['move_speed']
+            elif message == 'update':
+                await self.channel_layer.group_send(
+                self.room_group_name,
+                {"type": "update", "message": {'action' : 'game', 'bx' : self.game_values['ball_position_x'], 'bz' : self.game_values['ball_position_z']}}
+                )
         elif self.playernb == 2:
             if message == 'W' and self.game_values['paddleleft_position_z'] - self.game_values['move_speed'] > -6.5:
                 self.game_values['paddleleft_position_z'] -= self.game_values['move_speed']

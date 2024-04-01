@@ -460,6 +460,9 @@ gameSocket.onmessage = function(e) {
 		PaddleLeft.position.x = parseFloat(game_data.px);
 		PaddleLeft.position.z = parseFloat(game_data.pz);
 	}
+	gameSocket.send(JSON.stringify({
+		'message' : 'update'
+		}));
 	//console.log(`hello from room ${game_data.room_name} in group ${game_data.room_group_name}`);
 	//update_game_data();
 };
