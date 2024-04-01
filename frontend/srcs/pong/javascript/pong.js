@@ -6,7 +6,12 @@ import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+//import { gameid } from './join.js';
+// import { RectAreaLightHelper } from 'three/addons/helpers/RectAreaLightHelper.js';
 
+let gameid = sessionStorage.getItem('gameid');
+let game_data;
+let renderer;
 let scene;
 let renderer;
 let camera;
@@ -26,14 +31,7 @@ let PaddleRight;
 let PaddleLeft;
 let ball;
 let ballVelocity;
-const gameSocket = new WebSocket(
-    'ws://'
-    + window.location.host
-    + '/ws/'
-    + 'game'
-    + '/'
-);
-console.log(gameSocket);
+let gameSocket;
 
 const KeyState = {
 	KeyW: false,
@@ -41,6 +39,45 @@ const KeyState = {
 	ArrowUp: false,
 	ArrowDown: false,
 };
+
+function makeid(length) {
+    let result = '';
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const charactersLength = characters.length;
+    let counter = 0;
+    while (counter < length) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+      counter += 1;
+    }
+    return result;
+}
+
+console.log(`ID IS ${gameid}`);
+
+if (gameid != null)
+{
+	gameSocket = new WebSocket(
+		'ws://'
+		+ window.location.host
+		+ '/ws/'
+		+ 'game'
+		+ '/'
+		+ gameid
+		+ '/'
+	);
+}
+else
+{
+	gameSocket = new WebSocket(
+		'ws://'
+		+ window.location.host
+		+ '/ws/'
+		+ 'game'
+		+ '/'
+		+ makeid(5)
+		+ '/'
+	);
+}
 
 function init() {
 	// Renderer
@@ -167,9 +204,39 @@ function handleGround() {
 
 // Fonction pour gérer l'appui sur une touche
 function handleKeyDown(event) {
-	if (KeyState.hasOwnProperty(event.code)) {
-		KeyState[event.code] = true;
-	}
+	//console.log(event.code);
+	//if (KeyState.hasOwnProperty(event.code)) {
+		if (event.code == 'ArrowUp')
+		{
+			gameSocket.send(JSON.stringify({
+			'message' : 'Up'
+			}));
+		}
+		else if (event.code == 'ArrowDown')
+		{
+			gameSocket.send(JSON.stringify({
+			'message' : 'Down'
+			}));
+		}
+		else if (event.code == 'Escape')
+		{
+			gameSocket.send(JSON.stringify({
+			'message' : 'Stop'
+			}));
+		}
+		else if (event.code == 'KeyW')
+		{
+			gameSocket.send(JSON.stringify({
+			'message' : 'W'
+			}));
+		}
+		else if (event.code == 'KeyS')
+		{
+			gameSocket.send(JSON.stringify({
+			'message' : 'S'
+			}));
+		}
+	//}
 }
 
 // Fonction pour gérer le relâchement d'une touche
@@ -289,7 +356,27 @@ function handleBackground() {
 
 gameSocket.onmessage = function(e) {
 	game_data = JSON.parse(e.data);
-	update_game_data()
+	console.log(game_data);
+	if (game_data.action == 'game')
+	{
+		ball = scene.getObjectByName('Ball');
+		ball.position.x = parseFloat(game_data.bx);
+		ball.position.z = parseFloat(game_data.bz);
+	}
+	else if (game_data.action == 'p1')
+	{
+		PaddleRight = scene.getObjectByName("RightPaddle");
+		PaddleRight.position.x = parseFloat(game_data.px);
+		PaddleRight.position.z = parseFloat(game_data.pz);
+	}
+	else if (game_data.action == 'p2')
+	{
+		PaddleLeft = scene.getObjectByName("LeftPaddle");
+		PaddleLeft.position.x = parseFloat(game_data.px);
+		PaddleLeft.position.z = parseFloat(game_data.pz);
+	}
+	//console.log(`hello from room ${game_data.room_name} in group ${game_data.room_group_name}`);
+	//update_game_data();
 };
 
 function update_game_data() {
@@ -303,20 +390,18 @@ function update_game_data() {
 	PaddleRight.position.x = parseFloat(game_data.paddleright_position_x);
 	PaddleRight.position.z = parseFloat(game_data.paddleright_position_z);
 	PaddleLeft.position.x = parseFloat(game_data.paddleleft_position_x);
+	PaddleLeft.position.z = parseFloat(game_data.paddleleft_position_z);
 	//PaddleLeft.position.z = parseFloat(game_data.paddleleft_position_z);
 	ball.position.x = parseFloat(game_data.ball_position_x);
 	ball.position.z = parseFloat(game_data.ball_position_z);
-	gameSocket.send(JSON.stringify({
-		'message' : 'IA',
-		'pos' : PaddleLeft.position.z
-	}));
+
 }
 
 function animate() {
 	requestAnimationFrame(animate);
-	handlePaddleLeft();
-	handlePaddleRight();
-	// handleAIPaddle();
+	//handlePaddleLeft();
+	//handlePaddleRight();
+	//handleAIPaddle();
 	handleBackground();
 	// handleAIPaddleRight();
 	updateBall();

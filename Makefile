@@ -6,7 +6,7 @@
 #    By: ppotier <ppotier@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/02/22 11:53:18 by vgroux            #+#    #+#              #
-#    Updated: 2024/03/18 15:58:42 by ppotier          ###   ########.fr        #
+#    Updated: 2024/04/01 10:37:22 by ppotier          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -35,7 +35,7 @@ clean:
 	docker image prune -a
 	docker-compose -f ./docker-compose.yml down
 
-fclean: clean
+fclean: clean vol
 	docker system prune -a --volumes
 	
 vol:
