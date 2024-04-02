@@ -13,7 +13,6 @@ let gameid = sessionStorage.getItem('gameid');
 let game_data;
 let renderer;
 let scene;
-let renderer;
 let camera;
 let controls;
 let composer;
