@@ -77,7 +77,6 @@ fn connection(srv: String, login: String, password: String) -> bool {
 			return false;
 		}
 	};
-	println!("CSRF-Token: {:#?}", csrf);
 	let csrf_token = csrf.split(';').nth(0).unwrap().split('=').nth(1).unwrap().to_string();
 	let csrf_token = csrf_token.as_str();
 	// let csrf_token = "csrftoken=".to_string() + csrf_token + ";";
@@ -88,19 +87,16 @@ fn connection(srv: String, login: String, password: String) -> bool {
 	println!("{:#?}\n", jar);
 	println!("{:#?}\n", client);
 
-	
 	let req = client
 		.post(("https://{server}/auth/test/").replace("{server}", &srv))
 		.header("User-Agent", "cli_rust")
 		.header("Accept", "application/json")
-		// .header("cookie", "csrftoken={csrf_token}".replace("{csrf_token}", csrf_token.as_str()))
-		.header("cookie", csrf_token)
+		// .header("cookie", csrf_token)
 		.body(("email={email}&password={password}").replace("{email}", &login).replace("{password}", &password))
 		.timeout(Duration::from_secs(3));
 
 	let req = req.build().expect("ERROR WHILE BUILDING THE REQUEST");
 	println!("Request was: {:#?}\n", req);
-	// println!("{:#?}\n", jar.cookies(&"https://example.com/".parse()));
 	let res = client.execute(req);
 
 	match res {
