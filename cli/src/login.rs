@@ -1,7 +1,14 @@
 use std::io::Write;
 use pwhash::sha256_crypt;
 use std::time::Duration;
-use reqwest::blocking::Client;
+use reqwest::{
+	cookie::{Cookie, CookieStore, Jar},
+	Url,
+    header::HeaderValue,
+    blocking::Client,
+};
+use std::sync::{Arc, Mutex};
+
 
 // Ask the user for login and password, and then return the connection status
 pub fn login(srv: String) -> bool {
@@ -31,9 +38,11 @@ pub fn login(srv: String) -> bool {
 
 // Use the provide login and password to connect to the server
 fn connection(srv: String, login: String, password: String) -> bool {
+	let jar = Arc::new(Jar::default());
+
 	let client = reqwest::blocking::Client::builder()
 		.danger_accept_invalid_certs(true)
-		// .cookie_store(true)
+		.cookie_provider(Arc::clone(&jar))
 		.build();
 	let client = match client {
 		Ok(client) => client,
@@ -68,19 +77,30 @@ fn connection(srv: String, login: String, password: String) -> bool {
 			return false;
 		}
 	};
-	let csrf: Vec<&str> = csrf.split(';').collect();
-	let csrf_token = csrf[0].split('=').nth(1).unwrap().to_string();
+	println!("CSRF-Token: {:#?}", csrf);
+	let csrf_token = csrf.split(';').nth(0).unwrap().split('=').nth(1).unwrap().to_string();
+	let csrf_token = csrf_token.as_str();
+	// let csrf_token = "csrftoken=".to_string() + csrf_token + ";";
+	let csrf_token = "csrftoken=".to_string() + csrf_token;
+	let url = "https://{server}/".replace("{server}", &srv).parse::<Url>().unwrap();
+	jar.add_cookie_str(&csrf_token, &url);
 
+	println!("{:#?}\n", jar);
+	println!("{:#?}\n", client);
+
+	
 	let req = client
 		.post(("https://{server}/auth/test/").replace("{server}", &srv))
 		.header("User-Agent", "cli_rust")
 		.header("Accept", "application/json")
-		.header("csrf", csrf_token)
+		// .header("cookie", "csrftoken={csrf_token}".replace("{csrf_token}", csrf_token.as_str()))
+		.header("cookie", csrf_token)
 		.body(("email={email}&password={password}").replace("{email}", &login).replace("{password}", &password))
 		.timeout(Duration::from_secs(3));
 
-	println!("Request was: {:#?}", req);
 	let req = req.build().expect("ERROR WHILE BUILDING THE REQUEST");
+	println!("Request was: {:#?}\n", req);
+	// println!("{:#?}\n", jar.cookies(&"https://example.com/".parse()));
 	let res = client.execute(req);
 
 	match res {

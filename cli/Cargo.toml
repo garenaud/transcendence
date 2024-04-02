@@ -13,5 +13,5 @@ rpassword = "7.3.1"
 term_size="0.3.2"
 url = "2.5.0"
 websocket = "0.27.0"
-reqwest = { version = "0.12", features = ["json", "blocking", "native-tls"] }
+reqwest = { version = "0.12", features = ["json", "blocking", "native-tls", "cookies"] }
 time = "0.3.34"

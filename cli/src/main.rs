@@ -1,5 +1,7 @@
 mod pong;
 mod login;
+// mod test;
+
 use std::io;
 use std::io::Write;
 use std::error::Error;
@@ -58,6 +60,12 @@ fn main() {
 		}
 	};
 
+	// if test::login(srv),expect("ERROR CONNECTING") {
+	// 	println!("user's login successfuly saved");
+	// 	// pong::game();
+	// } else {
+	// 	eprintln!("user's login failed, exiting...");
+	// }
 	if login::login(srv) {
 		println!("user's login successfuly saved");
 		// pong::game();
