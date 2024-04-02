@@ -43,8 +43,8 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
         await self.accept()
-        if self.game.p1id == self.channel_name:
-            threading.Thread(target=self.loop).start()
+        # if self.game.p1id == self.channel_name:
+        threading.Thread(target=self.loop).start()
 
     def loop(self):
         while True:
