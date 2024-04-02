@@ -55,32 +55,32 @@ function makeid(length) {
     return result;
 }
 
-console.log(`ID IS ${gameid}`);
+// console.log(`ID IS ${gameid}`);
 
-if (gameid != null)
-{
+// if (gameid != null)
+// {
 	gameSocket = new WebSocket(
 		'ws://'
 		+ window.location.host
 		+ '/ws/'
 		+ 'game'
 		+ '/'
-		+ gameid
+		+ '1'
 		+ '/'
 	);
-}
-else
-{
-	gameSocket = new WebSocket(
-		'ws://'
-		+ window.location.host
-		+ '/ws/'
-		+ 'game'
-		+ '/'
-		+ makeid(5)
-		+ '/'
-	);
-}
+// }
+// else
+// {
+// 	gameSocket = new WebSocket(
+// 		'ws://'
+// 		+ window.location.host
+// 		+ '/ws/'
+// 		+ 'game'
+// 		+ '/'
+// 		+ makeid(5)
+// 		+ '/'
+// 	);
+// }
 
 function init() {
 	// Renderer
