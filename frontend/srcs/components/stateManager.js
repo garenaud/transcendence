@@ -64,14 +64,16 @@ export async function renderApp() {
             }
             switch(appState.currentView) {
                 case 'hero':
-                    if (!appState.renderedComponents.hero) {
+/*                     if (!appState.renderedComponents.hero) {
                         await renderHero();
                         appState.renderedComponents.hero = true;
                     }
                     if (!appState.renderedComponents.navbar) {
                         renderNavbar(appState.user);
                         appState.renderedComponents.navbar = true;
-                    }
+                    } */
+                    await renderHero();
+                    renderNavbar(appState.user);
                     break;
                 case 'game':
                     const game = await renderGame();
