@@ -7,7 +7,6 @@ export function renderBlackJack() {
 			<div class="bg">BlackJack</div>
 			<div class="fg">BlackJack</div>
 		</div>
-		<p>fucking css</p>
         <button type="button" class="btn btn-primary glowing-btn center mx-auto d-block" data-toggle="modal" data-target="#blackjack">
         <span class='glowing-txt'>J<span class='faulty-letter'>O</span>UER</span></button>
 	</div>
