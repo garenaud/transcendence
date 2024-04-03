@@ -8,7 +8,7 @@ use reqwest::{
     blocking::Client,
 };
 use std::sync::{Arc, Mutex};
-
+use colored::Colorize;
 
 // Ask the user for login and password, and then return the connection status
 pub fn login(srv: String) -> Option<(Client, String)> {
@@ -68,7 +68,6 @@ fn connection(srv: String, login: String, password: String) -> Option<(Client, S
 				let csrf = res.headers().get("set-cookie").unwrap();
 				csrf.to_str().unwrap().to_string()
 			} else {
-				eprintln!("Respond status code: {:#?}", res.status());
 				return None;
 			}
 		},
@@ -79,7 +78,7 @@ fn connection(srv: String, login: String, password: String) -> Option<(Client, S
 	};
 	let csrf_token = csrf.split(';').nth(0).unwrap().split('=').nth(1).unwrap().to_string();
 	let csrf_token = csrf_token.as_str();
-	
+
 	let req = client
 		.post(("https://{server}/auth/test/").replace("{server}", &srv))
 		.header("User-Agent", "cli_rust")
@@ -94,7 +93,6 @@ fn connection(srv: String, login: String, password: String) -> Option<(Client, S
 	match res {
 		Ok(res) => {
 			if !res.status().is_success() {
-				eprintln!("Respond status code: {:#?}", res.status());
 				return None;
 			}
 		},

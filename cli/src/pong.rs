@@ -1,7 +1,9 @@
 use ncurses::*;
+use reqwest::blocking::*;
+use tungstenite::{connect, Message};
+use url::Url;
 
 // use tokio_native_tls::TlsConnector;	
-// use url::Url;
 // use tokio_tungstenite::tungstenite::{connect, Message};
 
 /*
@@ -12,6 +14,32 @@ use ncurses::*;
 ** Ball = 0.5 (circle)
 ** Paddle = 5.5
 */
+
+pub fn create_game(client: Client, csrf: String) {
+	println!("Create a game !!!!!!!!!!!");
+}
+
+pub fn join_game(client: Client, csrf: String) -> Result<(), Box<dyn std::error::Error>> {
+	println!("Join a game !!!!!!!!!!!");
+	game();
+	// let (mut socket, response) = connect(Url::parse("ws://localhost/game/").unwrap()).expect("Can't connect");
+	
+	// println!("Connected to the server");
+	// println!("Response HTTP code: {}", response.status());
+	// println!("Response contains the following headers:");
+	// for (ref header, _value) in response.headers() {
+	// 	println!("* {}", header);
+	// }
+
+	// socket.send(Message::Text("Hello WebSocket".into())).unwrap();
+	// loop {
+	// 	let msg = socket.read().expect("Error reading message");
+	// 	println!("Received: {}", msg);
+	// }
+	
+	Ok(())
+}
+
 pub fn game() {
 	/* WEBSOCKET HANDSHAKE REFECTED */
 	// let (mut socket, response) = connect(
@@ -32,15 +60,18 @@ pub fn game() {
 	// }
 
 	/* SERVER NOT OK WITH THAT (Request seems to be crypted) */
-	// let connector = native_tls::TlsConnector::new().unwrap();
-	// let websocket = match ClientBuilder::new("ws://localhost/ws/game/").unwrap().connect_secure(Some(connector)) {
-	// 	Ok(s) => s,
-	// 	Err(e) => {
-	// 		eprintln!("{}", e);
-	// 		return ;
-	// 	}
-	// };
-	// let (mut receiver, mut sender) = websocket.split().unwrap();
+	let connector = native_tls::TlsConnector::new().unwrap();
+	let ws_client = match ClientBuilder::new()
+		.danger_accept_invalid_certs(true)
+		.build() {
+		Ok(s) => s,
+		Err(e) => {
+			eprintln!("{}", e);
+			return ;
+		}
+	};
+
+	let (mut receiver, mut sender) = ws_client.get("ws://localhost/game/").split().unwrap();
 
 
 	// Read from command line and send messages
@@ -59,12 +90,6 @@ pub fn game() {
 		println!("Received: {}", ch);
 	}
 }
-
-
-
-
-
-
 
 
 struct Console {

@@ -1,14 +1,22 @@
-mod pong;
 mod login;
-// mod test;
+mod menu;
+mod pong;
 
 use std::io;
 use std::io::Write;
 use std::error::Error;
 use reqwest::blocking::Client;
+use colored::*;
+
+struct user {
+	login: String,
+	session_id: String,
+	client: Client,
+	csrf: String,
+}
 
 fn main() {
-	println!("Welcome to T_BOOL TRANSCENDENCE !");
+	println!("{}", format!("Welcome to T_BOOL TRANSCENDENCE !").blue());
 	
 	let log_client: Client;
 	let log_csrf: String;
@@ -21,11 +29,11 @@ fn main() {
 
 		std::io::stdin()
 			.read_line(&mut srv)
-			.expect("Erreur lors de la lecture de l'utilisateur");
+			.expect(&format!("Erreur lors de la lecture de l'utilisateur").red());
 		srv = (*srv.trim()).to_string();
 
 		if srv.len() <= 0 {
-			eprintln!("Server name is empty, please try again");
+			eprintln!("{}", format!("Server name is empty, please try again").red());
 			continue;
 		}
 			
@@ -36,7 +44,7 @@ fn main() {
 		let client = match client {
 			Ok(client) => client,
 			Err(err) => {
-				eprintln!("{}", err);
+				eprintln!("{}", format!("{}", err).red());
 				continue;
 			}
 		};
@@ -51,10 +59,10 @@ fn main() {
 		match res {
 			Ok(res) => {
 				if res.status().is_success() {
-					println!("Server is up !");
+					println!("{}", format!("Server is up !").green());
 					break srv;
 				} else {
-					eprintln!("Server is down, please try again");
+					eprintln!("{}", format!("Server is down, please try again").red());
 					continue;
 				}
 			},
@@ -65,25 +73,25 @@ fn main() {
 			}
 		}
 	};
-	println!("Server: {}", srv);
-	while max_try > 0 {
-		println!("Try to login ({} tries left)", max_try);
+
+	loop {
 		match login::login(srv.clone()) {
 			Some((client, csrf)) => {
 				log_client = client;
 				log_csrf = csrf;
+				println!("{}", format!("Login successful !").green().bold());
 				break;
 			},
 			None => {
 				max_try -= 1;
 				if max_try <= 0 {
-					eprintln!("Failed to login, exiting...");
+					eprintln!("{}", format!("Failed to login, exiting...").red().bold());
 					return;
 				}
-				eprintln!("Failed to login");
+				eprintln!("{}", format!("Failed to login ({} tries left)", max_try).red().bold());
 				continue;
 			}
 		};
 	}
-	// pong::game();
+	menu::menu(log_client, log_csrf);
 }
