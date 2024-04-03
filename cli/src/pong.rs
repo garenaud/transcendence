@@ -1,4 +1,5 @@
 use ncurses::*;
+use colored::Colorize;
 use reqwest::blocking::*;
 use tungstenite::{connect, Message};
 use url::Url;
@@ -15,28 +16,22 @@ use url::Url;
 ** Paddle = 5.5
 */
 
-pub fn create_game(client: Client, csrf: String) {
+pub fn create_game(client: Client, csrf: String, srv: String) {
 	println!("Create a game !!!!!!!!!!!");
 }
 
-pub fn join_game(client: Client, csrf: String) -> Result<(), Box<dyn std::error::Error>> {
+pub fn join_game(client: Client, csrf: String, srv: String) -> Result<(), Box<dyn std::error::Error>> {
 	println!("Join a game !!!!!!!!!!!");
-	game();
-	// let (mut socket, response) = connect(Url::parse("ws://localhost/game/").unwrap()).expect("Can't connect");
-	
-	// println!("Connected to the server");
-	// println!("Response HTTP code: {}", response.status());
-	// println!("Response contains the following headers:");
-	// for (ref header, _value) in response.headers() {
-	// 	println!("* {}", header);
-	// }
+	// game();
 
-	// socket.send(Message::Text("Hello WebSocket".into())).unwrap();
-	// loop {
-	// 	let msg = socket.read().expect("Error reading message");
-	// 	println!("Received: {}", msg);
-	// }
-	
+	let req = match connect(("ws://{server}/game/").replace("{server}", &srv)) {
+		Ok(req) => req,
+		Err(err) => {
+			eprintln!("{}", format!("{}", err).red());
+			return Err(Box::new(err));
+		}
+	};
+
 	Ok(())
 }
 
@@ -58,21 +53,6 @@ pub fn game() {
 	// 		println!("Received: {}", msg.into_text().unwrap());
 	// 	}
 	// }
-
-	/* SERVER NOT OK WITH THAT (Request seems to be crypted) */
-	let connector = native_tls::TlsConnector::new().unwrap();
-	let ws_client = match ClientBuilder::new()
-		.danger_accept_invalid_certs(true)
-		.build() {
-		Ok(s) => s,
-		Err(e) => {
-			eprintln!("{}", e);
-			return ;
-		}
-	};
-
-	let (mut receiver, mut sender) = ws_client.get("ws://localhost/game/").split().unwrap();
-
 
 	// Read from command line and send messages
 	initscr();

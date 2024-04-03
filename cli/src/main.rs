@@ -93,5 +93,5 @@ fn main() {
 			}
 		};
 	}
-	menu::menu(log_client, log_csrf);
+	menu::menu(log_client, log_csrf, srv);
 }

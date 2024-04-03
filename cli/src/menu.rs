@@ -5,7 +5,7 @@ use std::error::Error;
 use reqwest::blocking::Client;
 use colored::Colorize;
 
-pub fn menu(client: Client, csrf: String) {
+pub fn menu(client: Client, csrf: String, srv: String) {
 	'menu: loop {
 		let mut choice = String::new();
 		println!("1. Create a game");
@@ -21,10 +21,10 @@ pub fn menu(client: Client, csrf: String) {
 		
 		match choice.as_str() {
 			"1" => {
-				pong::create_game(client.clone(), csrf.clone());
+				pong::create_game(client.clone(), csrf.clone(), srv.clone());
 			},
 			"2" => {
-				pong::join_game(client.clone(), csrf.clone());
+				pong::join_game(client.clone(), csrf.clone(), srv.clone());
 			},
 			"3" => {
 				break 'menu;
