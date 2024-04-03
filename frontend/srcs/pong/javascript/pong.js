@@ -45,7 +45,7 @@ const KeyState = {
 
 function makeid(length) {
     let result = '';
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const characters = '0123456789';
     const charactersLength = characters.length;
     let counter = 0;
     while (counter < length) {
@@ -59,15 +59,15 @@ function makeid(length) {
 
 // if (gameid != null)
 // {
-	gameSocket = new WebSocket(
-		'ws://'
-		+ window.location.host
-		+ '/ws/'
-		+ 'game'
-		+ '/'
-		+ '1'
-		+ '/'
-	);
+gameSocket = new WebSocket(
+	'ws://'
+	+ window.location.host
+	+ '/ws/'
+	+ 'game'
+	+ '/'
+	+ makeid(3)
+	+ '/'
+);
 // }
 // else
 // {
@@ -441,24 +441,18 @@ function handleBackground() {
 
 gameSocket.onmessage = function(e) {
 	game_data = JSON.parse(e.data);
-	console.log(game_data);
+	console.log(typeof(game_data.prx));
 	if (game_data.action == 'game')
 	{
 		ball = scene.getObjectByName('Ball');
 		ball.position.x = parseFloat(game_data.bx);
 		ball.position.z = parseFloat(game_data.bz);
-	}
-	else if (game_data.action == 'p1')
-	{
 		PaddleRight = scene.getObjectByName("RightPaddle");
-		PaddleRight.position.x = parseFloat(game_data.px);
-		PaddleRight.position.z = parseFloat(game_data.pz);
-	}
-	else if (game_data.action == 'p2')
-	{
+		PaddleRight.position.x = parseFloat(game_data.prx);
+		PaddleRight.position.z = parseFloat(game_data.prz);
 		PaddleLeft = scene.getObjectByName("LeftPaddle");
-		PaddleLeft.position.x = parseFloat(game_data.px);
-		PaddleLeft.position.z = parseFloat(game_data.pz);
+		PaddleLeft.position.x = parseFloat(game_data.plx);
+		PaddleLeft.position.z = parseFloat(game_data.plz);
 	}
 	gameSocket.send(JSON.stringify({
 		'message' : 'update'

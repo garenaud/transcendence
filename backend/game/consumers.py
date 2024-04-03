@@ -13,7 +13,7 @@ import random
 from channels.db import database_sync_to_async
 from.game_class import gameData
 
-
+tasks = set()
 gameTab = [None] * 100
 
 channel_layer = channels.layers.get_channel_layer()
@@ -27,15 +27,17 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
         game.save()
 
     async def connect(self):
-        self.room_id = self.scope["url_route"]["kwargs"]["room_id"]
+        self.room_id = 1 #self.scope["url_route"]["kwargs"]["room_id"]
         self.room_group_name = f"game_{self.room_id}"
         if gameTab[self.room_id] is None:
             gameTab[self.room_id] = gameData(self.room_id)
             self.game = gameTab[self.room_id]
             self.game.p1id = self.channel_name
+            print("p1")
         else:
             self.game = gameTab[self.room_id]
             self.game.p2id = self.channel_name
+            print("p2")
         
             
         await self.channel_layer.group_add(
@@ -43,8 +45,9 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
         await self.accept()
-        # if self.game.p1id == self.channel_name:
-        threading.Thread(target=self.loop).start()
+        if self.game.p1id == self.channel_name:
+            threading.Thread(target=self.loop).start()
+        
 
     def loop(self):
         while True:
@@ -103,7 +106,7 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             
             async_to_sync(self.channel_layer.group_send)(
                 self.room_group_name,
-                {"type": "update", "message": {'action' : 'game', 'bx' : self.game.bpx, 'bz' : self.game.bpz}}
+                {"type": "update", "message": {'action' : 'game', 'bx' : self.game.bpx, 'bz' : self.game.bpz, 'plx' : self.game.plx ,'plz' : self.game.plz, 'prx' : self.game.prx ,'prz' : self.game.prz}}
             )
 
     async def disconnect(self, close_code):
@@ -114,31 +117,29 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         jsondata = json.loads(text_data)
         message = jsondata['message']
-        if self.game.p1id == self.channel_name:
+        if message == 'update':
+            await self.channel_layer.group_send(
+            self.room_group_name,
+            {"type": "update", "message": {'action' : 'game', 'bx' : self.game.bpx, 'bz' : self.game.bpz, 'plx' : self.game.plx ,'plz' : self.game.plz, 'prx' : self.game.prx ,'prz' : self.game.prz}}
+            )
+            return
+        elif self.game.p1id == self.channel_name:
             if message == 'Up' and self.game.prz - self.game.ms > -6.5:
                 self.game.prz -= self.game.ms
             elif message == 'Down' and self.game.prz + self.game.ms < 6.5:
                 self.game.prz += self.game.ms
-            elif message == 'update':
-                await self.channel_layer.group_send(
-                self.room_group_name,
-                {"type": "update", "message": {'action' : 'game', 'bx' : self.game.bpx, 'bz' : self.game.bpz}}
-                )
+            # print("p1 paddle")
         elif self.game.p2id == self.channel_name:
             if message == 'W' and self.game.plz - self.game.ms > -6.5:
                 self.game.plz -= self.game.ms
             elif message == 'S' and self.game.plz + self.game.ms < 6.5:
                 self.game.plz += self.game.ms
-        if self.game.p1id == self.channel_name:
-            await self.channel_layer.group_send(
-                self.room_group_name,
-                {"type": "update", "message": {'action' : 'p1', 'px' : self.game.prx , 'pz' : self.game.prz }}
-            )
-        elif self.game.p2id == self.channel_name:
-            await self.channel_layer.group_send(
-                self.room_group_name,
-                {"type": "update", "message": {'action' : 'p2', 'px' : self.game.plx ,'pz' : self.game.plz }}
-            )
+            # print("p2 paddle")
+        # await self.channel_layer.group_send(
+        #     self.room_group_name,
+        #     {"type": "update", "message": {'action' : 'paddle', 'plx' : self.game.plx ,'plz' : self.game.plz, 'prx' : self.game.prx ,'prz' : self.game.prz }}
+        # )
+            
 
     async def update(self, event):
         data = event['message']
