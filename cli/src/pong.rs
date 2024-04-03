@@ -24,7 +24,7 @@ pub fn join_game(client: Client, csrf: String, srv: String) -> Result<(), Box<dy
 	println!("Join a game !!!!!!!!!!!");
 	// game();
 
-	let req = match connect(("ws://{server}/game/").replace("{server}", &srv)) {
+	let req = match connect(("ws://{server}/ws/game/").replace("{server}", &srv)) {
 		Ok(req) => {
 			println!("{:#?}", req);
 			req
