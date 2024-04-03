@@ -4,11 +4,49 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 var BossAnimation = [];
 var MexicanAnimation = [];
+let bossLoad = false;
+let mexicanLoad = false;
 let LeftId;
 let RightId;
 let KeypressLeft = 0.1;
 let finished = false;
 let KeypressRight = 0.1;
+
+var startNum;
+var currentNum;
+
+function addClassDelayed(jqObj, c, to) {    
+    setTimeout(function() { jqObj.addClass(c); }, to);
+}
+
+function anim() {
+  if (bossLoad == true && mexicanLoad == true && currentNum >= 0) {
+    addClassDelayed($("#countdown"), "puffer", 600);
+    currentNum--;
+    console.log(currentNum);
+    if (currentNum > 0 ){
+      $('#countdown').html(currentNum);
+    } else if (currentNum == 0) {
+      $('#countdown').html("GO !");
+    } else {
+      $('#countdown').html("");
+      $('#countdown').removeClass("puffer");
+      return ; 
+    }
+    $('#countdown').removeClass("puffer");
+  } else {
+    return ;
+  }
+}
+      
+$(function() {
+  startNum = 6; 
+  currentNum = startNum;
+  if (currentNum >= 0) {
+    setTimeout(1500);
+    self.setInterval(function(){anim()},1325);
+  }
+});
 
 class BasicCharacterControls {
   constructor(params) {
@@ -34,7 +72,7 @@ class BasicCharacterControls {
   }
 
   _onKeyDown(event) {
-	if (!finished) {
+	if (!finished && currentNum < 0) {
 	  switch (event.keyCode) {
 		  case 87: // w
 		  this._move.forward = true;
@@ -55,7 +93,7 @@ class BasicCharacterControls {
 }
 	
 	_onKeyUp(event) {
-	if (!finished) {
+	if (!finished && currentNum < 0) {
 		switch(event.keyCode) {
 		case 87: // w
 		this._move.forward = false;
@@ -113,20 +151,24 @@ class BasicCharacterControls {
         // Jouer une animation de victoire
         if (MexicanAnimation.Win) MexicanAnimation.Win.play();
 		if (BossAnimation.Loose) BossAnimation.Loose.play();
-		finished = true;
+		  finished = true;
+    console.log("Left (win) > " + Math.round((KeypressLeft / 2) / 0.1));
+    console.log("Right > " + Math.round((KeypressRight / 2) / 0.1));
     }
 
 	if (controlObject.position.z >= 500 && this.id === RightId && finished === false) {
-        // Arrêter toutes les animations en cours
-        if (BossAnimation.Idle) BossAnimation.Idle.stop();
-        if (MexicanAnimation.Idle) MexicanAnimation.Idle.stop();
-        if (BossAnimation.Run) BossAnimation.Run.stop();
-        if (MexicanAnimation.Run) MexicanAnimation.Run.stop();
+    // Arrêter toutes les animations en cours
+    if (BossAnimation.Idle) BossAnimation.Idle.stop();
+    if (MexicanAnimation.Idle) MexicanAnimation.Idle.stop();
+    if (BossAnimation.Run) BossAnimation.Run.stop();
+    if (MexicanAnimation.Run) MexicanAnimation.Run.stop();
 
-        // Jouer une animation de victoire
-        if (BossAnimation.Win) BossAnimation.Win.play();
+    // Jouer une animation de victoire
+    if (BossAnimation.Win) BossAnimation.Win.play();
 		if (MexicanAnimation.Loose) MexicanAnimation.Loose.play();
-		finished = true;
+		  finished = true;
+      console.log("Right (win) > " + Math.round((KeypressRight / 2) / 0.1));
+      console.log("Left > " + Math.round((KeypressLeft / 2) / 0.1));
     }
     controlObject.quaternion.copy(_R);
 
@@ -236,7 +278,7 @@ class LoadModelDemo {
 
     this._mixers = [];
     this._LoadTheBoss();
-	this._LoadTheCatch();
+	  this._LoadTheCatch();
     this._RAF();
   }
 
@@ -272,6 +314,7 @@ class LoadModelDemo {
                 Loose: null
             };
             BossAnimation.Idle.play();
+            bossLoad = true;
         });
 
         animationsLoader.load('DrunkRunForward.fbx', (animations) => {
@@ -332,6 +375,7 @@ class LoadModelDemo {
 			Loose: null
 		};
 		MexicanAnimation.Idle.play();
+    mexicanLoad = true;
 	});
 
 	animationsLoader.load('DrunkRunForward.fbx', (animations) => {
