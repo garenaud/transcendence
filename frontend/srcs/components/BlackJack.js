@@ -7,9 +7,11 @@ export function renderBlackJack() {
 			<div class="bg">BlackJack</div>
 			<div class="fg">BlackJack</div>
 		</div>
+		<p>fucking css</p>
         <button type="button" class="btn btn-primary glowing-btn center mx-auto d-block" data-toggle="modal" data-target="#blackjack">
         <span class='glowing-txt'>J<span class='faulty-letter'>O</span>UER</span></button>
-          
+	</div>
+    </div>
           <!-- Modal -->
           <div class="modal" id="blackjack" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
@@ -24,39 +26,37 @@ export function renderBlackJack() {
                     <div class="container">
                     	<div class="pack casino"></div>
                       		<div class="deck"></div>
-
-                      <div class="pack player-hand"></div>
-
-                      <div class="control clearfix">
-                        <div class="control-wrap">
-                          <div class="wager">
-                            <div class="bank" title="Your money">$<span></span></div>
-                            <div class="bet">
-                              Bet <input title="Use UP/DOWN arrows to adjust bet" type="number" name="quantity" min="5" max="50" step="5" value="10" class="bet-val">
-                            </div>
-                          </div>
-                          <div class="actions">
-                            <span class="deal-btn">
-                              <button class="btn" title="Press 'D' to Deal">Deal</button>
-                              <input title="Press 'A' for Autodeal" type="checkbox" class="autodeal"/>
-                            </span>
-                            <button class="btn hit-btn"  title="Press 'H' to Hit" disabled>Hit</button>
-                            <button class="btn stand-btn"  title="Press 'S' to Stand" disabled>Stand</button>
-                          </div>
-                        </div>
-                      </div>
-                        </div>
-                </div>
-                </div>
-                    <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-</div>
+                      			<div class="pack player-hand"></div>
+                      				<div class="control clearfix">
+                        				<div class="control-wrap">
+                          					<div class="wager">
+                            					<div class="bank" title="Your money">$<span></span></div>
+                            						<div class="bet">
+                              							Bet <input title="Use UP/DOWN arrows to adjust bet" type="number" name="quantity" min="5" max="50" step="5" value="10" class="bet-val">
+                            						</div>
+                          						</div>
+                          						<div class="actions">
+                            						<span class="deal-btn">
+                              							<button class="btn" title="Press 'D' to Deal">Deal</button>
+                              							<input title="Press 'A' for Autodeal" type="checkbox" class="autodeal"/>
+                            						</span>
+                            						<button class="btn hit-btn"  title="Press 'H' to Hit" disabled>Hit</button>
+                            						<button class="btn stand-btn"  title="Press 'S' to Stand" disabled>Stand</button>
+                          						</div>
+                        					</div>
+                      					</div>
+                        			</div>
+                				</div>
+                			</div>
+                    		<div class="modal-footer">
+                    			<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    			<button type="button" class="btn btn-primary">Save changes</button>
+                			</div>
+            			</div>
+        			</div>
+    			</div>
+			</div>
+		</div>
     `;
     const blackJackElement = document.createElement('div');
 	blackJackElement.classList.add('col-12', 'col-md-3');

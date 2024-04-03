@@ -86,6 +86,8 @@ export function spinWheel() {
           </div>
           <button type="button" class="btn btn-primary glowing-btn center mx-auto d-block" data-toggle="modal" data-target="#roulette">
           <span class='glowing-txt'>J<span class='faulty-letter'>O</span>UER</span></button>
+        </div>
+      </div>
             
             <!-- Modal -->
             <div class="modal" id="roulette" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">

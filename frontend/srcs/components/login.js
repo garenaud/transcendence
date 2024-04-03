@@ -14,7 +14,7 @@ export function renderLogin() {
 		  		<p class="text-white-50 mb-3">Please enter your login and password!</p>
 
 		  		<div class="form-outline form-white mb-2">
-		  			<input type="email" id="typeEmailX" class="form-control form-control-lg" />
+		  			<input type="text" id="typeEmailX" class="form-control form-control-lg" />
 		  			<label class="form-label" for="typeEmailX">Email</label>
 		  		</div>
 		  		<div class="form-outline form-white mb-2">

@@ -80,6 +80,9 @@ export function loadUser() {
                 console.log('je mets la photo par defaut');
                 appState.user.profilePicture = 'Design/User/Max-R_Headshot.jpg';
             }
+            else {
+                console.log('ben pas de photo par defaut');
+            }
             appState.user.pts = 100;
             localStorage.setItem('user', JSON.stringify(appState.user));
             //console.log('appState.user:', appState.user);

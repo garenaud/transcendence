@@ -29,9 +29,12 @@ h1 {
 .modal-title {
     color: #F6428E;
 }
+.modal-backdrop {
+  z-index: 1040;
+}
 .modal {
-  position: relative;
-  z-index: 1000 !important;
+  /* position: relative; */
+  z-index: 1050 !important;
 }
 
 
@@ -808,7 +811,8 @@ margin-bottom: 15px !important;
 }
 
 .card-game-wrapper {
-  position: relative; /* Pour que l'effet glowing soit positionné par rapport à cet élément */
+  position: relative;
+  z-index: 998;
 }
 
 .card-game-test .title {
@@ -1357,7 +1361,7 @@ background-size: 70px 120px;
   background-color: #1A244D;
   color: #F6428E;
   display: none;
-  z-index: 900;
+  z-index: 999;
 }
 
 .user-menu-img {

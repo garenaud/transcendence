@@ -59,6 +59,7 @@ export async function renderApp() {
             break;
         default:
             if (!appState.user) {
+                console.log('loading user');
                 await loadUser();
             }
             switch(appState.currentView) {
@@ -94,7 +95,7 @@ export async function renderApp() {
         break;
     }
 }
-
-loadUser().then(() => {
+renderApp();
+/* loadUser().then(() => {
     renderApp();
-});
+}); */
