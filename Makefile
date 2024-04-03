@@ -33,7 +33,6 @@ vol:
 	docker volume rm ft_transcendence_frontend
 	rm -rf ~/data
 
-re: fclean
-	docker-compose -f ./docker-compose.yml up -d --build
+re: fclean all
 	
 .PHONY: all down re clean fclean vol debug look
