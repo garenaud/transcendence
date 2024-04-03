@@ -78,21 +78,21 @@ fn connection(srv: String, login: String, password: String) -> bool {
 		}
 	};
 	let csrf_token = csrf.split(';').nth(0).unwrap().split('=').nth(1).unwrap().to_string();
-	let csrf_token = csrf_token.as_str();
-	// let csrf_token = "csrftoken=".to_string() + csrf_token + ";";
-	let csrf_token = "csrftoken=".to_string() + csrf_token;
+	let csrf = csrf_token.as_str();
+	// let csrf_token = "csrftoken=".to_string() + csrf + ";";
+	let csrf_token = "csrftoken=".to_string() + csrf;
 	let url = "https://{server}/".replace("{server}", &srv).parse::<Url>().unwrap();
 	jar.add_cookie_str(&csrf_token, &url);
 
 	println!("{:#?}\n", jar);
-	println!("{:#?}\n", client);
 
 	let req = client
 		.post(("https://{server}/auth/test/").replace("{server}", &srv))
 		.header("User-Agent", "cli_rust")
 		.header("Accept", "application/json")
-		// .header("cookie", csrf_token)
-		.body(("email={email}&password={password}").replace("{email}", &login).replace("{password}", &password))
+		.header("X-CSRFToken", csrf)
+		.header("cookie", csrf_token)
+		.body(("{\"email\":\"{email}\",\"password\":\"{password}\"}").replace("{email}", &login).replace("{password}", &password))
 		.timeout(Duration::from_secs(3));
 
 	let req = req.build().expect("ERROR WHILE BUILDING THE REQUEST");
@@ -106,6 +106,7 @@ fn connection(srv: String, login: String, password: String) -> bool {
 				eprintln!("Respond status code: {:#?}", res.status());
 				return false;
 			}
+			println!("Respond body: {:#?}", res.text());
 		},
 		Err(err) => {
 			eprintln!("Error in respond: {:#?}", err);
