@@ -25,7 +25,10 @@ pub fn join_game(client: Client, csrf: String, srv: String) -> Result<(), Box<dy
 	// game();
 
 	let req = match connect(("ws://{server}/game/").replace("{server}", &srv)) {
-		Ok(req) => req,
+		Ok(req) => {
+			println!("{:#?}", req);
+			req
+		},
 		Err(err) => {
 			eprintln!("{}", format!("{}", err).red());
 			return Err(Box::new(err));
