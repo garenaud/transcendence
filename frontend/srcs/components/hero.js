@@ -17,6 +17,16 @@ export function renderHero() {
 
     document.body.insertAdjacentHTML('afterbegin', heroHTML);
     setupButtonListener();
+	fetch('/auth/session_user/', {
+		method: 'GET'
+	})
+	.then(response => response.json())
+	.then(data => {
+		console.log('genial:', data);
+	})
+	.catch((error) => {
+		console.error('Error:', error);
+	});
 }
 
 function    setupButtonListener() {

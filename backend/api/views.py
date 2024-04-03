@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 from database.models import Users, Games
-from database.serializers import UsersSerializer, CreateUserSerializer, UserSerializer
+from database.serializers import UsersSerializer, CreateUserSerializer, UserSerializer, GamesSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -76,3 +76,25 @@ def delete_user_by_id(request, id):
 		return Response("Method not allowed", status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
+@api_view(['GET'])
+def get_game_list(request):
+	if (request.method == 'GET'):
+		games = Games.objects.all()
+		serializer = GamesSerializer(games, many=True)
+		return Response(serializer.data)
+	else:
+		return Response("Unauthorized method", status=status.HTTP_401_UNAUTHORIZED)
+	
+@api_view(['GET'])
+def get_game_by_id(request, gameid):
+	if (request.method == 'GET'):
+		game = Games.objects.filter(id=gameid).count()
+		if game == 0:
+			return Response({"message" : "Not found"})
+		else:
+			game = Games.objects.get(id=gameid)
+			serializer = GamesSerializer(game)
+			return Response({"message" : serializer.data})
+	else:
+		return Response("Unauthorized method", status=status.HTTP_401_UNAUTHORIZED)
+	

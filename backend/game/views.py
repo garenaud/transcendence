@@ -16,8 +16,8 @@ from django.shortcuts import render
 def update_pos(request):
 	pass
 
-def render_pong(request):
-	return render(request, 'game/test.html')
+def render_chat(request, room_name):
+	return render(request, 'game/index.html', {"room_name" : room_name})
 
 # Définir les positions initiales des joueurs et de la balle
 player1_position = {'x': 0, 'y': 0}

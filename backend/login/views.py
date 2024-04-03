@@ -63,15 +63,20 @@ def test(request):
 		data = json.load(request)
 		username = data['email']
 		password = data['password']
+		request.session['user_id'] = -1
 		user = authenticate(username=username, password=password)
 		if user is not None:
+			request.session['user_id'] = User.objects.get(username=username).id
 			auth.login(request, user)
 			user = User.objects.get(username=username)
-			return JsonResponse({"message" : "OK","id" : user.id, "username" : user.username, "first_name" : user.first_name, "last_name" : user.last_name, "email" : user.email, "password" : user.password, "logged_in" : user.is_authenticated}, safe=False)
+			return JsonResponse({"message" : "OK", "id" : user.id, "username" : user.username, "first_name" : user.first_name, "last_name" : user.last_name, "email" : user.email, "password" : user.password, "logged_in" : user.is_authenticated, "session_username" : request.session['user_id']}, safe=False)
 		else:
-			return JsonResponse({"message" : str(username) + str(password)})
+			return JsonResponse({"message" : request.session['user_id']})
 	else:
 		return JsonResponse({"message" : "KO"})
+	
+def get_session_username(request):
+	return JsonResponse({'user_id' : request.session['user_id']})
 
 # LOGIN form -> if method == get render login form else if method == post login user
 # REGISTER form -> if method == get render register form else if method == post create new user in database

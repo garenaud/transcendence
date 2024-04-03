@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 // import {LoadGLTFByPath} from './ModelHelper.js'
+// game
 
 const scenePath = '/pong/javascript/assets/scene.gltf'
 
