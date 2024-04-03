@@ -365,7 +365,7 @@ class LoadModelDemo {
 	animationsLoader.setPath('./models/');
 
 	// Charger toutes les animations nécessaires dans une variable
-	animationsLoader.load('DrunkIdle.fbx', (animations) => {
+	animationsLoader.load('DwarfIdle.fbx', (animations) => {
 		let mixer = new THREE.AnimationMixer(fbxCatch);
 		this._mixers.push(mixer);
 		MexicanAnimation = {
@@ -378,7 +378,7 @@ class LoadModelDemo {
     mexicanLoad = true;
 	});
 
-	animationsLoader.load('DrunkRunForward.fbx', (animations) => {
+	animationsLoader.load('Run.fbx', (animations) => {
 		let mixer = new THREE.AnimationMixer(fbxCatch);
 		this._mixers.push(mixer);
 		MexicanAnimation.Run = mixer.clipAction(animations.animations[0]);
