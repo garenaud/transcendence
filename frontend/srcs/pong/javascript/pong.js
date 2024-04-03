@@ -78,7 +78,7 @@ else
 	);
 }
 
-function init() {
+export function initPong() {
 	// Renderer
 	renderer = new THREE.WebGLRenderer({
 		canvas: document.querySelector('#background'),
@@ -415,4 +415,4 @@ document.addEventListener('keydown', handleKeyDown);
 document.addEventListener('keyup', handleKeyUp);
 
 // Appel de la fonction d'initialisation
-init();
+//initPong();

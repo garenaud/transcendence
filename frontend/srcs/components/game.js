@@ -1,3 +1,4 @@
+import { initPong } from "../pong/javascript/pong.js";
 export function renderGame() {
     const gameHTML = `
         <div class="card-game-wrapper glowing">
@@ -22,7 +23,19 @@ export function renderGame() {
                         </button>
                     </div>
                     <div class="modal-body">
-                        <h1>Test</h1>
+                    <div class="card-game-wrapper glowing inside-card-modal">
+                    <div class="card-game-inside" style="background-image: url(Design/PongCoverImage.webp);">
+                        <div class="goldTitle">
+                            <div class="bg">Pong</div>
+                            <div class="fg">Pong</div>
+                        </div>
+                        <div class="pong-glowing-btn">
+                            <button id='localPongBtn' class='glowing-btn'><span class='glowing-txt'>L<span class='faulty-letter'>O</span>CAL</span></button>
+                            <button id='multiPongBtn' class='glowing-btn'><span class='glowing-txt'>M<span class='faulty-letter'>U</span>LTIPLAYER</span></button>
+                            <button id='tourPongBtn' class='glowing-btn'><span class='glowing-txt'>T<span class='faulty-letter'>O</span>URNAMENT</span></button>
+                        </div>
+                    </div>
+                </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -32,9 +45,28 @@ export function renderGame() {
             </div>
         </div>
     `;
-    //const gameHTML = `<div>Test</div>`;
+    const pongLocal = `
+    <canvas id="background"></canvas>
+    `;
     const gameElement = document.createElement('div');
     gameElement.classList.add('col-12', 'col-md-6');
     gameElement.innerHTML = gameHTML;
+    gameElement.querySelector('#localPongBtn').addEventListener('click', function() {
+        changeDivContent(pongLocal);
+        initPong();
+    });
+
+    gameElement.querySelector('#multiPongBtn').addEventListener('click', function() {
+        changeDivContent('Contenu pour le mode tournoi');
+    });
+
+    gameElement.querySelector('#tourPongBtn').addEventListener('click', function() {
+        changeDivContent('Contenu pour le mode tournoi');
+    });
     return gameElement;
+}
+
+function changeDivContent(newContent) {
+    const div = document.querySelector('.card-game-inside');
+    div.innerHTML = newContent;
 }
