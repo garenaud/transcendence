@@ -11,7 +11,7 @@ use std::sync::{Arc, Mutex};
 
 
 // Ask the user for login and password, and then return the connection status
-pub fn login(srv: String) -> bool {
+pub fn login(srv: String) -> Option<(Client, String)> {
 	print!("Login: ");
 	let _ = std::io::stdout().flush();
 
@@ -37,9 +37,9 @@ pub fn login(srv: String) -> bool {
 }
 
 // Use the provide login and password to connect to the server
-fn connection(srv: String, login: String, password: String) -> bool {
+fn connection(srv: String, login: String, password: String) -> Option<(Client, String)> {
 	let jar = Arc::new(Jar::default());
-
+	
 	let client = reqwest::blocking::Client::builder()
 		.danger_accept_invalid_certs(true)
 		.cookie_provider(Arc::clone(&jar))
@@ -48,7 +48,7 @@ fn connection(srv: String, login: String, password: String) -> bool {
 		Ok(client) => client,
 		Err(err) => {
 			eprintln!("{}", err);
-			return false;
+			return None;
 		}
 	};
 
@@ -63,55 +63,45 @@ fn connection(srv: String, login: String, password: String) -> bool {
 			if res.status().is_success() {
 				if res.headers().get("set-cookie").is_none() {
 					eprintln!("No CSRF-Token in the header");
-					return false;
+					return None;
 				}
 				let csrf = res.headers().get("set-cookie").unwrap();
 				csrf.to_str().unwrap().to_string()
 			} else {
 				eprintln!("Respond status code: {:#?}", res.status());
-				return false;
+				return None;
 			}
 		},
 		Err(err) => {
 			eprintln!("Error in respond: {:#?}", err);
-			return false;
+			return None;
 		}
 	};
 	let csrf_token = csrf.split(';').nth(0).unwrap().split('=').nth(1).unwrap().to_string();
-	let csrf = csrf_token.as_str();
-	// let csrf_token = "csrftoken=".to_string() + csrf + ";";
-	let csrf_token = "csrftoken=".to_string() + csrf;
-	let url = "https://{server}/".replace("{server}", &srv).parse::<Url>().unwrap();
-	jar.add_cookie_str(&csrf_token, &url);
-
-	println!("{:#?}\n", jar);
-
+	let csrf_token = csrf_token.as_str();
+	
 	let req = client
 		.post(("https://{server}/auth/test/").replace("{server}", &srv))
 		.header("User-Agent", "cli_rust")
 		.header("Accept", "application/json")
-		.header("X-CSRFToken", csrf)
-		.header("cookie", csrf_token)
+		.header("X-CSRFToken", csrf_token)
 		.body(("{\"email\":\"{email}\",\"password\":\"{password}\"}").replace("{email}", &login).replace("{password}", &password))
 		.timeout(Duration::from_secs(3));
 
 	let req = req.build().expect("ERROR WHILE BUILDING THE REQUEST");
-	println!("Request was: {:#?}\n", req);
 	let res = client.execute(req);
 
 	match res {
 		Ok(res) => {
-			println!("Repond is: {:#?}", res);
 			if !res.status().is_success() {
 				eprintln!("Respond status code: {:#?}", res.status());
-				return false;
+				return None;
 			}
-			println!("Respond body: {:#?}", res.text());
 		},
 		Err(err) => {
 			eprintln!("Error in respond: {:#?}", err);
-			return false;
+			return None;
 		}
 	}
-	true
+	return Some((client, csrf_token.to_string()));
 }

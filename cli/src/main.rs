@@ -5,10 +5,15 @@ mod login;
 use std::io;
 use std::io::Write;
 use std::error::Error;
+use reqwest::blocking::Client;
 
 fn main() {
 	println!("Welcome to T_BOOL TRANSCENDENCE !");
 	
+	let log_client: Client;
+	let log_csrf: String;
+	let mut max_try = 3;
+
 	let srv = loop {
 		let mut srv: String = String::new();
 		print!("Server: ");
@@ -50,6 +55,7 @@ fn main() {
 					break srv;
 				} else {
 					eprintln!("Server is down, please try again");
+					continue;
 				}
 			},
 			Err(err) => {
@@ -59,17 +65,25 @@ fn main() {
 			}
 		}
 	};
-
-	// if test::login(srv),expect("ERROR CONNECTING") {
-	// 	println!("user's login successfuly saved");
-	// 	// pong::game();
-	// } else {
-	// 	eprintln!("user's login failed, exiting...");
-	// }
-	if login::login(srv) {
-		println!("user's login successfuly saved");
-		// pong::game();
-	} else {
-		eprintln!("user's login failed, exiting...");
+	println!("Server: {}", srv);
+	while max_try > 0 {
+		println!("Try to login ({} tries left)", max_try);
+		match login::login(srv.clone()) {
+			Some((client, csrf)) => {
+				log_client = client;
+				log_csrf = csrf;
+				break;
+			},
+			None => {
+				max_try -= 1;
+				if max_try <= 0 {
+					eprintln!("Failed to login, exiting...");
+					return;
+				}
+				eprintln!("Failed to login");
+				continue;
+			}
+		};
 	}
+	// pong::game();
 }
