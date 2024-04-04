@@ -23,11 +23,9 @@ pub fn login(srv: String) -> Option<(Client, String)> {
 	
 	println!("Password: ");
 
-	let hashed_pw: String;
 	let password = rpassword::read_password().unwrap();
-	// let password = sha256_crypt::hash(rpassword::read_password().unwrap());
-	// match password {
-	// 	Ok(str) => hashed_pw = String::from(str),
+	// let password = match sha256_crypt::hash(rpassword::read_password().unwrap()) {
+	// 	Ok(str) => String::from(str),
 	// 	Err(_) => {
 	// 		eprintln!("ERREUR LORS DU HASHAGE DU MOT DE PASSE");
 	// 		return false;
