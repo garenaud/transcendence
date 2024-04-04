@@ -248,7 +248,6 @@ function handleBackground() {
 
 gameSocket.onmessage = function(e) {
 	game_data = JSON.parse(e.data);
-	console.log(typeof(game_data.prx));
 	if (game_data.action == 'game')
 	{
 		ball = scene.getObjectByName('Ball');
@@ -279,4 +278,4 @@ document.addEventListener('keydown', handleKeyDown);
 document.addEventListener('keyup', handleKeyUp);
 
 // Appel de la fonction d'initialisation
-//initPong();
+initPong();
