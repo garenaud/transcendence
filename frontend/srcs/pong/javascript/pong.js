@@ -16,14 +16,10 @@ let scene;
 let camera;
 let controls;
 let composer;
-let scoreText1, scoreText2;
 let player1Score = 0;
 let player2Score = 0;
 const initialAngle = 0.45;
 const speed = 0.25;
-const mooveSpeed = 0.15;
-const wallLimit = 6.5;
-const ballLimit = 8.5;
 let scoreLeft;
 let scoreRight;
 let PaddleRight;
@@ -108,7 +104,6 @@ function init() {
 			handleGround();
 			handleLight();
 			handleText();
-			// createScoreTexts();
 			handleBall();
 		})
 		.catch((error) => {
@@ -116,7 +111,6 @@ function init() {
 		});
 		scene.castShadow = true;
 		scene.receiveShadow = true;
-
 		// Animation loop
 		animate();
 }
@@ -168,13 +162,6 @@ function handleLight() {
 	scene.add( rectLightUp );
 }
 
-function updateCameraAspect(selectedCamera) {
-	const width = window.innerWidth;
-	const height = window.innerHeight;
-	selectedCamera.aspect = width / height;
-	selectedCamera.updateProjectionMatrix();
-}
-
 function initControls() {
 	const newControls = new OrbitControls(camera, renderer.domElement);
 	newControls.maxPolarAngle = Math.PI * 0.5;
@@ -203,8 +190,6 @@ function handleGround() {
 
 // Fonction pour gérer l'appui sur une touche
 function handleKeyDown(event) {
-	//console.log(event.code);
-	//if (KeyState.hasOwnProperty(event.code)) {
 		if (event.code == 'ArrowUp')
 		{
 			gameSocket.send(JSON.stringify({
@@ -235,7 +220,6 @@ function handleKeyDown(event) {
 			'message' : 'S'
 			}));
 		}
-	//}
 }
 
 // Fonction pour gérer le relâchement d'une touche
@@ -244,97 +228,6 @@ function handleKeyUp(event) {
 		KeyState[event.code] = false;
 	}
 }
-
-function handlePaddleRight() {
-	const PaddleRightName = 'RightPaddle';
-	PaddleRight = scene.getObjectByName(PaddleRightName);
-
-	if (PaddleRight) {
-		PaddleRight.castShadow = true;
-		// PaddleRight.receiveShadow = true;
-		if (KeyState['ArrowUp'] && PaddleRight.position.z - mooveSpeed > -wallLimit) {
-			PaddleRight.position.z -= mooveSpeed;
-		}
-		if (KeyState['ArrowDown'] && PaddleRight.position.z + mooveSpeed < wallLimit) {
-			PaddleRight.position.z += mooveSpeed;
-		}	
-	}
-}
-
-function handlePaddleLeft() {
-	const PaddleLeftName = 'LeftPaddle';
-	PaddleLeft = scene.getObjectByName(PaddleLeftName);
-	
-	// TODO condition si 2player alors mouvement, sinon IA;
-	if (PaddleLeft) {
-		PaddleLeft.castShadow = true;
-		// PaddleLeft.receiveShadow = true;
-		if (KeyState['KeyW'] && PaddleLeft.position.z - mooveSpeed > -wallLimit) {
-			PaddleLeft.position.z -= mooveSpeed;
-		}
-		if (KeyState['KeyS'] && PaddleLeft.position.z + mooveSpeed < wallLimit) {
-			PaddleLeft.position.z += mooveSpeed;
-		}
-	} 
-}
-
-let speedIncreaseFactor = 1; // Facteur d'augmentation de la vitesse
-
-// TODO: Reajuster l'angle de la balle.
-function handlePaddleCollision() {
-	const ballRadius = ball.geometry.boundingSphere.radius;
-	// console.log(PaddleLeft.geometry);
-	const PaddleSizeX = PaddleLeft.geometry.boundingBox.max.x;
-	const PaddleSizeZ = PaddleLeft.geometry.boundingBox.max.z + 3;
-	let isColliding = false;
-	// console.log(PaddleSizeZ);
-
-	if (PaddleLeft && PaddleRight && !isColliding) {
-		// Vérifier la collision avec le paddle gauche
-		if (
-			ball.position.x - ballRadius < PaddleLeft.position.x + PaddleSizeX / 2 &&
-			ball.position.x + ballRadius > PaddleLeft.position.x - PaddleSizeX / 2 &&
-			ball.position.z + ballRadius > PaddleLeft.position.z - PaddleSizeZ / 2 &&
-			ball.position.z - ballRadius < PaddleLeft.position.z + PaddleSizeZ / 2
-			) {
-				isColliding = true;
-				ballVelocity.x *= -1;
-				speedIncreaseFactor += 0.1;
-			}
-			// Vérifier la collision avec le paddle droit
-			if (
-				ball.position.x - ballRadius < PaddleRight.position.x + PaddleSizeX / 2 &&
-				ball.position.x + ballRadius > PaddleRight.position.x - PaddleSizeX / 2 &&
-				ball.position.z + ballRadius > PaddleRight.position.z - PaddleSizeZ / 2 &&
-				ball.position.z - ballRadius < PaddleRight.position.z + PaddleSizeZ / 2
-				) {
-					isColliding = true;
-					ballVelocity.x *= -1;
-					speedIncreaseFactor += 0.1;
-				}
-			}
-			isColliding = false;
-	}
-	
-function handleWallColision() {
-		if (ball.position.z > ballLimit || ball.position.z < -ballLimit) {
-			ballVelocity.z *= -1;
-		} else if (ball.position.x > 18 || ball.position.x < -18) {
-			ball.position.set(0, 0, 0);
-			speedIncreaseFactor = 1.1;
-			ballVelocity = new THREE.Vector3(Math.cos(initialAngle) * speed, 0, Math.sin(initialAngle) * speed);
-		}
-}
-	
-	function updateBall() {
-		if (ball) {
-			ball.position.z += ballVelocity.z * speedIncreaseFactor;
-			ball.position.x += ballVelocity.x * speedIncreaseFactor;
-			// console.log(speedIncreaseFactor);
-			handlePaddleCollision();
-			handleWallColision();
-		}
-	}
 
 
 function handleBackground() {
@@ -365,48 +258,25 @@ gameSocket.onmessage = function(e) {
 	else if (game_data.action == 'p1')
 	{
 		PaddleRight = scene.getObjectByName("RightPaddle");
+		PaddleRight.castShadow = true;
 		PaddleRight.position.x = parseFloat(game_data.px);
 		PaddleRight.position.z = parseFloat(game_data.pz);
 	}
 	else if (game_data.action == 'p2')
 	{
 		PaddleLeft = scene.getObjectByName("LeftPaddle");
+		PaddleLeft.castShadow = true;
 		PaddleLeft.position.x = parseFloat(game_data.px);
 		PaddleLeft.position.z = parseFloat(game_data.pz);
 	}
 	gameSocket.send(JSON.stringify({
 		'message' : 'update'
 		}));
-	//console.log(`hello from room ${game_data.room_name} in group ${game_data.room_group_name}`);
-	//update_game_data();
 };
-
-function update_game_data() {
-	const PaddleRightName = 'RightPaddle';
-	const PaddleLeftName = 'LeftPaddle';
-	ball = scene.getObjectByName('Ball');
-	PaddleRight = scene.getObjectByName(PaddleRightName);
-	PaddleLeft = scene.getObjectByName(PaddleLeftName);
-	// console.log(PaddleRight);
-	// console.log(ball);
-	PaddleRight.position.x = parseFloat(game_data.paddleright_position_x);
-	PaddleRight.position.z = parseFloat(game_data.paddleright_position_z);
-	PaddleLeft.position.x = parseFloat(game_data.paddleleft_position_x);
-	PaddleLeft.position.z = parseFloat(game_data.paddleleft_position_z);
-	//PaddleLeft.position.z = parseFloat(game_data.paddleleft_position_z);
-	ball.position.x = parseFloat(game_data.ball_position_x);
-	ball.position.z = parseFloat(game_data.ball_position_z);
-
-}
 
 function animate() {
 	requestAnimationFrame(animate);
-	//handlePaddleLeft();
-	//handlePaddleRight();
-	//handleAIPaddle();
 	handleBackground();
-	// handleAIPaddleRight();
-	updateBall();
 	controls.update();
 	composer.render(scene, camera);
 }
