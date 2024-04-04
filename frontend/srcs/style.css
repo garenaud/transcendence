@@ -2,6 +2,7 @@
     margin: 5;
     padding: 0;
     box-sizing: border-box;
+    font-family:  "Fira Sans", sans-serif;
 }
 
 body {
@@ -10,12 +11,12 @@ body {
     background-repeat: no-repeat;
     background-position: center center;
     background-attachment: fixed;
-    font-family:  "Fira Sans", sans-serif;
+
 }
 
 h1 {
-    font-family: "Fira Sans", sans-serif;
-    font-weight: 900;
+/*     font-family: "Fira Sans", sans-serif;
+ */    font-weight: 900;
     font-style: normal;
     color: #F6428E;
 }
@@ -27,6 +28,13 @@ h1 {
 /*-------------------------------- Modal --------------------------------*/
 .modal-title {
     color: #F6428E;
+}
+.modal-backdrop {
+  z-index: 1040;
+}
+.modal {
+  /* position: relative; */
+  z-index: 1050 !important;
 }
 
 
@@ -65,8 +73,8 @@ h1 {
 .navbar {
     background-color: #1A244D !important;
     margin-bottom: 100px;
-    padding-left: 50px;
-    padding-right: 50px;
+    padding-left: 100px;
+    padding-right: 100px;
 }
 
 .navbar * {
@@ -135,6 +143,7 @@ h1 {
   justify-self: flex-end;
   height: 60px;
   width: auto;
+  z-index: 11;
 }
 
 .nav-user-info {
@@ -144,6 +153,7 @@ h1 {
   flex-direction: column;
   align-items: flex-end; /* Correction ici */
   justify-content:baseline;
+  z-index: 11;
 }
 
 .nav-user-img {
@@ -151,6 +161,7 @@ h1 {
   align-items: center;
   justify-content: flex-end;
   height: 90px; /* Hauteur de la navbar pour alignement vertical */
+  z-index: 11;
 }
 
 .img_cont_nav {
@@ -294,7 +305,10 @@ canvas {
 
 :root {
   --glow-color: #F6428E;
-}
+    --gold: #ffb338;
+    --light-shadow: #77571d;
+    --dark-shadow: #3e2904;
+  }
 
 *,
 *::before,
@@ -780,11 +794,79 @@ margin-bottom: 15px !important;
   border-top-right-radius: 15px;
 }
 
+.card-game-test {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 30vh;
+  padding: 10px;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  border-radius: 15px;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.card-game-inside {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%; /* Prend toute la hauteur du conteneur parent */
+  padding: 10px;
+  text-align: center;
+  position: relative; /* Pour que le contenu de la carte soit positionné par rapport à cet élément */
+  z-index: 1;
+  border-radius: 15px;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.inside-card-modal {
+  height: 100%;
+}
+
+.card-game-wrapper {
+  position: relative;
+  z-index: 998;
+}
+
+.card-game-test .title {
+  text-align: center;
+  margin-bottom: auto; /* Pour pousser le bouton vers le bas */
+  color: white;
+}
+
+.card-game-test .button {
+  display: flex;
+  flex-direction: row;
+  justify-items: flex-end;
+  margin-top: auto; /* Pour être poussé vers le bas par le titre */
+}
+
 .container-div-game {
   height: 100%;
-  margin: 10px;
-/*   margin-left: 100px;
-  margin-right: 100px; */
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.row-div {
+  display: flex;
+  flex-direction: row;
+  margin-left: 100px;
+  margin-right: 100px;
+}
+
+.row {
+  display: flex;
+}
+
+.row > * {
+  margin-top: 15px;
 }
 
 .card-body {
@@ -1284,7 +1366,221 @@ background-size: 70px 120px;
   transition: all .4s ease-in-out;
 }
 .card.flip .face {
-  z-index: 1000;
+  z-index: 900;
   background: #fff;
   transform: rotateX(0deg) rotateY(0deg);
+}
+
+/*-------------------------------- User-menu --------------------------------*/
+#user-menu {
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 300px;
+  height: 100%;
+  background-color: #1A244D;
+  color: #F6428E;
+  display: none;
+  z-index: 999;
+}
+
+.user-menu-img {
+  position: relative; /* Ajoutez cette ligne */
+}
+
+.user-menu-img img {
+  max-width: 100%;
+  max-height: 100%;
+  position: relative; /* Ajoutez cette ligne */
+  top: 0; /* Ajoutez cette ligne */
+  right: 0; /* Ajoutez cette ligne */
+}
+
+.user-menu-title {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+/*  justify-content: center;
+  align-items: center;
+  align-content: center; */
+  margin-top: 10px;
+}
+
+.user-menu-title h2 h3 h4{
+  text-transform: uppercase;
+}
+
+.close-menu-button {
+  background: none;
+  border: none;
+  position: absolute;
+  color: white;
+  top: 10px;
+  right: 10px;
+}
+
+.edit-menu-button {
+  background: none;
+  border: none;
+  position: absolute;
+  color: white;
+  top: 10px;
+  left: 10px; 
+}
+
+#user-menu .active {
+  background-color: #F6428E !important;
+  color: #1A244D;
+}
+
+.user-menu-info {
+  display: flex;
+  flex-direction: column;
+  /* margin-top: 10px; */
+
+}
+
+.user-menu-info > * {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.user-menu-li {
+  display: flex;
+  align-items: center;
+  align-content: center;
+  width:100%;
+  background-color: #1A244D;
+  border: none;
+  color: #F6428E;
+  padding-left: 5px;
+  text-transform: uppercase;
+}
+
+.user-menu-li:hover {
+  background-color: #F6428E;
+  color: #1A244D;
+}
+
+.userlist-table {
+  width: 100%;
+}
+
+.userlist-table td {
+  padding: 10px;
+  border: 1px solid #ddd;
+}
+
+.userlist-table button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  margin: 10px 0;
+  border: none;
+  cursor: pointer;
+}
+
+
+/* modale pour changer les informations de l'utilisateur */
+#preview {
+  max-width: 100%;
+  height: auto;
+}
+
+/*-------------------------------- login --------------------------------*/
+.login-form {
+  display: block;
+}
+
+.signup {
+  display: none;
+}
+
+/*-------------------------------- Gold title (https://codepen.io/TajShireen/pen/LYyOzJL) --------------------------------*/
+
+
+
+
+.goldTitle {
+  display: grid;
+  grid-template-areas: 'overlap';
+  place-content: center;
+  text-transform: uppercase;
+}
+.goldTitle > div {
+  background-clip: text;  
+  -webkit-background-clip: text;
+  font-weight: 900;
+  font-size: clamp( 1em, 8vw, 5rem);
+  grid-area: overlap;
+  letter-spacing: 1px;
+  -webkit-text-stroke: 4px transparent;
+}
+div.bg {
+  background-image: repeating-linear-gradient( 105deg, 
+    var(--gold) 0% , 
+    var(--dark-shadow) 5%,
+    var(--gold) 12%);
+  color: transparent;
+  filter: drop-shadow(5px 15px 15px black);
+  transform: scaleY(1.05);
+  transform-origin: top;
+}
+div.fg{
+  background-image: repeating-linear-gradient( 5deg,  
+    var(--gold) 0% , 
+    var(--light-shadow) 23%, 
+    var(--gold) 31%);
+  color: #1e2127;
+  transform: scale(1);
+}
+
+
+
+@media (min-width: 768px) {
+  .row {
+    margin-left: 100px;
+    margin-right: 100px;
+  }
+}
+
+/*-------------------------------- Pong --------------------------------*/
+
+.pong-game {
+  position: relative;
+}
+
+.pong-table {
+  position: relative;
+  width: 600px;
+  height: 400px;
+  background-color: #000;
+  border: 2px solid #fff;
+}
+
+.left-paddle, .right-paddle, .ball {
+  position: absolute;
+  background-color: #fff;
+}
+
+.left-paddle {
+  width: 10px;
+  height: 80px;
+  left: 10px;
+  top: 160px;
+}
+
+.right-paddle {
+  width: 10px;
+  height: 80px;
+  right: 10px;
+  top: 160px;
+}
+
+.ball {
+  width: 20px;
+  height: 20px;
+  left: 290px;
+  top: 190px;
+  border-radius: 50%;
 }

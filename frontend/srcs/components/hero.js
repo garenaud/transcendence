@@ -6,7 +6,7 @@ export function renderHero() {
 		<div class="row">
 			<div class="col-hero">
 				<div class="hero col-md-6">
-					<h1>Transcendez le jeu, devenez légende.</h1>
+					<h1>Transcendez le jeu, devenez légende!</h1>
 					<button id='heroGameBtn' class='glowing-btn'><span class='glowing-txt'>J<span class='faulty-letter'>O</span>UER</span></button>
 				</div>
 				<div class="lg-img col-md-4"><img src="Design/cyberUnicorn2.webp" alt=""></div>
@@ -17,7 +17,9 @@ export function renderHero() {
 
     document.body.insertAdjacentHTML('afterbegin', heroHTML);
     setupButtonListener();
-	fetch('/auth/session_user/', {
+
+	// je sais plus pourquoi j'ai mis ça là, mais sait-on jamais ca me reviendra peut-être ;-)
+/* 	fetch('/auth/session_user/', {
 		method: 'GET'
 	})
 	.then(response => response.json())
@@ -26,7 +28,7 @@ export function renderHero() {
 	})
 	.catch((error) => {
 		console.error('Error:', error);
-	});
+	}); */
 }
 
 function    setupButtonListener() {

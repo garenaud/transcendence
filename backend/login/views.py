@@ -22,12 +22,13 @@ def signup_form(request):
 		if form.is_valid():
 			form.save()
 			messages.success(request, "Your account has been created successfully")
-			return redirect("home_page")
+			return JsonResponse({"message" : "OK"})
 		else:
 			messages.error(request, "Error")
-	
+			return JsonResponse({"message" : "Error", "errors": form.errors}, status=400)
 	else:
 		form = SignupForm()
+		return JsonResponse({"message" : "Invalid request method"}, status=400)
 	return render(request, "login/signup.html", {'form' : form})
 
 

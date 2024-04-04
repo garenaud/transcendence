@@ -1,18 +1,24 @@
 import { getUser, loadUser } from './userManager.js';
-import { renderNavbar } from './navbar.js'; // Ajustez le chemin selon l'organisation de vos fichiers
+import { renderNavbar } from './navbar.js'; 
 import { renderHero } from './hero.js';
-import { renderGame } from './game.js';
+import { renderPong } from './pongComponent.js';
 import { renderChat } from './chat.js';
-import { renderRoulette, setupRoulette } from './roulette.js';
+import { renderRoulette, setupRoulette, runRoulette } from './roulette.js';
 import { renderLogin } from './login.js';
 import { renderBlackJack } from './BlackJack.js';
+import { renderRun } from './runGame.js';
+import { renderUserMenu } from './userMenu.js';
 //import { renderSlotMachine } from './slotMachine.js';
 
-let appState = {
+// Initialisation de l'état de l'application et du current user
+export let appState = {
     currentView: 'login',
     user: null,
+    users: [],
+    renderedComponents: {},
 };
 
+// Fonction pour créer et ajouter un div avec des composants spécifiques à la page
 function renderDiv(components, className) {
     const div = document.createElement('div');
     div.classList.add(className);
@@ -22,52 +28,74 @@ function renderDiv(components, className) {
     document.body.appendChild(div);
 }
 
+// Fonction pour changer la vue actuelle de l'application
 export function changeView(newView) {
-    history.pushState({ view: newView }, "", newView);
+    location.hash = newView;
     appState.currentView = newView;
+    localStorage.setItem('appState', JSON.stringify(appState));
     renderApp();
 }
 
-window.addEventListener("popstate", function(event) {
-    if (event.state) {
-        appState.currentView = event.state.view;
-        renderApp();
-    }
+// Écouteur d'événement pour changer la vue lorsque l'URL change (rajoute le # à l'URL lorsqu'on change de vue)
+window.addEventListener("hashchange", function() {
+    appState.currentView = location.hash.substring(1);
+    renderApp();
 });
 
 export function getCurrentView() {
     return appState.currentView;
 }
 
+// Fonction principale pour rendre l'application en fonction de l'état actuel
 export async function renderApp() {
-    await loadUser();
-    appState.user = getUser();
+    const savedState = localStorage.getItem('appState');
+    if (savedState) {
+        appState = JSON.parse(savedState);
+    } else {
+        const view = window.location.pathname.substring(1);
+        appState.currentView = ['login', 'hero', 'game', 'chat'].includes(view) ? view : 'login';
+    }
+    if (!appState.renderedComponents) {
+        appState.renderedComponents = {};
+    }
     document.body.innerHTML = '';
     switch(appState.currentView) {
         case 'login':
             renderLogin();
             break;
-        case 'hero':
-            renderRoulette();
-            await renderHero();
-            renderNavbar();
-            break;
-        case 'game':
-            const game = await renderGame();
-            const roulette = await renderRoulette();
-            const BlackJack = await renderBlackJack();
-            const test = await renderBlackJack();
-            const test2 = await renderRoulette();
-            const test3 = await renderRoulette();
-            await renderDiv([roulette, BlackJack, test, test2, test3], 'game-div');
-            renderNavbar();
-            break;
-        case 'chat':
-            const chat = await renderChat();
-            await renderDiv([chat], 'chat-div');
-            renderNavbar(); 
-            break;
+        default:
+            if (!appState.user) {
+                console.log('loading user');
+                await loadUser();
+            }
+            switch(appState.currentView) {
+                case 'hero':
+                    await renderHero();
+                    renderNavbar(appState.user);
+                    break;
+                case 'game':
+                    const game = await renderPong();
+                    const game2 = await renderRun();
+                    const roulette = await renderRoulette();
+                    const BlackJack = await renderBlackJack();
+                    const test = await renderBlackJack();
+                    const test2 = await renderRoulette();
+                    const test3 = await renderRoulette();
+                    await renderDiv([roulette, BlackJack, test, test2, game, game2], 'row');
+                    //await renderDiv([game, game2], 'row');
+                    //console.log('appState.user game:', getUser());
+                    renderNavbar(appState.user);
+                    break;
+                case 'chat':
+                    const chat = await renderChat();
+                    await renderDiv([chat], 'chat-div');
+                    renderNavbar(appState.user);
+                    break;
+            }
+        break;
     }
 }
-
-renderApp(); // Cela rendra la vue initiale basée sur l'état actuel
+renderApp();
+/* loadUser().then(() => {
+    renderApp();
+}); */

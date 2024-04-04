@@ -8,10 +8,10 @@ import { renderLogin } from './login.js';
 import { renderBlackJack } from './BlackJack.js';
 //import { renderSlotMachine } from './slotMachine.js';
 
-let appState = {
+/* let appState = {
     currentView: 'login',
     user: null,
-};
+}; */
 
 function renderDiv(components, className) {
     const div = document.createElement('div');
