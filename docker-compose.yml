@@ -22,29 +22,9 @@ services:
       timeout: 5s
       retries: 5
 
-  # pgadmin:
-  #   container_name: pgadmin
-  #   image: pgadmin:latest
-  #   volumes:
-  #     -
-  #   networks:
-  #     - transcendence
-  #   ports:
-  #     - ""
-  #   restart: on-failure
-  #   env_file:
-  #     - req/.env
-  #   depends_on:
-  #     - postgre
-  #   build:
-  #     context: req/pgadmin
-  #     dockerfile: Dockerfile
-
   backend:
     container_name: backend
     image: backend
-    volumes:
-      - backend:/code
     networks:
       - transcendence
     ports:
@@ -59,10 +39,8 @@ services:
       - postgre
 
   frontend:
-    container_name: frontend
+    container_name: nginx
     image: frontend
-    volumes:
-      - frontend:/var/www/html
     networks:
       - transcendence
     ports:
@@ -76,13 +54,6 @@ services:
       dockerfile: Dockerfile
 
 volumes:
-  backend:
-    external: false
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: '~/data/back/'
   db:
     external: false
     driver: local
@@ -90,13 +61,6 @@ volumes:
       type: none
       o : bind
       device: '~/data/db'
-  frontend:
-    external: false
-    driver: local
-    driver_opts:
-      type: none
-      o : bind
-      device: '~/data/front'
 
 networks:
   transcendence:

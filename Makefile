@@ -2,13 +2,17 @@ all:
 	@mkdir -p ~/data/db
 	@mkdir -p ~/data/back
 	@mkdir -p ~/data/front
-	docker-compose build --no-cache
+	docker-compose build
+	@sleep 3
 	docker-compose up -d
 
-down:
+down: 
 	docker-compose down
 
-debug: all
+debug:
+	@mkdir -p ~/data/db
+	@mkdir -p ~/data/back
+	@mkdir -p ~/data/front
 	docker-compose -f ./docker-compose.yml logs -f
 
 look:
@@ -22,15 +26,14 @@ look:
 
 clean:
 	docker image prune -a
-	docker-compose -f ./docker-compose.yml down
 
-fclean: clean vol
+fclean: down clean vol
 	docker system prune -a --volumes
 	
 vol:
-	docker volume rm ft_transcendence_backend
+# docker volume rm ft_transcendence_backend
 	docker volume rm ft_transcendence_db
-	docker volume rm ft_transcendence_frontend
+# docker volume rm ft_transcendence_frontend
 	rm -rf ~/data
 
 re: fclean all

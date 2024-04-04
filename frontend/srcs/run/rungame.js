@@ -338,13 +338,12 @@ class LoadModelDemo {
             BossAnimation.Loose.loop = THREE.LoopOnce;
             BossAnimation.Loose.clampWhenFinished = true;
         });
-
         this._scene.add(fbxBoss);
     });
 }
 
 
-  _LoadTheCatch() {
+_LoadTheCatch() {
     const loader = new FBXLoader();
     loader.setPath('./models/');
     loader.load('Catch.fbx', (fbxCatch) => {
