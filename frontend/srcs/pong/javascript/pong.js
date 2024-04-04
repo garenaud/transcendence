@@ -6,8 +6,10 @@ import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+//import { gameid } from './join.js';
 // import { RectAreaLightHelper } from 'three/addons/helpers/RectAreaLightHelper.js';
 
+let gameid = sessionStorage.getItem('gameid');
 let game_data;
 let renderer;
 let scene;
@@ -31,6 +33,7 @@ let PaddleRight;
 let PaddleLeft;
 let ball;
 let ballVelocity;
+let gameSocket;
 
 const KeyState = {
 	KeyW: false,
@@ -40,13 +43,44 @@ const KeyState = {
 	Escape: false,
 };
 
-const gameSocket = new WebSocket(
+function makeid(length) {
+    let result = '';
+    const characters = '0123456789';
+    const charactersLength = characters.length;
+    let counter = 0;
+    while (counter < length) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+      counter += 1;
+    }
+    return result;
+}
+
+// console.log(`ID IS ${gameid}`);
+
+// if (gameid != null)
+// {
+gameSocket = new WebSocket(
 	'ws://'
 	+ window.location.host
 	+ '/ws/'
 	+ 'game'
 	+ '/'
+	+ makeid(3)
+	+ '/'
 );
+// }
+// else
+// {
+// 	gameSocket = new WebSocket(
+// 		'ws://'
+// 		+ window.location.host
+// 		+ '/ws/'
+// 		+ 'game'
+// 		+ '/'
+// 		+ makeid(5)
+// 		+ '/'
+// 	);
+// }
 
 function init() {
 	// Renderer
@@ -193,6 +227,18 @@ function handleKeyDown(event) {
 		{
 			gameSocket.send(JSON.stringify({
 			'message' : 'Stop'
+			}));
+		}
+		else if (event.code == 'KeyW')
+		{
+			gameSocket.send(JSON.stringify({
+			'message' : 'W'
+			}));
+		}
+		else if (event.code == 'KeyS')
+		{
+			gameSocket.send(JSON.stringify({
+			'message' : 'S'
 			}));
 		}
 	//}
@@ -395,7 +441,24 @@ function handleBackground() {
 
 gameSocket.onmessage = function(e) {
 	game_data = JSON.parse(e.data);
-	update_game_data()
+	console.log(typeof(game_data.prx));
+	if (game_data.action == 'game')
+	{
+		ball = scene.getObjectByName('Ball');
+		ball.position.x = parseFloat(game_data.bx);
+		ball.position.z = parseFloat(game_data.bz);
+		PaddleRight = scene.getObjectByName("RightPaddle");
+		PaddleRight.position.x = parseFloat(game_data.prx);
+		PaddleRight.position.z = parseFloat(game_data.prz);
+		PaddleLeft = scene.getObjectByName("LeftPaddle");
+		PaddleLeft.position.x = parseFloat(game_data.plx);
+		PaddleLeft.position.z = parseFloat(game_data.plz);
+	}
+	gameSocket.send(JSON.stringify({
+		'message' : 'update'
+		}));
+	//console.log(`hello from room ${game_data.room_name} in group ${game_data.room_group_name}`);
+	//update_game_data();
 };
 
 function update_game_data() {
@@ -409,13 +472,11 @@ function update_game_data() {
 	PaddleRight.position.x = parseFloat(game_data.paddleright_position_x);
 	PaddleRight.position.z = parseFloat(game_data.paddleright_position_z);
 	PaddleLeft.position.x = parseFloat(game_data.paddleleft_position_x);
+	PaddleLeft.position.z = parseFloat(game_data.paddleleft_position_z);
 	//PaddleLeft.position.z = parseFloat(game_data.paddleleft_position_z);
 	ball.position.x = parseFloat(game_data.ball_position_x);
 	ball.position.z = parseFloat(game_data.ball_position_z);
-	gameSocket.send(JSON.stringify({
-		'message' : 'IA',
-		'pos' : PaddleLeft.position.z
-	}));
+
 }
 
 function animate() {
@@ -423,7 +484,7 @@ function animate() {
 	requestAnimationFrame(animate);
 	//handlePaddleLeft();
 	//handlePaddleRight();
-	handleAIPaddle();
+	//handleAIPaddle();
 	handleBackground();
 	// handleAIPaddleRight();
 	//updateBall();

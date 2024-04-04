@@ -1,4 +1,5 @@
-RUST_SOURCE = cli/src/main.rs
+RUST_FILES = main.rs menu.rs login.rs pong.rs
+RUST_SOURCE = $(addprefix cli/src/, $(RUST_FILES))
 
 all:
 	@mkdir -p ~/data/db
@@ -29,14 +30,14 @@ clean:
 	docker image prune -a
 	docker-compose -f ./docker-compose.yml down
 
-fclean: clean
+fclean: clean vol
 	docker system prune -a --volumes
 	
 vol:
-	docker volume rm web42_backend
-	docker volume rm web42_db
-	docker volume rm web42_frontend
-	sudo rm -rf ~/data
+	docker volume rm ft_transcendence_backend
+	docker volume rm ft_transcendence_db
+	docker volume rm ft_transcendence_frontend
+	rm -rf ~/data
 
 re: fclean
 	docker-compose -f ./docker-compose.yml up -d --build
