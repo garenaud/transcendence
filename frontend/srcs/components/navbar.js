@@ -13,11 +13,11 @@ function displayUserInfo(user) {
       const userInfoDiv = document.getElementById('nav-user');
       if (userInfoDiv) {
           userInfoDiv.innerHTML = `
-          <div class="nav-user-info">
+          <div class="nav-user-info d-none d-md-block">
           <h4>${user.username}</h4>
           <h6>${user.pts} pts</h6>
           </div>
-          <div id="user-menu-button" class="nav-user-img">
+          <div id="user-menu-button" class="nav-user-img d-none d-md-block">
                   <div id="user-menu-button" class="img_cont_nav">
                   <img src="${user.profilePicture}" alt="User Image">
                   </div>
@@ -111,9 +111,9 @@ function displayUserInfo(user) {
         const navbarHTML = `
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
       <div class="container-fluid">
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon fas fa-bars"></span>
-    </button>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon fas fa-bars"></span>
+      </button>
     <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
       <ul class="nav-div-btn navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-glowing-btn">
