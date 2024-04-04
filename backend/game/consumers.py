@@ -3,6 +3,7 @@ import json
 import math
 import introcs
 import asyncio
+import random
 import time
 import threading
 from database.models import Games
@@ -52,23 +53,22 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
     def loop(self):
         while True:
             time.sleep(0.02)
+            is_colliding = False
             paddle_size_x = 0.20000000298023224
             paddle_size_z = 3.1
-            max_angle_adjustment = math.pi / 6
-            min_angle_adjustment = (math.pi * -1) / 6
             #verifier la collision avec le paddle gauche
             if (self.game.bpx - self.game.bradius < self.game.plx + paddle_size_x / 2 and
                 self.game.bpx + self.game.bradius > self.game.plx - paddle_size_x / 2 and
                 self.game.bpz + self.game.bradius > self.game.plz - paddle_size_z / 2 and
                 self.game.bpz - self.game.bradius < self.game.plz + paddle_size_z / 2
                 ):
-                relative_position = (self.game.bpz - self.game.plz) / paddle_size_z
-                angleadjustment = (relative_position - 0.5) * (max_angle_adjustment - min_angle_adjustment) * 0.6
+                # relative_position = (self.game.bpz - self.game.plz) / paddle_size_z
+                # angleadjustment = (relative_position - 0.5) * (max_angle_adjustment - min_angle_adjustment) * 0.6
                 # Ajuster la direction de la balle en fonction de l'angle
-                angle = math.pi / 4 + angleadjustment
-                self.game.bv.x = math.cos(angle) * (0.2 * self.game.sif)
-                self.game.bv.x = math.sin(angle) * (0.2 * self.game.sif)
+                # angle = math.pi / 4 + angleadjustment
+                self.game.bv.x *= -1
                 self.game.sif += 0.1
+                is_colliding = True
                 # print("collision detectee a gauche")
             #verifier la collision avec le paddle droit
             if (self.game.bpx - self.game.bradius < self.game.prx + paddle_size_x / 2 and
@@ -76,15 +76,11 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
                 self.game.bpz + self.game.bradius > self.game.prz - paddle_size_z / 2 and
                 self.game.bpz - self.game.bradius < self.game.prz + paddle_size_z / 2
                 ):
-                relative_position = (self.game.bpz - self.game.prz) / paddle_size_z
-                angleadjustment = (relative_position - 0.5) * (max_angle_adjustment - min_angle_adjustment) * 0.3
-                # Ajuster la direction de la balle en fonction de l'angle
-                angle = (math.pi * -1) / 4 - angleadjustment
-                self.game.bv.x = (math.cos(angle) * -1) * (0.2 * self.game.sif)
-                self.game.bv.z = (math.sin(angle) * -1) * (0.2 * self.game.sif)
+                self.game.bv.x *= -1;
                 self.game.sif += 0.1
-                # print("collision detectee a droite")
-
+                is_colliding = True
+                # print("collision detectee a droite"
+            is_colliding = False
             balllimit = 8.5
             if self.game.bpz > balllimit or self.game.bpz < -balllimit:
                 self.game.bv.z *= -1
@@ -241,40 +237,26 @@ class GameConsumer(WebsocketConsumer):
             self.game.sif = 1.1
             ball_velocity = introcs.Vector3(math.cos(0) * 0.25, 0, math.sin(0) * 0.25)
     
-    def handle_paddle_collision(self):
-        self.game.bradius = self.game_values['self.game.bradius']
-        paddle_size_x = 0.20000000298023224
-        paddle_size_z = 3.1
-        max_angle_adjustment = math.pi / 6
-        min_angle_adjustment = (math.pi * -1) / 6
-        #verifier la collision avec le paddle gauche
-        if (self.game.bpx - self.game.bradius < self.game.plx + paddle_size_x / 2 and
-            self.game.bpx + self.game.bradius > self.game.plx - paddle_size_x / 2 and
-            self.game.bpz + self.game.bradius > self.game.plz - paddle_size_z / 2 and
-            self.game.bpz - self.game.bradius < self.game.plz + paddle_size_z / 2
-            ):
-            relative_position = (self.game.bpz - self.game.plz) / paddle_size_z
-            angleadjustment = (relative_position - 0.5) * (max_angle_adjustment - min_angle_adjustment) * 0.6
-            # Ajuster la direction de la balle en fonction de l'angle
-            angle = math.pi / 4 + angleadjustment
-            self.game.bvx = math.cos(angle) * (0.2 * self.game.sif)
-            self.game.bvz = math.sin(angle) * (0.2 * self.game.sif)
-            self.game.sif += 0.1
-            # print("collision detectee a gauche")
-        #verifier la collision avec le paddle droit
-        if (self.game.bpx - self.game.bradius < self.game.prx + paddle_size_x / 2 and
-            self.game.bpx + self.game.bradius > self.game.prx - paddle_size_x / 2 and
-            self.game.bpz + self.game.bradius > self.game.prz - paddle_size_z / 2 and
-            self.game.bpz - self.game.bradius < self.game.prz + paddle_size_z / 2
-            ):
-            relative_position = (self.game.bpz - self.game.prz) / paddle_size_z
-            angleadjustment = (relative_position - 0.5) * (max_angle_adjustment - min_angle_adjustment) * 0.3
-            # Ajuster la direction de la balle en fonction de l'angle
-            angle = (math.pi * -1) / 4 - angleadjustment
-            self.game.bvx = (math.cos(angle) * -1) * (0.2 * self.game.sif)
-            self.game.bvz = (math.sin(angle) * -1) * (0.2 * self.game.sif)
-            self.game.sif += 0.1
-            # print("collision detectee a droite")
+    # def handle_paddle_collision(self):
+    #     self.game.bradius = self.game_values['self.game.bradius']
+    #     paddle_size_x = 0.20000000298023224
+    #     paddle_size_z = 3.1
+    #     #verifier la collision avec le paddle gauche
+    #     if (self.game.bpx - self.game.bradius < self.game.plx + paddle_size_x / 2 and
+    #         self.game.bpx + self.game.bradius > self.game.plx - paddle_size_x / 2 and
+    #         self.game.bpz + self.game.bradius > self.game.plz - paddle_size_z / 2 and
+    #         self.game.bpz - self.game.bradius < self.game.plz + paddle_size_z / 2
+    #         ):
+    #         self.game.sif += 0.1
+    #         # print("collision detectee a gauche")
+    #     #verifier la collision avec le paddle droit
+    #     if (self.game.bpx - self.game.bradius < self.game.prx + paddle_size_x / 2 and
+    #         self.game.bpx + self.game.bradius > self.game.prx - paddle_size_x / 2 and
+    #         self.game.bpz + self.game.bradius > self.game.prz - paddle_size_z / 2 and
+    #         self.game.bpz - self.game.bradius < self.game.prz + paddle_size_z / 2
+    #         ):
+    #         self.game.sif += 0.1
+    #         # print("collision detectee a droite")
 
     def update_ball_pos(self):
         while self.game_values['finished'] == False:
@@ -301,6 +283,7 @@ class GameConsumer(WebsocketConsumer):
     def connect(self):
         self.room_id = self.scope["url_route"]["kwargs"]["room_id"]
         self.room_group_name = "chat_%s" % self.room_id
+        random_angle = math.radians(random.uniform(45, 90))
         self.game_values = {
             'p1_id' : 1,
             'p2_id' : -1,
@@ -319,8 +302,12 @@ class GameConsumer(WebsocketConsumer):
             'paddleright_position_z' : 0.0,
             'move_speed' : 0.25,
             'speed_increase_factor' : 1.1,
-            'channel_name' : self.channel_name
+            'channel_name' : self.channel_name,
+    
         }
+        initial_speed = 0.25  # Adjust the initial speed as needed
+        self.game_values['ball_velocity_x'] = math.cos(random_angle) * initial_speed
+        self.game_values['ball_velocity_z'] = math.sin(random_angle) * initial_speed
         self.game_values['room_id'] = self.room_id
         self.game_values['room_group_name'] = self.room_group_name
         # Join room group

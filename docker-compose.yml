@@ -25,6 +25,8 @@ services:
   backend:
     container_name: backend
     image: backend
+    volumes:
+      - .:/code
     networks:
       - transcendence
     ports:
