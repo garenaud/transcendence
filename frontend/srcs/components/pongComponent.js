@@ -1,6 +1,7 @@
 import { initPong } from "../pong/javascript/pong.js";
-export function renderGame() {
-    const gameHTML = `
+
+export function renderPong() {
+    const pongHTML = `
         <div class="card-game-wrapper glowing">
             <div class="card-game-test" style="background-image: url(Design/PongCoverImage.webp);">
                 <div class="goldTitle">
@@ -48,24 +49,44 @@ export function renderGame() {
     const pongLocal = `
     <canvas id="background"></canvas>
     `;
-    const gameElement = document.createElement('div');
-    gameElement.classList.add('col-12', 'col-md-6');
-    gameElement.innerHTML = gameHTML;
-    gameElement.querySelector('#localPongBtn').addEventListener('click', function() {
-        changeDivContent(pongLocal);
-        initPong();
+    const pongElement = document.createElement('div');
+    pongElement.classList.add('col-12', 'col-md-6');
+    pongElement.innerHTML = pongHTML;
+    const originalModalContent = pongElement.querySelector('.modal-content').innerHTML;
+
+    /**
+     * Ajoute des gestionnaires d'événements aux boutons dans la modale.
+     * - Le bouton 'localPongBtn' déclenche le jeu Pong en mode local.
+     * - Le bouton 'multiPongBtn' change le contenu de la modale pour le mode multijoueur -> a faire.
+     * - Le bouton 'tourPongBtn' change le contenu de la modale pour le mode tournoi -> a faire.
+     */
+    function addEventListeners() {
+        pongElement.querySelector('#localPongBtn').addEventListener('click', function() {
+            changeDivContent(pongLocal);
+            initPong();
+        });
+
+        pongElement.querySelector('#multiPongBtn').addEventListener('click', function() {
+            changeDivContent('Contenu pour le mode tournoi');
+        });
+
+        pongElement.querySelector('#tourPongBtn').addEventListener('click', function() {
+            changeDivContent('Contenu pour le mode tournoi');
+        });
+    }
+
+    addEventListeners();
+
+    // Réinitialise le contenu de la modale lorsque celle-ci est fermée.
+    pongElement.querySelector('#pong').addEventListener('hidden.bs.modal', function () {
+        pongElement.querySelector('.modal-content').innerHTML = originalModalContent;
+        addEventListeners();
     });
 
-    gameElement.querySelector('#multiPongBtn').addEventListener('click', function() {
-        changeDivContent('Contenu pour le mode tournoi');
-    });
-
-    gameElement.querySelector('#tourPongBtn').addEventListener('click', function() {
-        changeDivContent('Contenu pour le mode tournoi');
-    });
-    return gameElement;
+    return pongElement;
 }
 
+// Change le contenu de la modale.
 function changeDivContent(newContent) {
     const div = document.querySelector('.card-game-inside');
     div.innerHTML = newContent;

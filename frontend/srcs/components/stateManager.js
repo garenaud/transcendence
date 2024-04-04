@@ -1,7 +1,7 @@
 import { getUser, loadUser } from './userManager.js';
 import { renderNavbar } from './navbar.js'; 
 import { renderHero } from './hero.js';
-import { renderGame } from './game.js';
+import { renderPong } from './pongComponent.js';
 import { renderChat } from './chat.js';
 import { renderRoulette, setupRoulette, runRoulette } from './roulette.js';
 import { renderLogin } from './login.js';
@@ -9,6 +9,7 @@ import { renderBlackJack } from './BlackJack.js';
 import { renderUserMenu } from './userMenu.js';
 //import { renderSlotMachine } from './slotMachine.js';
 
+// Initialisation de l'état de l'application et du current user
 export let appState = {
     currentView: 'login',
     user: null,
@@ -16,6 +17,7 @@ export let appState = {
     renderedComponents: {},
 };
 
+// Fonction pour créer et ajouter un div avec des composants spécifiques à la page
 function renderDiv(components, className) {
     const div = document.createElement('div');
     div.classList.add(className);
@@ -25,6 +27,7 @@ function renderDiv(components, className) {
     document.body.appendChild(div);
 }
 
+// Fonction pour changer la vue actuelle de l'application
 export function changeView(newView) {
     location.hash = newView;
     appState.currentView = newView;
@@ -32,6 +35,7 @@ export function changeView(newView) {
     renderApp();
 }
 
+// Écouteur d'événement pour changer la vue lorsque l'URL change (rajoute le # à l'URL lorsqu'on change de vue)
 window.addEventListener("hashchange", function() {
     appState.currentView = location.hash.substring(1);
     renderApp();
@@ -41,6 +45,7 @@ export function getCurrentView() {
     return appState.currentView;
 }
 
+// Fonction principale pour rendre l'application en fonction de l'état actuel
 export async function renderApp() {
     const savedState = localStorage.getItem('appState');
     if (savedState) {
@@ -64,20 +69,12 @@ export async function renderApp() {
             }
             switch(appState.currentView) {
                 case 'hero':
-/*                     if (!appState.renderedComponents.hero) {
-                        await renderHero();
-                        appState.renderedComponents.hero = true;
-                    }
-                    if (!appState.renderedComponents.navbar) {
-                        renderNavbar(appState.user);
-                        appState.renderedComponents.navbar = true;
-                    } */
                     await renderHero();
                     renderNavbar(appState.user);
                     break;
                 case 'game':
-                    const game = await renderGame();
-                    const game2 = await renderGame();
+                    const game = await renderPong();
+                    const game2 = await renderPong();
                     const roulette = await renderRoulette();
                     const BlackJack = await renderBlackJack();
                     const test = await renderBlackJack();

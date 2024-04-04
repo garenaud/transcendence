@@ -17,7 +17,9 @@ export function renderHero() {
 
     document.body.insertAdjacentHTML('afterbegin', heroHTML);
     setupButtonListener();
-	fetch('/auth/session_user/', {
+
+	// je sais plus pourquoi j'ai mis ça là, mais sait-on jamais ca me reviendra peut-être ;-)
+/* 	fetch('/auth/session_user/', {
 		method: 'GET'
 	})
 	.then(response => response.json())
@@ -26,7 +28,7 @@ export function renderHero() {
 	})
 	.catch((error) => {
 		console.error('Error:', error);
-	});
+	}); */
 }
 
 function    setupButtonListener() {

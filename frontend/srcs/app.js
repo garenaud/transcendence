@@ -4,5 +4,5 @@ import { renderNavbar } from './components/navbar.js';
 
 
 document.addEventListener('DOMContentLoaded', () => {
-    renderApp(); // Cela rendra la vue initiale basée sur l'état actuel
+    renderApp();
 });
