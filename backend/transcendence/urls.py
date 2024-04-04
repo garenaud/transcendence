@@ -27,3 +27,4 @@ urlpatterns = [
 	path('game/', include('game.urls')),
 	path('auth/', include('login.urls')),
 ]
+""" get localhost/auth/register """
