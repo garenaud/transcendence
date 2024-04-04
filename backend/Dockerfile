@@ -26,8 +26,11 @@ RUN pip3 install --upgrade pip
 # copy whole project to your docker home directory. 
 COPY . $DockerHOME  
 # run this command to install all dependencies  
-RUN pip3 install -r requirements.txt
-run pip3 install --upgrade attrs  
+COPY requirements.txt /opt/app/requirements.txt
+WORKDIR /opt/app
+RUN pip install -r requirements.txt
+COPY . /opt/app
+RUN pip3 install --upgrade attrs  
 # port where the Django app runs  
 EXPOSE 8000
 
