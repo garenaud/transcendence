@@ -6,6 +6,7 @@ import { renderChat } from './chat.js';
 import { renderRoulette, setupRoulette, runRoulette } from './roulette.js';
 import { renderLogin } from './login.js';
 import { renderBlackJack } from './BlackJack.js';
+import { renderRun } from './runGame.js';
 import { renderUserMenu } from './userMenu.js';
 //import { renderSlotMachine } from './slotMachine.js';
 
@@ -74,7 +75,7 @@ export async function renderApp() {
                     break;
                 case 'game':
                     const game = await renderPong();
-                    const game2 = await renderPong();
+                    const game2 = await renderRun();
                     const roulette = await renderRoulette();
                     const BlackJack = await renderBlackJack();
                     const test = await renderBlackJack();
