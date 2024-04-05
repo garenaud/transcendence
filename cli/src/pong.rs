@@ -56,19 +56,20 @@ pub fn join_game(user: User) -> Result<(), Box<dyn std::error::Error>> {
 
 pub fn game(user: User, mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<std::net::TcpStream>>) {
 	// Read from command line and send messages
+	let _ = clearscreen::clear();
+
 	initscr();
 	raw();
 	keypad(stdscr(), true);
 	noecho();
 	timeout(0);
 	loop { // game loop
-		let ch = getch();
-		match ch {
+		match getch() {
 			27 => {
 				endwin();
 				break;
 			},
-			_ => {
+			ch => {
 				let ch = match char::from_u32(ch as u32) {
 					Some(ch) => {
 						ch
@@ -80,16 +81,22 @@ pub fn game(user: User, mut socket: tungstenite::WebSocket<tungstenite::stream::
 				}
 			}
 		}
-		let msg = socket.read_message().unwrap();
-		match msg {
-			Message::Text(msg) => {
-				let msg = msg.as_str();
-				let json = json::parse(msg).unwrap();
-				if json["type"] == "update" {
-					render(json["message"].clone());
-				}
+		match socket.read_message() {
+			Ok(msg) => match msg {
+				Message::Text(msg) => {
+					let msg = msg.as_str();
+					let json = json::parse(msg).unwrap();
+					if json["action"] == "game" {
+						render(json);
+					}
+				},
+				_ => {}
 			},
-			_ => {}
+			Err(err) => {
+				endwin();
+				eprintln!("{}", format!("{}", err).red());
+				break;
+			}
 		}
 	}
 }
@@ -101,16 +108,25 @@ struct Console {
 }
 
 fn render(json: json::JsonValue) {
-	let _ = clearscreen::clear();
+	// let _ = clearscreen::clear();
 	let term: Console;
 
+	// println!("{}", json);
 	if let Some((w, h)) = term_size::dimensions() {
 		term =  Console {
 			width: w,
 			height: h
 		};
+		// Print the score
+		term_cursor::set_pos((w / 2 - 3).try_into().unwrap(), 0);
+		println!("{} - {}", 0, 0);
+
+		term_cursor::set_pos(0, 2);
+		for _ in 0..term.width {
+			print!("-");
+		}
+
 		term_cursor::set_pos(3, 3);
-		write!(stdout(), "{}", json["ball"]).unwrap();
 		stdout().flush().unwrap();
 		println!("{}\t{}", term.width, term.height);
 	} else {
