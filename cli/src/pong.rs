@@ -3,6 +3,8 @@ use colored::Colorize;
 use reqwest::blocking::*;
 use tungstenite::{connect, Message, WebSocket};
 use url::Url;
+use term_cursor::*;
+use std::io::{stdout, Write};
 
 use crate::user::User;
 
@@ -38,9 +40,7 @@ pub fn join_game(user: User) -> Result<(), Box<dyn std::error::Error>> {
 	// game();
 
 	let mut socket = match connect(("ws://{server}/ws/game/1/").replace("{server}", user.get_server().as_str())) {
-		Ok((mut socket, res)) => {
-			println!("{:#?}", res);
-			println!("{:#?}", socket);
+		Ok((socket, res)) => {
 			socket
 		},
 		Err(err) => {
@@ -50,14 +50,11 @@ pub fn join_game(user: User) -> Result<(), Box<dyn std::error::Error>> {
 	};
 
 	socket.write_message(Message::Text(r#"{"message":"update"}"#.to_string()))?;
-	// loop {
-	// 	let msg = socket.read_message()?;	
-	// 	println!("{:?}", msg);
-	// }
+	game(user, socket);
 	Ok(())
 }
 
-pub fn game(user: User, socket: WebSocket<AutoStream>) {
+pub fn game(user: User, mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<std::net::TcpStream>>) {
 	// Read from command line and send messages
 	initscr();
 	raw();
@@ -66,22 +63,32 @@ pub fn game(user: User, socket: WebSocket<AutoStream>) {
 	timeout(0);
 	loop { // game loop
 		let ch = getch();
-		println!("{:?}", ch);
 		match ch {
 			27 => {
 				endwin();
 				break;
 			},
 			_ => {
-				let ch = char::from_u32(ch as u32).unwrap();
-				socket.write_message(Message::Text(r#"{"message":"{ch}"}"#.to_string().replace("{ch}", ch.as_str())))?;
+				let ch = match char::from_u32(ch as u32) {
+					Some(ch) => {
+						ch
+					},
+					None => ' '
+				};
+				socket.write_message(Message::Text(r#"{"message":"{ch}"}"#.to_string().replace("{ch}", &ch.to_string())));
 			}
 		}
-		if ch == 27 { // 27 == ascii code for ESC
-			endwin();
-			break;
+		let msg = socket.read_message().unwrap();
+		match msg {
+			Message::Text(msg) => {
+				let msg = msg.as_str();
+				let json = json::parse(msg).unwrap();
+				if json["type"] == "update" {
+					render(json["message"].clone());
+				}
+			},
+			_ => {}
 		}
-		// render();
 	}
 }
 
@@ -91,7 +98,7 @@ struct Console {
 	height: usize
 }
 
-fn render() {
+fn render(json: json::JsonValue) {
 	let _ = clearscreen::clear();
 	let term: Console;
 
@@ -100,9 +107,12 @@ fn render() {
 			width: w,
 			height: h
 		};
+		term_cursor::set_pos(3, 3);
+		write!(stdout(), "{}", json["ball"]).unwrap();
+		stdout().flush().unwrap();
+		println!("{}\t{}", term.width, term.height);
 	} else {
 		println!("Error\n");
 		return ;
 	}
-	println!("hauteur={}\tlargeur={}", term.width, term.height);
 }
