@@ -1,7 +1,7 @@
 use ncurses::*;
 use colored::Colorize;
 use reqwest::blocking::*;
-use tungstenite::{connect, Message};
+use tungstenite::{connect, Message, WebSocket};
 use url::Url;
 
 use crate::user::User;
@@ -40,6 +40,7 @@ pub fn join_game(user: User) -> Result<(), Box<dyn std::error::Error>> {
 	let mut socket = match connect(("ws://{server}/ws/game/1/").replace("{server}", user.get_server().as_str())) {
 		Ok((mut socket, res)) => {
 			println!("{:#?}", res);
+			println!("{:#?}", socket);
 			socket
 		},
 		Err(err) => {
@@ -49,30 +50,14 @@ pub fn join_game(user: User) -> Result<(), Box<dyn std::error::Error>> {
 	};
 
 	socket.write_message(Message::Text(r#"{"message":"update"}"#.to_string()))?;
-	let msg = socket.read_message()?;
-	
+	// loop {
+	// 	let msg = socket.read_message()?;	
+	// 	println!("{:?}", msg);
+	// }
 	Ok(())
 }
 
-pub fn game() {
-	/* WEBSOCKET HANDSHAKE REFECTED */
-	// let (mut socket, response) = connect(
-	// 	Url::parse("wss://localhost/ws/game").unwrap()
-	// ).expect("Can't connect");
-
-	// loop {
-	// 	let msg = match socket.read_message() {
-	// 		Ok(msg) => msg,
-	// 		Err(e) => {
-	// 			eprintln!("Error: {}", e);
-	// 			break;
-	// 		}
-	// 	};
-	// 	if msg.is_text() {
-	// 		println!("Received: {}", msg.into_text().unwrap());
-	// 	}
-	// }
-
+pub fn game(user: User, socket: WebSocket<AutoStream>) {
 	// Read from command line and send messages
 	initscr();
 	raw();
@@ -81,12 +66,22 @@ pub fn game() {
 	timeout(0);
 	loop { // game loop
 		let ch = getch();
+		println!("{:?}", ch);
+		match ch {
+			27 => {
+				endwin();
+				break;
+			},
+			_ => {
+				let ch = char::from_u32(ch as u32).unwrap();
+				socket.write_message(Message::Text(r#"{"message":"{ch}"}"#.to_string().replace("{ch}", ch.as_str())))?;
+			}
+		}
 		if ch == 27 { // 27 == ascii code for ESC
 			endwin();
 			break;
 		}
-		render();
-		println!("Received: {}", ch);
+		// render();
 	}
 }
 

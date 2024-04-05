@@ -22,6 +22,17 @@ impl User {
 		}
 	}
 
+	pub fn from(username: String, session_id: String, client: Client, server: String, csrf: String) -> User {
+		User {
+			username,
+			logged_in: true,
+			session_id,
+			client,
+			server,
+			csrf,
+		}
+	}
+
 	pub fn fill(&mut self, username: String, session_id: String, client: Client, server: String, csrf: String) {
 		self.username = username;
 		self.logged_in = true;
