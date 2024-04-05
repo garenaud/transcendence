@@ -1,5 +1,6 @@
 mod login;
 mod menu;
+mod user;
 mod pong;
 
 use std::io;
@@ -7,13 +8,6 @@ use std::io::Write;
 use std::error::Error;
 use reqwest::blocking::Client;
 use colored::*;
-
-struct user {
-	login: String,
-	session_id: String,
-	client: Client,
-	csrf: String,
-}
 
 fn main() {
 	println!("{}", format!("Welcome to T_BOOL TRANSCENDENCE !").blue());
@@ -74,11 +68,11 @@ fn main() {
 		}
 	};
 
+	let mut user = user::User::new();
 	loop {
 		match login::login(srv.clone()) {
-			Some((client, csrf)) => {
-				log_client = client;
-				log_csrf = csrf;
+			Some(user_logged) => {
+				user = user_logged;
 				println!("{}", format!("Login successful !").green().bold());
 				break;
 			},
@@ -93,5 +87,5 @@ fn main() {
 			}
 		};
 	}
-	menu::menu(log_client, log_csrf, srv);
+	menu::menu(user);
 }

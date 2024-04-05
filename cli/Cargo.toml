@@ -16,3 +16,4 @@ reqwest = { version = "0.12", features = ["json", "blocking", "native-tls", "coo
 time = "0.3.34"
 colored = "2"
 tungstenite = "0.21.0"
+json = "0.12.4"

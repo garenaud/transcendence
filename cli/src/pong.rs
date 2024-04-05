@@ -4,6 +4,9 @@ use reqwest::blocking::*;
 use tungstenite::{connect, Message};
 use url::Url;
 
+use crate::user::User;
+
+
 // use tokio_native_tls::TlsConnector;	
 // use tokio_tungstenite::tungstenite::{connect, Message};
 
@@ -15,19 +18,29 @@ use url::Url;
 ** Ball = 0.5 (circle)
 ** Paddle = 5.5
 */
+struct coord {
+	x: f32,
+	y: f32,
+}
 
-pub fn create_game(client: Client, csrf: String, srv: String) {
+struct game {
+	ball: coord,
+	paddle1: coord,
+	paddle2: coord,
+}
+
+pub fn create_game(user: User) {
 	println!("Create a game !!!!!!!!!!!");
 }
 
-pub fn join_game(client: Client, csrf: String, srv: String) -> Result<(), Box<dyn std::error::Error>> {
+pub fn join_game(user: User) -> Result<(), Box<dyn std::error::Error>> {
 	println!("Join a game !!!!!!!!!!!");
 	// game();
 
-	let req = match connect(("ws://{server}/ws/game/").replace("{server}", &srv)) {
-		Ok(req) => {
-			println!("{:#?}", req);
-			req
+	let mut socket = match connect(("ws://{server}/ws/game/1/").replace("{server}", user.get_server().as_str())) {
+		Ok((mut socket, res)) => {
+			println!("{:#?}", res);
+			socket
 		},
 		Err(err) => {
 			eprintln!("{}", format!("{}", err).red());
@@ -35,6 +48,9 @@ pub fn join_game(client: Client, csrf: String, srv: String) -> Result<(), Box<dy
 		}
 	};
 
+	socket.write_message(Message::Text(r#"{"message":"update"}"#.to_string()))?;
+	let msg = socket.read_message()?;
+	
 	Ok(())
 }
 

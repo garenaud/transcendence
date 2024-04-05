@@ -1,17 +1,19 @@
 use std::io::Write;
-use pwhash::sha256_crypt;
 use std::time::Duration;
+use std::sync::{Arc, Mutex};
+use pwhash::sha256_crypt;
 use reqwest::{
 	cookie::{Cookie, CookieStore, Jar},
 	Url,
     header::HeaderValue,
     blocking::Client,
 };
-use std::sync::{Arc, Mutex};
 use colored::Colorize;
 
+use crate::user::User;
+
 // Ask the user for login and password, and then return the connection status
-pub fn login(srv: String) -> Option<(Client, String)> {
+pub fn login(srv: String) -> Option<User> {
 	print!("Login: ");
 	let _ = std::io::stdout().flush();
 
@@ -35,7 +37,7 @@ pub fn login(srv: String) -> Option<(Client, String)> {
 }
 
 // Use the provide login and password to connect to the server
-fn connection(srv: String, login: String, password: String) -> Option<(Client, String)> {
+fn connection(srv: String, login: String, password: String) -> Option<User> {
 	let jar = Arc::new(Jar::default());
 	
 	let client = reqwest::blocking::Client::builder()
@@ -82,22 +84,43 @@ fn connection(srv: String, login: String, password: String) -> Option<(Client, S
 		.header("User-Agent", "cli_rust")
 		.header("Accept", "application/json")
 		.header("X-CSRFToken", csrf_token)
-		.body(("{\"email\":\"{email}\",\"password\":\"{password}\"}").replace("{email}", &login).replace("{password}", &password))
+		.body((r#"{"email":"{email}","password":"{password}"}"#).replace("{email}", &login).replace("{password}", &password))
 		.timeout(Duration::from_secs(3));
 
 	let req = req.build().expect("ERROR WHILE BUILDING THE REQUEST");
 	let res = client.execute(req);
 
+	let mut user = User::new();
 	match res {
 		Ok(res) => {
 			if !res.status().is_success() {
 				return None;
 			}
+			let res = res.text().ok();
+			let res = match res {
+				Some(res) => res,
+				None => {
+					eprintln!("Error in respond: {:#?}", res);
+					return None;
+				}
+			};
+			let res = match json::parse(&res) {
+				Ok(res) => {
+					if res["message"] == -1 {
+						return None;
+					}
+					user.fill(login, res["session_id"].to_string(), client, srv, csrf_token.to_string());
+				},
+				Err(err) => {
+					eprintln!("Error in respond: {:#?}", err);
+					return None;
+				}
+			};
 		},
 		Err(err) => {
 			eprintln!("Error in respond: {:#?}", err);
 			return None;
 		}
 	}
-	return Some((client, csrf_token.to_string()));
+	return Some(user);
 }
