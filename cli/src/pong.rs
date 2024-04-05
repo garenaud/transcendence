@@ -75,7 +75,9 @@ pub fn game(user: User, mut socket: tungstenite::WebSocket<tungstenite::stream::
 					},
 					None => ' '
 				};
-				socket.write_message(Message::Text(r#"{"message":"{ch}"}"#.to_string().replace("{ch}", &ch.to_string())));
+				if ch != ' ' {
+					socket.write_message(Message::Text(r#"{"message":"{ch}"}"#.to_string().replace("{ch}", &ch.to_string())));
+				}
 			}
 		}
 		let msg = socket.read_message().unwrap();
