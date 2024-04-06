@@ -9,28 +9,6 @@ use std::io::{stdout, Write};
 use crate::user::User;
 
 
-// use tokio_native_tls::TlsConnector;	
-// use tokio_tungstenite::tungstenite::{connect, Message};
-
-/*
-** TAILLE ELEMENTS:
-
-** Wall left/right = 19
-** Wall top/bottom = 36
-** Ball = 0.5 (circle)
-** Paddle = 5.5
-*/
-struct coord {
-	x: f32,
-	y: f32,
-}
-
-struct game {
-	ball: coord,
-	paddle1: coord,
-	paddle2: coord,
-}
-
 pub fn create_game(user: User) {
 	println!("Create a game !!!!!!!!!!!");
 }
@@ -81,21 +59,24 @@ pub fn game(user: User, mut socket: tungstenite::WebSocket<tungstenite::stream::
 				}
 			}
 		}
-		match socket.read_message() {
-			Ok(msg) => match msg {
-				Message::Text(msg) => {
-					let msg = msg.as_str();
-					let json = json::parse(msg).unwrap();
-					if json["action"] == "game" {
-						render(json);
-					}
+		loop {
+			match socket.read_message() {
+				Ok(msg) => match msg {
+					Message::Text(msg) => {
+						let msg = msg.as_str();
+						let json = json::parse(msg).unwrap();
+						if json["action"] == "game" {
+							render(json);
+						}
+					},
+					_ => {}
 				},
-				_ => {}
-			},
-			Err(err) => {
-				endwin();
-				eprintln!("{}", format!("{}", err).red());
-				break;
+				Err(err) if err.kind() == ErrorKind::Interrupted => continue,
+				Err(err) => {
+					endwin();
+					eprintln!("{}", format!("{}", err).red());
+					break;
+				}
 			}
 		}
 	}
@@ -107,6 +88,15 @@ struct Console {
 	height: usize
 }
 
+
+/*
+** TAILLE ELEMENTS:
+
+** Wall left/right = 19
+** Wall top/bottom = 36
+** Ball = 0.5 (circle)
+** Paddle = 5.5
+*/
 fn render(json: json::JsonValue) {
 	// let _ = clearscreen::clear();
 	let term: Console;
@@ -118,16 +108,15 @@ fn render(json: json::JsonValue) {
 			height: h
 		};
 		// Print the score
-		term_cursor::set_pos((w / 2 - 3).try_into().unwrap(), 0);
+		let _ = term_cursor::set_pos((w / 2 - 3).try_into().unwrap(), 0);
 		println!("{} - {}", 0, 0);
 
-		term_cursor::set_pos(0, 2);
+		_ = term_cursor::set_pos(0, 2);
 		for _ in 0..term.width {
 			print!("-");
 		}
 
-		term_cursor::set_pos(3, 3);
-		stdout().flush().unwrap();
+		_ = term_cursor::set_pos(3, 3);
 		println!("{}\t{}", term.width, term.height);
 	} else {
 		println!("Error\n");

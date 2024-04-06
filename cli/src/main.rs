@@ -9,7 +9,21 @@ use std::error::Error;
 use reqwest::blocking::Client;
 use colored::*;
 
+use std::os::unix::io::RawFd;
+use nix::sys::signal::{self, Signal, SigHandler, SigAction, SigSet, SaFlags};
+use nix::unistd::Pid;
+
 fn main() {
+	let sig_action = SigAction::new(
+		SigHandler::SigIgn,
+		SaFlags::empty(),
+		SigSet::empty(),
+	);
+	
+	unsafe {
+		let _ = signal::sigaction(Signal::SIGWINCH, &sig_action).expect("Failed to ignore SIGWINCH");
+	}
+
 	println!("{}", format!("Welcome to T_BOOL TRANSCENDENCE !").blue());
 	
 	let log_client: Client;
