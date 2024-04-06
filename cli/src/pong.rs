@@ -41,7 +41,7 @@ pub fn game(user: User, mut socket: tungstenite::WebSocket<tungstenite::stream::
 	keypad(stdscr(), true);
 	noecho();
 	timeout(0);
-	loop { // game loop
+	'game: loop { // game loop
 		match getch() {
 			27 => {
 				endwin();
@@ -55,7 +55,7 @@ pub fn game(user: User, mut socket: tungstenite::WebSocket<tungstenite::stream::
 					None => ' '
 				};
 				if ch != ' ' {
-					socket.write_message(Message::Text(r#"{"message":"{ch}"}"#.to_string().replace("{ch}", &ch.to_string())));
+					_ = socket.write_message(Message::Text(r#"{"message":"{ch}"}"#.to_string().replace("{ch}", &ch.to_string())));
 				}
 			}
 		}
@@ -71,13 +71,16 @@ pub fn game(user: User, mut socket: tungstenite::WebSocket<tungstenite::stream::
 					},
 					_ => {}
 				},
-				Err(err) if err.kind() == ErrorKind::Interrupted => continue,
-				Err(err) => {
-					endwin();
-					eprintln!("{}", format!("{}", err).red());
-					break;
+				Err(err) => match err {
+					tungstenite::error::Error::Io(err) if err.kind() == std::io::ErrorKind::Interrupted => continue,
+					_ => {
+						endwin();
+						eprintln!("{}", format!("{}", err).red());
+						break 'game;
+					}
 				}
 			}
+			break;
 		}
 	}
 }
