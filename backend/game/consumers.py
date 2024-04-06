@@ -3,7 +3,6 @@ import json
 import math
 import introcs
 import asyncio
-import random
 import time
 import threading
 from database.models import Games
@@ -93,7 +92,7 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
                 self.game.bpx = 0.0
                 self.game.bpz = 0.0
                 self.game.sif = 1.1
-                self.game.bv = introcs.Vector3(math.cos(0) * 0.25, 0, math.sin(0) * 0.25)
+                self.game.bv = introcs.Vector3(math.cos(self.game.initial_angle) * 0.25, 0, math.sin(self.game.initial_angle) * 0.25)
 
             self.game.bvx = self.game.bv.x
             self.game.bvz = self.game.bv.z
@@ -226,7 +225,6 @@ class GameConsumer(WebsocketConsumer):
         balllimit = 8.5
         if self.game.bpz > balllimit or self.game.bpz < -balllimit:
             self.game.bvz *= -1
-            # print("mur")
         elif self.game.bpx > 18 or self.game.bpx < -18:
             if self.game.bpx > 18:
                 self.game.scorep2 += 1
@@ -280,42 +278,42 @@ class GameConsumer(WebsocketConsumer):
         elif message == 'Down' and self.game.prz + self.game.ms < 6.5:
             self.game.prz += self.game.ms
 
-    def connect(self):
-        self.room_id = self.scope["url_route"]["kwargs"]["room_id"]
-        self.room_group_name = "chat_%s" % self.room_id
-        random_angle = math.radians(random.uniform(45, 90))
-        self.game_values = {
-            'p1_id' : 1,
-            'p2_id' : -1,
-            'finished' : False,
-            'scoreleft' : 0,
-            'scoreright' : 0,
-            'initial_angle' : 0.0,
-            'self.game.bradius' : 0.5196152629183178,
-            'ball_position_x' : 0.0,
-            'ball_position_z' : 0.0,
-            'ball_velocity_x' : 0.0,
-            'ball_velocity_z' : 0.0,
-            'paddleleft_position_x' : -15.0,
-            'paddleleft_position_z' : 0.0,
-            'paddleright_position_x' : 15.0,
-            'paddleright_position_z' : 0.0,
-            'move_speed' : 0.25,
-            'speed_increase_factor' : 1.1,
-            'channel_name' : self.channel_name,
-    
-        }
-        initial_speed = 0.25  # Adjust the initial speed as needed
-        self.game_values['ball_velocity_x'] = math.cos(random_angle) * initial_speed
-        self.game_values['ball_velocity_z'] = math.sin(random_angle) * initial_speed
-        self.game_values['room_id'] = self.room_id
-        self.game_values['room_group_name'] = self.room_group_name
-        # Join room group
-        async_to_sync(channel_layer.group_add)(
-        self.room_group_name, self.channel_name
-        )
-        self.accept()
-        threading.Thread(target=self.update_ball_pos).start()
+    # def connect(self):
+    #     self.room_id = self.scope["url_route"]["kwargs"]["room_id"]
+    #     self.room_group_name = "chat_%s" % self.room_id
+    #     random_angle = math.radians(random.uniform(0, 90))
+    #     self.game_values = {
+    #         'p1_id' : 1,
+    #         'p2_id' : -1,
+    #         'finished' : False,
+    #         'scoreleft' : 0,
+    #         'scoreright' : 0,
+    #         'initial_angle' : 0.0,
+    #         'self.game.bradius' : 0.5196152629183178,
+    #         'ball_position_x' : 0.0,
+    #         'ball_position_z' : 0.0,
+    #         'ball_velocity_x' : 0.0,
+    #         'ball_velocity_z' : 0.0,
+    #         'paddleleft_position_x' : -15.0,
+    #         'paddleleft_position_z' : 0.0,
+    #         'paddleright_position_x' : 15.0,
+    #         'paddleright_position_z' : 0.0,
+    #         'move_speed' : 0.25,
+    #         'speed_increase_factor' : 1.1,
+    #         'channel_name' : self.channel_name,
+    #     }
+    #     print("data")
+    #     initial_speed = 0.25  # Adjust the initial speed as needed
+    #     self.game_values['ball_velocity_x'] = math.cos(random_angle) * initial_speed
+    #     self.game_values['ball_velocity_z'] = math.sin(random_angle) * initial_speed
+    #     self.game_values['room_id'] = self.room_id
+    #     self.game_values['room_group_name'] = self.room_group_name
+    #     # Join room group
+    #     async_to_sync(channel_layer.group_add)(
+    #     self.room_group_name, self.channel_name
+    #     )
+    #     self.accept()
+    #     threading.Thread(target=self.update_ball_pos).start()
 
 
     def disconnect(self, close_code):

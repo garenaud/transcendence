@@ -104,7 +104,6 @@ export function initPong() {
 			handleGround();
 			handleLight();
 			handleText();
-			handleBall();
 		})
 		.catch((error) => {
 			console.error('Error loading JSON scene:', error);
@@ -122,18 +121,6 @@ function handleText() {
 	scoreRight = scene.getObjectByName('Text001');
 	scene.add(scoreRight);
 	scene.remove(scoreRight);
-}
-
-function handleBall() {
-	const ballName = 'Ball';
-	ball = scene.getObjectByName(ballName);
-	if (ball) {
-	ball.castShadow = true;
-		ball.position.set(0, 0, 0);
-		ballVelocity = new THREE.Vector3(Math.cos(initialAngle) * speed, 0, Math.sin(initialAngle) * speed);
-	} else {
-		console.error('Ball not found');
-	}
 }
 
 function handleLight() {
@@ -248,15 +235,15 @@ function handleBackground() {
 
 gameSocket.onmessage = function(e) {
 	game_data = JSON.parse(e.data);
-	if (game_data.action == 'game')
+	ball = scene.getObjectByName('Ball');
+	PaddleRight = scene.getObjectByName("RightPaddle");
+	PaddleLeft = scene.getObjectByName("LeftPaddle");
+	if (game_data.action == 'game' && ball)
 	{
-		ball = scene.getObjectByName('Ball');
+		PaddleLeft.castShadow = true;
+		PaddleRight.castShadow = true;
 		ball.position.x = parseFloat(game_data.bx);
 		ball.position.z = parseFloat(game_data.bz);
-		PaddleRight = scene.getObjectByName("RightPaddle");
-		PaddleLeft = scene.getObjectByName("LeftPaddle");
-		PaddleRight.castShadow = true;
-		PaddleLeft.castShadow = true;
 		PaddleRight.position.x = parseFloat(game_data.prx);
 		PaddleRight.position.z = parseFloat(game_data.prz);
 		PaddleLeft.position.x = parseFloat(game_data.plx);
