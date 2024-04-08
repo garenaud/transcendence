@@ -47,34 +47,31 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
         await self.accept()
         if self.game.p1id == self.channel_name:
             threading.Thread(target=self.loop).start()
-        
+
 
     def loop(self):
         while True:
             time.sleep(0.02)
             is_colliding = False
-            paddle_size_x = 0.20000000298023224
-            paddle_size_z = 3.1
-            #verifier la collision avec le paddle gauche
-            if (self.game.bpx - self.game.bradius < self.game.plx + paddle_size_x / 2 and
-                self.game.bpx + self.game.bradius > self.game.plx - paddle_size_x / 2 and
-                self.game.bpz + self.game.bradius > self.game.plz - paddle_size_z / 2 and
-                self.game.bpz - self.game.bradius < self.game.plz + paddle_size_z / 2
-                and is_colliding == False):
-                # relative_position = (self.game.bpz - self.game.plz) / paddle_size_z
-                # angleadjustment = (relative_position - 0.5) * (max_angle_adjustment - min_angle_adjustment) * 0.6
-                # Ajuster la direction de la balle en fonction de l'angle
-                # angle = math.pi / 4 + angleadjustment
+            paddle_size_x = 0
+            paddle_size_z = 3.2
+            if not is_colliding:
+                bx = self.game.bpx
+                br = self.game.bradius
+                px = self.game.prx
+                pz = self.game.prz
+            if (bx - br < px + paddle_size_x / 2 and
+                bx + br > px - paddle_size_x / 2 and
+                self.game.bpz + br > pz - paddle_size_z / 2 and
+                self.game.bpz - br < pz + paddle_size_z / 2):
                 self.game.bv.x *= -1
                 self.game.sif += 0.1
                 is_colliding = True
-                # print("collision detectee a gauche")
             #verifier la collision avec le paddle droit
             if (self.game.bpx - self.game.bradius < self.game.prx + paddle_size_x / 2 and
                 self.game.bpx + self.game.bradius > self.game.prx - paddle_size_x / 2 and
                 self.game.bpz + self.game.bradius > self.game.prz - paddle_size_z / 2 and
-                self.game.bpz - self.game.bradius < self.game.prz + paddle_size_z / 2
-                and is_colliding == False):
+                self.game.bpz - self.game.bradius < self.game.prz + paddle_size_z / 2):
                 self.game.bv.x *= -1;
                 self.game.sif += 0.1
                 is_colliding = True
@@ -92,7 +89,6 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
                 self.game.bpx = 0.0
                 self.game.bpz = 0.0
                 self.game.sif = 1.1
-                self.game.bv = introcs.Vector3(math.cos(self.game.initial_angle) * 0.25, 0, math.sin(self.game.initial_angle) * 0.25)
 
             self.game.bvx = self.game.bv.x
             self.game.bvz = self.game.bv.z
@@ -128,21 +124,13 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             if message == 'W' and self.game.plz - self.game.ms > -6.5:
                 self.game.plz -= self.game.ms
             elif message == 'S' and self.game.plz + self.game.ms < 6.5:
-                self.game.plz += self.game.ms
-            # print("p2 paddle")
-        # await self.channel_layer.group_send(
-        #     self.room_group_name,
-        #     {"type": "update", "message": {'action' : 'paddle', 'plx' : self.game.plx ,'plz' : self.game.plz, 'prx' : self.game.prx ,'prz' : self.game.prz }}
-        # )
-            
+                self.game.plz += self.game.ms            
 
     async def update(self, event):
         data = event['message']
         await self.send(text_data=json.dumps(data))
 
 class ChatConsumer(WebsocketConsumer):
-    lolmessage = "superlol"
-    mdrmessage = "superlolmdr"
     def connect(self):
         self.room_id = self.scope["url_route"]["kwargs"]["room_id"]
         self.room_group_name = "chat_%s" % self.room_id
@@ -154,22 +142,9 @@ class ChatConsumer(WebsocketConsumer):
 
         self.accept()
 
-
-    def test1(self):
-        self.lolmessage = "test1"
-
-    def test2(self):
-        self.lolmessage = "test2"
-
-    def test3(self):
-        self.mdrmessage = "test3"
-
     def loop(self):
         while True:
             time.sleep(1)
-            self.test1()
-            self.test2()
-            self.test3()
             async_to_sync(channel_layer.group_send)(
                 self.room_group_name, {"type": "chat_message", "message": self.lolmessage}
             )
@@ -194,142 +169,19 @@ class ChatConsumer(WebsocketConsumer):
     def chat_message(self, event):
         message = event["message"]
 
-        # Send message to WebSocket
         self.send(text_data=json.dumps({"message": message}))
     
 class GameConsumer(WebsocketConsumer):
-    #     'p1_id' : 1,
-    #     'p2_id' : -1,
-    #     'finished' : False,
-    #     'scoreleft' : 0,
-    #     'scoreright' : 0,
-    #     'initial_angle' : 0.0,
-    #     'self.game.bradius' : 0.5196152629183178,
-    #     'ball_position_x' : 0.0,
-    #     'ball_position_z' : 0.0,
-    #     'ball_velocity_x' : 0.0,
-    #     'ball_velocity_z' : 0.0,
-    #     'paddleleft_position_x' : -15.0,
-    #     'paddleleft_position_z' : 0.0,
-    #     'paddleright_position_x' : 15.0,
-    #     'paddleright_position_z' : 0.0,
-    #     'move_speed' : 0.25,
-    #     'speed_increase_factor' : 1.1,
-    #     'room_id' : "",
-    #     'room_group_name' : ""
-    # }
-
-    ball_velocity = introcs.Vector3(math.cos(0) * 0.25, 0, math.sin(0) * 0.25)
-
-    def handle_wall_collision(self):
-        balllimit = 8.5
-        if self.game.bpz > balllimit or self.game.bpz < -balllimit:
-            self.game.bvz *= -1
-        elif self.game.bpx > 18 or self.game.bpx < -18:
-            if self.game.bpx > 18:
-                self.game.scorep2 += 1
-            elif self.game.bpx < -18:
-                self.game.scorep1 += 1
-            self.game.bpx = 0.0
-            self.game.bpz = 0.0
-            self.game.sif = 1.1
-            ball_velocity = introcs.Vector3(math.cos(0) * 0.25, 0, math.sin(0) * 0.25)
-    
-    # def handle_paddle_collision(self):
-    #     self.game.bradius = self.game_values['self.game.bradius']
-    #     paddle_size_x = 0.20000000298023224
-    #     paddle_size_z = 3.1
-    #     #verifier la collision avec le paddle gauche
-    #     if (self.game.bpx - self.game.bradius < self.game.plx + paddle_size_x / 2 and
-    #         self.game.bpx + self.game.bradius > self.game.plx - paddle_size_x / 2 and
-    #         self.game.bpz + self.game.bradius > self.game.plz - paddle_size_z / 2 and
-    #         self.game.bpz - self.game.bradius < self.game.plz + paddle_size_z / 2
-    #         ):
-    #         self.game.sif += 0.1
-    #         # print("collision detectee a gauche")
-    #     #verifier la collision avec le paddle droit
-    #     if (self.game.bpx - self.game.bradius < self.game.prx + paddle_size_x / 2 and
-    #         self.game.bpx + self.game.bradius > self.game.prx - paddle_size_x / 2 and
-    #         self.game.bpz + self.game.bradius > self.game.prz - paddle_size_z / 2 and
-    #         self.game.bpz - self.game.bradius < self.game.prz + paddle_size_z / 2
-    #         ):
-    #         self.game.sif += 0.1
-    #         # print("collision detectee a droite")
-
-    def update_ball_pos(self):
-        while self.game_values['finished'] == False:
-            time.sleep(0.02)
-            self.handle_paddle_collision()
-            self.handle_wall_collision()
-            self.game.bvx = self.game.bvx
-            self.game.bvz = self.game.bvz
-            self.game.bpx += self.game.bvx
-            self.game.bpz += self.game.bvz
-            # print(self.game.bpx)
-            #self.send(text_data=json.dumps(self.game_values))
-            # async_to_sync(self.channel_layer.group_send)(self.randname, {"type" : "testsend", "game_data" : self.game_values})
-            async_to_sync(channel_layer.group_send)(
-             self.room_group_name, {"type": "chat_message", "message": self.game_values}
-            )
-
-    def update_right_paddle_pos(self, message):
-        if message == 'Up' and self.game.prz - self.game.ms > -6.5:
-            self.game.prz -= self.game.ms
-        elif message == 'Down' and self.game.prz + self.game.ms < 6.5:
-            self.game.prz += self.game.ms
-
-    # def connect(self):
-    #     self.room_id = self.scope["url_route"]["kwargs"]["room_id"]
-    #     self.room_group_name = "chat_%s" % self.room_id
-    #     random_angle = math.radians(random.uniform(0, 90))
-    #     self.game_values = {
-    #         'p1_id' : 1,
-    #         'p2_id' : -1,
-    #         'finished' : False,
-    #         'scoreleft' : 0,
-    #         'scoreright' : 0,
-    #         'initial_angle' : 0.0,
-    #         'self.game.bradius' : 0.5196152629183178,
-    #         'ball_position_x' : 0.0,
-    #         'ball_position_z' : 0.0,
-    #         'ball_velocity_x' : 0.0,
-    #         'ball_velocity_z' : 0.0,
-    #         'paddleleft_position_x' : -15.0,
-    #         'paddleleft_position_z' : 0.0,
-    #         'paddleright_position_x' : 15.0,
-    #         'paddleright_position_z' : 0.0,
-    #         'move_speed' : 0.25,
-    #         'speed_increase_factor' : 1.1,
-    #         'channel_name' : self.channel_name,
-    #     }
-    #     print("data")
-    #     initial_speed = 0.25  # Adjust the initial speed as needed
-    #     self.game_values['ball_velocity_x'] = math.cos(random_angle) * initial_speed
-    #     self.game_values['ball_velocity_z'] = math.sin(random_angle) * initial_speed
-    #     self.game_values['room_id'] = self.room_id
-    #     self.game_values['room_group_name'] = self.room_group_name
-    #     # Join room group
-    #     async_to_sync(channel_layer.group_add)(
-    #     self.room_group_name, self.channel_name
-    #     )
-    #     self.accept()
-    #     threading.Thread(target=self.update_ball_pos).start()
-
 
     def disconnect(self, close_code):
         async_to_sync(channel_layer.group_discard)(
             self.room_group_name, self.channel_name
         )
-        # game = Games(player1=User.objects.get(id=self.game_values['p1_id']), p1_score=self.game.scorep2, p2_score=self.game.scorep1)
-        # game.save()
-        #async_to_sync(self.channel_layer.group_add)(self.randname), self.channel_name)
         pass
 
     def receive(self, text_data):
-        #while self.game_values['finished'] == False:
         text_data_json = json.loads(text_data)
         message = text_data_json["message"]
-        #print(message)
         if message == 'Stop':
             self.game_values['finished'] = True
         elif message == 'IA':
@@ -337,24 +189,7 @@ class GameConsumer(WebsocketConsumer):
             self.game.plz = float(pos)
         else:
             self.update_right_paddle_pos(message)
-        # async_to_sync(channel_layer.group_send)(
-        #      self.room_group_name, {"type": "chat_message", "message": self.game_values}
-        #  )
     
     def chat_message(self, event):
         data = event["message"]
         self.send(text_data=json.dumps(data))
-
-        
-    # finished = False
-    # scoreleft = 0
-    # scoreright = 0
-    # ball_position_x = 0.0
-    # ball_position_z = 0.0
-    # ball_velocity_x = 0.0
-    # ball_velocity_z = 0.0
-    # paddleleft_position_x = 0.0
-    # paddleleft_position_z = 0.0
-    # paddleright_position_x = 0.0
-    # paddleright_position_z = 0.0
-    # move_speed = 0.1

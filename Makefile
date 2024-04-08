@@ -18,8 +18,7 @@ all:
 down: 
 	docker-compose down
 
-debug:
-	@mkdir -p ~/data/db
+debug: all
 	docker-compose -f ./docker-compose.yml logs -f
 
 look:

@@ -4,6 +4,7 @@ import random
 
 class gameData:
 	def __init__(self, id):
+		self.bv = introcs.Vector3(0, 0, 0)
 		self.id = id
 		self.finished = False
 		self.p1id = ""
@@ -24,12 +25,12 @@ class gameData:
 		bv2_z = math.sin(angle2_rad) * 0.25
 		# Sélectionner aléatoirement l'une des deux directions pour le départ de la balle
 		if random.choice([True, False]):
-			self.bvx = bv1_x
-			self.bvz = bv1_z
+			self.bv.x = bv1_x
+			self.bv.z = bv1_z
 		else:
-			self.bvx = bv2_x
-			self.bvz = bv2_z
-		self.bradius = 0.6 # ball radius
+			self.bv.x = bv2_x
+			self.bv.z = bv2_z
+		self.bradius = 0.7 # ball radius
 		self.bpx = 0.0 # ball position x
 		self.bpz = 0.0 # ball position z
 		self.plx = -15.0 # paddle left position x
