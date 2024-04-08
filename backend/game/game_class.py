@@ -10,13 +10,28 @@ class gameData:
 		self.p2id = ""
 		self.scorep1 = 0
 		self.scorep2 = 0
-		self.initial_angle = random.uniform(45, 90)
-		self.bradius = 0.5196152 # ball radius
+		# Générer un angle aléatoire entre 40 et 60 degrés pour la première direction
+		angle1_deg = random.uniform(40, 60)
+		angle1_rad = math.radians(angle1_deg)
+		# Calculer les composantes x et z de la vitesse de la balle pour la première direction
+		bv1_x = math.cos(angle1_rad) * 0.25
+		bv1_z = math.sin(angle1_rad) * 0.25
+		# Générer un angle aléatoire entre 120 et 140 degrés pour la deuxième direction
+		angle2_deg = random.uniform(120, 140)
+		angle2_rad = math.radians(angle2_deg)
+		# Calculer les composantes x et z de la vitesse de la balle pour la deuxième direction
+		bv2_x = math.cos(angle2_rad) * 0.25
+		bv2_z = math.sin(angle2_rad) * 0.25
+		# Sélectionner aléatoirement l'une des deux directions pour le départ de la balle
+		if random.choice([True, False]):
+			self.bvx = bv1_x
+			self.bvz = bv1_z
+		else:
+			self.bvx = bv2_x
+			self.bvz = bv2_z
+		self.bradius = 0.6 # ball radius
 		self.bpx = 0.0 # ball position x
 		self.bpz = 0.0 # ball position z
-		self.bv = introcs.Vector3(math.cos(self.initial_angle) * 0.25, 0, math.sin(self.initial_angle) * 0.25) # ball velocity
-		self.bvx = self.bv.x # ball velocity x
-		self.bvz = self.bv.z # ball velocity z
 		self.plx = -15.0 # paddle left position x
 		self.plz = 0.0 # paddle left position z
 		self.prx = 15 # paddle right position x

@@ -60,7 +60,7 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
                 self.game.bpx + self.game.bradius > self.game.plx - paddle_size_x / 2 and
                 self.game.bpz + self.game.bradius > self.game.plz - paddle_size_z / 2 and
                 self.game.bpz - self.game.bradius < self.game.plz + paddle_size_z / 2
-                ):
+                and is_colliding == False):
                 # relative_position = (self.game.bpz - self.game.plz) / paddle_size_z
                 # angleadjustment = (relative_position - 0.5) * (max_angle_adjustment - min_angle_adjustment) * 0.6
                 # Ajuster la direction de la balle en fonction de l'angle
@@ -74,7 +74,7 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
                 self.game.bpx + self.game.bradius > self.game.prx - paddle_size_x / 2 and
                 self.game.bpz + self.game.bradius > self.game.prz - paddle_size_z / 2 and
                 self.game.bpz - self.game.bradius < self.game.prz + paddle_size_z / 2
-                ):
+                and is_colliding == False):
                 self.game.bv.x *= -1;
                 self.game.sif += 0.1
                 is_colliding = True
@@ -358,4 +358,3 @@ class GameConsumer(WebsocketConsumer):
     # paddleright_position_x = 0.0
     # paddleright_position_z = 0.0
     # move_speed = 0.1
-        
