@@ -47,23 +47,52 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
         await self.accept()
         if self.game.p1id == self.channel_name:
             threading.Thread(target=self.loop).start()
+            # threading.Thread(target=self.ball_calc).start()
 
+    def ball_calc(self):
+        while self.game.finished == False:
+            is_colliding = False
+            paddle_size_x = 0
+            paddle_size_z = 3.2
+		#verifier la collision avec le paddle gauche
+        if (self.game.bpx - self.game.bradius < self.game.plx + paddle_size_x / 2 and
+            self.game.bpx + self.game.bradius > self.game.plx - paddle_size_x / 2 and
+            self.game.bpz + self.game.bradius > self.game.plz - paddle_size_z / 2 and
+            self.game.bpz - self.game.bradius < self.game.plz + paddle_size_z / 2
+            and is_colliding == False):
+            self.game.bv.x *= -1
+            self.game.sif += 0.1
+            is_colliding = True
+		#verifier la collision avec le paddle droit
+        if (self.game.bpx - self.game.bradius < self.game.prx + paddle_size_x / 2 and
+            self.game.bpx + self.game.bradius > self.game.prx - paddle_size_x / 2 and
+            self.game.bpz + self.game.bradius > self.game.prz - paddle_size_z / 2 and
+            self.game.bpz - self.game.bradius < self.game.prz + paddle_size_z / 2
+            and is_colliding == False):
+            self.game.bv.x *= -1;
+            self.game.sif += 0.1
+            is_colliding = True
+            # print("collision detectee a droite"
+    is_colliding = False
+
+    # def paddle_calc(self):
+    #     pass
+
+    # def wall_calc(self):
+    #     pass
 
     def loop(self):
-        while True:
+        while self.game.finished == False:
             time.sleep(0.02)
             is_colliding = False
             paddle_size_x = 0
             paddle_size_z = 3.2
-            if not is_colliding:
-                bx = self.game.bpx
-                br = self.game.bradius
-                px = self.game.prx
-                pz = self.game.prz
-            if (bx - br < px + paddle_size_x / 2 and
-                bx + br > px - paddle_size_x / 2 and
-                self.game.bpz + br > pz - paddle_size_z / 2 and
-                self.game.bpz - br < pz + paddle_size_z / 2):
+            #verifier la collision avec le paddle gauche
+            if (self.game.bpx - self.game.bradius < self.game.plx + paddle_size_x / 2 and
+                self.game.bpx + self.game.bradius > self.game.plx - paddle_size_x / 2 and
+                self.game.bpz + self.game.bradius > self.game.plz - paddle_size_z / 2 and
+                self.game.bpz - self.game.bradius < self.game.plz + paddle_size_z / 2
+                and is_colliding == False):
                 self.game.bv.x *= -1
                 self.game.sif += 0.1
                 is_colliding = True
@@ -71,7 +100,8 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             if (self.game.bpx - self.game.bradius < self.game.prx + paddle_size_x / 2 and
                 self.game.bpx + self.game.bradius > self.game.prx - paddle_size_x / 2 and
                 self.game.bpz + self.game.bradius > self.game.prz - paddle_size_z / 2 and
-                self.game.bpz - self.game.bradius < self.game.prz + paddle_size_z / 2):
+                self.game.bpz - self.game.bradius < self.game.prz + paddle_size_z / 2
+                and is_colliding == False):
                 self.game.bv.x *= -1;
                 self.game.sif += 0.1
                 is_colliding = True
