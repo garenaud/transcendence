@@ -184,7 +184,6 @@ function    setupButtonListener() {
 			credentials: 'same-origin' 
 		})
 		.then(response => {
-			console.log('response:', response.json());
 			const contentType = response.headers.get('content-type');
 			if (!response.ok) {
 				throw new Error(`HTTP error! status: ${response.status}`);
@@ -199,9 +198,9 @@ function    setupButtonListener() {
 			if (data.message === "Error") {
 				console.log('Signup Error:', data.errors);
 				document.getElementById('error-message').textContent = data.errors.join(', ');
-				} 
-				else if (data.message === "OK") 
-				{
+			} 
+			else if (data.message === "OK") 
+			{
 				console.log('Signup Success:', data);
 				document.getElementById('success-message').textContent = "Your account has been created successfully";
 				changeView('hero');
@@ -210,7 +209,7 @@ function    setupButtonListener() {
 		.catch((error) => {
 			console.error('Error:', error);
 		});
-});
+	});
 }
 
 function getCookie(name) {

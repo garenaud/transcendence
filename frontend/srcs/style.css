@@ -40,6 +40,16 @@ h1 {
     color: #F6428E;
 }
 
+.btn-logout {
+  color: #F6428E;
+  border-color: #F6428E;
+}
+
+.btn-logout:hover {
+  background-color: #F6428E;
+  border-color: #F6428E;
+}
+
 /*-------------------------------- Modal --------------------------------*/
 .modal-title {
     color: #F6428E;
@@ -136,11 +146,11 @@ h1 {
 }
 
 .navbar-logo {
-  width: auto;
-  display: flex;
-  justify-content: center;
+/*   width: auto;
+ */  display: inline-block;
+/*   justify-content: center;
   align-items: center;
-  align-content: center;
+  align-content: center; */
 
 }
 
@@ -155,20 +165,21 @@ h1 {
 }
 
 .nav-user {
-  justify-self: flex-end;
-  height: 60px;
   width: auto;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
   z-index: 11;
 }
 
 .nav-user-info {
   width: auto;
-  min-width: 60px;
+  min-width: 120px;
   padding-right: 20px;
-  display: flex;
+  display: flex !important;
   flex-direction: column;
-  align-items: flex-end; /* Correction ici */
-  justify-content:baseline;
+  align-items: center; /* Correction ici */
+  justify-content: flex-end;
   z-index: 11;
 }
 
@@ -210,8 +221,8 @@ h1 {
 
 .navbar-collapse {
   margin: 10px;
-  z-index: 1000;
-}
+/*   z-index: 1000;
+ */}
 
 .collapse {
   background-color: #1A244D;
@@ -798,8 +809,8 @@ margin-bottom: 15px !important;
 .card-game-component {
   position: relative;
   background-color: rgba(255, 255, 255, 0.9);
-  border-radius: 15px; /* Pour les coins arrondis */
-  color: #1A244D; /* Couleur du texte à l'intérieur de la carte */
+  border-radius: 15px; 
+  color: #1A244D; 
 /*   max-width: 400px; */
 }
 
@@ -818,13 +829,13 @@ margin-bottom: 15px !important;
   justify-content: center;
   align-items: center;
   overflow: hidden;
-  border-radius: 15px; /* Pour les coins arrondis */
+  border-radius: 15px;
 }
 .card-game-component .card-img-top {
 /*   height: 120px;
   width: auto; */
   max-height: 160px;
-  object-fit: cover; /* Ajustez selon le besoin pour l'image */
+  object-fit: cover;
   margin-bottom: 0px;
   border-top-left-radius: 15px;
   border-top-right-radius: 15px;
@@ -850,10 +861,10 @@ margin-bottom: 15px !important;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 100%; /* Prend toute la hauteur du conteneur parent */
+  height: 100%; 
   padding: 10px;
   text-align: center;
-  position: relative; /* Pour que le contenu de la carte soit positionné par rapport à cet élément */
+  position: relative;
   z-index: 1;
   border-radius: 15px;
   overflow: hidden;
@@ -1412,7 +1423,7 @@ background-size: 70px 120px;
   position: fixed;
   right: 0;
   top: 0;
-  width: 300px;
+  width: 350px;
   height: 100%;
   background-color: #1A244D;
   color: #F6428E;
@@ -1421,25 +1432,45 @@ background-size: 70px 120px;
 }
 
 .user-menu-img {
-  position: relative; /* Ajoutez cette ligne */
+  position: relative;
 }
 
 .user-menu-img img {
   max-width: 100%;
   max-height: 100%;
-  position: relative; /* Ajoutez cette ligne */
-  top: 0; /* Ajoutez cette ligne */
-  right: 0; /* Ajoutez cette ligne */
+  position: relative;
+  top: 0;
+  right: 0;
 }
 
 .user-menu-title {
   display: flex;
   flex-direction: column;
   text-align: center;
-/*  justify-content: center;
-  align-items: center;
-  align-content: center; */
   margin-top: 10px;
+  margin-bottom: 40px;
+}
+
+.user-menu-logout {
+  position: absolute;
+  bottom: 60px;
+  width: 100%;
+  text-align: center;
+}
+
+.user-menu-li {
+  display: flex;
+  align-items:center;
+}
+
+.user-menu-li i {
+  margin-right: 10px;
+  padding: 10px;
+}
+
+.user-menu-li h4 {
+  margin: 0;
+  padding: 10px;
 }
 
 .user-menu-title h2 h3 h4{

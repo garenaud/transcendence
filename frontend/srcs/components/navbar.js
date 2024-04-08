@@ -13,11 +13,11 @@ function displayUserInfo(user) {
       const userInfoDiv = document.getElementById('nav-user');
       if (userInfoDiv) {
           userInfoDiv.innerHTML = `
-          <div class="nav-user-info d-none d-md-block">
+          <div class="nav-user-info d-md-block">
           <h4>${user.username}</h4>
           <h6>${user.pts} pts</h6>
           </div>
-          <div id="user-menu-button" class="nav-user-img d-none d-md-block">
+          <div id="user-menu-button" class="nav-user-img d-md-block">
                   <div id="user-menu-button" class="img_cont_nav">
                   <img src="${user.profilePicture}" alt="User Image">
                   </div>
@@ -42,10 +42,12 @@ function displayUserInfo(user) {
                 <button type="button" class="user-menu-li" aria-label="Edit" data-toggle="modal" data-target="#addFriend"> 
                     <i class="fas fa-user-plus"></i><h4>  add a friend</h4>
                 </button>
-                <li class="user-menu-li">
-                    <i class="fa-solid fa-cog"></i><h4>  set your profile</h4>
-                </li>
-                <button id="logoutBtn" class="btn btn-outline-light btn-lg px-5">Logout</button>
+                <button type="button" class="user-menu-li" aria-label="Edit" data-toggle="modal" data-target="#editPicture">
+                    <i class="fas fa-cog"></i><h4>  set your profile</h4>
+                </button>
+            </div>
+            <div class="user-menu-logout">
+              <button id="logoutBtn" class="btn btn-logout btn-outline-light btn-lg px-5">Logout</button>
             </div>
         </div>
 
@@ -124,7 +126,7 @@ function displayUserInfo(user) {
         </li>
       </ul>
     </div>
-    <a class="collapse navbar-collapse navbar-brand navbar-logo" href="#"><img src="Design/LogoTranscendance3.png" alt=""></a>
+    <div class="collapse navbar-collapse navbar-logo" href="#"><img src="Design/LogoTranscendance3.png" alt=""></div>
       <div class="nav-user" id="nav-user">
 
         </div>

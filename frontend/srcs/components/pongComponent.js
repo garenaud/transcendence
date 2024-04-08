@@ -49,11 +49,22 @@ export function renderPong() {
     const pongLocal = `
     <canvas id="background"></canvas>
     `;
+    const originalModalContent = `
+        <div class="goldTitle">
+            <div class="bg">Pong</div>
+            <div class="fg">Pong</div>
+        </div>
+        <div class="pong-glowing-btn">
+            <button id='localPongBtn' class='glowing-btn'><span class='glowing-txt'>L<span class='faulty-letter'>O</span>CAL</span></button>
+            <button id='multiPongBtn' class='glowing-btn'><span class='glowing-txt'>M<span class='faulty-letter'>U</span>LTIPLAYER</span></button>
+            <button id='tourPongBtn' class='glowing-btn'><span class='glowing-txt'>T<span class='faulty-letter'>O</span>URNAMENT</span></button>
+        </div>
+    `;
     const pongElement = document.createElement('div');
     pongElement.classList.add('col-12', 'col-md-6');
     pongElement.innerHTML = pongHTML;
-    const originalModalContent = pongElement.querySelector('.modal-content').innerHTML;
-
+/*     const originalModalContent = pongElement.querySelector('.card-game-inside').innerHTML;
+ */
     /**
      * Ajoute des gestionnaires d'événements aux boutons dans la modale.
      * - Le bouton 'localPongBtn' déclenche le jeu Pong en mode local.
@@ -79,7 +90,7 @@ export function renderPong() {
 
     // Réinitialise le contenu de la modale lorsque celle-ci est fermée.
     pongElement.querySelector('#pong').addEventListener('hidden.bs.modal', function () {
-        pongElement.querySelector('.modal-content').innerHTML = originalModalContent;
+        pongElement.querySelector('.card-game-inside').innerHTML = originalModalContent;
         addEventListeners();
     });
 

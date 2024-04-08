@@ -33,7 +33,7 @@ export function changeView(newView) {
     location.hash = newView;
     appState.currentView = newView;
     localStorage.setItem('appState', JSON.stringify(appState));
-    renderApp();
+    /* renderApp(); */
 }
 
 // Écouteur d'événement pour changer la vue lorsque l'URL change (rajoute le # à l'URL lorsqu'on change de vue)
@@ -96,6 +96,6 @@ export async function renderApp() {
     }
 }
 renderApp();
-/* loadUser().then(() => {
+ /*loadUser().then(() => {
     renderApp();
 }); */
