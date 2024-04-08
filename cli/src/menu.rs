@@ -23,10 +23,10 @@ pub fn menu(user: User) {
 		
 		match choice.as_str() {
 			"1" => {
-				pong::create_game(user.clone());
+				let _ = pong::create_game(user.clone());
 			},
 			"2" => {
-				pong::join_game(user.clone());
+				let _ = pong::join_game(user.clone());
 			},
 			"3" => {
 				break 'menu;

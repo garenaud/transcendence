@@ -85,12 +85,10 @@ pub fn game(user: User, mut socket: tungstenite::WebSocket<tungstenite::stream::
 	}
 }
 
-
 struct Console {
-	width: usize,
-	height: usize
+	width: f64,
+	height: f64
 }
-
 
 /*
 ** TAILLE ELEMENTS:
@@ -100,6 +98,8 @@ struct Console {
 ** Ball = 0.5 (circle)
 ** Paddle = 5.5
 */
+const PADDLE_HEIGHT: f64 = 5.5;
+const BALL_SIZE: f64 = 0.5;
 fn render(json: json::JsonValue) {
 	// let _ = clearscreen::clear();
 	let term: Console;
@@ -107,22 +107,39 @@ fn render(json: json::JsonValue) {
 	// println!("{}", json);
 	if let Some((w, h)) = term_size::dimensions() {
 		term =  Console {
-			width: w,
-			height: h
+			width: w as f64,
+			height: h as f64
 		};
 		// Print the score
-		let _ = term_cursor::set_pos((w / 2 - 3).try_into().unwrap(), 0);
-		println!("{} - {}", 0, 0);
-
+		let _ = term_cursor::set_pos(((term.width / 2.0 - 3.0) as i32).try_into().unwrap(), 1);
+		println!("{} - {}", json["score1"], json["score2"]);
 		_ = term_cursor::set_pos(0, 2);
-		for _ in 0..term.width {
+		for _ in 0..term.width as i32 {
 			print!("-");
 		}
 
-		_ = term_cursor::set_pos(3, 3);
-		println!("{}\t{}", term.width, term.height);
+		let paddle_offset: f64 = term.width / 12.0;
+
+		let paddle1 = json["plz"].as_f64().unwrap();
+		let paddle1 = paddle1 + 8.5;
+		let paddle1 = paddle1 / 19.0;
+		let paddle1 = paddle1 * (term.height - 2.0);
+		print_paddle(paddle_offset, paddle1);
+		print_paddle(term.width - paddle_offset, json["prz"].as_f64().unwrap());
+
+
+
 	} else {
 		println!("Error\n");
 		return ;
+	}
+}
+
+fn print_paddle(posx: f64, posy: f64) {
+	let posx = posx as i32;
+	let posy = posy as i32;
+	for i in 0..PADDLE_HEIGHT as i32 {
+		_ = term_cursor::set_pos(posx, posy + i);
+		print!("|");
 	}
 }
