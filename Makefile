@@ -6,7 +6,7 @@
 #    By: afrigger <afrigger@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/02/22 11:53:18 by vgroux            #+#    #+#              #
-#    Updated: 2024/03/27 12:08:10 by afrigger         ###   ########.fr        #
+#    Updated: 2024/04/08 14:39:08 by afrigger         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,10 +14,12 @@ all:
 	@mkdir -p ~/data/db
 	@mkdir -p ~/data/back
 	@mkdir -p ~/data/front
-	docker-compose -f ./docker-compose.yml up -d --build
+	docker-compose build
+	@sleep 3
+	docker-compose up -d
 
-down:
-	docker-compose -f ./docker-compose.yml down
+down: 
+	docker-compose down
 
 debug: all
 	docker-compose -f ./docker-compose.yml logs -f
@@ -33,18 +35,16 @@ look:
 
 clean:
 	docker image prune -a
-	docker-compose -f ./docker-compose.yml down
 
-fclean: clean vol
+fclean: down clean vol
 	docker system prune -a --volumes
 	
 vol:
-	docker volume rm ft_transcendence_backend
+# docker volume rm ft_transcendence_backend
 	docker volume rm ft_transcendence_db
-	docker volume rm ft_transcendence_frontend
+# docker volume rm ft_transcendence_frontend
 	rm -rf ~/data
 
-re: fclean
-	docker-compose -f ./docker-compose.yml up -d --build
+re: fclean all
 	
 .PHONY: all down re clean fclean vol debug look

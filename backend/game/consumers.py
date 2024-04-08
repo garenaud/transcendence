@@ -49,8 +49,19 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             threading.Thread(target=self.loop).start()
         
 
+    def ball_calc(self):
+        pass
+
+    def paddle_calc(self):
+        pass
+
+    def wall_calc(self):
+        pass
+
+
+    
     def loop(self):
-        while True:
+        while self.game.finished == False:
             time.sleep(0.02)
             paddle_size_x = 0.20000000298023224
             paddle_size_z = 3.1

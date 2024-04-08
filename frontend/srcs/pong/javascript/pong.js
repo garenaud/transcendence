@@ -29,9 +29,6 @@ const maxAngleAdjustment = 0.5;
 const deltaTime = 30;
 let scoreLeft;
 let scoreRight;
-let PaddleRight;
-let PaddleLeft;
-let ball;
 let ballVelocity;
 let gameSocket;
 
@@ -439,24 +436,24 @@ function handleBackground() {
     scene.background = color;
 }
 
+const ball = scene.getObjectByName('Ball');
+const PaddleLeft = scene.getObjectByName("LeftPaddle");
+const PaddleRight = scene.getObjectByName("RightPaddle");
+
 gameSocket.onmessage = function(e) {
 	game_data = JSON.parse(e.data);
-	console.log(typeof(game_data.prx));
 	if (game_data.action == 'game')
 	{
-		ball = scene.getObjectByName('Ball');
 		ball.position.x = parseFloat(game_data.bx);
 		ball.position.z = parseFloat(game_data.bz);
-		PaddleRight = scene.getObjectByName("RightPaddle");
 		PaddleRight.position.x = parseFloat(game_data.prx);
 		PaddleRight.position.z = parseFloat(game_data.prz);
-		PaddleLeft = scene.getObjectByName("LeftPaddle");
 		PaddleLeft.position.x = parseFloat(game_data.plx);
 		PaddleLeft.position.z = parseFloat(game_data.plz);
 	}
-	gameSocket.send(JSON.stringify({
-		'message' : 'update'
-		}));
+	// gameSocket.send(JSON.stringify({
+	// 	'message' : 'update'
+	// 	}));
 	//console.log(`hello from room ${game_data.room_name} in group ${game_data.room_group_name}`);
 	//update_game_data();
 };

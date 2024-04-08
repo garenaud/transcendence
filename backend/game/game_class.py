@@ -5,8 +5,8 @@ class gameData:
 	def __init__(self, id):
 		self.id = id
 		self.finished = False
-		self.p1id = ""
-		self.p2id = ""
+		self.p1id = "xxx"
+		self.p2id = "xxx"
 		self.scorep1 = 0
 		self.scorep2 = 0
 		self.initial_angle = 0.0

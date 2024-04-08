@@ -1,4 +1,4 @@
-FROM nginx:1.19.0-alpine
+FROM nginx:1.19.0-alpine-perl
 
 RUN apk add openssl
 
@@ -21,7 +21,6 @@ COPY srcs/ /var/www/html/
 
 COPY ./tools/nginx.conf /etc/nginx/conf.d/default.conf
 
-WORKDIR /var/www/html
 EXPOSE 443
 
 CMD ["nginx", "-g", "daemon off;"]
