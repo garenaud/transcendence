@@ -198,16 +198,19 @@ function    setupButtonListener() {
 			if (data.message === "Error") {
 				console.log('Signup Error:', data.errors);
 				document.getElementById('error-message').textContent = data.errors.join(', ');
+				document.getElementById('error-message').style.display = 'block';
 			} 
 			else if (data.message === "OK") 
 			{
 				console.log('Signup Success:', data);
 				document.getElementById('success-message').textContent = "Your account has been created successfully";
+				document.getElementById('error-message').style.display = 'block';
 				changeView('hero');
 			}
 		})
 		.catch((error) => {
 			console.error('Error:', error);
+			document.getElementById('error-message').textContent = error.message;
 		});
 	});
 }

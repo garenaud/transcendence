@@ -1,4 +1,4 @@
-import { initPong } from "../pong/javascript/pong.js";
+//import { initPong } from "../pong/javascript/pong.js";
 
 export function renderPong() {
     const pongHTML = `

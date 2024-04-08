@@ -8,6 +8,7 @@ import { renderLogin } from './login.js';
 import { renderBlackJack } from './BlackJack.js';
 import { renderRun } from './runGame.js';
 import { renderUserMenu } from './userMenu.js';
+import { LanguageBtn } from './languageManager.js';
 //import { renderSlotMachine } from './slotMachine.js';
 
 // Initialisation de l'état de l'application et du current user
@@ -70,6 +71,7 @@ export async function renderApp() {
             }
             switch(appState.currentView) {
                 case 'hero':
+                    await LanguageBtn();
                     await renderHero();
                     renderNavbar(appState.user);
                     break;

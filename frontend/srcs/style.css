@@ -50,6 +50,19 @@ h1 {
   border-color: #F6428E;
 }
 
+.dropdown-language {
+  position: fixed;
+  top: 30px;
+  left: 10px;
+  z-index: 1000;
+  background-color: white;
+}
+
+/*-------------------------------- Div Alert --------------------------------*/
+#error-message, #success-message {
+  display: none;
+}
+
 /*-------------------------------- Modal --------------------------------*/
 .modal-title {
     color: #F6428E;
