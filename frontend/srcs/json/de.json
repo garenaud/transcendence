@@ -1,3 +1,15 @@
 {
-    "heroTxt": "Überwinde das Spiel und werde zur Legende!"
+    "heroTxt": "Überwinde das Spiel, werde zur Legende!",
+    "playBtn": "SPIELEN",
+    "addFriend": "Einen Freund hinzufügen",
+    "setProfile": "Profil bearbeiten",
+    "logout": "Abmelden",
+    "editPicture": "Profilbild ändern",
+    "newPicture": "Neues Bild",
+    "previewPicture": "Vorschau",
+    "newUsername": "Neuer Benutzername",
+    "close": "Schließen",
+    "saveChanges": "Änderungen speichern",
+    "ranking": "RANGLISTE",
+    "home": "STARTSEITE"
 }

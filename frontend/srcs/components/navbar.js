@@ -40,14 +40,14 @@ function displayUserInfo(user) {
             </div>
             <div class="user-menu-info">
                 <button type="button" class="user-menu-li" aria-label="Edit" data-toggle="modal" data-target="#addFriend"> 
-                    <i class="fas fa-user-plus"></i><h4>  add a friend</h4>
+                    <i class="fas fa-user-plus"></i><h4 data-lang-key='addFriend'>ajouter un ami</h4>
                 </button>
                 <button type="button" class="user-menu-li" aria-label="Edit" data-toggle="modal" data-target="#editPicture">
-                    <i class="fas fa-cog"></i><h4>  set your profile</h4>
+                    <i class="fas fa-cog"></i><h4 data-lang-key='setProfile'>Editer le profil</h4>
                 </button>
             </div>
             <div class="user-menu-logout">
-              <button id="logoutBtn" class="btn btn-logout btn-outline-light btn-lg px-5">Logout</button>
+              <button id="logoutBtn" class="btn btn-logout btn-outline-light btn-lg px-5" data-lang-key='logout'>Déconnexion</button>
             </div>
         </div>
 
@@ -56,30 +56,30 @@ function displayUserInfo(user) {
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="editPictureLabel">Edit picture</h5>
+                        <h5 class="modal-title" id="editPictureLabel" data-lang-key='editPicture'>changer l'image de profil</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
                       <form>
-                      <label for="newProfilePicture"  class="text-white">Nouvelle image</label>
+                      <label for="newProfilePicture"  class="text-white" data-lang-key='newPicture'>Nouvelle image</label>
                         <div class="input-group">
                           <input type="text" class="form-control" placeholder="URL of your new image" id="newProfilePicture" aria-describedby="basic-addon1">
                           <div class="input-group-append">
-                            <button class="btn btn-success" type="button">preview</button>
+                            <button class="btn btn-success" type="button" data-lang-key='previewPicture'>preview</button>
                           </div>
                           <img id="preview" style="display: none;" />
                         </div>
                           <div class="form-group">
-                          <label for="formGroupExampleInput"  class="text-white">Nouveau username</label>
+                          <label for="formGroupExampleInput"  class="text-white" data-lang-key='newUsername'>Nouveau username</label>
                           <input type="text" class="form-control" id="newUsername" placeholder="Username">
                         </div>
                       </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button id="userSaveChange" type="button" class="btn btn-primary"  data-dismiss="modal">Save changes</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" data-lang-key='close'>Close</button>
+                        <button id="userSaveChange" type="button" class="btn btn-primary"  data-dismiss="modal" data-lang-key='saveChanges'>Save changes</button>
                     </div>
                 </div>
             </div>
@@ -90,7 +90,7 @@ function displayUserInfo(user) {
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="editPictureLabel">Add a friend</h5>
+                        <h5 class="modal-title" id="editPictureLabel" data-lang-key='addFriend'>Add a friend</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -99,8 +99,8 @@ function displayUserInfo(user) {
 
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button id="userSaveChange" type="button" class="btn btn-primary"  data-dismiss="modal">Save changes</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" data-lang-key='close'>Close</button>
+                        <button id="userSaveChange" type="button" class="btn btn-primary"  data-dismiss="modal" data-lang-key='saveChanges'>Save changes</button>
                     </div>
                 </div>
             </div>
@@ -119,10 +119,10 @@ function displayUserInfo(user) {
     <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
       <ul class="nav-div-btn navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-glowing-btn">
-          <button id='navChatBtn' class='glowing-btn'><span class='glowing-txt'>C<span class='faulty-letter'>L</span>ASSEMENT</span></button>
+          <button id='navChatBtn' class='glowing-btn'><span class='glowing-txt' data-lang-key='ranking'>CLASSEMENT</span></button>
         </li>
         <li class="nav-glowing-btn">
-          <button id='navGameBtn' class='glowing-btn'><span class='glowing-txt'>O<span class='faulty-letter'>P</span>TIONS</span></button>
+          <button id='navGameBtn' class='glowing-btn'><span class='glowing-txt' data-lang-key='home'>HOME</span></button>
         </li>
       </ul>
     </div>
