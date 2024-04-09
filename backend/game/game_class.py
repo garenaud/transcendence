@@ -7,8 +7,9 @@ class gameData:
 		self.bv = introcs.Vector3(0, 0, 0)
 		self.id = id
 		self.finished = False
-		self.p1id = ""
-		self.p2id = ""
+		self.started = False
+		self.p1id = "xxx"
+		self.p2id = "xxx"
 		self.scorep1 = 0
 		self.scorep2 = 0
 		# Générer un angle aléatoire entre 40 et 60 degrés pour la première direction
