@@ -16,7 +16,7 @@ pub fn create_game(user: User) {
 
 pub fn join_game(user: User) -> Result<(), Box<dyn std::error::Error>> {
 
-	let mut socket = match connect(("ws://{server}/game/1/").replace("{server}", user.get_server().as_str())) {
+	let mut socket = match connect(("ws://{server}/ws/game/1/").replace("{server}", user.get_server().as_str())) {
 		Ok((socket, res)) => {
 			socket
 		},
