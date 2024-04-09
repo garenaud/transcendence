@@ -33,11 +33,9 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             gameTab[self.room_id] = gameData(self.room_id)
             self.game = gameTab[self.room_id]
             self.game.p1id = self.channel_name
-            print("p1")
         else:
             self.game = gameTab[self.room_id]
             self.game.p2id = self.channel_name
-            print("p2")
         
             
         await self.channel_layer.group_add(
@@ -68,22 +66,17 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
     
     async def loop(self):
         while self.game.finished == False:
-            paddle_size_x = 0.20000000298023224
+            print(self.game.sif)
+            paddle_size_x = 0.2
             paddle_size_z = 3.1
-            max_angle_adjustment = math.pi / 6
-            min_angle_adjustment = (math.pi * -1) / 6
             #verifier la collision avec le paddle gauche
             if (self.game.bpx - self.game.bradius < self.game.plx + paddle_size_x / 2 and
                 self.game.bpx + self.game.bradius > self.game.plx - paddle_size_x / 2 and
                 self.game.bpz + self.game.bradius > self.game.plz - paddle_size_z / 2 and
                 self.game.bpz - self.game.bradius < self.game.plz + paddle_size_z / 2
-                ):
-                relative_position = (self.game.bpz - self.game.plz) / paddle_size_z
-                angleadjustment = (relative_position - 0.5) * (max_angle_adjustment - min_angle_adjustment) * 0.6
+                and is_colliding == False):
                 # Ajuster la direction de la balle en fonction de l'angl
-                angle = math.pi / 4 + angleadjustment
-                self.game.bv.x = math.cos(angle) * (0.2 * self.game.sif)
-                self.game.bv.x = math.sin(angle) * (0.2 * self.game.sif)
+                self.game.bv.x *= -1;
                 self.game.sif += 0.1
                 is_colliding = True
             #verifier la collision avec le paddle droit
@@ -100,7 +93,6 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             balllimit = 8.5
             if self.game.bpz > balllimit or self.game.bpz < -balllimit:
                 self.game.bv.z *= -1
-                # print("mur")
             elif self.game.bpx > 18 or self.game.bpx < -18:
                 if self.game.bpx > 18:
                     self.game.scorep2 += 1
@@ -108,15 +100,22 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
                     self.game.scorep1 += 1
                 self.game.bpx = 0.0
                 self.game.bpz = 0.0
-                self.game.sif = 1.1
-
+                self.game.sif = 0.8
+            if (self.game.scorep2 == 5):
+                self.game.finished == True
+                self.game.bpx = 0.0
+                self.game.bpz = 0.0
+            elif (self.game.scorep1 == 5):
+                self.game.finished == True
+                self.game.bpx = 0.0
+                self.game.bpz = 0.0
             self.game.bvx = self.game.bv.x
             self.game.bvz = self.game.bv.z
             self.game.bpx += self.game.bvx
             self.game.bpz += self.game.bvz
             
             await self.ball_update({'bpx' : self.game.bpx, 'bpz' : self.game.bpz})
-            await asyncio.sleep(1 / 120)
+            await asyncio.sleep(1 / 80)
 
     async def disconnect(self, close_code):
         self.channel_layer.group_discard(
