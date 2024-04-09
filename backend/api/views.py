@@ -92,7 +92,7 @@ def get_game_by_id(request, gameid):
 		if game == 0:
 			return Response({"message" : "Not found"})
 		else:
-			game = Games.objects.get(room_id=gameid)
+			game = Games.objects.get(room_id=gameid, finished=False)
 			serializer = GamesSerializer(game)
 			return Response({"message" : serializer.data})
 	else:

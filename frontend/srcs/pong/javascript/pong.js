@@ -241,7 +241,7 @@ function handleKeyDown(event) {
 		else if (event.code == 'Enter')
 		{
 			gameSocket.send(JSON.stringify({
-			'message' : 'start'
+			'message' : 'Start'
 			}));
 		}
 	//}
