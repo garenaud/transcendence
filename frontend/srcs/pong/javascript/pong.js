@@ -29,9 +29,6 @@ const maxAngleAdjustment = 0.5;
 const deltaTime = 30;
 let scoreLeft;
 let scoreRight;
-let PaddleRight;
-let PaddleLeft;
-let ball;
 let ballVelocity;
 let gameSocket;
 
@@ -209,7 +206,7 @@ function handleGround() {
 
 // Fonction pour gérer l'appui sur une touche
 function handleKeyDown(event) {
-	//console.log(event.code);
+	console.log(event.code);
 	//if (KeyState.hasOwnProperty(event.code)) {
 		if (event.code == 'ArrowUp')
 		{
@@ -239,6 +236,12 @@ function handleKeyDown(event) {
 		{
 			gameSocket.send(JSON.stringify({
 			'message' : 'S'
+			}));
+		}
+		else if (event.code == 'Enter')
+		{
+			gameSocket.send(JSON.stringify({
+			'message' : 'start'
 			}));
 		}
 	//}
@@ -439,24 +442,31 @@ function handleBackground() {
     scene.background = color;
 }
 
+
 gameSocket.onmessage = function(e) {
 	game_data = JSON.parse(e.data);
-	console.log(typeof(game_data.prx));
-	if (game_data.action == 'game')
+	console.log(game_data.action);
+	const ball = scene.getObjectByName('Ball');
+	const PaddleLeft = scene.getObjectByName("LeftPaddle");
+	const PaddleRight = scene.getObjectByName("RightPaddle");
+	if (game_data.action == 'paddle1')
 	{
-		ball = scene.getObjectByName('Ball');
-		ball.position.x = parseFloat(game_data.bx);
-		ball.position.z = parseFloat(game_data.bz);
-		PaddleRight = scene.getObjectByName("RightPaddle");
 		PaddleRight.position.x = parseFloat(game_data.prx);
 		PaddleRight.position.z = parseFloat(game_data.prz);
-		PaddleLeft = scene.getObjectByName("LeftPaddle");
+	}
+	else if (game_data.action == 'paddle2')
+	{
 		PaddleLeft.position.x = parseFloat(game_data.plx);
 		PaddleLeft.position.z = parseFloat(game_data.plz);
 	}
-	gameSocket.send(JSON.stringify({
-		'message' : 'update'
-		}));
+	else if (game_data.action == 'ball')
+	{
+		ball.position.x = parseFloat(game_data.bx);
+		ball.position.z = parseFloat(game_data.bz);
+	}
+	// gameSocket.send(JSON.stringify({
+	// 	'message' : 'update'
+	// 	}));
 	//console.log(`hello from room ${game_data.room_name} in group ${game_data.room_group_name}`);
 	//update_game_data();
 };
@@ -490,6 +500,11 @@ function animate() {
 	//updateBall();
 	// console.log(ball.position.x);
 	// console.log(ball.position.z);
+	// gameSocket.send(JSON.stringify(
+	// 	{
+	// 		"message" : "ball_update"
+	// 	})
+	// );
 	controls.update();
 	composer.render(scene, camera);
 }
