@@ -5,6 +5,7 @@ class gameData:
 	def __init__(self, id):
 		self.id = id
 		self.finished = False
+		self.started = False
 		self.p1id = "xxx"
 		self.p2id = "xxx"
 		self.scorep1 = 0

@@ -45,8 +45,7 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
         await self.accept()
-        if self.game.p1id == self.channel_name:
-            threading.Thread(target=self.loop).start()
+
         
 
     def ball_calc(self):
@@ -55,14 +54,20 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
     def paddle_calc(self):
         pass
 
-    def wall_calc(self):
-        pass
-
+    async def ball_update(self, event):
+        ball_position_x = event['bpx']
+        ball_position_z = event['bpz']
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type' : 'update',
+                "message": {'action' : 'ball', 'bx' : ball_position_x, 'bz' : ball_position_z}
+            }
+        )
 
     
-    def loop(self):
+    async def loop(self):
         while self.game.finished == False:
-            time.sleep(0.02)
             paddle_size_x = 0.20000000298023224
             paddle_size_z = 3.1
             max_angle_adjustment = math.pi / 6
@@ -75,7 +80,7 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
                 ):
                 relative_position = (self.game.bpz - self.game.plz) / paddle_size_z
                 angleadjustment = (relative_position - 0.5) * (max_angle_adjustment - min_angle_adjustment) * 0.6
-                # Ajuster la direction de la balle en fonction de l'angle
+                # Ajuster la direction de la balle en fonction de l'angl
                 angle = math.pi / 4 + angleadjustment
                 self.game.bv.x = math.cos(angle) * (0.2 * self.game.sif)
                 self.game.bv.x = math.sin(angle) * (0.2 * self.game.sif)
@@ -115,10 +120,8 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             self.game.bpx += self.game.bvx
             self.game.bpz += self.game.bvz
             
-            async_to_sync(self.channel_layer.group_send)(
-                self.room_group_name,
-                {"type": "update", "message": {'action' : 'game', 'bx' : self.game.bpx, 'bz' : self.game.bpz, 'plx' : self.game.plx ,'plz' : self.game.plz, 'prx' : self.game.prx ,'prz' : self.game.prz}}
-            )
+            await self.ball_update({'bpx' : self.game.bpx, 'bpz' : self.game.bpz})
+            await asyncio.sleep(1 / 120)
 
     async def disconnect(self, close_code):
         self.channel_layer.group_discard(
@@ -128,28 +131,38 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         jsondata = json.loads(text_data)
         message = jsondata['message']
-        if message == 'update':
+        #print(f"message is {message}")
+        if message == 'ball_update':
             await self.channel_layer.group_send(
             self.room_group_name,
             {"type": "update", "message": {'action' : 'game', 'bx' : self.game.bpx, 'bz' : self.game.bpz, 'plx' : self.game.plx ,'plz' : self.game.plz, 'prx' : self.game.prx ,'prz' : self.game.prz}}
             )
-            return
+        if message == "start" and self.game.started == False:
+            self.game.started = True
+            asyncio.create_task(self.loop())
+        elif message == 'update':
+            await self.channel_layer.group_send(
+            self.room_group_name,
+            {"type": "update", "message": {'action' : 'game', 'bx' : self.game.bpx, 'bz' : self.game.bpz, 'plx' : self.game.plx ,'plz' : self.game.plz, 'prx' : self.game.prx ,'prz' : self.game.prz}}
+            )
         elif self.game.p1id == self.channel_name:
             if message == 'Up' and self.game.prz - self.game.ms > -6.5:
                 self.game.prz -= self.game.ms
             elif message == 'Down' and self.game.prz + self.game.ms < 6.5:
                 self.game.prz += self.game.ms
-            # print("p1 paddle")
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {"type": "update", "message": {'action' : 'paddle1', 'prx' : self.game.prx ,'prz' : self.game.prz }}
+            )
         elif self.game.p2id == self.channel_name:
             if message == 'W' and self.game.plz - self.game.ms > -6.5:
                 self.game.plz -= self.game.ms
             elif message == 'S' and self.game.plz + self.game.ms < 6.5:
                 self.game.plz += self.game.ms
-            # print("p2 paddle")
-        # await self.channel_layer.group_send(
-        #     self.room_group_name,
-        #     {"type": "update", "message": {'action' : 'paddle', 'plx' : self.game.plx ,'plz' : self.game.plz, 'prx' : self.game.prx ,'prz' : self.game.prz }}
-        # )
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {"type": "update", "message": {'action' : 'paddle2', 'plx' : self.game.plx ,'plz' : self.game.plz}}
+            )
             
 
     async def update(self, event):
