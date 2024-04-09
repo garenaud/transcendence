@@ -14,7 +14,7 @@ from channels.db import database_sync_to_async
 from.game_class import gameData
 
 tasks = set()
-gameTab = [None] * 100
+gameTab = [None] * 1000
 
 channel_layer = channels.layers.get_channel_layer()
 
@@ -27,7 +27,7 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
         game.save()
 
     async def connect(self):
-        self.room_id = 1 #self.scope["url_route"]["kwargs"]["room_id"]
+        self.room_id = self.scope["url_route"]["kwargs"]["room_id"]
         self.room_group_name = f"game_{self.room_id}"
         if gameTab[self.room_id] is None:
             gameTab[self.room_id] = gameData(self.room_id)
