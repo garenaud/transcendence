@@ -13,7 +13,6 @@ import random
 from channels.db import database_sync_to_async
 from.game_class import gameData
 
-tasks = set()
 gameTab = [None] * 1000
 
 channel_layer = channels.layers.get_channel_layer()
@@ -33,6 +32,8 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             gameTab[self.room_id] = gameData(self.room_id)
             self.game = gameTab[self.room_id]
             self.game.p1id = self.channel_name
+            self.dbgame = Games(p1_id=1, p2_id=2, room_id=self.room_id, room_group_name=self.room_group_name)
+            await sync_to_async(self.saveGame)(self.dbgame)
             print("p1")
         else:
             self.game = gameTab[self.room_id]

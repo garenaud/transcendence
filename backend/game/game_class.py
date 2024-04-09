@@ -23,5 +23,6 @@ class gameData:
 		self.prz = 0.0 # paddle right position z
 		self.ms = 0.25 # move speed
 		self.sif = 1.1 # speed increase factor
+		self.dbgame = None
 
 	

@@ -55,7 +55,7 @@ function    setupButtonListener() {
 		const password = document.getElementById('typePasswordX').value;
 		let csrf = getCookie("csrftoken");
 		fetch('/auth/test/', {
-			method: 'POST',
+			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json',
 				'X-CSRFToken': csrf,
