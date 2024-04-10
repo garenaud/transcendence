@@ -67,60 +67,56 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
     async def loop(self):
         while self.game.finished == False:
             print(self.game.sif)
-            paddle_size_x = 0.2
-            paddle_size_z = 3.1
-            #verifier la collision avec le paddle gauche
-            if (self.game.bpx - self.game.bradius < self.game.plx + paddle_size_x / 2 and
-                self.game.bpx + self.game.bradius > self.game.plx - paddle_size_x / 2 and
-                self.game.bpz + self.game.bradius > self.game.plz - paddle_size_z / 2 and
-                self.game.bpz - self.game.bradius < self.game.plz + paddle_size_z / 2
-                and is_colliding == False):
-                # Ajuster la direction de la balle en fonction de l'angl
-                self.game.bv.x *= -1;
-                self.game.sif += 0.1
-                is_colliding = True
-            #verifier la collision avec le paddle droit
-            if (self.game.bpx - self.game.bradius < self.game.prx + paddle_size_x / 2 and
-                self.game.bpx + self.game.bradius > self.game.prx - paddle_size_x / 2 and
-                self.game.bpz + self.game.bradius > self.game.prz - paddle_size_z / 2 and
-                self.game.bpz - self.game.bradius < self.game.prz + paddle_size_z / 2
-                and is_colliding == False):
-                self.game.bv.x *= -1;
-                self.game.sif += 0.1
-                is_colliding = True
-                # print("collision detectee a droite"
             is_colliding = False
-            balllimit = 8.5
-            if self.game.bpz > balllimit or self.game.bpz < -balllimit:
-                self.game.bv.z *= -1
-            elif self.game.bpx > 18 or self.game.bpx < -18:
-                if self.game.bpx > 18:
-                    self.game.scorep2 += 1
-                elif self.game.bpx < -18:
-                    self.game.scorep1 += 1
-                self.game.bpx = 0.0
-                self.game.bpz = 0.0
-                self.game.sif = 0.8
-            if (self.game.scorep2 == 5):
-                self.game.finished == True
-                self.game.bpx = 0.0
-                self.game.bpz = 0.0
-            elif (self.game.scorep1 == 5):
-                self.game.finished == True
-                self.game.bpx = 0.0
-                self.game.bpz = 0.0
-            self.game.bvx = self.game.bv.x
-            self.game.bvz = self.game.bv.z
-            self.game.bpx += self.game.bvx
-            self.game.bpz += self.game.bvz
-            
-            await self.ball_update({'bpx' : self.game.bpx, 'bpz' : self.game.bpz})
-            await asyncio.sleep(1 / 80)
+            #verifier la collision avec le paddle gauche
+        for paddle in [(self.game.plx, self.game.plz), (self.game.prx, self.game.prz)]:
+            if self.check_collision(paddle):
+                self.game.bv.x *= -1
+                self.game.sif += 0.1
+                is_colliding = True
+                break
+            # print("collision detectee a droite"
+        balllimit = 8.5
+        if self.game.bpz > balllimit or self.game.bpz < -balllimit:
+            self.game.bv.z *= -1
+        elif self.game.bpx > 18 or self.game.bpx < -18:
+            if self.game.bpx > 18:
+                self.game.scorep2 += 1
+            elif self.game.bpx < -18:
+                self.game.scorep1 += 1
+            self.game.bpx = 0.0
+            self.game.bpz = 0.0
+            self.game.sif = 0.8
+        if (self.game.scorep2 == 5):
+            self.game.finished = True
+            self.game.bpx = 0.0
+            self.game.bpz = 0.0
+        elif (self.game.scorep1 == 5):
+            self.game.finished = True
+            self.game.bpx = 0.0
+            self.game.bpz = 0.0
+        self.game.bvx = self.game.bv.x
+        self.game.bvz = self.game.bv.z
+        self.game.bpx += self.game.bvx
+        self.game.bpz += self.game.bvz
+        
+        await self.ball_update({'bpx' : self.game.bpx, 'bpz' : self.game.bpz})
+        await asyncio.sleep(1 / 80)
 
-    async def disconnect(self, close_code):
-        self.channel_layer.group_discard(
-            self.room_group_name, self.channel_name
-        )
+PADDLE_SIZE_X = 0.2
+PADDLE_SIZE_Z = 3.1
+
+def check_collision(self, paddle):
+    paddle_x, paddle_z = paddle
+    return (self.game.bpx - self.game.bradius < paddle_x + PADDLE_SIZE_X / 2 and
+           self.game.bpx + self.game.bradius > paddle_x - PADDLE_SIZE_X / 2 and
+            self.game.bpz + self.game.bradius > paddle_z - PADDLE_SIZE_Z / 2 and
+           self.game.bpz - self.game.bradius < paddle_z + PADDLE_SIZE_Z / 2)
+
+async def disconnect(self, close_code):
+    self.channel_layer.group_discard(
+        self.room_group_name, self.channel_name
+    )
 
     async def receive(self, text_data):
         jsondata = json.loads(text_data)

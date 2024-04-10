@@ -7,8 +7,8 @@ all:
 down: 
 	docker-compose down
 
-debug: all
-	docker-compose -f ./docker-compose.yml logs -f
+debug:
+	docker-compose logs -f
 
 look:
 	docker ps -a
