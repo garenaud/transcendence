@@ -5,9 +5,6 @@
 	<head lang="en">
 		<meta charset="utf-8">
 		<title>SecondGame</title>
-		<style>
-			body { margin: 0; }
-		</style>
 		<div id="countdown"></div>
 		<!-- 
 			Import map is not available in all browsers.
@@ -24,7 +21,13 @@
 		
 	</head>
 	<body>
-		<canvas id="background"></canvas>
+		<div id="menu">
+			<button id="createBtn">Create Game</button>
+			<button id="joinBtn">Join Game</button>
+			<button id="listBtn">List Game</button>
+			<input type="text" id="gameCodeInput" placeholder="Enter Game Code"><br>
+			<a id="error"></a>
+		</div>
 		<script type="module" src="rungame.js"></script>
 		<!-- Canvas is necessary to hold a scene  -->
 	</body>

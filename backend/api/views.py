@@ -88,11 +88,11 @@ def get_game_list(request):
 @api_view(['GET'])
 def get_game_by_id(request, gameid):
 	if (request.method == 'GET'):
-		game = Games.objects.filter(id=gameid).count()
+		game = Games.objects.filter(room_id=gameid).count()
 		if game == 0:
 			return Response({"message" : "Not found"})
 		else:
-			game = Games.objects.get(id=gameid)
+			game = Games.objects.get(room_id=gameid, finished=False)
 			serializer = GamesSerializer(game)
 			return Response({"message" : serializer.data})
 	else:

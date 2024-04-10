@@ -44,11 +44,10 @@ function makeid(length) {
     return result;
 }
 
-// console.log(`ID IS ${gameid}`);
 
-// if (gameid != null)
-// {
-gameSocket = new WebSocket(
+if (gameid == null)
+{console.log("null");
+	gameSocket = new WebSocket(
 	'ws://'
 	+ window.location.host
 	+ '/ws/'
@@ -56,22 +55,23 @@ gameSocket = new WebSocket(
 	+ '/'
 	+ makeid(3)
 	+ '/'
-);
-// }
-// else
-// {
-// 	gameSocket = new WebSocket(
-// 		'ws://'
-// 		+ window.location.host
-// 		+ '/ws/'
-// 		+ 'game'
-// 		+ '/'
-// 		+ makeid(5)
-// 		+ '/'
-// 	);
-// }
-
-export function initPong() {
+	);
+}
+else
+{console.log("pas null");
+	gameSocket = new WebSocket(
+		'ws://'
+		+ window.location.host
+		+ '/ws/'
+		+ 'game'
+		+ '/'
+		+ gameid
+		+ '/'
+		);
+}
+console.log(`ID IS ${gameid}`);
+		
+		function init() {
 	// Renderer
 	renderer = new THREE.WebGLRenderer({
 		canvas: document.querySelector('#background'),
@@ -209,7 +209,7 @@ function handleKeyDown(event) {
 		else if (event.code == 'Enter')
 		{
 			gameSocket.send(JSON.stringify({
-			'message' : 'start'
+			'message' : 'Start'
 			}));
 		}
 	//}

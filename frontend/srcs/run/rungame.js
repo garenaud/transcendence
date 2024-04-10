@@ -2,24 +2,146 @@ import * as THREE from 'three';
 import {FBXLoader} from 'three/addons/loaders/FBXLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
+const errorLink = document.getElementById('error');
+let _APP = null;
 var BossAnimation = [];
 var MexicanAnimation = [];
 let bossLoad = false;
 let mexicanLoad = false;
 let LeftId;
 let RightId;
-let KeypressLeft = 0.1;
 let finished = false;
+let dataKey;
+let KeypressLeft = 0.1;
 let KeypressRight = 0.1;
+let inGame = false;
 
 var startNum;
 var currentNum;
+
+function makeid(length) {
+  let result = '';
+  const characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvxyz';
+  const charactersLength = characters.length;
+  let counter = 0;
+  while (counter < length) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    counter += 1;
+  }
+  return result;
+}
 
 function addClassDelayed(jqObj, c, to) {    
     setTimeout(function() { jqObj.addClass(c); }, to);
 }
 
-function anim() {
+const socket = new WebSocket('ws://localhost:8765/');
+
+socket.onmessage = function(event) {
+  const data = JSON.parse(event.data);
+  if (data.type === 'start_game') {
+      inGame = true;
+      var div_del = document.querySelector('.load-3');
+      if (div_del)
+        div_del.remove();
+      document.getElementById("menu").style.display = "none";
+      initializeGameContent();
+  } else if (data.type === 'game_not_found') {
+    console.log("La partie n'a pas été trouvée.");
+    errorLink.textContent = "La partie n'a pas été trouvée.";
+  } else if (data.type === 'game_create') {
+    console.log("Game create {" + data.gameid + "}");
+    const loadWrapper = document.createElement("div");
+    loadWrapper.className = "load-wrapp";
+
+    loadWrapper.innerHTML = `
+      <div class="container">
+        <div class="load-3">
+            <p id="loading"></p>
+            <div class="line"></div>
+            <div class="line"></div>
+            <div class="line"></div>
+        </div>
+      </div>
+    `;
+    document.getElementById("menu").style.display = "none";
+    document.body.appendChild(loadWrapper);
+    let loading = document.getElementById('loading');
+    loading.textContent = "Waiting for opponent (GameID " + data.gameid + ")";
+  } else if (data.type === 'lobby_full') {
+    console.log("La partie est deja pleine.");
+    errorLink.textContent = "La partie est deja pleine.";
+  } else if (data.type === 'list') {
+    if (data.data.length === 0) {
+      errorLink.textContent = "No games created yet !";
+    } else {
+      errorLink.textContent = "List Game ID : ";
+      errorLink.textContent += data.data;
+    }
+  }
+};
+
+socket.onopen = function(event) {
+  console.log('WebSocket is connected port 8765.');
+};
+
+window.addEventListener('beforeunload', function(event) {
+  console.log('WebSocket is closed.');
+  socket.send(JSON.stringify({
+    'status': 'leave',
+  }));
+});
+
+socket.onclose = function(event) {
+  console.log('WebSocket is closed.');
+  socket.send(JSON.stringify({
+    'status': 'leave',
+  }));
+};
+
+document.getElementById('createBtn').addEventListener('click', function() {
+  const gameId = makeid(5);
+  socket.send(JSON.stringify({
+    'create_game': true,
+    'game_id': gameId
+  }));
+});
+
+document.getElementById('joinBtn').addEventListener('click', function() {
+  const joinGameButton = document.getElementById('joinBtn');
+  const gameIdInput = document.getElementById('gameCodeInput');
+  const gameId = gameIdInput.value.trim();
+  errorLink.textContent = "";
+  if (gameId !== '' && gameId.length == 5) {
+      socket.send(JSON.stringify({
+          'join_game': true,
+          'game_id': gameId
+      }));
+  } else {
+    errorLink.textContent = "Veuillez saisir un ID de partie valide.";
+    console.log('Veuillez saisir un ID de partie valide.');
+  }
+});
+
+document.getElementById('listBtn').addEventListener('click', function() {
+  socket.send(JSON.stringify({
+    'get_list': true,
+  }));
+});
+
+document.addEventListener('keyup', function(event) {
+  if (event.key == "ArrowUp" && inGame == true)
+      socket.send(JSON.stringify({
+          'keypress': true,
+      }));    
+});
+
+function initializeGameContent() {
+  console.log("Salut");
+  _APP = new LoadModelDemo();
+}
+
+/*function anim() {
   if (bossLoad == true && mexicanLoad == true && currentNum >= 0) {
     addClassDelayed($("#countdown"), "puffer", 600);
     currentNum--;
@@ -46,7 +168,7 @@ $(function() {
     setTimeout(1500);
     self.setInterval(function(){anim()},1325);
   }
-});
+});*/
 
 class BasicCharacterControls {
   constructor(params) {
@@ -72,7 +194,7 @@ class BasicCharacterControls {
   }
 
   _onKeyDown(event) {
-	if (!finished && currentNum < 0) {
+if (!finished) {//&& currentNum < 0) {
 	  switch (event.keyCode) {
 		  case 87: // w
 		  this._move.forward = true;
@@ -93,7 +215,7 @@ class BasicCharacterControls {
 }
 	
 	_onKeyUp(event) {
-	if (!finished && currentNum < 0) {
+	if (!finished) {// && currentNum < 0) {
 		switch(event.keyCode) {
 		case 87: // w
 		this._move.forward = false;
@@ -460,8 +582,8 @@ _LoadTheCatch() {
 }
 
 
-let _APP = null;
+/*let _APP = null;
 
 window.addEventListener('DOMContentLoaded', () => {
   _APP = new LoadModelDemo();
-});
+});*/
