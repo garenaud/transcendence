@@ -41,8 +41,12 @@ export function loadLanguage(lang) {
                 }
             });
             const dropdownButton = document.querySelector('#languageDropdown');
-            const flagIcon = dropdownButton.querySelector('.flag-icon');
-            flagIcon.className = ''; // supprimer toutes les classes
-            flagIcon.classList.add('flag-icon', 'flag-icon-' + lang); // ajouter les classes pour le drapeau de la langue
+            if (dropdownButton) {
+                const flagIcon = dropdownButton.querySelector('.flag-icon');
+                if (flagIcon) {
+                    flagIcon.className = ''; // supprimer toutes les classes
+                    flagIcon.classList.add('flag-icon', 'flag-icon-' + lang); // ajouter les classes pour le drapeau de la langue
+                }
+            }
         });
 }

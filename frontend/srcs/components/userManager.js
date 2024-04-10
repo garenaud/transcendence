@@ -18,6 +18,9 @@ function updateUserOnServer(user) {
     })
     .then(response => {
         console.log('Server response:', response);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
         return response.json();
     })
     .then(data => {

@@ -4,6 +4,17 @@
     "addFriend": "Ajouter un ami",
     "setProfile": "Editer le profil",
     "logout": "Déconnexion",
+    "login": "Connexion",
+    "signup": "Inscription",
+    "password": "Mot de passe",
+    "loginTxt": "indique ton nom d'utilisateur et ton mot de passe pour te connecter",
+    "forgotPass": "Mot de passe oublié?",
+    "noAccount": "Pas de compte?",
+    "alreadyAccount": "Déjà un compte?",
+    "username": "Nom d'utilisateur",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "passConfirm": "Confirmer le mot de passe",
     "editPicture": "Changer l'image de profil",
     "newPicture": "Nouvelle image",
     "previewPicture": "Aperçu",
@@ -11,5 +22,7 @@
     "close": "Fermer",
     "saveChanges": "Sauvegarder les modifications",
     "ranking": "CLASSEMENT",
-    "home": "ACCUEIL"
+    "home": "ACCUEIL",
+    "blackjack": "blackJack",
+    "roulette": "Roulette"
 }

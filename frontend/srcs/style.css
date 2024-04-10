@@ -51,7 +51,7 @@ h1 {
 }
 
 .dropdown-language {
-  position: fixed;
+  position: absolute;
   top: 30px;
   left: 10px;
   z-index: 1000;

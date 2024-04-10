@@ -10,8 +10,8 @@ export function renderLogin() {
 	  <div class="login text-white" style="border-radius: 1rem;">
 		<div class="card-body-login p-5 text-center">
 		  <div class="mb-md-3 mt-md-2 pb-3">
-		  		<h2 class="fw-bold mb-2 text-uppercase">Login</h2>
-		  		<p class="text-white-50 mb-3">Please enter your login and password!</p>
+		  		<h2 class="fw-bold mb-2 text-uppercase" data-lang-key='login'>Login</h2>
+		  		<p class="text-white-50 mb-3" data-lang-key='loginTxt'>Please enter your login and password!</p>
 
 		  		<div class="form-outline form-white mb-2">
 		  			<input type="text" id="typeEmailX" class="form-control form-control-lg" />
@@ -19,12 +19,12 @@ export function renderLogin() {
 		  		</div>
 		  		<div class="form-outline form-white mb-2">
 		  			<input type="password" id="typePasswordX" class="form-control form-control-lg" />
-		  			<label class="form-label" for="typePasswordX">Password</label>
+		  			<label class="form-label" for="typePasswordX"  data-lang-key='password'>Password</label>
 		  		</div>
 
-			<p class="small mb-3 pb-lg-2"><a class="text-white-50" href="#!">Forgot password?</a></p>
+			<p class="small mb-3 pb-lg-2"><a class="text-white-50" href="#!" data-lang-key='forgotPass'>Forgot password?</a></p>
 
-			<button id='loginBtn' class="btn btn-outline-light btn-lg px-5" type="submit">Login</button>
+			<button id='loginBtn' class="btn btn-outline-light btn-lg px-5" type="submit" data-lang-key='login'>Login</button>
 
 			<div class="d-flex justify-content-center text-center mt-2 pt-1">
 			  <a href="#!" class="text-white"><i class="fab fa-facebook-f fa-lg"></i></a>
@@ -35,7 +35,7 @@ export function renderLogin() {
 		  </div>
 
 		  <div>
-			<p class="mb-0">Don't have an account? <a href="#!" id="signup-btn-form" class="text-white-50 fw-bold">Sign Up</a>
+			<p class="mb-0" data-lang-key='noAccount'>Don't have an account? <a href="#!" id="signup-btn-form" class="text-white-50 fw-bold">Sign Up</a>
 			</p>
 		  </div>
 
@@ -53,20 +53,20 @@ export function renderLogin() {
 		<div class="card-body-login p-5 text-center">
 		  <div class="mb-md-3 mt-md-2 pb-3">
 		  		<h2 class="fw-bold mb-2 text-uppercase">Signup</h2>
-				  <p class="mb-0">Already have an account? <a href="#!" id="login-btn-form" class="text-white-50 fw-bold">Log in</a>
+				  <p class="mb-0" data-lang-key='alreadyAccount'>Already have an account? <a href="#!" id="login-btn-form" class="text-white-50 fw-bold">Log in</a>
 
 
 		  		<div class="form-outline form-white mb-2">
 		  			<input type="username" id="signupUsername" class="form-control form-control-lg" />
-		  			<label class="form-label" for="signupUsername">Username</label>
+		  			<label class="form-label" for="signupUsername" data-lang-key='username'>Username</label>
 		  		</div>
 		  		<div class="form-outline form-white mb-2">
 		  			<input type="username" id="signupFirstName" class="form-control form-control-lg" />
-		  			<label class="form-label" for="signupFirstName">First name</label>
+		  			<label class="form-label" for="signupFirstName" data-lang-key='firstName'>First name</label>
 		  		</div>
 		  		<div class="form-outline form-white mb-2">
 		  			<input type="username" id="signupLastName" class="form-control form-control-lg" />
-		  			<label class="form-label" for="signupLastName">Last name</label>
+		  			<label class="form-label" for="signupLastName" data-lang-key='lastName'>Last name</label>
 		  		</div>
 		  		<div class="form-outline form-white mb-2">
 		  			<input type="email" id="signupEmail" class="form-control form-control-lg" />
@@ -74,18 +74,18 @@ export function renderLogin() {
 		  		</div>
 		  		<div class="form-outline form-white mb-2">
 		  			<input type="password" id="signupPassword1" class="form-control form-control-lg" />
-		  			<label class="form-label" for="signupPassword1">Password</label>
+		  			<label class="form-label" for="signupPassword1" data-lang-key='password'>Password</label>
 		  		</div>
 		  		<div class="form-outline form-white mb-2">
 		  			<input type="password" id="signupPassword2" class="form-control form-control-lg" />
-		  			<label class="form-label" for="signupPassword2">Password</label>
+		  			<label class="form-label" for="signupPassword2" data-lang-key='passConfirm'>Password confirmation</label>
 		  		</div>
 				<div id="error-message" class="alert alert-danger" role="alert"></div>
 				<div id="success-message" class="alert alert-success" role="alert"></div>
 
-			<p class="small mb-3 pb-lg-2"><a class="text-white-50" href="#!">Forgot password?</a></p>
+			<p class="small mb-3 pb-lg-2"><a class="text-white-50" href="#!" data-lang-key='forgotPass'>Forgot password?</a></p>
 
-			<button id='signupBtn' class="btn btn-outline-light btn-lg px-5" type="submit">signup</button>
+			<button id='signupBtn' class="btn btn-outline-light btn-lg px-5" type="submit" data-lang-key='signup'>signup</button>
 
 			<div class="d-flex justify-content-center text-center mt-2 pt-1">
 			  <a href="#!" class="text-white"><i class="fab fa-facebook-f fa-lg"></i></a>

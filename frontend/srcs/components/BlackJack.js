@@ -4,11 +4,11 @@ export function renderBlackJack() {
     <div class="card-game-wrapper glowing">
         <div class="card-game-test" style="background-image: url(Design/blackJackImgPres.webp);">
 			<div class="goldTitle">
-			<div class="bg">BlackJack</div>
-			<div class="fg">BlackJack</div>
+			<div class="bg" data-lang-key='blackjack'>BlackJack</div>
+			<div class="fg" data-lang-key='blackjack'>BlackJack</div>
 		</div>
         <button type="button" class="btn btn-primary glowing-btn center mx-auto d-block" data-toggle="modal" data-target="#blackjack">
-        <span class='glowing-txt'>J<span class='faulty-letter'>O</span>UER</span></button>
+        <span class='glowing-txt' data-lang-key='playBtn'>JOUER</span></button>
 	</div>
     </div>
           <!-- Modal -->
@@ -16,7 +16,7 @@ export function renderBlackJack() {
             <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
               <div class="modal-content">
                 <div class="modal-header">
-                  <h5 class="modal-title" id="exampleModalLabel">Black Jack</h5>
+                  <h5 class="modal-title" id="exampleModalLabel" data-lang-key='blackjack'>Black Jack</h5>
                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 	<span aria-hidden="true">&times;</span>
                   </button>

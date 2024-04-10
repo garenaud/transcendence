@@ -1,6 +1,13 @@
 import { changeView, appState } from './stateManager.js';
 import { getUser, setUserProfilePicture, setUsername } from './userManager.js';
 
+
+function escapeHTML(unsafeText) {
+  let div = document.createElement('div');
+  div.textContent = unsafeText;
+  return div.innerHTML;
+}
+
 export function renderNavbar(user){
   //const user = getUser();
   if (!user) {
@@ -187,6 +194,7 @@ function    setupButtonListener() {
   function updateUserInfoInNavbar(user) {
     const userInfoDiv = document.getElementById('nav-user');
     if (userInfoDiv) {
+        let escapedUsername = escapeHTML(user.username);
         userInfoDiv.innerHTML = `
         <div class="nav-user-info">
         <h4>${user.username}</h4>
@@ -223,9 +231,10 @@ function    setupButtonListener() {
       updateUserInfoInNavbar(appState.user);
     }
     if (newUsername) {
-      setUsername(newUsername);
+      let escapedUsername = escapeHTML(newUsername);
+      setUsername(escapedUsername);
       const displayedUsername = document.querySelector('.user-menu-title');
-      displayedUsername.textContent = newUsername;
+      displayedUsername.textContent = escapedUsername;
       updateUserInfoInNavbar(appState.user);
     }
   });
