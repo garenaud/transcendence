@@ -5,8 +5,9 @@ class gameData:
 	def __init__(self, id):
 		self.id = id
 		self.finished = False
-		self.p1id = ""
-		self.p2id = ""
+		self.started = False
+		self.p1id = -1
+		self.p2id = -1
 		self.scorep1 = 0
 		self.scorep2 = 0
 		self.initial_angle = 0.0
@@ -22,5 +23,6 @@ class gameData:
 		self.prz = 0.0 # paddle right position z
 		self.ms = 0.25 # move speed
 		self.sif = 1.1 # speed increase factor
+		self.dbgame = None
 
 	

@@ -11,6 +11,9 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages, auth
 from django.shortcuts import render
 from django.contrib.auth.models import User
+import random
+
+
 
 #Returns all user in the database
 @api_view(['GET'])
@@ -88,13 +91,44 @@ def get_game_list(request):
 @api_view(['GET'])
 def get_game_by_id(request, gameid):
 	if (request.method == 'GET'):
-		game = Games.objects.filter(id=gameid).count()
+		game = Games.objects.filter(room_id=gameid).count()
 		if game == 0:
 			return Response({"message" : "Not found"})
 		else:
-			game = Games.objects.get(id=gameid)
-			serializer = GamesSerializer(game)
-			return Response({"message" : serializer.data})
+			try:
+				game = Games.objects.get(room_id=gameid, finished=False)
+				serializer = GamesSerializer(game)
+				return Response({"message" : serializer.data})
+			except:
+				return Response({"message" : "Game is already finished"})
 	else:
 		return Response("Unauthorized method", status=status.HTTP_401_UNAUTHORIZED)
 	
+
+@api_view(['GET'])
+def create_game(request, gameid):
+	if request.method == 'GET':
+		game = Games.objects.filter(room_id=gameid).count()
+		if game == 0:
+			return Response({"message" : "ok"})
+		else:
+			newid = random.randint(1, 999)
+			while Games.objects.filter(room_id=newid).count() != 0:
+				newid = random.randint(1, 999)
+			return Response({"message" : "id exists", 'id' : newid})
+	else:
+		return Response("Unauthorized method", status=status.HTTP_401_UNAUTHORIZED)
+	
+
+@api_view(['GET'])
+def search_game(request):
+	if request.method == 'GET':
+		while True:
+			try:
+				games = Games.objects.filter(started=False, finished=False, full=False)
+				id = games[0].room_id
+				return Response({"message" : "ok", 'id' : id})
+			except:
+				pass
+	else:
+		return Response("Unauthorized method", status=status.HTTP_401_UNAUTHORIZED)

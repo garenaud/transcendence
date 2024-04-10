@@ -9,6 +9,7 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 //import { gameid } from './join.js';
 // import { RectAreaLightHelper } from 'three/addons/helpers/RectAreaLightHelper.js';
 
+let active = false;
 let gameid = sessionStorage.getItem('gameid');
 let game_data;
 let renderer;
@@ -22,9 +23,6 @@ const initialAngle = 0.45;
 const speed = 0.25;
 let scoreLeft;
 let scoreRight;
-let PaddleRight;
-let PaddleLeft;
-let ball;
 let ballVelocity;
 let gameSocket;
 
@@ -47,11 +45,11 @@ function makeid(length) {
     return result;
 }
 
-// console.log(`ID IS ${gameid}`);
 
-// if (gameid != null)
-// {
-gameSocket = new WebSocket(
+if (gameid == null)
+{
+	console.log("null");
+	gameSocket = new WebSocket(
 	'ws://'
 	+ window.location.host
 	+ '/ws/'
@@ -59,22 +57,24 @@ gameSocket = new WebSocket(
 	+ '/'
 	+ makeid(3)
 	+ '/'
-);
-// }
-// else
-// {
-// 	gameSocket = new WebSocket(
-// 		'ws://'
-// 		+ window.location.host
-// 		+ '/ws/'
-// 		+ 'game'
-// 		+ '/'
-// 		+ makeid(5)
-// 		+ '/'
-// 	);
-// }
-
-export function initPong() {
+	);
+}
+else
+{
+	console.log("pas null");
+	gameSocket = new WebSocket(
+		'ws://'
+		+ window.location.host
+		+ '/ws/'
+		+ 'game'
+		+ '/'
+		+ gameid
+		+ '/'
+		);
+}
+console.log(`ID IS ${gameid}`);
+		
+		function init() {
 	// Renderer
 	renderer = new THREE.WebGLRenderer({
 		canvas: document.querySelector('#background'),
@@ -202,22 +202,28 @@ function handleKeyDown(event) {
 			'message' : 'Down'
 			}));
 		}
-		else if (event.code == 'Escape')
-		{
-			gameSocket.send(JSON.stringify({
-			'message' : 'Stop'
-			}));
-		}
 		else if (event.code == 'KeyW')
 		{
 			gameSocket.send(JSON.stringify({
-			'message' : 'W'
+				'message' : 'W'
 			}));
 		}
 		else if (event.code == 'KeyS')
 		{
 			gameSocket.send(JSON.stringify({
-			'message' : 'S'
+				'message' : 'S'
+			}));
+		}
+		else if (event.code == 'Enter')
+		{
+			gameSocket.send(JSON.stringify({
+				'message' : 'Start'
+			}));
+		}
+		else if (event.code == 'Escape')
+		{
+			gameSocket.send(JSON.stringify({
+			'message' : 'Stop'
 			}));
 		}
 }
@@ -246,31 +252,51 @@ function handleBackground() {
     scene.background = color;
 }
 
+
 gameSocket.onmessage = function(e) {
 	game_data = JSON.parse(e.data);
-	console.log(typeof(game_data.prx));
-	if (game_data.action == 'game')
+	console.log(game_data.action);
+	const ball = scene.getObjectByName('Ball');
+	const PaddleLeft = scene.getObjectByName("LeftPaddle");
+	const PaddleRight = scene.getObjectByName("RightPaddle");
+	if (game_data.action == 'paddle1')
 	{
-		ball = scene.getObjectByName('Ball');
-		ball.position.x = parseFloat(game_data.bx);
-		ball.position.z = parseFloat(game_data.bz);
-		PaddleRight = scene.getObjectByName("RightPaddle");
-		PaddleLeft = scene.getObjectByName("LeftPaddle");
-		PaddleRight.castShadow = true;
-		PaddleLeft.castShadow = true;
 		PaddleRight.position.x = parseFloat(game_data.prx);
 		PaddleRight.position.z = parseFloat(game_data.prz);
+	}
+	else if (game_data.action == 'paddle2')
+	{
 		PaddleLeft.position.x = parseFloat(game_data.plx);
 		PaddleLeft.position.z = parseFloat(game_data.plz);
 	}
-	gameSocket.send(JSON.stringify({
-		'message' : 'update'
-		}));
+	else if (game_data.action == 'ball')
+	{
+		ball.position.x = parseFloat(game_data.bx);
+		ball.position.z = parseFloat(game_data.bz);
+	}
+	else if (game_data.action == 'Stop')
+	{
+		sessionStorage.setItem("gameid", null);
+	}
+	// gameSocket.send(JSON.stringify({
+	// 	'message' : 'update'
+	// 	}));
+	//console.log(`hello from room ${game_data.room_name} in group ${game_data.room_group_name}`);
+	//update_game_data();
 };
 
 function animate() {
 	requestAnimationFrame(animate);
 	handleBackground();
+	// handleAIPaddleRight();
+	//updateBall();
+	// console.log(ball.position.x);
+	// console.log(ball.position.z);
+	// gameSocket.send(JSON.stringify(
+	// 	{
+	// 		"message" : "ball_update"
+	// 	})
+	// );
 	controls.update();
 	composer.render(scene, camera);
 }

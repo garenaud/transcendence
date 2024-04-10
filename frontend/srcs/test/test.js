@@ -12,7 +12,7 @@ function makeid(length) {
 // const roomName = JSON.parse(document.getElementById('room-name').textContent);
 
 const chatSocket = new WebSocket(
-	'ws://'
+	'wss://'
 	+ window.location.host
 	+ '/ws/chat/'
 	+ makeid(5)
