@@ -24,5 +24,8 @@
     "ranking": "RANGLISTE",
     "home": "START",
     "blackjack": "BlackJack",
-    "roulette": "Roulette"
+    "roulette": "Roulette",
+    "createRoomPong": "CREER UNE PARTIE",
+    "joinRoomPong": "REJOINDRE UNE PARTIE",
+    "joinRandomRoomPong": "REJOINDRE UNE PARTIE ALÉATOIRE"
 }

@@ -49,6 +49,71 @@ export function renderPong() {
     const pongLocal = `
     <canvas id="background"></canvas>
     `;
+    const pongMulti = `
+    <div class="h-100 align-items-center ">
+        <a class="glowing-btn btn btn-primary m-5" data-toggle="collapse" href="#createRoomPong" data-lang-key='createRoomPong' aria-expanded="false" aria-controls="collapseExample">
+            CREER UNE PARTIE
+        </a>
+        <a class="glowing-btn btn btn-primary m-5" data-toggle="collapse" href="#joinRoomPong" data-lang-key='joinRoomPong' aria-expanded="false" aria-controls="collapseExample">
+            REJOINDRE UNE PARTIE
+        </a>
+        <a class="glowing-btn btn btn-primary m-5" data-toggle="collapse" href="#joinRandomRoomPong" data-lang-key='joinRandomRoomPong' aria-expanded="false" aria-controls="collapseExample">
+        REJOINDRE UNE PARTIE ALÉATOIRE
+        </a>
+        </p>
+        <div class="collapse w-100" id="createRoomPong">
+            <div class="card  w-100">
+            <form>
+                <div class="form-group row">
+                <label for="inputEmail3" class="col-sm-2 col-form-label">Email</label>
+                <div class="col-sm-10">
+                    <input type="email" class="form-control" id="inputEmail3" placeholder="Email">
+                </div>
+                </div>
+                <div class="form-group row">
+                <div class="col-sm-10 offset-sm-2">
+                    <button type="submit" class="btn btn-primary">Sign in</button>
+                </div>
+                </div>
+            </form>
+            </div>
+        </div>
+        <div class="collapse w-100" id="joinRoomPong">
+            <div class="card  w-100">
+            <form>
+                <div class="form-group row">
+                <label for="inputEmail3" class="col-sm-2 col-form-label">Email</label>
+                <div class="col-sm-10">
+                    <input type="email" class="form-control" id="inputEmail3" placeholder="Email">
+                </div>
+                </div>
+                <div class="form-group row">
+                <div class="col-sm-10 offset-sm-2">
+                    <button type="submit" class="btn btn-primary">Sign in</button>
+                </div>
+                </div>
+            </form>
+            </div>
+        </div>
+        <div class="collapse w-100" id="joinRandomRoomPong">
+            <div class="card  w-100">
+            <form>
+                <div class="form-group row">
+                <label for="inputEmail3" class="col-sm-2 col-form-label">Email</label>
+                <div class="col-sm-10">
+                    <input type="email" class="form-control" id="inputEmail3" placeholder="Email">
+                </div>
+                </div>
+                <div class="form-group row">
+                <div class="col-sm-10 offset-sm-2">
+                    <button type="submit" class="btn btn-primary">Sign in</button>
+                </div>
+                </div>
+            </form>
+            </div>
+        </div>
+    </div>
+    `;
     const originalModalContent = `
         <div class="goldTitle">
             <div class="bg">Pong</div>
@@ -78,7 +143,7 @@ export function renderPong() {
         });
 
         pongElement.querySelector('#multiPongBtn').addEventListener('click', function() {
-            changeDivContent('Contenu pour le mode tournoi');
+            changeDivContent(pongMulti);
         });
 
         pongElement.querySelector('#tourPongBtn').addEventListener('click', function() {

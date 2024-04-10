@@ -236,9 +236,9 @@ h1 {
 /*   z-index: 1000;
  */}
 
-.collapse {
+/* .collapse {
   background-color: #1A244D;
-}
+} */
 
 @media (max-width: 768px) {
   .navbar {
