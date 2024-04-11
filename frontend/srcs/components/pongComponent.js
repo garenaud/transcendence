@@ -9,7 +9,7 @@ export function renderPong() {
                     <div class="fg">Pong</div>
                 </div>
                 <button type="button" class="btn btn-primary glowing-btn center mx-auto d-block button" data-toggle="modal" data-target="#pong">
-                <span class='glowing-txt'>J<span class='faulty-letter'>O</span>UER</span></button>
+                <span id="playBtnPong" class='glowing-txt' data-lang-key='playBtn'>JOUER</span></button>
             </div>
         </div>
 
@@ -30,7 +30,7 @@ export function renderPong() {
                             <div class="bg">Pong</div>
                             <div class="fg">Pong</div>
                         </div>
-                        <div class="pong-glowing-btn">
+                        <div class="d-flex flex-row justify-content-between pong-glowing-btn">
                             <button id='localPongBtn' class='glowing-btn'><span class='glowing-txt'>L<span class='faulty-letter'>O</span>CAL</span></button>
                             <button id='multiPongBtn' class='glowing-btn'><span class='glowing-txt'>M<span class='faulty-letter'>U</span>LTIPLAYER</span></button>
                             <button id='tourPongBtn' class='glowing-btn'><span class='glowing-txt'>T<span class='faulty-letter'>O</span>URNAMENT</span></button>

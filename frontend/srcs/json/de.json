@@ -25,7 +25,7 @@
     "home": "START",
     "blackjack": "BlackJack",
     "roulette": "Roulette",
-    "createRoomPong": "CREER UNE PARTIE",
-    "joinRoomPong": "REJOINDRE UNE PARTIE",
-    "joinRandomRoomPong": "REJOINDRE UNE PARTIE ALÉATOIRE"
+    "createRoomPong": "EIN SPIEL ERSTELLEN",
+    "joinRoomPong": "EINEM SPIEL BEITRETEN",
+    "joinRandomRoomPong": "EINEM ZUFÄLLIGEN SPIEL BEITRETEN"
 }

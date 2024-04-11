@@ -7,7 +7,7 @@ export function renderRun() {
                     <div class="fg">Casino Rush</div>
                 </div>
                 <button type="button" class="btn btn-primary glowing-btn center mx-auto d-block button" data-toggle="modal" data-target="#run">
-                <span class='glowing-txt'>J<span class='faulty-letter'>O</span>UER</span></button>
+                <span id="playBtnRun" class='glowing-txt' data-lang-key='playBtn'>JOUER</span></button>
             </div>
         </div>
 
@@ -28,10 +28,14 @@ export function renderRun() {
                             <div class="bg">Casino Rush</div>
                             <div class="fg">Casino Rush</div>
                         </div>
-                        <div class="pong-glowing-btn">
-                            <button id='localRunBtn' class='glowing-btn'><span class='glowing-txt'>L<span class='faulty-letter'>O</span>CAL</span></button>
-                            <button id='multiRunBtn' class='glowing-btn'><span class='glowing-txt'>M<span class='faulty-letter'>U</span>LTIPLAYER</span></button>
-                            <button id='tourRunBtn' class='glowing-btn'><span class='glowing-txt'>T<span class='faulty-letter'>O</span>URNAMENT</span></button>
+                        <div class="d-flex flex-column" id="menu">
+                            <div class="d-flex flex-row justify-content-between mb-2">
+                                <button id="createBtn" class='glowing-btn'><span class='glowing-txt' data-lang-key='createRoomPong'>CREATE GAME</button>
+                                <button id="joinBtn" class='glowing-btn'><span class='glowing-txt' data-lang-key='joinRoomPong'>JOIN GAME</button>
+                                <button id="listBtn" class='glowing-btn'><span class='glowing-txt' data-lang-key='joinRandomRoomPong'>LIST GAME</button>
+                            </div>
+                            <input type="text" class=id="gameCodeInput" placeholder="Enter Game Code"><br>
+                            <a id="error"></a>
                         </div>
                     </div>
                 </div>
@@ -44,6 +48,7 @@ export function renderRun() {
             </div>
         </div>
     `;
+
     const runLocal = `
     <h1>partie en local</h1>
     `;
@@ -58,7 +63,7 @@ export function renderRun() {
      * - Le bouton 'multiPongBtn' change le contenu de la modale pour le mode multijoueur -> a faire.
      * - Le bouton 'tourPongBtn' change le contenu de la modale pour le mode tournoi -> a faire.
      */
-    function addEventListeners() {
+/*     function addEventListeners() {
         runElement.querySelector('#localRunBtn').addEventListener('click', function() {
             changeDivContent(runLocal);
             initPong();
@@ -73,7 +78,7 @@ export function renderRun() {
         });
     }
 
-    addEventListeners();
+    addEventListeners(); */
 
     // Réinitialise le contenu de la modale lorsque celle-ci est fermée.
     runElement.querySelector('#run').addEventListener('hidden.bs.modal', function () {
