@@ -87,20 +87,13 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
                 await self.stop_game()
             paddle_size_x = 0.20000000298023224
             paddle_size_z = 3.1
-            max_angle_adjustment = math.pi / 6
-            min_angle_adjustment = (math.pi * -1) / 6
             #verifier la collision avec le paddle gauche
             if (self.game.bpx - self.game.bradius < self.game.plx + paddle_size_x / 2 and
                 self.game.bpx + self.game.bradius > self.game.plx - paddle_size_x / 2 and
                 self.game.bpz + self.game.bradius > self.game.plz - paddle_size_z / 2 and
                 self.game.bpz - self.game.bradius < self.game.plz + paddle_size_z / 2
                 ):
-                relative_position = (self.game.bpz - self.game.plz) / paddle_size_z
-                angleadjustment = (relative_position - 0.5) * (max_angle_adjustment - min_angle_adjustment) * 0.6
-                # Ajuster la direction de la balle en fonction de l'angl
-                angle = math.pi / 4 + angleadjustment
-                self.game.bv.x = math.cos(angle) * (0.2 * self.game.sif)
-                self.game.bv.x = math.sin(angle) * (0.2 * self.game.sif)
+                self.game.bv.x *= -1;
                 self.game.sif += 0.1
                 # print("collision detectee a gauche")
             #verifier la collision avec le paddle droit
@@ -109,15 +102,9 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
                 self.game.bpz + self.game.bradius > self.game.prz - paddle_size_z / 2 and
                 self.game.bpz - self.game.bradius < self.game.prz + paddle_size_z / 2
                 ):
-                relative_position = (self.game.bpz - self.game.prz) / paddle_size_z
-                angleadjustment = (relative_position - 0.5) * (max_angle_adjustment - min_angle_adjustment) * 0.3
-                # Ajuster la direction de la balle en fonction de l'angle
-                angle = (math.pi * -1) / 4 - angleadjustment
-                self.game.bv.x = (math.cos(angle) * -1) * (0.2 * self.game.sif)
-                self.game.bv.z = (math.sin(angle) * -1) * (0.2 * self.game.sif)
+                self.game.bv.x *= -1;
                 self.game.sif += 0.1
                 # print("collision detectee a droite")
-
             balllimit = 8.5
             if self.game.bpz > balllimit or self.game.bpz < -balllimit:
                 self.game.bv.z *= -1
