@@ -112,9 +112,9 @@ def create_game(request, gameid):
 		if game == 0:
 			return Response({"message" : "ok"})
 		else:
-			newid = random.randint(1, 999)
+			newid = random.randint(1, 9999)
 			while Games.objects.filter(room_id=newid).count() != 0:
-				newid = random.randint(1, 999)
+				newid = random.randint(1, 9999)
 			return Response({"message" : "ko", 'id' : newid})
 	else:
 		return Response("Unauthorized method", status=status.HTTP_401_UNAUTHORIZED)
@@ -129,9 +129,9 @@ def search_game(request):
 			id = games[0].room_id
 			return Response({"message" : "ok", 'id' : id})
 		except:
-			newid = random.randint(1, 999)
+			newid = random.randint(1, 9999)
 			while Games.objects.filter(room_id=newid).count() != 0:
-				newid = random.randint(1, 999)
+				newid = random.randint(1, 9999)
 			return Response({"message" : "ko", 'id' : newid})
 	else:
 		return Response("Unauthorized method", status=status.HTTP_401_UNAUTHORIZED)

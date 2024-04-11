@@ -13,7 +13,7 @@ import random
 from channels.db import database_sync_to_async
 from.game_class import gameData
 
-gameTab = [None] * 1000
+gameTab = [None] * 10000
 
 channel_layer = channels.layers.get_channel_layer()
 
@@ -49,6 +49,13 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
         await self.accept()
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type' : 'update',
+                "message": {'action' : 'private'}
+            }
+        )
 
         
 
@@ -156,6 +163,10 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
         jsondata = json.loads(text_data)
         message = jsondata['message']
         #print(f"message is {message}")
+        if message == 'private':
+            self.game.dbgame.private = True
+            await sync_to_async(self.saveGame)(self.game.dbgame)
+            print("private")
         if message == 'ball_update':
             await self.channel_layer.group_send(
             self.room_group_name,

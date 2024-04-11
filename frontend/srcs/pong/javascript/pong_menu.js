@@ -1,6 +1,6 @@
 const errorLink = document.getElementById('error');
 let gameid;
-let private_game;
+let privategame = false;
 
 function makeid(length) {
 	let result = '';
@@ -15,7 +15,7 @@ function makeid(length) {
   }
 
 document.getElementById('createBtn').addEventListener('click', function() {
-	gameid = makeid(3);
+	gameid = makeid(4);
 	let url = '/api/game/create/' + gameid;
 	  console.log(url);
 	  fetch(url, {
@@ -27,13 +27,15 @@ document.getElementById('createBtn').addEventListener('click', function() {
 		  console.log('Success:', data);
 		  if (data['message'] == "ko") {
 			gameid = data['id'];
-			private_game = true;
-			sessionStorage.setItem("private", private_game);
+			privategame = true;
+			sessionStorage.setItem("privategame", privategame);
 			sessionStorage.setItem("gameid", gameid);
 			window.location.href = "/pong/pong.html";
 		  } else if (data['message'] == 'ok'){
-			  sessionStorage.setItem("gameid", gameid);
-			  window.location.href = "/pong/pong.html";
+				privategame = true;
+				sessionStorage.setItem("gameid", gameid);
+				sessionStorage.setItem("privategame", privategame);
+				window.location.href = "/pong/pong.html";
 		  }
 	  })
 	  .catch((error) => {
@@ -57,8 +59,8 @@ document.getElementById('joinBtn').addEventListener('click', function() {
 		  if (data['message'] == "Not found") {
 			errorLink.textContent = `La partie ${gameid} n'existe pas, veuillez reessayer`;
 		  } else{
-			private_game = true;
-			sessionStorage.setItem("private", private_game);
+			privategame = true;
+			sessionStorage.setItem("privategame", privategame);
 			sessionStorage.setItem("gameid", gameid);
 			window.location.href = "/pong/pong.html";
 		  }
@@ -92,14 +94,14 @@ document.getElementById('searchBtn').addEventListener('click', function() {
 		  console.log('Success:', data);
 		  if (data['message'] == "ok") {
 			gameid = data['id'];
-			private_game = false;
-			sessionStorage.setItem("private", private_game);
+			privategame = false;
+			sessionStorage.setItem("privategame", privategame);
 			sessionStorage.setItem("gameid", gameid);
 			window.location.href = "/pong/pong.html";
 		  } else if (data['message'] == 'ko'){
 			gameid = data['id'];
-			private_game = false;
-			sessionStorage.setItem("private", private_game);
+			privategame = false;
+			sessionStorage.setItem("privategame", privategame);
 			sessionStorage.setItem("gameid", gameid);
 			window.location.href = "/pong/pong.html";
 			

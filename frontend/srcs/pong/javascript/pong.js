@@ -11,6 +11,7 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 
 let active = false;
 let gameid = sessionStorage.getItem('gameid');
+let privategame = sessionStorage.getItem('privategame');
 let game_data;
 let renderer;
 let scene;
@@ -63,7 +64,7 @@ if (gameid == null)
 	+ '/ws/'
 	+ 'game'
 	+ '/'
-	+ makeid(3)
+	+ makeid(4)
 	+ '/'
 	);
 }
@@ -80,9 +81,12 @@ else
 		+ '/'
 		);
 }
+
+console.log(privategame);
+
 console.log(`ID IS ${gameid}`);
-		
-		function init() {
+
+function init() {
 	// Renderer
 	renderer = new THREE.WebGLRenderer({
 		canvas: document.querySelector('#background'),
@@ -446,33 +450,40 @@ function handleBackground() {
 gameSocket.onmessage = function(e) {
 	game_data = JSON.parse(e.data);
 	console.log(game_data.action);
-	const ball = scene.getObjectByName('Ball');
-	const PaddleLeft = scene.getObjectByName("LeftPaddle");
-	const PaddleRight = scene.getObjectByName("RightPaddle");
-	if (game_data.action == 'paddle1')
+	if (game_data.action == "private")
 	{
-		PaddleRight.position.x = parseFloat(game_data.prx);
-		PaddleRight.position.z = parseFloat(game_data.prz);
+	if (privategame == 'true')
+		{
+			gameSocket.send(JSON.stringify({
+			'message' : 'private'
+			}));
+		}
 	}
-	else if (game_data.action == 'paddle2')
-	{
-		PaddleLeft.position.x = parseFloat(game_data.plx);
-		PaddleLeft.position.z = parseFloat(game_data.plz);
+	else
+	{	
+		const ball = scene.getObjectByName('Ball');
+		const PaddleLeft = scene.getObjectByName("LeftPaddle");
+		const PaddleRight = scene.getObjectByName("RightPaddle");
+		if (game_data.action == 'paddle1')
+		{
+			PaddleRight.position.x = parseFloat(game_data.prx);
+			PaddleRight.position.z = parseFloat(game_data.prz);
+		}
+		else if (game_data.action == 'paddle2')
+		{
+			PaddleLeft.position.x = parseFloat(game_data.plx);
+			PaddleLeft.position.z = parseFloat(game_data.plz);
+		}
+		else if (game_data.action == 'ball')
+		{
+			ball.position.x = parseFloat(game_data.bx);
+			ball.position.z = parseFloat(game_data.bz);
+		}
+		else if (game_data.action == 'Stop')
+		{
+			sessionStorage.setItem("gameid", null);
+		}
 	}
-	else if (game_data.action == 'ball')
-	{
-		ball.position.x = parseFloat(game_data.bx);
-		ball.position.z = parseFloat(game_data.bz);
-	}
-	else if (game_data.action == 'Stop')
-	{
-		sessionStorage.setItem("gameid", null);
-	}
-	// gameSocket.send(JSON.stringify({
-	// 	'message' : 'update'
-	// 	}));
-	//console.log(`hello from room ${game_data.room_name} in group ${game_data.room_group_name}`);
-	//update_game_data();
 };
 
 function update_game_data() {
