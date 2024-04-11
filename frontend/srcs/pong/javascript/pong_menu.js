@@ -1,5 +1,6 @@
 const errorLink = document.getElementById('error');
 let gameid;
+let private_game;
 
 function makeid(length) {
 	let result = '';
@@ -25,9 +26,11 @@ document.getElementById('createBtn').addEventListener('click', function() {
 	  .then(data => {
 		  console.log('Success:', data);
 		  if (data['message'] == "ko") {
-		gameid = data['id'];
-		sessionStorage.setItem("gameid", gameid);
-			  window.location.href = "/pong/pong.html";
+			gameid = data['id'];
+			private_game = true;
+			sessionStorage.setItem("private", private_game);
+			sessionStorage.setItem("gameid", gameid);
+			window.location.href = "/pong/pong.html";
 		  } else if (data['message'] == 'ok'){
 			  sessionStorage.setItem("gameid", gameid);
 			  window.location.href = "/pong/pong.html";
@@ -54,8 +57,10 @@ document.getElementById('joinBtn').addEventListener('click', function() {
 		  if (data['message'] == "Not found") {
 			errorLink.textContent = `La partie ${gameid} n'existe pas, veuillez reessayer`;
 		  } else{
-			  sessionStorage.setItem("gameid", gameid);
-			  window.location.href = "/pong/pong.html";
+			private_game = true;
+			sessionStorage.setItem("private", private_game);
+			sessionStorage.setItem("gameid", gameid);
+			window.location.href = "/pong/pong.html";
 		  }
 	  })
 	  .catch((error) => {
@@ -87,10 +92,18 @@ document.getElementById('searchBtn').addEventListener('click', function() {
 		  console.log('Success:', data);
 		  if (data['message'] == "ok") {
 			gameid = data['id'];
+			private_game = false;
+			sessionStorage.setItem("private", private_game);
 			sessionStorage.setItem("gameid", gameid);
 			window.location.href = "/pong/pong.html";
 		  } else if (data['message'] == 'ko'){
-			console.log("L'homme methode GET")
+			gameid = data['id'];
+			private_game = false;
+			sessionStorage.setItem("private", private_game);
+			sessionStorage.setItem("gameid", gameid);
+			window.location.href = "/pong/pong.html";
+			
+			console.log("L'homme methode GET") // IMPORTANT NE PAS ENLEVER!!!
 		  }
 	  })
 	  .catch((error) => {

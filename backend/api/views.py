@@ -115,7 +115,7 @@ def create_game(request, gameid):
 			newid = random.randint(1, 999)
 			while Games.objects.filter(room_id=newid).count() != 0:
 				newid = random.randint(1, 999)
-			return Response({"message" : "id exists", 'id' : newid})
+			return Response({"message" : "ko", 'id' : newid})
 	else:
 		return Response("Unauthorized method", status=status.HTTP_401_UNAUTHORIZED)
 	
@@ -123,12 +123,15 @@ def create_game(request, gameid):
 @api_view(['GET'])
 def search_game(request):
 	if request.method == 'GET':
-		while True:
-			try:
-				games = Games.objects.filter(started=False, finished=False, full=False)
-				id = games[0].room_id
-				return Response({"message" : "ok", 'id' : id})
-			except:
-				pass
+		try:
+			#ajouter le nombre de user actuellement en recherche de game dans la db
+			games = Games.objects.filter(started=False, finished=False, full=False, private=False)
+			id = games[0].room_id
+			return Response({"message" : "ok", 'id' : id})
+		except:
+			newid = random.randint(1, 999)
+			while Games.objects.filter(room_id=newid).count() != 0:
+				newid = random.randint(1, 999)
+			return Response({"message" : "ko", 'id' : newid})
 	else:
 		return Response("Unauthorized method", status=status.HTTP_401_UNAUTHORIZED)

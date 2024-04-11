@@ -21,6 +21,7 @@ class Games(models.Model):
 	finished = models.BooleanField(default=False)
 	started = models.BooleanField(default=False)
 	full = models.BooleanField(default=False)
+	private = models.BooleanField(default=False)
 	scoreleft = models.IntegerField(default=0)
 	scoreright = models.IntegerField(default=0)
 	p1_score = models.IntegerField(default=0)

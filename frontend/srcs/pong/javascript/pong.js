@@ -58,7 +58,7 @@ if (gameid == null)
 {
 	console.log("null");
 	gameSocket = new WebSocket(
-	'ws://'
+	'wss://'
 	+ window.location.host
 	+ '/ws/'
 	+ 'game'
@@ -71,7 +71,7 @@ else
 {
 	console.log("pas null");
 	gameSocket = new WebSocket(
-		'ws://'
+		'wss://'
 		+ window.location.host
 		+ '/ws/'
 		+ 'game'
