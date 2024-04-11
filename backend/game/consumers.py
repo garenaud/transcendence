@@ -79,36 +79,30 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
         )
 
     async def loop(self):
-        while self.game.finished == False:
+        def check_collision(self, paddle_x, paddle_z):
+            paddle_size_x = 0.20000000298023224
+            paddle_size_z = 3.1
+            if (self.game.bpx - self.game.bradius < paddle_x + paddle_size_x / 2 and
+                self.game.bpx + self.game.bradius > paddle_x - paddle_size_x / 2 and
+                self.game.bpz + self.game.bradius > paddle_z - paddle_size_z / 2 and
+                self.game.bpz - self.game.bradius < paddle_z + paddle_size_z / 2
+                ):
+                self.game.bv.x *= -1
+                self.game.sif += 0.1
+
+        while not self.game.finished:
             if self.game.scorep1 == 5 or self.game.scorep2 == 5:
                 self.game.finished = True
                 self.game.dbgame.finished = True
                 await sync_to_async(self.saveGame)(self.game.dbgame)
                 await self.stop_game()
-            paddle_size_x = 0.20000000298023224
-            paddle_size_z = 3.1
-            #verifier la collision avec le paddle gauche
-            if (self.game.bpx - self.game.bradius < self.game.plx + paddle_size_x / 2 and
-                self.game.bpx + self.game.bradius > self.game.plx - paddle_size_x / 2 and
-                self.game.bpz + self.game.bradius > self.game.plz - paddle_size_z / 2 and
-                self.game.bpz - self.game.bradius < self.game.plz + paddle_size_z / 2
-                ):
-                self.game.bv.x *= -1;
-                self.game.sif += 0.1
-                # print("collision detectee a gauche")
-            #verifier la collision avec le paddle droit
-            if (self.game.bpx - self.game.bradius < self.game.prx + paddle_size_x / 2 and
-                self.game.bpx + self.game.bradius > self.game.prx - paddle_size_x / 2 and
-                self.game.bpz + self.game.bradius > self.game.prz - paddle_size_z / 2 and
-                self.game.bpz - self.game.bradius < self.game.prz + paddle_size_z / 2
-                ):
-                self.game.bv.x *= -1;
-                self.game.sif += 0.1
-                # print("collision detectee a droite")
+
+            # Check collision with left and right paddles
+            check_collision(self, self.game.plx, self.game.plz)  # Left paddle
+            check_collision(self, self.game.prx, self.game.prz)  # Right paddle
             balllimit = 8.5
             if self.game.bpz > balllimit or self.game.bpz < -balllimit:
                 self.game.bv.z *= -1
-                # print("mur")
             elif self.game.bpx > 18 or self.game.bpx < -18:
                 if self.game.bpx > 18:
                     self.game.scorep2 += 1
@@ -116,14 +110,12 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
                     self.game.scorep1 += 1
                 self.game.bpx = 0.0
                 self.game.bpz = 0.0
-                self.game.sif = 1.1
-                self.game.bv = introcs.Vector3(math.cos(0) * 0.25, 0, math.sin(0) * 0.25)
+                self.game.sif = 0.4
 
             self.game.bvx = self.game.bv.x
             self.game.bvz = self.game.bv.z
-            self.game.bpx += self.game.bvx
-            self.game.bpz += self.game.bvz
-            
+            self.game.bpx += self.game.bvx * self.game.sif
+            self.game.bpz += self.game.bvz * self.game.sif
             await self.ball_update({'bpx' : self.game.bpx, 'bpz' : self.game.bpz})
             await asyncio.sleep(1 / 120)
 

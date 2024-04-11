@@ -292,4 +292,5 @@ document.addEventListener('keydown', handleKeyDown);
 document.addEventListener('keyup', handleKeyUp);
 
 // Appel de la fonction d'initialisation
-initPong();
+init();
+// 
