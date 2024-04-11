@@ -55,6 +55,7 @@ pub fn join_game(user: User) -> Result<(), Box<dyn std::error::Error>> {
 	// ASK THE USER FOR THE ROOM ID
 	let mut room: String = String::new();
 	loop {
+		romm.clear();
 		print!("Room ID: ");
 		let _ = std::io::stdout().flush();
 	
@@ -66,9 +67,25 @@ pub fn join_game(user: User) -> Result<(), Box<dyn std::error::Error>> {
 		if room.len() <= 0 {
 			eprintln!("{}", format!("Room ID is empty, please try again").red());
 			continue;
-		} else {
-			break;
 		}
+		let req = user.get_client().get("https://{server}/api/game/{room_id}/".replace("{server}", user.get_server().as_str()).replace("{room_id}", room.as_str()));
+		let res = req.build();
+		let res = user.execute(res.expect("ERROR WHILE BUILDING THE REQUEST"));
+		match res {
+			Ok(res) => {
+				if res.status().is_success() {
+					break;
+				} else if res.status().is_client_error() {
+					eprintln!("{}", format!("Room not found").red());
+					continue;
+				}
+			},
+			Err(err) => {
+				eprintln!("{}", format!("{}", err).red());
+				return Err(Box::new(err));
+			}
+		}
+		break;
 	}
 
 	let mut socket = connect_ws(user, room);
@@ -79,7 +96,6 @@ pub fn join_game(user: User) -> Result<(), Box<dyn std::error::Error>> {
 			return Err(Box::new(err));
 		}
 	};
-
 
 	// THIS IS TEMP: SEND A MESSAGE TO THE SERVER TO START THE GAME
 	socket.send(Message::Text(r#"{"message":"start"}"#.to_string()))?;
