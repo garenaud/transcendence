@@ -8,6 +8,7 @@ import { renderLogin } from './login.js';
 import { renderBlackJack } from './BlackJack.js';
 import { renderRun } from './runGame.js';
 import { renderUserMenu } from './userMenu.js';
+import { LanguageBtn, loadLanguage } from './languageManager.js';
 //import { renderSlotMachine } from './slotMachine.js';
 
 // Initialisation de l'état de l'application et du current user
@@ -16,6 +17,7 @@ export let appState = {
     user: null,
     users: [],
     renderedComponents: {},
+    language: 'fr',
 };
 
 // Fonction pour créer et ajouter un div avec des composants spécifiques à la page
@@ -33,7 +35,7 @@ export function changeView(newView) {
     location.hash = newView;
     appState.currentView = newView;
     localStorage.setItem('appState', JSON.stringify(appState));
-    renderApp();
+    /* renderApp(); */
 }
 
 // Écouteur d'événement pour changer la vue lorsque l'URL change (rajoute le # à l'URL lorsqu'on change de vue)
@@ -51,9 +53,11 @@ export async function renderApp() {
     const savedState = localStorage.getItem('appState');
     if (savedState) {
         appState = JSON.parse(savedState);
+        loadLanguage(appState.language);
     } else {
         const view = window.location.pathname.substring(1);
         appState.currentView = ['login', 'hero', 'game', 'chat'].includes(view) ? view : 'login';
+        appState.language = 'fr';
     }
     if (!appState.renderedComponents) {
         appState.renderedComponents = {};
@@ -70,6 +74,7 @@ export async function renderApp() {
             }
             switch(appState.currentView) {
                 case 'hero':
+                    await LanguageBtn();
                     await renderHero();
                     renderNavbar(appState.user);
                     break;
@@ -82,6 +87,7 @@ export async function renderApp() {
                     const test2 = await renderRoulette();
                     const test3 = await renderRoulette();
                     await renderDiv([roulette, BlackJack, test, test2, game, game2], 'row');
+                    await LanguageBtn();
                     //await renderDiv([game, game2], 'row');
                     //console.log('appState.user game:', getUser());
                     renderNavbar(appState.user);
@@ -96,6 +102,6 @@ export async function renderApp() {
     }
 }
 renderApp();
-/* loadUser().then(() => {
+ /*loadUser().then(() => {
     renderApp();
 }); */

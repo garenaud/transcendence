@@ -1,4 +1,4 @@
-export function spinWheel() {
+export function spinWheel(ballAnim) {
     document.querySelector(".winner").textContent = "";
     document.querySelector("#winnerMsg").textContent = ``;
   
@@ -81,11 +81,11 @@ export function spinWheel() {
       <div class="card-game-wrapper glowing">
         <div class="card-game-test" style="background-image: url(Design/RoulettePresImg.webp);">
           <div class="goldTitle">
-            <div class="bg">Roulette</div>
-            <div class="fg">Roulette</div>
+            <div class="bg" data-lang-key='roulette'>Roulette</div>
+            <div class="fg" data-lang-key='roulette'>Roulette</div>
           </div>
           <button type="button" class="btn btn-primary glowing-btn center mx-auto d-block" data-toggle="modal" data-target="#roulette">
-          <span class='glowing-txt'>J<span class='faulty-letter'>O</span>UER</span></button>
+          <span id="playBtn" class='glowing-txt' data-lang-key='playBtn'>JOUER</span></button>
         </div>
       </div>
             
@@ -94,7 +94,7 @@ export function spinWheel() {
               <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
                 <div class="modal-content">
                   <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Roulette</h5>
+                    <h5 class="modal-title" id="exampleModalLabel" data-lang-key='roulette'>Roulette</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                       <span aria-hidden="true">&times;</span>
                     </button>
@@ -489,32 +489,21 @@ export function spinWheel() {
       `;
   
       const rouletteElement = document.createElement('div');
-      rouletteElement.classList.add('col-12', 'col-md-3');
-      rouletteElement.innerHTML = rouletteHTML;
-            
-      const roll = rouletteElement.querySelector(".roll");
-      const wheel = rouletteElement.querySelector("#rouletteWheel");
-      
-      
-/*       document.addEventListener('DOMContentLoaded', (event) => {
-        console.log('DOM fully loaded and parsed');
-        //const ballAnim = rouletteElement.querySelector(".ballAnim");
-        console.log(rouletteElement.querySelector(".winner")); // Doit retourner l'élément, pas null
-        console.log(rouletteElement.querySelector("#winnerMsg")); // Doit retourner l'élément, pas null
-        console.log(rouletteElement.querySelector(".ballAnim")); // Doit retourner l'élément, pas null
-        setupRoulette();
-        //spinWheel();
-      });
-      setupRoulette();
-      roll.addEventListener("click", spinWheel);
-      wheel.addEventListener("click", spinWheel); */
-      //setTimeout(setupRoulette, 0);
-      
-      return rouletteElement;
-    }
+  rouletteElement.classList.add('col-12', 'col-md-3');
+  rouletteElement.innerHTML = rouletteHTML;
+
+  const roll = rouletteElement.querySelector(".roll");
+  const wheel = rouletteElement.querySelector("#rouletteWheel");
+
+  //document.body.appendChild(rouletteElement);
+  rouletteElement.querySelector('#playBtn').addEventListener('click', () => setupRoulette(rouletteElement));
+
+  return rouletteElement;
+}
   
   export function setupRoulette(rouletteElement) {
-    console.error("setupRoulette");
+    const ballAnim = rouletteElement.querySelector(".ballAnim");
+    spinWheel(ballAnim);
         let nums = ["00", 27,10,25,29,12,8,19,31,18,6,21,33,16,4,23,35,14,2,0,28,9,26,30,11,7,20,32,17,5,22,34,15,3,24,36,13,1];
         let two2oneNums = [
           [3,6,9,12,15,18,21,24,27,30,33,36],
@@ -544,7 +533,7 @@ export function spinWheel() {
         const firstThird = rouletteElement.querySelector(".firstThird");
         const secondThird = rouletteElement.querySelector(".secondThird");
         const lastThird = rouletteElement.querySelector(".lastThird");
-        const ballAnim = rouletteElement.querySelector(".ballAnim");
+        //const ballAnim = rouletteElement.querySelector(".ballAnim");
         const balls = rouletteElement.querySelectorAll(".ball");
         const betBtnsSVG = rouletteElement.querySelectorAll(".placeBet");
         const two2one = rouletteElement.querySelectorAll(".two2one");
@@ -587,7 +576,6 @@ export function spinWheel() {
         if (wheel) {
           wheel.addEventListener("click", spinWheel);
         }
-        spinWheel();
       }
 
       export async function runRoulette() {
