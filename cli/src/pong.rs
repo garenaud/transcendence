@@ -120,8 +120,11 @@ pub fn game(user: User, mut socket: tungstenite::WebSocket<tungstenite::stream::
 						"game" => {
 							ball.x = (json["bx"].as_f64().unwrap() + 18.0) / 36.0 * term.width;
 							ball.y = (json["bz"].as_f64().unwrap() + 9.5) / 19.0 * term.height;
-							paddle_l.y = (json["plz"].as_f64().unwrap() + 8.5) / 19.0 * (term.height - 2.0) - (PADDLE_HEIGHT / 2.0);
-							paddle_r.y = (json["prz"].as_f64().unwrap() + 8.5) / 19.0 * (term.height - 2.0) - (PADDLE_HEIGHT / 2.0);
+							// paddle_l.y = (json["plz"].as_f64().unwrap() + 9.5) / 19.0 * (term.height - 2.0) - (PADDLE_HEIGHT / 2.0);
+							// paddle_r.y = (json["prz"].as_f64().unwrap() + 9.5) / 19.0 * (term.height - 2.0) - (PADDLE_HEIGHT / 2.0);
+						
+							paddle_l.y = (json["plz"].as_f64().unwrap() + 9.5) / 19.0 * term.height - (PADDLE_HEIGHT / 2.0);
+							paddle_r.y = (json["prz"].as_f64().unwrap() + 9.5) / 19.0 * term.height - (PADDLE_HEIGHT / 2.0);
 						},
 						"ball" => {
 							// print!("{} {}\t", json["bx"].as_f64().unwrap(), json["bz"].as_f64().unwrap());
@@ -130,15 +133,19 @@ pub fn game(user: User, mut socket: tungstenite::WebSocket<tungstenite::stream::
 							// println!("{} {}", ball.x, ball.y);
 						},
 						"paddle1" => { // RIGHT ONE
-							paddle_r.y = (json["prz"].as_f64().unwrap() + 8.5) / 19.0 * (term.height - 2.0) - (PADDLE_HEIGHT / 2.0);
+							// paddle_r.y = (json["prz"].as_f64().unwrap() + 9.5) / 19.0 * (term.height - 2.0) - (PADDLE_HEIGHT / 2.0);
+
+							paddle_r.y = (json["prz"].as_f64().unwrap() + 9.5) / 19.0 * term.height - (PADDLE_HEIGHT / 2.0);
 						},
 						"paddle2" => { // LEFT ONE
-							paddle_l.y = (json["plz"].as_f64().unwrap() + 8.5) / 19.0 * (term.height - 2.0) - (PADDLE_HEIGHT / 2.0);
+							// paddle_l.y = (json["plz"].as_f64().unwrap() + 9.5) / 19.0 * (term.height - 2.0) - (PADDLE_HEIGHT / 2.0);
+						
+							paddle_l.y = (json["plz"].as_f64().unwrap() + 9.5) / 19.0 * term.height - (PADDLE_HEIGHT / 2.0);
 						},
-						// "score" => {
-						// 	score.score1 = json["score1"].as_i32().unwrap();
-						// 	score.score2 = json["score2"].as_i32().unwrap();
-						// },
+						"score" => {
+							score.score1 = json["scorep1"].as_i32().unwrap();
+							score.score2 = json["scorep2"].as_i32().unwrap();
+						},
 						_ => {
 							println!("Unknown action: {}", json["action"]);
 						}
@@ -203,7 +210,7 @@ struct Console {
 ** Ball = 0.5 (circle)
 ** Paddle = 5.5	
 */
-const PADDLE_HEIGHT: f64 = 5.5;
+const PADDLE_HEIGHT: f64 = 6.5;
 fn render(term: &Console, paddle_l: &Paddle, paddle_r: &Paddle, ball: &Ball, score: &Score) {
 	match term_cursor::clear() {
 		Ok(_) => {
