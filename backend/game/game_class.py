@@ -38,7 +38,7 @@ class gameData:
 		self.plz = 0.0 # paddle left position z
 		self.prx = 15 # paddle right position x
 		self.prz = 0.0 # paddle right position z
-		self.ms = 0.25 # move speed
+		self.ms = 0.3 # move speed
 		self.sif = 0.4 # speed increase factor
 		self.dbgame = None
 
