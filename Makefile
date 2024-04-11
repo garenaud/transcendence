@@ -1,8 +1,6 @@
 all:
 	@mkdir -p ~/data/db
-	docker-compose build
-	@sleep 3
-	docker-compose up -d
+	docker-compose up --build
 
 down: 
 	docker-compose down
