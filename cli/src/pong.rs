@@ -10,35 +10,16 @@ use std::thread::sleep;
 use std::time::Duration;
 use crate::user::User;
 
-
-pub fn create_game(user: User) {
-	println!("Create a game !!!!!!!!!!!");
+struct Console {
+	width: f64,
+	height: f64
 }
 
-pub fn join_game(user: User) -> Result<(), Box<dyn std::error::Error>> {
-
-	let mut socket = match connect(("ws://{server}/ws/game/1/").replace("{server}", user.get_server().as_str())) {
-		Ok((socket, res)) => {
-			socket
-		},
-		Err(err) => {
-			eprintln!("{}", format!("{:#?}", err).red());
-			return Err(Box::new(err));
-		}
-	};
-
-	socket.write_message(Message::Text(r#"{"message":"update"}"#.to_string()))?;
-	game(user, socket);
-	Ok(())
-}
-
-#[derive(Debug)]
 struct Paddle {
 	x: f64,
 	y: f64,
 }
 
-#[derive(Debug)]
 struct Ball {
 	x: f64,
 	y: f64,
@@ -49,42 +30,81 @@ struct Score {
 	score2: i32,
 }
 
-fn thread_userinput(mut sender: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<std::net::TcpStream>>) {
-	// thread::spawn(move || {
-	// 	initscr();
-	// 	raw();
-	// 	keypad(stdscr(), true);
-	// 	noecho();
-	// 	loop {
-	// 		let ch = getch();
-	// 		match getch() {
-	// 			27 => {
-	// 				endwin();
-	// 				let _ = clearscreen::clear();
-	// 				break;
-	// 			},
-	// 			ch => {
-	// 				let ch = match char::from_u32(ch as u32) {
-	// 					Some(ch) => {
-	// 						ch
-	// 					},
-	// 					None => ' '
-	// 				};
-	// 				if ch != ' ' {
-	// 					_ = sender.write_message(Message::Text(r#"{"message":"{ch}"}"#.to_string().replace("{ch}", &ch.to_string())));
-	// 				}
-	// 			}
-	// 		}
-	// 	}
-	// });
+pub fn matchmaking(user: User)
+{
+	// JOIN THE WAITLIST
+	// api/game/search/  -> return {"message": "ok", "room_id": "SOMETHING"}
+
+	// WAIT FOR A GAME TO START
+
+	// START THE GAME WHEN AN OTHER PLAYER JOINED
 }
 
-pub fn game(user: User, mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<std::net::TcpStream>>) {
+pub fn create_game(user: User) {
+	println!("Create a game !!!!!!!!!!!");
+	// CREATE A ROOM ON THE SERVER
+
+	// PRINT THE ROOM ID
+
+	// WAIT FOR THE OTHER PLAYER TO JOIN
+
+	// START THE GAME WHEN THE OTHER PLAYER JOINED
+}
+
+pub fn join_game(user: User) -> Result<(), Box<dyn std::error::Error>> {
+	// ASK THE USER FOR THE ROOM ID
+	let mut room: String = String::new();
+	loop {
+		print!("Room ID: ");
+		let _ = std::io::stdout().flush();
+	
+		std::io::stdin()
+			.read_line(&mut room)
+			.expect(&format!("Erreur lors de la lecture de l'utilisateur").red());
+		room = (*room.trim()).to_string();
+	
+		if room.len() <= 0 {
+			eprintln!("{}", format!("Room ID is empty, please try again").red());
+			continue;
+		} else {
+			break;
+		}
+	}
+
+	let mut socket = connect_ws(user, room);
+	socket = match socket {
+		Ok(socket) => socket,
+		Err(err) => {
+			eprintln!("{}", format!("{:#?}", err).red());
+			return Err(Box::new(err));
+		}
+	};
+
+
+	// THIS IS TEMP: SEND A MESSAGE TO THE SERVER TO START THE GAME
+	socket.send(Message::Text(r#"{"message":"start"}"#.to_string()))?;
+
+
+	socket.write_message(Message::Text(r#"{"message":"update"}"#.to_string()))?;
+	game(user, socket);
+	Ok(())
+}
+
+fn connect_ws(user: User, room: String) -> Result<tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<std::net::TcpStream>>, Box<dyn std::error::Error>> {
+	let mut socket = match connect(("ws://{server}/ws/game/{room_id}/").replace("{server}", user.get_server().as_str()).replace("{room_id}", room.as_str())) {
+		Ok((socket, res)) => {
+			return Ok(socket);
+		},
+		Err(err) => {
+			eprintln!("{}", format!("{:#?}", err).red());
+			return Err(Box::new(err));
+		}
+	};
+}
+
+fn game(user: User, mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<std::net::TcpStream>>) {
 	// Read from command line and send messages
 	let _ = clearscreen::clear();
-
-	// let (receiver, sender) = stream::split(socket);
-	// thread_userinput(sender);
 
 	let mut paddle_l = Paddle { x: 0.0, y: 0.0 };
 	let mut paddle_r = Paddle { x: 0.0, y: 0.0 };
@@ -120,26 +140,17 @@ pub fn game(user: User, mut socket: tungstenite::WebSocket<tungstenite::stream::
 						"game" => {
 							ball.x = (json["bx"].as_f64().unwrap() + 18.0) / 36.0 * term.width;
 							ball.y = (json["bz"].as_f64().unwrap() + 9.5) / 19.0 * term.height;
-							// paddle_l.y = (json["plz"].as_f64().unwrap() + 9.5) / 19.0 * (term.height - 2.0) - (PADDLE_HEIGHT / 2.0);
-							// paddle_r.y = (json["prz"].as_f64().unwrap() + 9.5) / 19.0 * (term.height - 2.0) - (PADDLE_HEIGHT / 2.0);
-						
 							paddle_l.y = (json["plz"].as_f64().unwrap() + 9.5) / 19.0 * term.height - (PADDLE_HEIGHT / 2.0);
 							paddle_r.y = (json["prz"].as_f64().unwrap() + 9.5) / 19.0 * term.height - (PADDLE_HEIGHT / 2.0);
 						},
 						"ball" => {
-							// print!("{} {}\t", json["bx"].as_f64().unwrap(), json["bz"].as_f64().unwrap());
 							ball.x = (json["bx"].as_f64().unwrap() + 18.0) / 36.0 * term.width;
 							ball.y = (json["bz"].as_f64().unwrap() + 9.5) / 19.0 * term.height;
-							// println!("{} {}", ball.x, ball.y);
 						},
 						"paddle1" => { // RIGHT ONE
-							// paddle_r.y = (json["prz"].as_f64().unwrap() + 9.5) / 19.0 * (term.height - 2.0) - (PADDLE_HEIGHT / 2.0);
-
 							paddle_r.y = (json["prz"].as_f64().unwrap() + 9.5) / 19.0 * term.height - (PADDLE_HEIGHT / 2.0);
 						},
 						"paddle2" => { // LEFT ONE
-							// paddle_l.y = (json["plz"].as_f64().unwrap() + 9.5) / 19.0 * (term.height - 2.0) - (PADDLE_HEIGHT / 2.0);
-						
 							paddle_l.y = (json["plz"].as_f64().unwrap() + 9.5) / 19.0 * term.height - (PADDLE_HEIGHT / 2.0);
 						},
 						"score" => {
@@ -147,7 +158,9 @@ pub fn game(user: User, mut socket: tungstenite::WebSocket<tungstenite::stream::
 							score.score2 = json["scorep2"].as_i32().unwrap();
 						},
 						_ => {
+							endwin();
 							println!("Unknown action: {}", json["action"]);
+							break ;
 						}
 					}
 					render(&term, &paddle_l, &paddle_r, &ball, &score);
@@ -192,14 +205,7 @@ pub fn game(user: User, mut socket: tungstenite::WebSocket<tungstenite::stream::
 				}
 			}
 		}
-
 	}
-}
-
-#[derive(Debug)]
-struct Console {
-	width: f64,
-	height: f64
 }
 
 /*
