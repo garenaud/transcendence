@@ -9,6 +9,7 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 //import { gameid } from './join.js';
 // import { RectAreaLightHelper } from 'three/addons/helpers/RectAreaLightHelper.js';
 
+let active = false;
 let gameid = sessionStorage.getItem('gameid');
 let game_data;
 let renderer;
@@ -46,7 +47,8 @@ function makeid(length) {
 
 
 if (gameid == null)
-{console.log("null");
+{
+	console.log("null");
 	gameSocket = new WebSocket(
 	'ws://'
 	+ window.location.host
@@ -58,7 +60,8 @@ if (gameid == null)
 	);
 }
 else
-{console.log("pas null");
+{
+	console.log("pas null");
 	gameSocket = new WebSocket(
 		'ws://'
 		+ window.location.host
@@ -174,8 +177,6 @@ function handleGround() {
 
 // Fonction pour gérer l'appui sur une touche
 function handleKeyDown(event) {
-	console.log(event.code);
-	//if (KeyState.hasOwnProperty(event.code)) {
 		if (event.code == 'ArrowUp')
 		{
 			gameSocket.send(JSON.stringify({
@@ -188,31 +189,30 @@ function handleKeyDown(event) {
 			'message' : 'Down'
 			}));
 		}
+		else if (event.code == 'KeyW')
+		{
+			gameSocket.send(JSON.stringify({
+				'message' : 'W'
+			}));
+		}
+		else if (event.code == 'KeyS')
+		{
+			gameSocket.send(JSON.stringify({
+				'message' : 'S'
+			}));
+		}
+		else if (event.code == 'Enter')
+		{
+			gameSocket.send(JSON.stringify({
+				'message' : 'Start'
+			}));
+		}
 		else if (event.code == 'Escape')
 		{
 			gameSocket.send(JSON.stringify({
 			'message' : 'Stop'
 			}));
 		}
-		else if (event.code == 'KeyW')
-		{
-			gameSocket.send(JSON.stringify({
-			'message' : 'W'
-			}));
-		}
-		else if (event.code == 'KeyS')
-		{
-			gameSocket.send(JSON.stringify({
-			'message' : 'S'
-			}));
-		}
-		else if (event.code == 'Enter')
-		{
-			gameSocket.send(JSON.stringify({
-			'message' : 'Start'
-			}));
-		}
-	//}
 }
 
 // Fonction pour gérer le relâchement d'une touche
@@ -260,6 +260,10 @@ gameSocket.onmessage = function(e) {
 	{
 		ball.position.x = parseFloat(game_data.bx);
 		ball.position.z = parseFloat(game_data.bz);
+	}
+	else if (game_data.action == 'Stop')
+	{
+		sessionStorage.setItem("gameid", null);
 	}
 	// gameSocket.send(JSON.stringify({
 	// 	'message' : 'update'

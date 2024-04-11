@@ -21,7 +21,7 @@ var currentNum;
 
 function makeid(length) {
   let result = '';
-  const characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvxyz';
+  const characters = '0123456789';
   const charactersLength = characters.length;
   let counter = 0;
   while (counter < length) {
@@ -35,7 +35,7 @@ function addClassDelayed(jqObj, c, to) {
     setTimeout(function() { jqObj.addClass(c); }, to);
 }
 
-const socket = new WebSocket('ws://localhost:8765/');
+// const socket = new WebSocket('ws://localhost:8765/');
 
 socket.onmessage = function(event) {
   const data = JSON.parse(event.data);
@@ -100,11 +100,28 @@ socket.onclose = function(event) {
 };
 
 document.getElementById('createBtn').addEventListener('click', function() {
-  const gameId = makeid(5);
-  socket.send(JSON.stringify({
-    'create_game': true,
-    'game_id': gameId
-  }));
+  const gameId = makeid(3);
+  let url = '/api/game/create/' + gameid;
+	// console.log(url);
+	fetch(url, {
+		method: 'GET',
+		credentials: 'same-origin' 
+	})
+	.then(response => response.json())
+	.then(data => {
+		console.log('Success:', data);
+		if (data['message'] == "ko") {
+      gameid = data['id'];
+      sessionStorage.setItem("gameid", gameid);
+			window.location.href = "/pong/pong.html";
+		} else if (data['message'] == 'ok'){
+			sessionStorage.setItem("gameid", gameid);
+			window.location.href = "/pong/pong.html";
+		}
+	})
+	.catch((error) => {
+		console.error('Error:', error);
+	});
 });
 
 document.getElementById('joinBtn').addEventListener('click', function() {

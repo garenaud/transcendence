@@ -19,6 +19,8 @@ class Games(models.Model):
 	p2_id = models.IntegerField(default=-1)
 	#code = models.CharField(max_length=10)
 	finished = models.BooleanField(default=False)
+	started = models.BooleanField(default=False)
+	full = models.BooleanField(default=False)
 	scoreleft = models.IntegerField(default=0)
 	scoreright = models.IntegerField(default=0)
 	p1_score = models.IntegerField(default=0)

@@ -39,6 +39,8 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
         else:
             self.game = gameTab[self.room_id]
             self.game.p2id = self.channel_name
+            self.game.dbgame.full = True
+            await sync_to_async(self.saveGame)(self.game.dbgame)
             print("p2")
         
             
@@ -67,13 +69,22 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             }
         )
 
-    
+    async def stop_game(self):
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type' : 'update',
+                "message": {'action' : 'Stop', 'scorep1' : self.game.scorep1, 'scorep2' : self.game.scorep2}
+            }
+        )
+
     async def loop(self):
         while self.game.finished == False:
             if self.game.scorep1 == 5 or self.game.scorep2 == 5:
                 self.game.finished = True
                 self.game.dbgame.finished = True
                 await sync_to_async(self.saveGame)(self.game.dbgame)
+                await self.stop_game()
             paddle_size_x = 0.20000000298023224
             paddle_size_z = 3.1
             max_angle_adjustment = math.pi / 6
@@ -154,7 +165,10 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             self.game.started = True
             self.task = asyncio.create_task(self.loop())
         elif message == "Stop" or self.game.finished == True:
-            self.task.cancel()
+            try:
+                self.task.cancel()
+            except:
+                pass
         elif message == 'update':
             await self.channel_layer.group_send(
             self.room_group_name,

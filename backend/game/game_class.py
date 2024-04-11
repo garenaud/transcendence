@@ -8,8 +8,8 @@ class gameData:
 		self.id = id
 		self.finished = False
 		self.started = False
-		self.p1id = "xxx"
-		self.p2id = "xxx"
+		self.p1id = -1
+		self.p2id = -1
 		self.scorep1 = 0
 		self.scorep2 = 0
 		# Générer un angle aléatoire entre 40 et 60 degrés pour la première direction
