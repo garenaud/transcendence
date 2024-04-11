@@ -57,6 +57,7 @@ export async function renderApp() {
     } else {
         const view = window.location.pathname.substring(1);
         appState.currentView = ['login', 'hero', 'game', 'chat'].includes(view) ? view : 'login';
+        appState.language = 'fr';
     }
     if (!appState.renderedComponents) {
         appState.renderedComponents = {};

@@ -3,13 +3,13 @@ import { appState } from "./stateManager.js";
 export function LanguageBtn() {
     const languageBtnHTML = `
     <div class="dropdown dropdown-language">
-        <button class="btn btn-secondary dropdown-toggle w-100" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
             <i class="flag-icon flag-icon-fr"></i>
         </button>
-        <ul class="dropdown-menu w-100" aria-labelledby="languageDropdown">
-            <li><a class="dropdown-item w-100" data-lang="fr" href="#"><i class="flag-icon flag-icon-fr"></i></a></li>
-            <li><a class="dropdown-item w-100" data-lang="us" href="#"><i class="flag-icon flag-icon-us"></i></a></li>
-            <li><a class="dropdown-item w-100" data-lang="de" href="#"><i class="flag-icon flag-icon-de"></i></a></li>
+        <ul class="dropdown-menu dropdown-menu-lang" aria-labelledby="languageDropdown">
+            <li><a class="dropdown-item" data-lang="fr" href="#"><i class="flag-icon flag-icon-fr"></i></a></li>
+            <li><a class="dropdown-item" data-lang="us" href="#"><i class="flag-icon flag-icon-us"></i></a></li>
+            <li><a class="dropdown-item" data-lang="de" href="#"><i class="flag-icon flag-icon-de"></i></a></li>
         </ul>
     </div>
     `;
