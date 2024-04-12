@@ -93,7 +93,7 @@ def get_game_by_id(request, gameid):
 	if (request.method == 'GET'):
 		game = Games.objects.filter(room_id=gameid, private=True).count()
 		if game == 0:
-			return Response({"message" : "Not found"})
+			return Response({"message" : "Not found"}, status=status.HTTP_404_NOT_FOUND)
 		else:
 			try:
 				game = Games.objects.get(room_id=gameid, finished=False)
