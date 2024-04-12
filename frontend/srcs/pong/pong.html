@@ -13,11 +13,19 @@
 			Import map is not available in all browsers.
 			This is necessary to serve the three path so that other imports can access it. 
 		-->
-		<script type="importmap">
+		<!-- <script type="importmap">
 			{
 				"imports": {
 					"three": "https://unpkg.com/three@<0.161.0/build/three.module.js",
 						"three/addons/": "https://unpkg.com/three@0.161.0/examples/jsm/"
+				}
+			}
+		</script> -->
+		<script type="importmap">
+			{
+				"imports": {
+					"three": "https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js",
+					"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.161.0/examples/jsm/"
 				}
 			}
 		</script>
