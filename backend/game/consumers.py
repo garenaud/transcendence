@@ -106,9 +106,9 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
                 angleadjustment = (relative_position - 0.5) * (max_angle_adjustment - min_angle_adjustment) * 0.6
                 # Ajuster la direction de la balle en fonction de l'angl
                 angle = math.pi / 4 + angleadjustment
-                self.game.bv.x = math.cos(angle) * (0.2 * self.game.sif)
-                self.game.bv.x = math.sin(angle) * (0.2 * self.game.sif)
-                self.game.sif += 0.1
+                self.game.bv.x = math.cos(angle) * (0.15 * self.game.sif)
+                self.game.bv.x = math.sin(angle) * (0.15 * self.game.sif)
+                #self.game.sif += 0.1
                 # print("collision detectee a gauche")
             #verifier la collision avec le paddle droit
             if (self.game.bpx - self.game.bradius < self.game.prx + paddle_size_x / 2 and
@@ -120,9 +120,9 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
                 angleadjustment = (relative_position - 0.5) * (max_angle_adjustment - min_angle_adjustment) * 0.3
                 # Ajuster la direction de la balle en fonction de l'angle
                 angle = (math.pi * -1) / 4 - angleadjustment
-                self.game.bv.x = (math.cos(angle) * -1) * (0.2 * self.game.sif)
-                self.game.bv.z = (math.sin(angle) * -1) * (0.2 * self.game.sif)
-                self.game.sif += 0.1
+                self.game.bv.x = (math.cos(angle) * -1) * (0.15 * self.game.sif)
+                self.game.bv.z = (math.sin(angle) * -1) * (0.15 * self.game.sif)
+                #self.game.sif += 0.1
                 # print("collision detectee a droite")
 
             balllimit = 8.5
@@ -136,7 +136,7 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
                     self.game.scorep1 += 1
                 self.game.bpx = 0.0
                 self.game.bpz = 0.0
-                self.game.sif = 1.1
+                self.game.sif = 1.05
                 self.game.bv = introcs.Vector3(math.cos(0) * 0.25, 0, math.sin(0) * 0.25)
 
             self.game.bvx = self.game.bv.x
