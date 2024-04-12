@@ -121,7 +121,13 @@ export function renderPong() {
 
             pongLocal.classList.remove('d-none');
         });
-
+		localPongBtn.addEventListener('click', function() {
+    	fetch('/localpong/test.html')
+        	.then(response => response.text())
+        	.then(data => {
+            	document.querySelector('#content').innerHTML = data;
+        	});
+		});
         pongElement.querySelector('#createBtn').addEventListener('click', function() {
             pongMulti.classList.add('d-none');
             gameid = makeid(3);

@@ -11,22 +11,18 @@ let renderer;
 let camera;
 let controls;
 let composer;
-let player1Score = 0;
-let player2Score = 0;
+let scoreRight = 0;
+let scoreLeft = 0;
 const initialAngle = 0.45;
 const speed = 0.25;
-const mooveSpeed = 0.15;
+const mooveSpeed = 0.1;
 const wallLimit = 6.5;
 const ballLimit = 8.5;
-const maxAngleAdjustment = 0.5;
 // const deltaTime = 30;
-let scoreLeft;
-let scoreRight;
 let PaddleRight;
 let PaddleLeft;
 let ball;
 let ballVelocity;
-// const socket = new WebSocket('ws://localhost:3000');
 
 const KeyState = {
 	KeyW: false,
@@ -74,32 +70,49 @@ function init() {
 		scene.receiveShadow = true;
 
 		// Animation loop
-		// console.log(socket);
 		animate();
 }
 
 function handleText() {
-	scoreLeft = scene.getObjectByName('Text');
+	const scoreLeft = scene.getObjectByName('Text');
 	scene.add(scoreLeft);
 	scene.remove(scoreLeft);
-	scoreRight = scene.getObjectByName('Text001');
+	const scoreRight = scene.getObjectByName('Text001');
 	scene.add(scoreRight);
 	scene.remove(scoreRight);
 }
 
 function handleBall() {
-	const ballName = 'Ball';
-	ball = scene.getObjectByName(ballName);
-	if (ball) {
-	ball.castShadow = true;
-	// ball.receiveShadow = true;
-		ball.position.set(0, 0, 0);
-		ballVelocity = new THREE.Vector3(Math.cos(initialAngle) * speed, 0, Math.sin(initialAngle) * speed);
-	} else {
-		console.error('Ball not found');
-	}
-}
+    const ballName = 'Ball';
+    ball = scene.getObjectByName(ballName);
+    if (ball) {
+        ball.castShadow = true;
+        ball.position.set(0, 0, 0);
 
+        // Générer un angle aléatoire entre 40 et 60 degrés pour la première direction
+        let angle1_deg = Math.random() * (60 - 40) + 40;
+        let angle1_rad = angle1_deg * Math.PI / 180;
+        // Calculer les composantes x et z de la vitesse de la balle pour la première direction
+        let bv1_x = Math.cos(angle1_rad) * speed;
+        let bv1_z = Math.sin(angle1_rad) * speed;
+
+        // Générer un angle aléatoire entre 120 et 140 degrés pour la deuxième direction
+        let angle2_deg = Math.random() * (140 - 120) + 120;
+        let angle2_rad = angle2_deg * Math.PI / 180;
+        // Calculer les composantes x et z de la vitesse de la balle pour la deuxième direction
+        let bv2_x = Math.cos(angle2_rad) * speed;
+        let bv2_z = Math.sin(angle2_rad) * speed;
+
+        // Sélectionner aléatoirement l'une des deux directions pour le départ de la balle
+        if (Math.random() < 0.5) {
+            ballVelocity = new THREE.Vector3(bv1_x, 0, bv1_z);
+        } else {
+            ballVelocity = new THREE.Vector3(bv2_x, 0, bv2_z);
+        }
+    } else {
+        console.error('Ball not found');
+    }
+}
 function handleLight() {
 	const light = new THREE.AmbientLight( 0xFFFFFFF , 0.4 ); // soft white light
 	const dLight = new THREE.DirectionalLight( 0xFFFFFFF, 1.1 );
@@ -124,13 +137,6 @@ function handleLight() {
 	rectLightUp.lookAt( 0, 0, 0 );
 	scene.add( rectLightDown );
 	scene.add( rectLightUp );
-}
-
-function updateCameraAspect(selectedCamera) {
-	const width = window.innerWidth;
-	const height = window.innerHeight;
-	selectedCamera.aspect = width / height;
-	selectedCamera.updateProjectionMatrix();
 }
 
 function initControls() {
@@ -194,7 +200,6 @@ function handlePaddleLeft() {
 	const PaddleLeftName = 'LeftPaddle';
 	PaddleLeft = scene.getObjectByName(PaddleLeftName);
 	
-	// TODO condition si 2player alors mouvement, sinon IA;
 	if (PaddleLeft) {
 		PaddleLeft.castShadow = true;
 		// PaddleLeft.receiveShadow = true;
@@ -207,9 +212,8 @@ function handlePaddleLeft() {
 	} 
 }
 
-let speedIncreaseFactor = 1; // Facteur d'augmentation de la vitesse
+let speedIncreaseFactor = 0.2; // Facteur d'augmentation de la vitesse
 
-// TODO: Reajuster l'angle de la balle.
 function handlePaddleCollision() {
 	const ballRadius = ball.geometry.boundingSphere.radius;
 	const PaddleSizeX = 0;
@@ -247,9 +251,15 @@ function handlePaddleCollision() {
 function handleWallColision() {
 		if (ball.position.z > ballLimit || ball.position.z < -ballLimit) {
 			ballVelocity.z *= -1;
-		} else if (ball.position.x > 18 || ball.position.x < -18) {
+		} else if (ball.position.x > 18) {
+			scoreRight += 1;
 			ball.position.set(0, 0, 0);
-			speedIncreaseFactor = 1.1;
+			speedIncreaseFactor = 0.2;
+			ballVelocity = new THREE.Vector3(Math.cos(initialAngle) * speed, 0, Math.sin(initialAngle) * speed);
+		} else if( ball.position.x < -18) {
+			scoreLeft += 1;
+			ball.position.set(0, 0, 0);
+			speedIncreaseFactor = 0.2;
 			ballVelocity = new THREE.Vector3(Math.cos(initialAngle) * speed, 0, Math.sin(initialAngle) * speed);
 		}
 }
@@ -282,13 +292,13 @@ function handleBackground() {
 }
 
 function animate() {
-	requestAnimationFrame(animate);
 	handlePaddleLeft();
 	handlePaddleRight();
 	handleBackground();
 	updateBall();
 	controls.update();
 	composer.render(scene, camera);
+	requestAnimationFrame(animate);
 }
 
 document.addEventListener('keydown', handleKeyDown);
