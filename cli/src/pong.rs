@@ -3,7 +3,6 @@ use colored::Colorize;
 use reqwest::blocking::*;
 use tungstenite::{connect, Message, WebSocket};
 use url::Url;
-use term_cursor::*;
 use std::io::{stdout, Write};
 use std::thread;
 use std::thread::sleep;
@@ -32,18 +31,59 @@ struct Score {
 
 pub fn matchmaking(user: User)
 {
-	// JOIN THE WAITLIST
-	// api/game/search/  -> return {"message": "ok", "room_id": "SOMETHING"}
+	// SEARCH FOR A GAME
+	let req = user.get_client().get("https://{server}/api/game/search/".replace("{server}", user.get_server().as_str()));
+	let req = req.build();
+	let res = user.get_client().execute(req.expect("ERROR WHILE EXECUTING THE REQUEST"));
+	let room_id = match res {
+		Ok(res) => {
+			if res.status().is_success() {
+				let body = res.text().expect("ERROR WHILE READING THE BODY");
+				let json = json::parse(body.as_str()).unwrap();
+				let room_id = &json["id"];
+				room_id.to_string()
+			} else {
+				eprintln!("{}", format!("Error while searching for a game").red().bold());
+				return ;
+			}
+		},
+		Err(err) => {
+			eprintln!("{}", format!("{}", err).red());
+			return ;
+		}
+	};
 
-	// WAIT FOR A GAME TO START
+	let socket = connect_ws(user.clone(), room_id.to_string());
+	let mut socket = match socket {
+		Ok(socket) => {
+			// game(user.clone(), socket);
+			socket
+		},
+		Err(err) => {
+			eprintln!("{}", format!("{:#?}", err).red());
+			return ;
+		}
+	};
 
-	// START THE GAME WHEN AN OTHER PLAYER JOINED
+	// THIS IS TEMP: SEND A MESSAGE TO THE SERVER TO START THE GAME
+	match socket.send(Message::Text(r#"{"message":"start"}"#.to_string())) {
+		Ok(_) => {
+			game(user.clone(), socket);
+		},
+		Err(err) => {
+			eprintln!("{}", format!("{}", err).red());
+			return ;
+		}
+	};
 }
 
 pub fn create_game(user: User) {
 	println!("Create a game !!!!!!!!!!!");
 	// CREATE A ROOM ON THE SERVER
 
+	// api/game/create/ -> return {"message": "ok"} == Id choisi est valide
+	//					-> return {"message": "ko", "id": "NEW_ID"} == Id choisi est invalide donc server en a choisi un autre
+	
 	// PRINT THE ROOM ID
 
 	// WAIT FOR THE OTHER PLAYER TO JOIN
@@ -51,11 +91,11 @@ pub fn create_game(user: User) {
 	// START THE GAME WHEN THE OTHER PLAYER JOINED
 }
 
-pub fn join_game(user: User) -> Result<(), Box<dyn std::error::Error>> {
+pub fn join_game(user: User) {
 	// ASK THE USER FOR THE ROOM ID
 	let mut room: String = String::new();
 	loop {
-		romm.clear();
+		room.clear();
 		print!("Room ID: ");
 		let _ = std::io::stdout().flush();
 	
@@ -70,40 +110,44 @@ pub fn join_game(user: User) -> Result<(), Box<dyn std::error::Error>> {
 		}
 		let req = user.get_client().get("https://{server}/api/game/{room_id}/".replace("{server}", user.get_server().as_str()).replace("{room_id}", room.as_str()));
 		let res = req.build();
-		let res = user.execute(res.expect("ERROR WHILE BUILDING THE REQUEST"));
+		let res = user.get_client().execute(res.expect("ERROR WHILE BUILDING THE REQUEST"));
 		match res {
 			Ok(res) => {
 				if res.status().is_success() {
 					break;
 				} else if res.status().is_client_error() {
-					eprintln!("{}", format!("Room not found").red());
+					eprintln!("{}", format!("Room not found or ID invalid").red().bold());
 					continue;
 				}
 			},
 			Err(err) => {
 				eprintln!("{}", format!("{}", err).red());
-				return Err(Box::new(err));
+				return ;
 			}
 		}
 		break;
 	}
 
-	let mut socket = connect_ws(user, room);
-	socket = match socket {
+	let socket = connect_ws(user.clone(), room);
+	let mut socket = match socket {
 		Ok(socket) => socket,
 		Err(err) => {
 			eprintln!("{}", format!("{:#?}", err).red());
-			return Err(Box::new(err));
+			return ;
 		}
 	};
 
 	// THIS IS TEMP: SEND A MESSAGE TO THE SERVER TO START THE GAME
-	socket.send(Message::Text(r#"{"message":"start"}"#.to_string()))?;
+	match socket.send(Message::Text(r#"{"message":"start"}"#.to_string())) {
+		Ok(_) => {},
+		Err(err) => {
+			eprintln!("{}", format!("{}", err).red());
+			return ;
+		}
+	};
 
-
-	socket.write_message(Message::Text(r#"{"message":"update"}"#.to_string()))?;
-	game(user, socket);
-	Ok(())
+	// socket.write_message(Message::Text(r#"{"message":"update"}"#.to_string()))?;
+	game(user.clone(), socket);
 }
 
 fn connect_ws(user: User, room: String) -> Result<tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<std::net::TcpStream>>, Box<dyn std::error::Error>> {
@@ -147,7 +191,7 @@ fn game(user: User, mut socket: tungstenite::WebSocket<tungstenite::stream::Mayb
 	timeout(0);
 	loop { // game loop
 		sleep(Duration::from_millis(5));
-		match socket.read_message() {
+		match socket.read() {
 			Ok(msg) => match msg {
 				Message::Text(msg) => {
 					let msg = msg.as_str();
@@ -173,6 +217,7 @@ fn game(user: User, mut socket: tungstenite::WebSocket<tungstenite::stream::Mayb
 							score.score1 = json["scorep1"].as_i32().unwrap();
 							score.score2 = json["scorep2"].as_i32().unwrap();
 						},
+						"private" => continue,
 						_ => {
 							endwin();
 							println!("Unknown action: {}", json["action"]);
@@ -217,7 +262,7 @@ fn game(user: User, mut socket: tungstenite::WebSocket<tungstenite::stream::Mayb
 					None => ' '
 				};
 				if ch != ' ' {
-					_ = socket.write_message(Message::Text(r#"{"message":"{ch}"}"#.to_string().replace("{ch}", &ch.to_string())));
+					_ = socket.send(Message::Text(r#"{"message":"{ch}"}"#.to_string().replace("{ch}", &ch.to_string())));
 				}
 			}
 		}
