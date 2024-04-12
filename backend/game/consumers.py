@@ -13,7 +13,7 @@ import random
 from channels.db import database_sync_to_async
 from.game_class import gameData
 
-gameTab = [None] * 1000
+gameTab = [None] * 10000
 
 channel_layer = channels.layers.get_channel_layer()
 
@@ -26,18 +26,21 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
         game.save()
 
     async def connect(self):
+        self.task = None
         self.room_id = self.scope["url_route"]["kwargs"]["room_id"]
         self.room_group_name = f"game_{self.room_id}"
         if gameTab[self.room_id] is None:
             gameTab[self.room_id] = gameData(self.room_id)
             self.game = gameTab[self.room_id]
             self.game.p1id = self.channel_name
-            self.dbgame = Games(p1_id=1, p2_id=2, room_id=self.room_id, room_group_name=self.room_group_name)
-            await sync_to_async(self.saveGame)(self.dbgame)
+            self.game.dbgame = Games(p1_id=1, p2_id=2, room_id=self.room_id, room_group_name=self.room_group_name)
+            await sync_to_async(self.saveGame)(self.game.dbgame)
             print("p1")
         else:
             self.game = gameTab[self.room_id]
             self.game.p2id = self.channel_name
+            self.game.dbgame.full = True
+            await sync_to_async(self.saveGame)(self.game.dbgame)
             print("p2")
         
             
@@ -46,6 +49,13 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
         await self.accept()
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type' : 'update',
+                "message": {'action' : 'private'}
+            }
+        )
 
         
 
@@ -66,9 +76,22 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             }
         )
 
-    
+    async def stop_game(self):
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type' : 'update',
+                "message": {'action' : 'Stop', 'scorep1' : self.game.scorep1, 'scorep2' : self.game.scorep2}
+            }
+        )
+
     async def loop(self):
         while self.game.finished == False:
+            if self.game.scorep1 == 5 or self.game.scorep2 == 5:
+                self.game.finished = True
+                self.game.dbgame.finished = True
+                await sync_to_async(self.saveGame)(self.game.dbgame)
+                await self.stop_game()
             paddle_size_x = 0.20000000298023224
             paddle_size_z = 3.1
             max_angle_adjustment = math.pi / 6
@@ -128,19 +151,35 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
         self.channel_layer.group_discard(
             self.room_group_name, self.channel_name
         )
+        try:
+            self.task.cancel()
+        except:
+            print('ca arrive hein')
+        self.game.finished = True
+        self.game.dbgame.finished = True
+        await sync_to_async(self.saveGame)(self.game.dbgame)
 
     async def receive(self, text_data):
         jsondata = json.loads(text_data)
         message = jsondata['message']
         #print(f"message is {message}")
+        if message == 'private':
+            self.game.dbgame.private = True
+            await sync_to_async(self.saveGame)(self.game.dbgame)
+            print("private")
         if message == 'ball_update':
             await self.channel_layer.group_send(
             self.room_group_name,
             {"type": "update", "message": {'action' : 'game', 'bx' : self.game.bpx, 'bz' : self.game.bpz, 'plx' : self.game.plx ,'plz' : self.game.plz, 'prx' : self.game.prx ,'prz' : self.game.prz}}
             )
-        if message == "start" and self.game.started == False:
+        if message == "Start" and self.game.started == False:
             self.game.started = True
-            asyncio.create_task(self.loop())
+            self.task = asyncio.create_task(self.loop())
+        elif message == "Stop" or self.game.finished == True:
+            try:
+                self.task.cancel()
+            except:
+                pass
         elif message == 'update':
             await self.channel_layer.group_send(
             self.room_group_name,

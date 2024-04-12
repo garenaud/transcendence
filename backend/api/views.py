@@ -11,6 +11,9 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages, auth
 from django.shortcuts import render
 from django.contrib.auth.models import User
+import random
+
+
 
 #Returns all user in the database
 @api_view(['GET'])
@@ -90,11 +93,45 @@ def get_game_by_id(request, gameid):
 	if (request.method == 'GET'):
 		game = Games.objects.filter(room_id=gameid).count()
 		if game == 0:
-			return Response({"message" : "Not found"})
+			return Response({"message" : "Not found"}, status=status.HTTP_404_NOT_FOUND)
 		else:
-			game = Games.objects.get(room_id=gameid)
-			serializer = GamesSerializer(game)
-			return Response({"message" : serializer.data})
+			try:
+				game = Games.objects.get(room_id=gameid, finished=False)
+				serializer = GamesSerializer(game)
+				return Response({"message" : serializer.data})
+			except:
+				return Response({"message" : "Game is already finished"})
 	else:
 		return Response("Unauthorized method", status=status.HTTP_401_UNAUTHORIZED)
 	
+
+@api_view(['GET'])
+def create_game(request, gameid):
+	if request.method == 'GET':
+		game = Games.objects.filter(room_id=gameid).count()
+		if game == 0:
+			return Response({"message" : "ok"})
+		else:
+			newid = random.randint(1, 9999)
+			while Games.objects.filter(room_id=newid).count() != 0:
+				newid = random.randint(1, 9999)
+			return Response({"message" : "ko", 'id' : newid})
+	else:
+		return Response("Unauthorized method", status=status.HTTP_401_UNAUTHORIZED)
+	
+
+@api_view(['GET'])
+def search_game(request):
+	if request.method == 'GET':
+		try:
+			#ajouter le nombre de user actuellement en recherche de game dans la db
+			games = Games.objects.filter(started=False, finished=False, full=False, private=False)
+			id = games[0].room_id
+			return Response({"message" : "ok", 'id' : id})
+		except:
+			newid = random.randint(1, 9999)
+			while Games.objects.filter(room_id=newid).count() != 0:
+				newid = random.randint(1, 9999)
+			return Response({"message" : "ko", 'id' : newid})
+	else:
+		return Response("Unauthorized method", status=status.HTTP_401_UNAUTHORIZED)

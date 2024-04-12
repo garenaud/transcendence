@@ -9,7 +9,9 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 //import { gameid } from './join.js';
 // import { RectAreaLightHelper } from 'three/addons/helpers/RectAreaLightHelper.js';
 
+let active = false;
 let gameid = sessionStorage.getItem('gameid');
+let privategame = sessionStorage.getItem('privategame');
 let game_data;
 let renderer;
 let scene;
@@ -54,21 +56,23 @@ function makeid(length) {
 
 
 if (gameid == null)
-{console.log("null");
+{
+	console.log("null");
 	gameSocket = new WebSocket(
-	'ws://'
+	'wss://'
 	+ window.location.host
 	+ '/ws/'
 	+ 'game'
 	+ '/'
-	+ makeid(3)
+	+ makeid(4)
 	+ '/'
 	);
 }
 else
-{console.log("pas null");
+{
+	console.log("pas null");
 	gameSocket = new WebSocket(
-		'ws://'
+		'wss://'
 		+ window.location.host
 		+ '/ws/'
 		+ 'game'
@@ -77,9 +81,12 @@ else
 		+ '/'
 		);
 }
+
+console.log(privategame);
+
 console.log(`ID IS ${gameid}`);
-		
-		function init() {
+
+function init() {
 	// Renderer
 	renderer = new THREE.WebGLRenderer({
 		canvas: document.querySelector('#background'),
@@ -206,8 +213,6 @@ function handleGround() {
 
 // Fonction pour gérer l'appui sur une touche
 function handleKeyDown(event) {
-	console.log(event.code);
-	//if (KeyState.hasOwnProperty(event.code)) {
 		if (event.code == 'ArrowUp')
 		{
 			gameSocket.send(JSON.stringify({
@@ -220,31 +225,30 @@ function handleKeyDown(event) {
 			'message' : 'Down'
 			}));
 		}
+		else if (event.code == 'KeyW')
+		{
+			gameSocket.send(JSON.stringify({
+				'message' : 'W'
+			}));
+		}
+		else if (event.code == 'KeyS')
+		{
+			gameSocket.send(JSON.stringify({
+				'message' : 'S'
+			}));
+		}
+		else if (event.code == 'Enter')
+		{
+			gameSocket.send(JSON.stringify({
+				'message' : 'Start'
+			}));
+		}
 		else if (event.code == 'Escape')
 		{
 			gameSocket.send(JSON.stringify({
 			'message' : 'Stop'
 			}));
 		}
-		else if (event.code == 'KeyW')
-		{
-			gameSocket.send(JSON.stringify({
-			'message' : 'W'
-			}));
-		}
-		else if (event.code == 'KeyS')
-		{
-			gameSocket.send(JSON.stringify({
-			'message' : 'S'
-			}));
-		}
-		else if (event.code == 'Enter')
-		{
-			gameSocket.send(JSON.stringify({
-			'message' : 'start'
-			}));
-		}
-	//}
 }
 
 // Fonction pour gérer le relâchement d'une touche
@@ -446,29 +450,40 @@ function handleBackground() {
 gameSocket.onmessage = function(e) {
 	game_data = JSON.parse(e.data);
 	console.log(game_data.action);
-	const ball = scene.getObjectByName('Ball');
-	const PaddleLeft = scene.getObjectByName("LeftPaddle");
-	const PaddleRight = scene.getObjectByName("RightPaddle");
-	if (game_data.action == 'paddle1')
+	if (game_data.action == "private")
 	{
-		PaddleRight.position.x = parseFloat(game_data.prx);
-		PaddleRight.position.z = parseFloat(game_data.prz);
+	if (privategame == 'true')
+		{
+			gameSocket.send(JSON.stringify({
+			'message' : 'private'
+			}));
+		}
 	}
-	else if (game_data.action == 'paddle2')
-	{
-		PaddleLeft.position.x = parseFloat(game_data.plx);
-		PaddleLeft.position.z = parseFloat(game_data.plz);
+	else
+	{	
+		const ball = scene.getObjectByName('Ball');
+		const PaddleLeft = scene.getObjectByName("LeftPaddle");
+		const PaddleRight = scene.getObjectByName("RightPaddle");
+		if (game_data.action == 'paddle1')
+		{
+			PaddleRight.position.x = parseFloat(game_data.prx);
+			PaddleRight.position.z = parseFloat(game_data.prz);
+		}
+		else if (game_data.action == 'paddle2')
+		{
+			PaddleLeft.position.x = parseFloat(game_data.plx);
+			PaddleLeft.position.z = parseFloat(game_data.plz);
+		}
+		else if (game_data.action == 'ball')
+		{
+			ball.position.x = parseFloat(game_data.bx);
+			ball.position.z = parseFloat(game_data.bz);
+		}
+		else if (game_data.action == 'Stop')
+		{
+			sessionStorage.setItem("gameid", null);
+		}
 	}
-	else if (game_data.action == 'ball')
-	{
-		ball.position.x = parseFloat(game_data.bx);
-		ball.position.z = parseFloat(game_data.bz);
-	}
-	// gameSocket.send(JSON.stringify({
-	// 	'message' : 'update'
-	// 	}));
-	//console.log(`hello from room ${game_data.room_name} in group ${game_data.room_group_name}`);
-	//update_game_data();
 };
 
 function update_game_data() {
