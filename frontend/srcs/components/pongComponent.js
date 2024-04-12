@@ -60,81 +60,38 @@ export function renderPong() {
                             </div>
                         </div>
 
-                    <!-- multiplayerModalContent -->
-                    <div id="pongMulti" class="h-100 align-items-center d-none">
-                        <button id="createBtn">Create Game</button>
-                        <button id="joinBtn">Join Game</button>
-                        <button id="searchBtn">List Game</button>
-                        <input type="text" id="gameCodeInput" placeholder="Enter Game Code"><br>
-                        <p>
-                        <a id="error"></a>
-                        </p>
-                    </div>
-                    <div class="collapse w-100" id="createRoomPong">
-                        <div class="card  w-100">
-                            <form>
-                                <div class="form-group row">
-                                    <label for="inputEmail3" class="col-sm-2 col-form-label">Email</label>
-                                    <div class="col-sm-10">
-                                        <input type="email" class="form-control" id="inputEmail3" placeholder="Email">
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <div class="col-sm-10 offset-sm-2">
-                                        <button type="submit" class="btn btn-primary">Sign in</button>
-                                    </div>
-                                </div>
-                            </form>
+                        <!-- multiplayerModalContent -->
+                        <div id="pongMulti" class="h-100 align-items-center d-none">
+                            <button id="createBtn">Create Game</button>
+                            <button id="joinBtn">Join Game</button>
+                            <button id="searchBtn">List Game</button>
+                            <input type="text" id="gameCodeInput" placeholder="Enter Game Code"><br>
+                            <p><a id="error"></a></p>
                         </div>
+
+                        <!-- pongLocalContent -->
+                    <div id="pongLocal" class="h-100 align-items-center d-none">
+                        <canvas id="background" class="canvasPong w-100 h-100"></canvas>
                     </div>
-                    <div class="collapse w-100" id="joinRoomPong">
-                        <div class="card  w-100">
-                            <input id="chat-message-input" type="text" size="20"><br>
-                            <input id="chat-message-submit" type="button" value="Send">
+
+                        <!-- joinPongContent -->
+                    <div id="joinPong" class="h-100 align-items-center d-none">
+                        <input id="chat-message-input" type="text" size="20"><br>
+                        <input id="chat-message-submit" type="button" value="Send">
+                    </div>
+
+                    
                         </div>
-                    </div>
-                    <div class="collapse w-100" id="joinRandomRoomPong">
-                        <div class="card  w-100">
-                        <form>
-                            <div class="form-group row">
-                            <label for="inputEmail3" class="col-sm-2 col-form-label">Email</label>
-                            <div class="col-sm-10">
-                                <input type="email" class="form-control" id="inputEmail3" placeholder="Email">
-                            </div>
-                            </div>
-                            <div class="form-group row">
-                            <div class="col-sm-10 offset-sm-2">
-                                <button type="submit" class="btn btn-primary">Sign in</button>
-                            </div>
-                            </div>
-                        </form>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary">Save changes</button>
                         </div>
-                    </div>
-                </div>
-
-                    <!-- multiplayerModalContent -->
-                <div id="pongLocal" class="h-100 align-items-center d-none">
-                    <canvas id="background"></canvas>
-                    <h1>coooool</h1>
-                </div>
-
-                    <!-- joinPongContent -->
-                <div id="joinPong" class="h-100 align-items-center d-none">
-                    <input id="chat-message-input" type="text" size="20"><br>
-                    <input id="chat-message-submit" type="button" value="Send">
-                </div>
-
-                </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary">Save changes</button>
                     </div>
                 </div>
             </div>
         </div>
-        <script type="module" src="pong/javascript/pong.js"></script>
-        <script type="module" src="pong/javascript/pong_menu.js"></script>
+            <script type="module" src="pong/javascript/pong.js"></script>
+            <script type="module" src="pong/javascript/pong_menu.js"></script>
     `;
     const pongElement = document.createElement('div');
     pongElement.classList.add('col-12', 'col-md-6');
@@ -150,11 +107,23 @@ export function renderPong() {
         const pongLocal = element.querySelector('#pongLocal');
         const localPongBtn = element.querySelector('#localPongBtn');
         const previousDiv = origPong ? pongMulti.previousElementSibling : null;
+        const pongModal = element.querySelector('#pong');
     
         // Add event listener to the button
         multiPongBtn.addEventListener('click', toggleVisibility);
         localPongBtn.addEventListener('click', toggleVisibility);
+
+        localPongBtn.addEventListener('click', function() {
+            pongMulti.classList.add('d-none');
+            document.querySelectorAll('.card-game-inside > div').forEach(div => {
+                div.classList.add('d-none');
+            });
+
+            pongLocal.classList.remove('d-none');
+        });
+
         pongElement.querySelector('#createBtn').addEventListener('click', function() {
+            pongMulti.classList.add('d-none');
             gameid = makeid(3);
             let url = '/api/game/create/' + gameid;
               console.log(url);
@@ -199,16 +168,30 @@ export function renderPong() {
                   if (data['message'] == "Not found") {
                     errorLink.textContent = `La partie ${gameid} n'existe pas, veuillez reessayer`;
                   } else{
-                      sessionStorage.setItem("gameid", gameid);
-                      window.location.href = "/pong/pong.html";
-                  }
+                    sessionStorage.setItem("gameid", gameid);
+                    document.querySelectorAll('.card-game-inside > div').forEach(div => {
+                    div.classList.add('d-none');
+                    });
+                    pongLocal.classList.remove('d-none');
+                    }
               })
               .catch((error) => {
                   console.error('Error:', error);
               });
           });
         
+          pongModal.addEventListener('show.bs.modal', function () {
+            console.log('Modal is about to be shown');
+        });
         
+        pongModal.addEventListener('hidden.bs.modal', function () {
+            console.log('Modal is hidden or closed');
+            document.querySelectorAll('.card-game-inside > div').forEach(div => {
+                div.classList.add('d-none');
+            });
+            origPong.classList.remove('d-none');
+        });
+
         pongElement.querySelector('#searchBtn').addEventListener('click', function() {
             let url = '/api/game/search/';
             console.log(url);
@@ -251,13 +234,6 @@ export function renderPong() {
             }
         }
     }
-
-
-    // Réinitialise le contenu de la modale lorsque celle-ci est fermée.
-    pongElement.querySelector('#pong').addEventListener('hidden.bs.modal', function () {
-        pongElement.querySelector('.card-game-inside').innerHTML = originalModalContent;
-        addEventListeners();
-    });
 
     return pongElement;
 }
