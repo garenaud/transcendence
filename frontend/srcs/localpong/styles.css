@@ -8,41 +8,50 @@ body {
     color: #fff;
 }
 
-.pong-game {
-    position: relative;
+@keyframes rainbow {
+	0% {color: red;}
+	14% {color: orange;}
+	28% {color: yellow;}
+	42% {color: green;}
+	57% {color: blue;}
+	71% {color: indigo;}
+	85% {color: violet;}
+	100% {color: red;}
 }
 
-.pong-table {
-    position: relative;
-    width: 600px;
-    height: 400px;
-    background-color: #000;
-    border: 2px solid #fff;
+#countdown {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+	transform: translate(-50%, -50%);
+	font-size: 3em;
+	animation-name: rainbow;
+	animation-duration: 4s;
+	animation-iteration-count: infinite;
 }
 
-.left-paddle, .right-paddle, .ball {
-    position: absolute;
-    background-color: #fff;
+#displayscore {
+	position: absolute;
+	top: 10px;
+	left: 50%;
+	font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+	transform: translateX(-50%);
+	font-size: 2em;
+	z-index: 100;
+	animation-name: rainbow;
+	animation-duration: 4s;
+	animation-iteration-count: infinite;
 }
 
-.left-paddle {
-    width: 10px;
-    height: 80px;
-    left: 10px;
-    top: 160px;
-}
-
-.right-paddle {
-    width: 10px;
-    height: 80px;
-    right: 10px;
-    top: 160px;
-}
-
-.ball {
-    width: 20px;
-    height: 20px;
-    left: 290px;
-    top: 190px;
-    border-radius: 50%;
+#displayvictory {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+	transform: translate(-50%, -50%);
+	font-size: 3em;
+	animation-name: rainbow;
+	animation-duration: 4s;
+	animation-iteration-count: infinite;
 }

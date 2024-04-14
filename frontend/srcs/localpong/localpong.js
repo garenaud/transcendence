@@ -18,6 +18,10 @@ const speed = 0.25;
 const mooveSpeed = 0.1;
 const wallLimit = 6.5;
 const ballLimit = 8.5;
+let countdownValue = 3;
+let displayvictoryElement = document.getElementById('displayvictory');
+let displayScoreElement = document.getElementById('displayscore');
+let countdownElement = document.getElementById('countdown');
 // const deltaTime = 30;
 let PaddleRight;
 let PaddleLeft;
@@ -31,6 +35,35 @@ const KeyState = {
 	ArrowDown: false,
 };
 
+function displayvictory() {
+    if (scoreLeft === finalScore) {
+		displayvictoryElement.textContent = "Left player won !"
+    } else if (scoreRight === finalScore) {
+		displayvictoryElement.textContent = "Right player won !";
+    }
+	return ;
+}
+
+function countdown() {
+	if (countdownValue > 0) {
+		countdownElement.textContent = countdownValue + '...';
+		countdownValue -= 1;
+		setTimeout(countdown, 1000);
+	} else {
+		countdownElement.textContent = 'Go !!!';
+		setTimeout(function() {
+			countdownElement.style.display = 'none';
+		}, 1000);
+	}
+}
+
+function displayScore() { 
+    if (displayScoreElement) {
+        displayScoreElement.textContent = 'Score: ' + scoreLeft + ' - ' + scoreRight;
+    } else {
+        console.error('displayScoreElement is not defined');
+    }
+}
 function init() {
 	// Renderer
 	renderer = new THREE.WebGLRenderer({
@@ -55,7 +88,6 @@ function init() {
 	composer = initPostprocessing();
 
 	// Load the GLTF model and handle the PaddleRight
-	// TODO waiting room;
 	LoadGLTFByPath(scene)
 		.then(() => {
 			handleGround();
@@ -70,6 +102,7 @@ function init() {
 		scene.receiveShadow = true;
 
 		// Animation loop
+		countdown();
 		animate();
 }
 
@@ -247,20 +280,31 @@ function handlePaddleCollision() {
 			}
 			isColliding = false;
 	}
+
+const finalScore = 5;
 	
 function handleWallColision() {
 		if (ball.position.z > ballLimit || ball.position.z < -ballLimit) {
 			ballVelocity.z *= -1;
 		} else if (ball.position.x > 18) {
 			scoreRight += 1;
+			displayScore();
 			ball.position.set(0, 0, 0);
 			speedIncreaseFactor = 0.2;
-			ballVelocity = new THREE.Vector3(Math.cos(initialAngle) * speed, 0, Math.sin(initialAngle) * speed);
+			ballVelocity = new THREE.Vector3(Math.cos(initialAngle) * speed * -1, 0, Math.sin(initialAngle) * speed * -1);
 		} else if( ball.position.x < -18) {
 			scoreLeft += 1;
+			displayScore();
 			ball.position.set(0, 0, 0);
 			speedIncreaseFactor = 0.2;
 			ballVelocity = new THREE.Vector3(Math.cos(initialAngle) * speed, 0, Math.sin(initialAngle) * speed);
+		}
+		if (scoreLeft === finalScore || scoreRight === finalScore)
+		{
+			ball.position.set(0, 0, 0);
+			ballVelocity = new THREE.Vector3(0, 0, 0);
+			displayvictory();
+			return ;
 		}
 }
 	
@@ -295,7 +339,8 @@ function animate() {
 	handlePaddleLeft();
 	handlePaddleRight();
 	handleBackground();
-	updateBall();
+	if (countdownValue == 0)
+		updateBall();
 	controls.update();
 	composer.render(scene, camera);
 	requestAnimationFrame(animate);
