@@ -39,6 +39,8 @@ struct Score {
  * 		user: User - The user
  */
 pub fn matchmaking(user: User) {
+	
+	// Ask the server for the waiting room
 	let req = user.get_client().get("https://{server}/api/game/search/".replace("{server}", user.get_server().as_str()));
 	let req = req.build();
 	let res = user.get_client().execute(req.expect("ERROR WHILE EXECUTING THE REQUEST"));
@@ -60,6 +62,7 @@ pub fn matchmaking(user: User) {
 		}
 	};
 
+	// Join the room provide by the server
 	let socket = connect_ws(user.clone(), room_id.to_string());
 	let mut socket = match socket {
 		Ok(socket) => {
@@ -74,6 +77,12 @@ pub fn matchmaking(user: User) {
 	waiting_game(socket);
 }
 
+/**
+ * Create a game by creating a room and waiting for a player to join
+ * 
+ * Args:
+ * 		user: User - The user
+ */
 pub fn create_game(user: User) {
 	println!("Create a game !!!!!!!!!!!");
 	// CREATE A ROOM ON THE SERVER
@@ -84,6 +93,8 @@ pub fn create_game(user: User) {
 	// PRINT THE ROOM ID
 
 
+
+	// // Connect to the room
 	// let socket = connect_ws(user.clone(), room_id.to_string());
 	// let mut socket = match socket {
 	// 	Ok(socket) => {
@@ -93,11 +104,19 @@ pub fn create_game(user: User) {
 	// 		return ;
 	// 	}
 	// };
-	// socket.send(Message::Text(r#"{"message":"private"}"#.to_string()));
+	// _ = socket.send(Message::Text(r#"{"message":"private"}"#.to_string()));
 	// waiting_game(socket);
 }
 
+/**
+ * Join a game by entering the room ID
+ * 
+ * Args:
+ * 		user: User - The user
+ */
 pub fn join_game(user: User) {
+	
+	// Ask for the room ID
 	let mut room: String = String::new();
 	loop {
 		room.clear();
@@ -113,6 +132,8 @@ pub fn join_game(user: User) {
 			eprintln!("{}", format!("Room ID is empty, please try again").red());
 			continue;
 		}
+
+		// Check if the room exists
 		let req = user.get_client().get("https://{server}/api/game/{room_id}".replace("{server}", user.get_server().as_str()).replace("{room_id}", room.as_str()));
 		let res = req.build();
 		let res = user.get_client().execute(res.expect("ERROR WHILE BUILDING THE REQUEST"));
@@ -133,6 +154,7 @@ pub fn join_game(user: User) {
 		break;
 	}
 
+	// Connect to the room
 	let socket = connect_ws(user.clone(), room);
 	let mut socket = match socket {
 		Ok(socket) => socket,
@@ -154,6 +176,8 @@ pub fn join_game(user: User) {
  * 		room: String - The room id
  */
 fn connect_ws(user: User, room: String) -> Result<tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<std::net::TcpStream>>, Box<dyn std::error::Error>> {
+	
+	// Create a TLS connector (and a TCP stream) to dodge the self-signed certificate
 	let mut connector = native_tls::TlsConnector::builder();
 	let connector = connector.danger_accept_invalid_certs(true);
 	let connector = match connector.build() {
@@ -171,6 +195,7 @@ fn connect_ws(user: User, room: String) -> Result<tungstenite::WebSocket<tungste
 		}
 	};
 	
+	// Open the websocket
 	match tungstenite::client_tls_with_config(("wss://{server}/ws/game/{room_id}/").replace("{server}", user.get_server().as_str()).replace("{room_id}", room.as_str()), stream, None, Some(NativeTls(connector))) {
 		Ok((socket, res)) => {
 			return Ok(socket);
@@ -238,7 +263,6 @@ fn waiting_game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTls
 				return ;
 			}
 		}
-	
 	}
 	game(socket);
 }
@@ -380,7 +404,7 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
 /**
  * Render the entire game (score, paddles and ball)
  * 
- * Take refs to every argument to have the last informations
+ * Take refs to every argument
  * 
  * Args:
  * 		term: &Console - The console struct
