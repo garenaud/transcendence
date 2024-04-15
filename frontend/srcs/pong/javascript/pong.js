@@ -33,6 +33,7 @@ let scoreLeft;
 let scoreRight;
 let ballVelocity;
 let gameSocket;
+let currentNum = 7;
 
 const KeyState = {
 	KeyW: false,
@@ -55,36 +56,31 @@ function makeid(length) {
 }
 
 
-if (gameid == null)
-{
+if (gameid == null) {
 	//console.log("null");
-	gameSocket = new WebSocket(
+	gameid = makeid(4);
+}
+gameSocket = new WebSocket(
 	'wss://'
 	+ window.location.host
 	+ '/ws/'
 	+ 'game'
 	+ '/'
-	+ makeid(4)
+	+ gameid
 	+ '/'
 	);
-}
-else
-{
-	//console.log("pas null");
-	gameSocket = new WebSocket(
-		'wss://'
-		+ window.location.host
-		+ '/ws/'
-		+ 'game'
-		+ '/'
-		+ gameid
-		+ '/'
-		);
-}
 
+const gameidElement = document.getElementById("gameID");
+gameidElement.textContent = "Game ID : " + gameid;
 //console.log(privategame);
 
 //console.log(`ID IS ${gameid}`);
+
+function addClassDelayed(element, className, delay) {
+    setTimeout(function() {
+        element.classList.add(className);
+    }, delay);
+}
 
 function init() {
 	// Renderer
@@ -212,6 +208,7 @@ function handleGround() {
 
 // Fonction pour gérer l'appui sur une touche
 function handleKeyDown(event) {
+	if (currentNum < 0) {
 		if (event.code == 'ArrowUp')
 		{
 			gameSocket.send(JSON.stringify({
@@ -248,6 +245,7 @@ function handleKeyDown(event) {
 			'message' : 'Stop'
 			}));
 		}
+	}
 }
 
 // Fonction pour gérer le relâchement d'une touche
@@ -445,6 +443,25 @@ function handleBackground() {
     scene.background = color;
 }
 
+function anim() {
+    if (currentNum >= 0) {
+        addClassDelayed(document.getElementById("countdown"), "puffer", 600);
+        currentNum--;
+        console.log(currentNum);
+        if (currentNum > 0) {
+            document.getElementById("countdown").innerHTML = currentNum;
+        } else if (currentNum == 0) {
+            document.getElementById("countdown").innerHTML = "GO !";
+        } else {
+            document.getElementById("countdown").innerHTML = "";
+            document.getElementById("countdown").classList.remove("puffer");
+            return;
+        }
+        document.getElementById("countdown").classList.remove("puffer");
+    } else {
+        return;
+    }
+}
 
 gameSocket.onmessage = function(e) {
 	game_data = JSON.parse(e.data);
@@ -489,6 +506,14 @@ gameSocket.onmessage = function(e) {
 			if (game_data.scorep1 != undefined && game_data.scorep2 != undefined) {
 				const scoreElement = document.getElementById("score");
 				scoreElement.textContent = game_data.scorep2 + " - " + game_data.scorep1;
+			}
+		} else if (game_data.action == 'counter') {
+			if (game_data.num < currentNum) {
+				currentNum = game_data.num;
+				if (currentNum >= 0) {
+					setTimeout(function() {}, 1500);
+					setInterval(function() { anim(); }, 1325);
+				}
 			}
 		}
 	}
