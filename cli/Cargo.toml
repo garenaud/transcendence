@@ -20,3 +20,4 @@ tungstenite = { version = "0.21.0", features = ["native-tls"] }
 json = "0.12.4"
 nix = "0.24.1"
 signal = "0.7.0"
+native-tls = "0.2.11"

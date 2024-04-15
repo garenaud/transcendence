@@ -150,6 +150,7 @@ dependencies = [
  "clearscreen",
  "colored",
  "json",
+ "native-tls",
  "ncurses",
  "nix 0.24.3",
  "pwhash",

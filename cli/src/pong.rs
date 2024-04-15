@@ -2,6 +2,7 @@ use ncurses::*;
 use colored::Colorize;
 use reqwest::blocking::*;
 use tungstenite::{connect, Message, WebSocket};
+use tungstenite::Connector::NativeTls;
 use url::Url;
 use std::io::{stdout, Write};
 use std::thread;
@@ -14,6 +15,7 @@ struct Console {
 	height: f64
 }
 
+const PADDLE_HEIGHT: f64 = 6.5;
 struct Paddle {
 	x: f64,
 	y: f64,
@@ -29,8 +31,7 @@ struct Score {
 	score2: i32,
 }
 
-pub fn matchmaking(user: User)
-{
+pub fn matchmaking(user: User) {
 	// SEARCH FOR A GAME
 	let req = user.get_client().get("https://{server}/api/game/search/".replace("{server}", user.get_server().as_str()));
 	let req = req.build();
@@ -56,7 +57,6 @@ pub fn matchmaking(user: User)
 	let socket = connect_ws(user.clone(), room_id.to_string());
 	let mut socket = match socket {
 		Ok(socket) => {
-			// game(user.clone(), socket);
 			socket
 		},
 		Err(err) => {
@@ -64,16 +64,7 @@ pub fn matchmaking(user: User)
 		}
 	};
 
-	// THIS IS TEMP: SEND A MESSAGE TO THE SERVER TO START THE GAME
-	match socket.send(Message::Text(r#"{"message":"start"}"#.to_string())) {
-		Ok(_) => {
-			game(user.clone(), socket);
-		},
-		Err(err) => {
-			eprintln!("{}", format!("{}", err).red());
-			return ;
-		}
-	};
+	waiting_game(socket);
 }
 
 pub fn create_game(user: User) {
@@ -145,24 +136,88 @@ pub fn join_game(user: User) {
 		}
 	};
 
-	// socket.write_message(Message::Text(r#"{"message":"update"}"#.to_string()))?;
-	game(user.clone(), socket);
+	waiting_game(socket);
 }
 
+/**
+ * Connect to the websocket server
+ * 
+ * Args:
+ * 		user: User - The user
+ * 		room: String - The room id
+ */
 fn connect_ws(user: User, room: String) -> Result<tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<std::net::TcpStream>>, Box<dyn std::error::Error>> {
-	let mut socket = match connect(("wss://{server}/ws/game/{room_id}/").replace("{server}", user.get_server().as_str()).replace("{room_id}", room.as_str())).danger_connect {
+	let mut connector = native_tls::TlsConnector::builder();
+	let connector = connector.danger_accept_invalid_certs(true);
+	let connector = match connector.build() {
+		Ok(connector) => connector,
+		Err(err) => {
+			eprintln!("{}", format!("{}", err).red().bold());
+			return Err(Box::new(err));
+		}
+	};
+	let stream = match std::net::TcpStream::connect(format!("{server}:443", server = user.get_server())) {
+		Ok(stream) => stream,
+		Err(err) => {
+			eprintln!("{}", format!("{}", err).red().bold());
+			return Err(Box::new(err));
+		}
+	};
+	
+	match tungstenite::client_tls_with_config(("wss://{server}/ws/game/{room_id}/").replace("{server}", user.get_server().as_str()).replace("{room_id}", room.as_str()), stream, None, Some(NativeTls(connector))) {
 		Ok((socket, res)) => {
 			return Ok(socket);
 		},
 		Err(err) => {
-			eprintln!("{}", format!("{:#?}", err).red().bold());
+			eprintln!("{}", format!("{}", err).red().bold());
 			return Err(Box::new(err));
 		}
 	};
 }
 
-fn game(user: User, mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<std::net::TcpStream>>) {
-	// Read from command line and send messages
+/**
+ * Wait for the game to start and then called the function game(socket)
+ * 
+ * Args:
+ * 		socket: WebSocket - The websocket connected to the game
+ */
+fn waiting_game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<std::net::TcpStream>>) {
+	println!("Waiting for the game to start...");
+	loop {
+		match socket.read() {
+			Ok(msg) => {
+				match msg {
+					Message::Text(msg) => {
+						let msg = msg.as_str();
+						let json = json::parse(msg).unwrap();
+						match json["action"].as_str().unwrap() {
+							"start" => {
+								break ;
+							},
+							_ => {}
+						}
+					},
+					_ => {}
+				}
+			},
+			Err(err) => {
+				eprintln!("{}", format!("{}", err).red());
+				return ;
+			}
+		}
+	
+	}
+	game(socket);
+}
+
+/**
+ * Handle the game loop (The game must be started)
+ * Exiting when the game is over
+ * 
+ * Args:
+ * 		socket: WebSocket - The websocket connected to the game
+ */
+fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<std::net::TcpStream>>) {
 	let _ = clearscreen::clear();
 
 	let mut paddle_l = Paddle { x: 0.0, y: 0.0 };
@@ -183,13 +238,18 @@ fn game(user: User, mut socket: tungstenite::WebSocket<tungstenite::stream::Mayb
 		return ;
 	}
 
+	// Init ncurses to get the user's input
 	initscr();
 	raw();
 	keypad(stdscr(), true);
 	noecho();
 	timeout(0);
-	loop { // game loop
+
+	// game loop
+	loop {
 		sleep(Duration::from_millis(5));
+
+		// Handle the server's messages
 		match socket.read() {
 			Ok(msg) => match msg {
 				Message::Text(msg) => {
@@ -217,8 +277,21 @@ fn game(user: User, mut socket: tungstenite::WebSocket<tungstenite::stream::Mayb
 							score.score2 = json["scorep2"].as_i32().unwrap();
 						},
 						"private" => continue,
+						"stop" => {
+							endwin();
+							_ = term_cursor::clear();
+							if score.score1 > score.score2 {
+								println!("Player 1 wins !");
+							} else if score.score1 < score.score2 {
+								println!("Player 2 wins !");
+							} else {
+								println!("Draw !");
+							}
+							break ;
+						},
 						_ => {
 							endwin();
+							_ = term_cursor::clear();
 							println!("Unknown action: {}", json["action"]);
 							break ;
 						}
@@ -247,6 +320,8 @@ fn game(user: User, mut socket: tungstenite::WebSocket<tungstenite::stream::Mayb
 				}
 			}
 		}
+
+		// Send the user's input to the server
 		match getch() {
 			27 => {
 				endwin();
@@ -268,15 +343,18 @@ fn game(user: User, mut socket: tungstenite::WebSocket<tungstenite::stream::Mayb
 	}
 }
 
-/*
-** TAILLE ELEMENTS:
-
-** Wall left/right = 19
-** Wall top/bottom = 36
-** Ball = 0.5 (circle)
-** Paddle = 5.5	
-*/
-const PADDLE_HEIGHT: f64 = 6.5;
+/**
+ * Render the entire game (score, paddles and ball)
+ * 
+ * Take refs to every argument to have the last informations
+ * 
+ * Args:
+ * 		term: &Console - The console struct
+ * 		paddle_l: &Paddle - The left paddle
+ * 		paddle_r: &Paddle - The right paddle
+ * 		ball: &Ball - The ball
+ * 		score: &Score - The score
+ */
 fn render(term: &Console, paddle_l: &Paddle, paddle_r: &Paddle, ball: &Ball, score: &Score) {
 	match term_cursor::clear() {
 		Ok(_) => {
@@ -299,6 +377,12 @@ fn render(term: &Console, paddle_l: &Paddle, paddle_r: &Paddle, ball: &Ball, sco
 	}
 }
 
+/**
+ * Print the paddle
+ * 
+ * Args:
+ * 		paddle: &Paddle - Ref to paddle struct to print
+ */
 fn print_paddle(paddle: &Paddle) {
 	let x = paddle.x as i32;
 	let y = paddle.y as i32;
@@ -309,6 +393,12 @@ fn print_paddle(paddle: &Paddle) {
 	println!();
 }
 
+/**
+ * Print the ball
+ * 
+ * Args:
+ * 		ball: &Ball - Ref to ball struct to print
+ */
 fn print_ball(ball: &Ball) {
 	let x = ball.x as i32;
 	let y = ball.y as i32;
