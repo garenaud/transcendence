@@ -29,7 +29,7 @@ export function renderPong() {
                     <div class="bg">Pong</div>
                     <div class="fg">Pong</div>
                 </div>
-                <button type="button" class="btn btn-primary glowing-btn center mx-auto d-block button" data-toggle="modal" data-target="#pong">
+                <button type="button" class="btn btn-primary glowing-btn center mx-auto d-block button" data-bs-toggle="modal" data-bs-target="#pong">
                 <span id="playBtnPong" class='glowing-txt' data-lang-key='playBtn'>JOUER</span></button>
             </div>
         </div>
@@ -40,7 +40,7 @@ export function renderPong() {
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="exampleModalLabel">Pong</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
@@ -87,7 +87,7 @@ export function renderPong() {
 						
                         </div>
                         <div class="modal-footer">
-						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
 						<button type="button" class="btn btn-primary">Save changes</button>
                         </div>
 						</div>

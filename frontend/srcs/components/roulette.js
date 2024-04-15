@@ -84,7 +84,7 @@ export function spinWheel(ballAnim) {
             <div class="bg" data-lang-key='roulette'>Roulette</div>
             <div class="fg" data-lang-key='roulette'>Roulette</div>
           </div>
-          <button type="button" class="btn btn-primary glowing-btn center mx-auto d-block" data-toggle="modal" data-target="#roulette">
+          <button type="button" class="btn btn-primary glowing-btn center mx-auto d-block" data-bs-toggle="modal" data-bs-target="#roulette">
           <span id="playBtn" class='glowing-txt' data-lang-key='playBtn'>JOUER</span></button>
         </div>
       </div>

@@ -7,7 +7,7 @@ export function renderBlackJack() {
 			<div class="bg" data-lang-key='blackjack'>BlackJack</div>
 			<div class="fg" data-lang-key='blackjack'>BlackJack</div>
 		</div>
-        <button type="button" class="btn btn-primary glowing-btn center mx-auto d-block" data-toggle="modal" data-target="#blackjack">
+        <button type="button" class="btn btn-primary glowing-btn center mx-auto d-block" data-bs-toggle="modal" data-bs-target="#blackjack">
         <span class='glowing-txt' data-lang-key='playBtn'>JOUER</span></button>
 	</div>
     </div>
@@ -17,7 +17,7 @@ export function renderBlackJack() {
               <div class="modal-content">
                 <div class="modal-header">
                   <h5 class="modal-title" id="exampleModalLabel" data-lang-key='blackjack'>Black Jack</h5>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                 	<span aria-hidden="true">&times;</span>
                   </button>
                 </div>
@@ -48,7 +48,7 @@ export function renderBlackJack() {
                 				</div>
                 			</div>
                     		<div class="modal-footer">
-                    			<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    			<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     			<button type="button" class="btn btn-primary">Save changes</button>
                 			</div>
             			</div>

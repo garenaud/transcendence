@@ -39,17 +39,17 @@ function displayUserInfo(user) {
             <div class="user-menu-img">
                 <img src="${user.profilePicture}" alt="User Image">
                 <button type="button" class="close close-menu-button" aria-label="Close"> <span aria-hidden="true">&times;</span> </button>
-                <button type="button" class="edit edit-menu-button btn btn-primary" aria-label="Edit" data-toggle="modal" data-target="#editPicture"> <span aria-hidden="true">&#9998;</span> </button>
+                <button type="button" class="edit edit-menu-button btn btn-primary" aria-label="Edit" data-bs-toggle="modal" data-bs-target="#editPicture"> <span aria-hidden="true">&#9998;</span> </button>
             </div>
             <div class="user-menu-title">
                 <h3>${user.username}</h3>
                 <h4>${user.pts} pts</h4>
             </div>
             <div class="user-menu-info">
-                <button type="button" class="user-menu-li" aria-label="Edit" data-toggle="modal" data-target="#addFriend"> 
+                <button type="button" class="user-menu-li" aria-label="Edit" data-bs-toggle="modal" data-bs-target="#addFriend"> 
                     <i class="fas fa-user-plus"></i><h4 data-lang-key='addFriend'>ajouter un ami</h4>
                 </button>
-                <button type="button" class="user-menu-li" aria-label="Edit" data-toggle="modal" data-target="#editPicture">
+                <button type="button" class="user-menu-li" aria-label="Edit" data-bs-toggle="modal" data-bs-target="#editPicture">
                     <i class="fas fa-cog"></i><h4 data-lang-key='setProfile'>Editer le profil</h4>
                 </button>
             </div>
@@ -64,7 +64,7 @@ function displayUserInfo(user) {
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="editPictureLabel" data-lang-key='editPicture'>changer l'image de profil</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
@@ -85,8 +85,8 @@ function displayUserInfo(user) {
                       </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal" data-lang-key='close'>Close</button>
-                        <button id="userSaveChange" type="button" class="btn btn-primary"  data-dismiss="modal" data-lang-key='saveChanges'>Save changes</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-lang-key='close'>Close</button>
+                        <button id="userSaveChange" type="button" class="btn btn-primary"  data-bs-dismiss="modal" data-lang-key='saveChanges'>Save changes</button>
                     </div>
                 </div>
             </div>
@@ -98,7 +98,7 @@ function displayUserInfo(user) {
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="editPictureLabel" data-lang-key='addFriend'>Add a friend</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
@@ -106,8 +106,8 @@ function displayUserInfo(user) {
 
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal" data-lang-key='close'>Close</button>
-                        <button id="userSaveChange" type="button" class="btn btn-primary"  data-dismiss="modal" data-lang-key='saveChanges'>Save changes</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-lang-key='close'>Close</button>
+                        <button id="userSaveChange" type="button" class="btn btn-primary"  data-bs-dismiss="modal" data-lang-key='saveChanges'>Save changes</button>
                     </div>
                 </div>
             </div>
