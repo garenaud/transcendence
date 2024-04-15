@@ -113,15 +113,12 @@ pub fn join_game(user: User) {
 			eprintln!("{}", format!("Room ID is empty, please try again").red());
 			continue;
 		}
-		let req = user.get_client().get("https://{server}/api/game/{room_id}/".replace("{server}", user.get_server().as_str()).replace("{room_id}", room.as_str()));
+		let req = user.get_client().get("https://{server}/api/game/{room_id}".replace("{server}", user.get_server().as_str()).replace("{room_id}", room.as_str()));
 		let res = req.build();
 		let res = user.get_client().execute(res.expect("ERROR WHILE BUILDING THE REQUEST"));
 		match res {
 			Ok(res) => {
 				if res.status().is_success() {
-					
-					// VERIFIER SI L'ID DE LA ROOM EST OOOOOOOOOOOOOOOOOOOOK
-
 					break;
 				} else if res.status().is_client_error() {
 					eprintln!("{}", format!("Room not found or ID invalid").red().bold());
