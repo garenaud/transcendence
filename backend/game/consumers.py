@@ -85,7 +85,8 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             }
         )
 
-    async def loop(self):
+    async def loop(self): 
+        await asyncio.sleep(5)
         while self.game.finished == False:
             if self.game.scorep1 == 5 or self.game.scorep2 == 5:
                 self.game.finished = True
@@ -132,22 +133,15 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             elif self.game.bpx > 18 or self.game.bpx < -18:
                 if self.game.bpx > 18:
                     self.game.scorep2 += 1
-                    await self.channel_layer.group_send(
-                    self.room_group_name,
-                        {
-                            'type' : 'update',
-                            "message": {'action' : 'score', 'scorep1' : self.game.scorep1, 'scorep2' : self.game.scorep2}
-                        }
-                    )
                 elif self.game.bpx < -18:
                     self.game.scorep1 += 1
-                    await self.channel_layer.group_send(
-                    self.room_group_name,
-                        {
-                            'type' : 'update',
-                            "message": {'action' : 'score', 'scorep1' : self.game.scorep1, 'scorep2' : self.game.scorep2}
-                        }
-                    )
+                await self.channel_layer.group_send(
+                self.room_group_name,
+                    {
+                        'type' : 'update',
+                        "message": {'action' : 'score', 'scorep1' : self.game.scorep1, 'scorep2' : self.game.scorep2}
+                    }
+                )
                 self.game.bpx = 0.0
                 self.game.bpz = 0.0
                 self.game.sif = 1.05
@@ -176,19 +170,25 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         jsondata = json.loads(text_data)
         message = jsondata['message']
-        #print(f"message is {message}")
-        if message == 'private':
-            self.game.dbgame.private = True
-            await sync_to_async(self.saveGame)(self.game.dbgame)
-            print("private")
+        if message == 'private' or message == 'public':
+            if message == 'private':
+                self.game.dbgame.private = True
+                await sync_to_async(self.saveGame)(self.game.dbgame)
+            if self.game.dbgame.full == True:
+                self.game.started = True
+                await self.channel_layer.group_send(
+                self.room_group_name,
+                {"type": "update", "message": {'action' : 'start'}}
+                )
+                self.task = asyncio.create_task(self.loop())
         if message == 'ball_update':
             await self.channel_layer.group_send(
             self.room_group_name,
             {"type": "update", "message": {'action' : 'game', 'bx' : self.game.bpx, 'bz' : self.game.bpz, 'plx' : self.game.plx ,'plz' : self.game.plz, 'prx' : self.game.prx ,'prz' : self.game.prz}}
             )
-        if message == "Start" and self.game.started == False:
-            self.game.started = True
-            self.task = asyncio.create_task(self.loop())
+        # if message == "Start" and self.game.started == False:
+        #     self.game.started = True
+        #     self.task = asyncio.create_task(self.loop())
         elif message == "Stop" or self.game.finished == True:
             try:
                 self.task.cancel()

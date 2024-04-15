@@ -456,7 +456,14 @@ gameSocket.onmessage = function(e) {
 			'message' : 'private'
 			}));
 		}
-	} else {	
+		else
+		{
+			gameSocket.send(JSON.stringify({
+			'message' : 'public'
+			}));
+		}
+	}
+	else {	
 		const ball = scene.getObjectByName('Ball');
 		const PaddleLeft = scene.getObjectByName("LeftPaddle");
 		const PaddleRight = scene.getObjectByName("RightPaddle");
