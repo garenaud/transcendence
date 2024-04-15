@@ -104,7 +104,6 @@ console.log(`ID IS ${gameid}`);
 			handleGround();
 			handleLight();
 			handleText();
-			handleBall();
 		})
 		.catch((error) => {
 			console.error('Error loading JSON scene:', error);
@@ -122,18 +121,6 @@ function handleText() {
 	scoreRight = scene.getObjectByName('Text001');
 	scene.add(scoreRight);
 	scene.remove(scoreRight);
-}
-
-function handleBall() {
-	const ballName = 'Ball';
-	ball = scene.getObjectByName(ballName);
-	if (ball) {
-	ball.castShadow = true;
-		ball.position.set(0, 0, 0);
-		ballVelocity = new THREE.Vector3(Math.cos(initialAngle) * speed, 0, Math.sin(initialAngle) * speed);
-	} else {
-		console.error('Ball not found');
-	}
 }
 
 function handleLight() {
@@ -305,4 +292,5 @@ document.addEventListener('keydown', handleKeyDown);
 document.addEventListener('keyup', handleKeyUp);
 
 // Appel de la fonction d'initialisation
-//initPong();
+init();
+// 

@@ -1,0 +1,57 @@
+body {
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #000;
+    color: #fff;
+}
+
+@keyframes rainbow {
+	0% {color: red;}
+	14% {color: orange;}
+	28% {color: yellow;}
+	42% {color: green;}
+	57% {color: blue;}
+	71% {color: indigo;}
+	85% {color: violet;}
+	100% {color: red;}
+}
+
+#countdown {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+	transform: translate(-50%, -50%);
+	font-size: 3em;
+	animation-name: rainbow;
+	animation-duration: 4s;
+	animation-iteration-count: infinite;
+}
+
+#displayscore {
+	position: absolute;
+	top: 10px;
+	left: 50%;
+	font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+	transform: translateX(-50%);
+	font-size: 2em;
+	z-index: 100;
+	animation-name: rainbow;
+	animation-duration: 4s;
+	animation-iteration-count: infinite;
+}
+
+#displayvictory {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+	transform: translate(-50%, -50%);
+	font-size: 3em;
+	animation-name: rainbow;
+	animation-duration: 4s;
+	animation-iteration-count: infinite;
+}

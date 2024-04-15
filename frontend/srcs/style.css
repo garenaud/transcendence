@@ -1645,39 +1645,8 @@ div.fg{
   position: relative;
 }
 
-.pong-table {
-  position: relative;
-  width: 600px;
-  height: 400px;
-  background-color: #000;
-  border: 2px solid #fff;
-}
-
-.left-paddle, .right-paddle, .ball {
-  position: absolute;
-  background-color: #fff;
-}
-
-.left-paddle {
-  width: 10px;
-  height: 80px;
-  left: 10px;
-  top: 160px;
-}
-
-.right-paddle {
-  width: 10px;
-  height: 80px;
-  right: 10px;
-  top: 160px;
-}
-
-.ball {
-  width: 20px;
-  height: 20px;
-  left: 290px;
-  top: 190px;
-  border-radius: 50%;
+#pongLocal {
+	z-index: 1060;
 }
 
 #menu {

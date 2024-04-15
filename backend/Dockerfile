@@ -11,7 +11,7 @@ RUN mkdir -p $DockerHOME
 
 RUN apt-get update -y
 RUN apt-get install libsystemd0 -y
-RUN apt-get install vim -y
+# RUN apt-get install vim -y
 
 # where your code lives  
 WORKDIR $DockerHOME  
