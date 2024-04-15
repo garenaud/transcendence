@@ -132,8 +132,22 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             elif self.game.bpx > 18 or self.game.bpx < -18:
                 if self.game.bpx > 18:
                     self.game.scorep2 += 1
+                    await self.channel_layer.group_send(
+                    self.room_group_name,
+                        {
+                            'type' : 'update',
+                            "message": {'action' : 'score', 'scorep1' : self.game.scorep1, 'scorep2' : self.game.scorep2}
+                        }
+                    )
                 elif self.game.bpx < -18:
                     self.game.scorep1 += 1
+                    await self.channel_layer.group_send(
+                    self.room_group_name,
+                        {
+                            'type' : 'update',
+                            "message": {'action' : 'score', 'scorep1' : self.game.scorep1, 'scorep2' : self.game.scorep2}
+                        }
+                    )
                 self.game.bpx = 0.0
                 self.game.bpz = 0.0
                 self.game.sif = 1.05
