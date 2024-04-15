@@ -8,6 +8,15 @@ body {
     color: #fff;
 }
 
+#score {
+    position: absolute;
+    background-color: black;
+    top: 0;
+    left: 50%;
+    padding: 15px;
+    user-select: none;
+}
+
 .pong-game {
     position: relative;
 }

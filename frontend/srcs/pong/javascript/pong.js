@@ -123,7 +123,6 @@ function init() {
 		});
 		scene.castShadow = true;
 		scene.receiveShadow = true;
-
 		// Animation loop
 		animate();
 }
@@ -141,8 +140,8 @@ function handleBall() {
 	const ballName = 'Ball';
 	ball = scene.getObjectByName(ballName);
 	if (ball) {
-	ball.castShadow = true;
-	// ball.receiveShadow = true;
+		ball.castShadow = true;
+		// ball.receiveShadow = true;
 		ball.position.set(0, 0, 0);
 		ballVelocity = new THREE.Vector3(Math.cos(initialAngle) * speed, 0, Math.sin(initialAngle) * speed);
 	} else {
@@ -449,18 +448,22 @@ function handleBackground() {
 
 gameSocket.onmessage = function(e) {
 	game_data = JSON.parse(e.data);
-	//console.log(game_data.action);
 	if (game_data.action == "private")
 	{
-	if (privategame == 'true')
+		if (privategame == 'true')
 		{
 			gameSocket.send(JSON.stringify({
 			'message' : 'private'
 			}));
 		}
+		else
+		{
+			gameSocket.send(JSON.stringify({
+			'message' : 'public'
+			}));
+		}
 	}
-	else
-	{	
+	else {	
 		const ball = scene.getObjectByName('Ball');
 		const PaddleLeft = scene.getObjectByName("LeftPaddle");
 		const PaddleRight = scene.getObjectByName("RightPaddle");
@@ -482,6 +485,11 @@ gameSocket.onmessage = function(e) {
 		else if (game_data.action == 'Stop')
 		{
 			sessionStorage.setItem("gameid", null);
+		} else if (game_data.action == 'score') {
+			if (game_data.scorep1 != undefined && game_data.scorep2 != undefined) {
+				const scoreElement = document.getElementById("score");
+				scoreElement.textContent = game_data.scorep2 + " - " + game_data.scorep1;
+			}
 		}
 	}
 };
