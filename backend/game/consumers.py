@@ -97,6 +97,10 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
     async def loop(self):
         await asyncio.sleep(5)
         await self.send_messages()
+        await self.channel_layer.group_send(
+        self.room_group_name,
+        {"type": "update", "message": {'action' : 'start'}}
+        )
         while self.game.finished == False:
             if self.game.scorep1 == 5 or self.game.scorep2 == 5:
                 self.game.finished = True
@@ -186,10 +190,6 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
                 await sync_to_async(self.saveGame)(self.game.dbgame)
             if self.game.dbgame.full == True:
                 self.game.started = True 
-                await self.channel_layer.group_send(
-                self.room_group_name,
-                {"type": "update", "message": {'action' : 'start'}}
-                )
                 self.task = asyncio.create_task(self.loop())
         if message == 'ball_update':
             await self.channel_layer.group_send(
