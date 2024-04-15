@@ -122,7 +122,7 @@ function    setupButtonListener() {
 			credentials: 'same-origin' 
 		})
 		.then(response => {
-			//console.log('response:', response);
+			console.log('response:', response);
 			if (!response.ok) {
 				throw new Error(`HTTP error! status: ${response.status}`);
 			}
@@ -132,6 +132,7 @@ function    setupButtonListener() {
 			console.log('Success:', data);
 			if (data['message'] == "OK") {
 				let userId = data['id'];
+				console.log('userId:', userId);
 				localStorage.setItem('userId', userId);
 				loadUser();
 				changeView('hero');
@@ -229,12 +230,12 @@ document.body.addEventListener('keydown', function(event) {
 
         // Vérifie si l'élément actif est dans le formulaire de connexion
         if (loginForm.contains(activeElement)) {
-            event.preventDefault(); // Empêche le comportement par défaut
+            //event.preventDefault(); // Empêche le comportement par défaut
             document.getElementById('loginBtn').click(); // Simule un clic sur le bouton de connexion
         }
         // Vérifie si l'élément actif est dans le formulaire d'inscription
         else if (signupForm.contains(activeElement)) {
-            event.preventDefault(); // Empêche le comportement par défaut
+            //event.preventDefault(); // Empêche le comportement par défaut
             document.getElementById('signupBtn').click(); // Simule un clic sur le bouton d'inscription
         }
     }
