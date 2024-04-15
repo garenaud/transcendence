@@ -70,29 +70,36 @@ export function renderPong() {
                         </div>
 
                         <!-- pongLocalContent -->
-                    <div id="pongLocal" class="h-100 align-items-center d-none">
-                        <canvas id="background" class="canvasPong w-100 h-100"></canvas>
-                    </div>
 
+                    	<div id="pongLocal" class="h-100 align-items-center d-none">
+						<h1>fuckit</h1>
+						<canvas id="background" class="canvasPong w-100 h-100"></canvas>
+						<div id="countdown"></div>
+						<div id="displayscore"></div>
+						<div id ="displayvictory"></div>
+						<h1>okokoko0kl</h1>
+						<script type="module" src="../localpong/localpong.js"></script>
+						</div>
+						
                         <!-- joinPongContent -->
-                    <div id="joinPong" class="h-100 align-items-center d-none">
+						<div id="joinPong" class="h-100 align-items-center d-none">
                         <input id="chat-message-input" type="text" size="20"><br>
                         <input id="chat-message-submit" type="button" value="Send">
-                    </div>
-
-                    
+						</div>
+						
+						
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-primary">Save changes</button>
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						<button type="button" class="btn btn-primary">Save changes</button>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-            <script type="module" src="pong/javascript/pong.js"></script>
-            <script type="module" src="pong/javascript/pong_menu.js"></script>
-    `;
+						</div>
+						</div>
+						</div>
+						</div>
+						<script type="module" src="pong/javascript/pong.js"></script>
+						<script type="module" src="pong/javascript/pong_menu.js"></script>
+						`;
     const pongElement = document.createElement('div');
     pongElement.classList.add('col-12', 'col-md-6');
     pongElement.innerHTML = pongHTML;
@@ -120,14 +127,9 @@ export function renderPong() {
             });
 
             pongLocal.classList.remove('d-none');
+			var data = document.querySelector('#pongLocal').innerHTML;
+			document.querySelector('#pongLocal').innerHTML = data;
         });
-		localPongBtn.addEventListener('click', function() {
-    	fetch('/localpong/test.html')
-        	.then(response => response.text())
-        	.then(data => {
-            	document.querySelector('#content').innerHTML = data;
-        	});
-		});
         pongElement.querySelector('#createBtn').addEventListener('click', function() {
             pongMulti.classList.add('d-none');
             gameid = makeid(3);

@@ -18,7 +18,9 @@ const speed = 0.25;
 const mooveSpeed = 0.1;
 const wallLimit = 6.5;
 const ballLimit = 8.5;
+let load = false;
 let countdownValue = 3;
+let speedIncreaseFactor = 0.7; // Facteur d'augmentation de la vitesse
 let displayvictoryElement = document.getElementById('displayvictory');
 let displayScoreElement = document.getElementById('displayscore');
 let countdownElement = document.getElementById('countdown');
@@ -137,7 +139,7 @@ function handleBall() {
         let bv2_z = Math.sin(angle2_rad) * speed;
 
         // Sélectionner aléatoirement l'une des deux directions pour le départ de la balle
-        if (Math.random() < 0.5) {
+		if (Math.random() < 0.5 && countdownValue == 0) {
             ballVelocity = new THREE.Vector3(bv1_x, 0, bv1_z);
         } else {
             ballVelocity = new THREE.Vector3(bv2_x, 0, bv2_z);
@@ -222,6 +224,7 @@ function handlePaddleRight() {
 		// PaddleRight.receiveShadow = true;
 		if (KeyState['ArrowUp'] && PaddleRight.position.z - mooveSpeed > -wallLimit) {
 			PaddleRight.position.z -= mooveSpeed;
+			console.log("aled");
 		}
 		if (KeyState['ArrowDown'] && PaddleRight.position.z + mooveSpeed < wallLimit) {
 			PaddleRight.position.z += mooveSpeed;
@@ -245,7 +248,6 @@ function handlePaddleLeft() {
 	} 
 }
 
-let speedIncreaseFactor = 0.2; // Facteur d'augmentation de la vitesse
 
 function handlePaddleCollision() {
 	const ballRadius = ball.geometry.boundingSphere.radius;
@@ -288,15 +290,17 @@ function handleWallColision() {
 			ballVelocity.z *= -1;
 		} else if (ball.position.x > 18) {
 			scoreRight += 1;
+			console.log(scoreRight);
 			displayScore();
 			ball.position.set(0, 0, 0);
-			speedIncreaseFactor = 0.2;
+			speedIncreaseFactor = 0.6;
 			ballVelocity = new THREE.Vector3(Math.cos(initialAngle) * speed * -1, 0, Math.sin(initialAngle) * speed * -1);
 		} else if( ball.position.x < -18) {
 			scoreLeft += 1;
+			console.log(scoreLeft);
 			displayScore();
 			ball.position.set(0, 0, 0);
-			speedIncreaseFactor = 0.2;
+			speedIncreaseFactor = 0.6;
 			ballVelocity = new THREE.Vector3(Math.cos(initialAngle) * speed, 0, Math.sin(initialAngle) * speed);
 		}
 		if (scoreLeft === finalScore || scoreRight === finalScore)
