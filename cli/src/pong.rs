@@ -192,6 +192,27 @@ fn waiting_game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTls
 						let msg = msg.as_str();
 						let json = json::parse(msg).unwrap();
 						match json["action"].as_str().unwrap() {
+							"counter" => {
+								match json["num"].as_str().unwrap() {
+									"5" => {
+										println!("The game will start...");
+										println!("5");
+									},
+									"4" => {
+										println!("4");
+									},
+									"3" => {
+										println!("3");
+									},
+									"2" => {
+										println!("2");
+									},
+									"1" => {
+										println!("1");
+									},
+									_ => {}
+								}
+							}
 							"start" => {
 								break ;
 							},
