@@ -31,8 +31,14 @@ struct Score {
 	score2: i32,
 }
 
+/**
+ * Add the user to the matchmaking queue by searching a game
+ * Will automatically connect to the game when it starts
+ * 
+ * Args:
+ * 		user: User - The user
+ */
 pub fn matchmaking(user: User) {
-	// SEARCH FOR A GAME
 	let req = user.get_client().get("https://{server}/api/game/search/".replace("{server}", user.get_server().as_str()));
 	let req = req.build();
 	let res = user.get_client().execute(req.expect("ERROR WHILE EXECUTING THE REQUEST"));
@@ -64,7 +70,7 @@ pub fn matchmaking(user: User) {
 		}
 	};
 
-	socket.send(Message::Text(r#"{"message":"public"}"#.to_string()));
+	_ = socket.send(Message::Text(r#"{"message":"public"}"#.to_string()));
 	waiting_game(socket);
 }
 
@@ -77,13 +83,21 @@ pub fn create_game(user: User) {
 	
 	// PRINT THE ROOM ID
 
-	// WAIT FOR THE OTHER PLAYER TO JOIN
 
-	// START THE GAME WHEN THE OTHER PLAYER JOINED
+	// let socket = connect_ws(user.clone(), room_id.to_string());
+	// let mut socket = match socket {
+	// 	Ok(socket) => {
+	// 		socket
+	// 	},
+	// 	Err(err) => {
+	// 		return ;
+	// 	}
+	// };
+	// socket.send(Message::Text(r#"{"message":"private"}"#.to_string()));
+	// waiting_game(socket);
 }
 
 pub fn join_game(user: User) {
-	// ASK THE USER FOR THE ROOM ID
 	let mut room: String = String::new();
 	loop {
 		room.clear();
@@ -105,6 +119,9 @@ pub fn join_game(user: User) {
 		match res {
 			Ok(res) => {
 				if res.status().is_success() {
+					
+					// VERIFIER SI L'ID DE LA ROOM EST OOOOOOOOOOOOOOOOOOOOK
+
 					break;
 				} else if res.status().is_client_error() {
 					eprintln!("{}", format!("Room not found or ID invalid").red().bold());
@@ -128,15 +145,7 @@ pub fn join_game(user: User) {
 		}
 	};
 
-	// THIS IS TEMP: SEND A MESSAGE TO THE SERVER TO START THE GAME
-	match socket.send(Message::Text(r#"{"message":"start"}"#.to_string())) {
-		Ok(_) => {},
-		Err(err) => {
-			eprintln!("{}", format!("{}", err).red());
-			return ;
-		}
-	};
-
+	_ = socket.send(Message::Text(r#"{"message":"private"}"#.to_string()));
 	waiting_game(socket);
 }
 
@@ -177,7 +186,7 @@ fn connect_ws(user: User, room: String) -> Result<tungstenite::WebSocket<tungste
 }
 
 /**
- * Wait for the game to start and then called the function game(socket)
+ * Wait for the game to start, print the countdown and then called the game function
  * 
  * Args:
  * 		socket: WebSocket - The websocket connected to the game
@@ -193,24 +202,29 @@ fn waiting_game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTls
 						let json = json::parse(msg).unwrap();
 						match json["action"].as_str().unwrap() {
 							"counter" => {
-								match json["num"].as_str().unwrap() {
-									"5" => {
-										println!("The game will start...");
-										println!("5");
+								match json["num"].as_i32() {
+									Some(num) => match num {
+										5 => {
+											println!("The game will start...");
+											println!("5");
+										},
+										4 => {
+											println!("4");
+										},
+										3 => {
+											println!("3");
+										},
+										2 => {
+											println!("2");
+										},
+										1 => {
+											println!("1");
+										},
+										nu => {
+											println!("{}", nu)
+										}
 									},
-									"4" => {
-										println!("4");
-									},
-									"3" => {
-										println!("3");
-									},
-									"2" => {
-										println!("2");
-									},
-									"1" => {
-										println!("1");
-									},
-									_ => {}
+									None => {}
 								}
 							}
 							"start" => {
@@ -311,6 +325,7 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
 							}
 							break ;
 						},
+						"start" => continue,
 						_ => {
 							endwin();
 							_ = term_cursor::clear();
