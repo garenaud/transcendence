@@ -112,8 +112,9 @@ function    setupButtonListener() {
 		const email = document.getElementById('typeEmailX').value;
 		const password = document.getElementById('typePasswordX').value;
 		let csrf = getCookie("csrftoken");
+		console.log('csrf:', csrf);
 		fetch('/auth/test/', {
-			method: 'GET',
+			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
 				'X-CSRFToken': csrf,
@@ -132,7 +133,7 @@ function    setupButtonListener() {
 			console.log('Success:', data);
 			if (data['message'] == "OK") {
 				let userId = data['id'];
-				console.log('userId:', userId);
+				console.log('userId avant:', userId);
 				localStorage.setItem('userId', userId);
 				loadUser();
 				changeView('hero');

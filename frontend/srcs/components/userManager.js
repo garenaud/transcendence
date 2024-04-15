@@ -78,6 +78,7 @@ export function loadUser() {
             appState.users = users;
             //console.log('appState.users:', appState.users);
             let userId = Number(localStorage.getItem('userId'));
+            console.log('userId:', userId);
             appState.user = users.find(user => user.id === userId);
             if (!appState.user.profilePicture) {
                 console.log('je mets la photo par defaut');

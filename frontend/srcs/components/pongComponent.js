@@ -72,13 +72,10 @@ export function renderPong() {
                         <!-- pongLocalContent -->
 
                     	<div id="pongLocal" class="h-100 align-items-center d-none">
-						<h1>fuckit</h1>
-						<canvas id="background" class="canvasPong w-100 h-100"></canvas>
+						<canvas id="background"></canvas>
 						<div id="countdown"></div>
 						<div id="displayscore"></div>
 						<div id ="displayvictory"></div>
-						<h1>okokoko0kl</h1>
-						<script type="module" src="../localpong/localpong.js"></script>
 						</div>
 						
                         <!-- joinPongContent -->
@@ -97,7 +94,6 @@ export function renderPong() {
 						</div>
 						</div>
 						</div>
-						<script type="module" src="pong/javascript/pong.js"></script>
 						<script type="module" src="pong/javascript/pong_menu.js"></script>
 						`;
     const pongElement = document.createElement('div');
@@ -129,6 +125,7 @@ export function renderPong() {
             pongLocal.classList.remove('d-none');
 			var data = document.querySelector('#pongLocal').innerHTML;
 			document.querySelector('#pongLocal').innerHTML = data;
+            loadScripts();
         });
         pongElement.querySelector('#createBtn').addEventListener('click', function() {
             pongMulti.classList.add('d-none');
@@ -254,17 +251,23 @@ function changeDivContent(newContent) {
     div.innerHTML = newContent;
 }
 
-        // pongElement.querySelector('#localPongBtn').addEventListener('click', function() {
-        //     changeDivContent(pongLocal);
-        //     initPong();
-        // });
+// Pour load les scripts lorsque l'on presse le bouton
 
-        // pongElement.querySelector('#multiPongBtn').addEventListener('click', function() {
-        //     changeDivContent(pongMulti);
-        // });
+function loadScripts() {
+    // Supprime les anciens scripts si nécessaire
+    document.querySelectorAll('script[type="module"][data-pong="dynamic"]').forEach(script => script.remove());
 
-        // pongElement.querySelector('#tourPongBtn').addEventListener('click', function() {
-        //     changeDivContent('Contenu pour le mode tournoi');
-        // });
-        
-        
+    // Créer et ajouter le script localpong.js
+    const scriptLocalPong = document.createElement('script');
+    scriptLocalPong.type = 'module';
+    scriptLocalPong.src = '../localpong/localpong.js';
+    scriptLocalPong.setAttribute('data-pong', 'dynamic');  // Marqueur pour identifier les scripts chargés dynamiquement
+    document.body.appendChild(scriptLocalPong);
+
+    // Créer et ajouter le script ModelHelper.js
+    const scriptModelHelper = document.createElement('script');
+    scriptModelHelper.type = 'module';
+    scriptModelHelper.src = '../localpong/ModelHelper.js';
+    scriptModelHelper.setAttribute('data-pong', 'dynamic');
+    document.body.appendChild(scriptModelHelper);
+}

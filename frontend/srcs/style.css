@@ -1632,7 +1632,7 @@ div.fg{
 }
 
 /*-------------------------------- Pong --------------------------------*/
-.canvasPong {
+/* .canvasPong {
   margin: 0;
   display: flex;
   justify-content: center;
@@ -1640,7 +1640,7 @@ div.fg{
   height: 100vh;
   background-color: #000;
   color: #fff;
-}
+} */
 .pong-game {
   position: relative;
 }
@@ -1752,4 +1752,42 @@ animation: loadingC 1s 0.3s linear infinite;
    -ms-transition: all 0.4s ease-out;
    -o-transition: all 0.4s ease-out;
    transition: all 0.4s ease-out;
+}
+
+
+#countdown {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+	transform: translate(-50%, -50%);
+	font-size: 3em;
+	animation-name: rainbow;
+	animation-duration: 4s;
+	animation-iteration-count: infinite;
+}
+
+#displayscore {
+	position: absolute;
+	top: 10px;
+	left: 50%;
+	font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+	transform: translateX(-50%);
+	font-size: 2em;
+	z-index: 100;
+	animation-name: rainbow;
+	animation-duration: 4s;
+	animation-iteration-count: infinite;
+}
+
+#displayvictory {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+	transform: translate(-50%, -50%);
+	font-size: 3em;
+	animation-name: rainbow;
+	animation-duration: 4s;
+	animation-iteration-count: infinite;
 }
