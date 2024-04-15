@@ -85,7 +85,7 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             }
         )
 
-    async def send_messages(self):
+    async def send_counter(self):
         for num in range(6, 0, -1):
             await self.channel_layer.group_send(
                 self.room_group_name,
@@ -95,8 +95,8 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
 
 
     async def loop(self):
-        await asyncio.sleep(5)
-        await self.send_messages()
+        await asyncio.sleep(4)
+        await self.send_counter()
         await self.channel_layer.group_send(
         self.room_group_name,
         {"type": "update", "message": {'action' : 'start'}}

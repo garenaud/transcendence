@@ -13,11 +13,6 @@
 			Import map is not available in all browsers.
 			This is necessary to serve the three path so that other imports can access it. 
 		-->
-		<div id="countdown"></div>
-		<div class="container">
-			<div id="score">0 - 0</div>
-			<div id="gameID"></div>
-		</div>
 		<script type="importmap">
 			{
 				"imports": {
@@ -28,6 +23,11 @@
 		</script>
 	</head>
 	<body>
+		<div id="countdown"></div>
+		<div class="container">
+			<div id="score">0 - 0</div>
+			<div id="gameID"></div>
+		</div>
 		<!-- Canvas is necessary to hold a scene  -->
 		<canvas id="background"></canvas>
 		<script type="module" src="javascript/pong.js"></script>

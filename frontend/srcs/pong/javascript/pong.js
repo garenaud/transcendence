@@ -483,23 +483,16 @@ gameSocket.onmessage = function(e) {
 		const ball = scene.getObjectByName('Ball');
 		const PaddleLeft = scene.getObjectByName("LeftPaddle");
 		const PaddleRight = scene.getObjectByName("RightPaddle");
-		if (game_data.action == 'paddle1')
-		{
+		if (game_data.action == 'paddle1') {
 			PaddleRight.position.x = parseFloat(game_data.prx);
 			PaddleRight.position.z = parseFloat(game_data.prz);
-		}
-		else if (game_data.action == 'paddle2')
-		{
+		} else if (game_data.action == 'paddle2') {
 			PaddleLeft.position.x = parseFloat(game_data.plx);
 			PaddleLeft.position.z = parseFloat(game_data.plz);
-		}
-		else if (game_data.action == 'ball')
-		{
+		} else if (game_data.action == 'ball') {
 			ball.position.x = parseFloat(game_data.bx);
 			ball.position.z = parseFloat(game_data.bz);
-		}
-		else if (game_data.action == 'Stop')
-		{
+		} else if (game_data.action == 'Stop') {
 			sessionStorage.setItem("gameid", null);
 		} else if (game_data.action == 'score') {
 			if (game_data.scorep1 != undefined && game_data.scorep2 != undefined) {
@@ -517,6 +510,7 @@ gameSocket.onmessage = function(e) {
 		}
 	}
 };
+
 
 function update_game_data() {
 	const PaddleRightName = 'RightPaddle';
