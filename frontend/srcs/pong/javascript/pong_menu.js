@@ -17,30 +17,30 @@ function makeid(length) {
 document.getElementById('createBtn').addEventListener('click', function() {
 	gameid = makeid(4);
 	let url = '/api/game/create/' + gameid;
-	  console.log(url);
-	  fetch(url, {
-		  method: 'GET',
-		  credentials: 'same-origin' 
-	  })
-	  .then(response => response.json())
-	  .then(data => {
-		  console.log('Success:', data);
-		  if (data['message'] == "ko") {
+	console.log(url);
+	fetch(url, {
+		method: 'GET',
+		credentials: 'same-origin' 
+	})
+	.then(response => response.json())
+	.then(data => {
+		console.log('Success:', data);
+		if (data['message'] == "ko") {
 			gameid = data['id'];
 			privategame = true;
 			sessionStorage.setItem("privategame", privategame);
 			sessionStorage.setItem("gameid", gameid);
 			window.location.href = "/pong/pong.html";
-		  } else if (data['message'] == 'ok'){
-				privategame = true;
-				sessionStorage.setItem("gameid", gameid);
-				sessionStorage.setItem("privategame", privategame);
-				window.location.href = "/pong/pong.html";
-		  }
-	  })
-	  .catch((error) => {
-		  console.error('Error:', error);
-	  });
+		} else if (data['message'] == 'ok'){
+			privategame = true;
+			sessionStorage.setItem("gameid", gameid);
+			sessionStorage.setItem("privategame", privategame);
+			window.location.href = "/pong/pong.html";
+		}
+	})
+	.catch((error) => {
+		console.error('Error:', error);
+	});
   });
 
 document.getElementById('joinBtn').addEventListener('click', function() {
@@ -48,57 +48,60 @@ document.getElementById('joinBtn').addEventListener('click', function() {
 	const gameIdInput = document.getElementById('gameCodeInput');
 	gameid = gameIdInput.value.trim();
 	let url = '/api/game/' + gameid;
-	  console.log(url);
-	  fetch(url, {
-		  method: 'GET',
-		  credentials: 'same-origin' 
-	  })
-	  .then(response => response.json())
-	  .then(data => {
-		  console.log('Success:', data);
-		  if (data['message'] == "Not found") {
-			errorLink.textContent = `La partie ${gameid} n'existe pas, veuillez reessayer`;
-		  } else{
-			privategame = true;
-			sessionStorage.setItem("privategame", privategame);
-			sessionStorage.setItem("gameid", gameid);
-			window.location.href = "/pong/pong.html";
-		  }
-	  })
-	  .catch((error) => {
-		  console.error('Error:', error);
-	  });
-  });
+	if (!isNaN(gameid) && gameid > 0 && gameid <= 9999) {	
+		console.log(url);
+		fetch(url, {
+			method: 'GET',
+			credentials: 'same-origin' 
+		})
+		.then(response => response.json())
+		.then(data => {
+			console.log('Success:', data);
+			if (data['message'] == "Not found") {
+				errorLink.textContent = `La partie ${gameid} n'existe pas, veuillez reessayer`;
+			} else{
+				privategame = true;
+				sessionStorage.setItem("privategame", privategame);
+				sessionStorage.setItem("gameid", gameid);
+				window.location.href = "/pong/pong.html";
+			}
+		})
+		.catch((error) => {
+			console.error('Error:', error);
+		});
+	} else {
+		errorLink.textContent = `La partie ${gameid} n'existe pas, veuillez reessayer`;
+	}
+});
 
 
 document.getElementById('searchBtn').addEventListener('click', function() {
 	let url = '/api/game/search/';
 	console.log(url);
 	document.getElementsByTagName('body')[0].innerHTML = `
-	<div class="container">
-	  <div class="load-3">
-		  <p id="loading">[SEARCHING FOR OPPONENT]</p>
-		  <div class="line"></div>
-		  <div class="line"></div>
-		  <div class="line"></div>
-	  </div>
-	</div>
-  `;
-
-	  fetch(url, {
-		  method: 'GET',
-		  credentials: 'same-origin' 
-	  })
-	  .then(response => response.json())
-	  .then(data => {
-		  console.log('Success:', data);
-		  if (data['message'] == "ok") {
+		<div class="container">
+		<div class="load-3">
+			<p id="loading">[SEARCHING FOR OPPONENT]</p>
+			<div class="line"></div>
+			<div class="line"></div>
+			<div class="line"></div>
+		</div>
+		</div>
+	`;
+	fetch(url, {
+		method: 'GET',
+		credentials: 'same-origin' 
+	})
+	.then(response => response.json())
+	.then(data => {
+		console.log('Success:', data);
+		if (data['message'] == "ok") {
 			gameid = data['id'];
 			privategame = false;
 			sessionStorage.setItem("privategame", privategame);
 			sessionStorage.setItem("gameid", gameid);
 			window.location.href = "/pong/pong.html";
-		  } else if (data['message'] == 'ko'){
+		} else if (data['message'] == 'ko'){
 			gameid = data['id'];
 			privategame = false;
 			sessionStorage.setItem("privategame", privategame);
@@ -106,11 +109,11 @@ document.getElementById('searchBtn').addEventListener('click', function() {
 			window.location.href = "/pong/pong.html";
 			
 			console.log("L'homme methode GET") // IMPORTANT NE PAS ENLEVER!!!
-		  }
-	  })
-	  .catch((error) => {
-		  console.error('Error:', error);
-	  });
+		}
+	})
+	.catch((error) => {
+		console.error('Error:', error);
+	});
   });
 
 

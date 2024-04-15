@@ -91,7 +91,7 @@ def get_game_list(request):
 @api_view(['GET'])
 def get_game_by_id(request, gameid):
 	if (request.method == 'GET'):
-		game = Games.objects.filter(room_id=gameid).count()
+		game = Games.objects.filter(room_id=gameid, private=True).count()
 		if game == 0:
 			return Response({"message" : "Not found"}, status=status.HTTP_404_NOT_FOUND)
 		else:
@@ -108,7 +108,7 @@ def get_game_by_id(request, gameid):
 @api_view(['GET'])
 def create_game(request, gameid):
 	if request.method == 'GET':
-		game = Games.objects.filter(room_id=gameid).count()
+		game = Games.objects.filter(room_id=gameid, finished=False).count()
 		if game == 0:
 			return Response({"message" : "ok"})
 		else:

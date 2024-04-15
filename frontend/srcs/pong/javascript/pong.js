@@ -57,7 +57,7 @@ function makeid(length) {
 
 if (gameid == null)
 {
-	console.log("null");
+	//console.log("null");
 	gameSocket = new WebSocket(
 	'wss://'
 	+ window.location.host
@@ -70,7 +70,7 @@ if (gameid == null)
 }
 else
 {
-	console.log("pas null");
+	//console.log("pas null");
 	gameSocket = new WebSocket(
 		'wss://'
 		+ window.location.host
@@ -82,9 +82,9 @@ else
 		);
 }
 
-console.log(privategame);
+//console.log(privategame);
 
-console.log(`ID IS ${gameid}`);
+//console.log(`ID IS ${gameid}`);
 
 function init() {
 	// Renderer
@@ -449,7 +449,7 @@ function handleBackground() {
 
 gameSocket.onmessage = function(e) {
 	game_data = JSON.parse(e.data);
-	console.log(game_data.action);
+	//console.log(game_data.action);
 	if (game_data.action == "private")
 	{
 	if (privategame == 'true')
