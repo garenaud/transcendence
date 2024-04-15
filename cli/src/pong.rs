@@ -64,6 +64,7 @@ pub fn matchmaking(user: User) {
 		}
 	};
 
+	socket.send(Message::Text(r#"{"message":"public"}"#.to_string()));
 	waiting_game(socket);
 }
 
