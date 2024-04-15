@@ -32,7 +32,7 @@ pub fn menu(user: User) {
 			"3" => {
 				let _ = pong::join_game(user.clone());
 			},
-			"4" => {
+			"4" | "q" => {
 				break 'menu;
 			},
 			_ => {

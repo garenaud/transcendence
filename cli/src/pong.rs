@@ -60,7 +60,6 @@ pub fn matchmaking(user: User)
 			socket
 		},
 		Err(err) => {
-			eprintln!("{}", format!("{:#?}", err).red());
 			return ;
 		}
 	};
@@ -151,12 +150,12 @@ pub fn join_game(user: User) {
 }
 
 fn connect_ws(user: User, room: String) -> Result<tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<std::net::TcpStream>>, Box<dyn std::error::Error>> {
-	let mut socket = match connect(("ws://{server}/ws/game/{room_id}/").replace("{server}", user.get_server().as_str()).replace("{room_id}", room.as_str())) {
+	let mut socket = match connect(("wss://{server}/ws/game/{room_id}/").replace("{server}", user.get_server().as_str()).replace("{room_id}", room.as_str())).danger_connect {
 		Ok((socket, res)) => {
 			return Ok(socket);
 		},
 		Err(err) => {
-			eprintln!("{}", format!("{:#?}", err).red());
+			eprintln!("{}", format!("{:#?}", err).red().bold());
 			return Err(Box::new(err));
 		}
 	};
