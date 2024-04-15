@@ -447,7 +447,6 @@ function anim() {
     if (currentNum >= 0) {
         addClassDelayed(document.getElementById("countdown"), "puffer", 600);
         currentNum--;
-        console.log(currentNum);
         if (currentNum > 0) {
             document.getElementById("countdown").innerHTML = currentNum;
         } else if (currentNum == 0) {
