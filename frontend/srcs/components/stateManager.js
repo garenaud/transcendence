@@ -24,6 +24,7 @@ export let appState = {
 function renderDiv(components, className) {
     const div = document.createElement('div');
     div.classList.add(className);
+    div.innerHTML = '';
     for (const component of components) {
         div.appendChild(component);
     }
@@ -36,8 +37,12 @@ export function changeView(newView) {
     if (savedState) {
         appState = JSON.parse(savedState);
     }
+    if (appState.currentView !== newView) {
+        appState.renderedComponents = {};
+    }
+    //appState.renderedComponents = {};
     location.hash = newView;
-    appState.currentView = newView;
+    //appState.currentView = newView;
     localStorage.setItem('appState', JSON.stringify(appState));
     /* renderApp(); */
 }
@@ -47,6 +52,12 @@ window.addEventListener("hashchange", function() {
     console.log('hashchange event triggered');
     appState.currentView = location.hash.substring(1);
     renderApp();
+});
+
+window.addEventListener("popstate", function() {
+    console.log('popstate event triggered');
+    appState.currentView = location.hash.substring(1);
+    //renderApp();
 });
 
 export function getCurrentView() {
@@ -64,13 +75,18 @@ export async function renderApp() {
         appState.currentView = ['login', 'hero', 'game', 'chat'].includes(view) ? view : 'login';
         appState.language = 'fr';
     }
+    appState.currentView = location.hash.substring(1);
+    document.body.innerHTML = '';
     if (!appState.renderedComponents) {
         appState.renderedComponents = {};
     }
-    document.body.innerHTML = '';
     switch(appState.currentView) {
         case 'login':
-            renderLogin();
+            if (!appState.renderedComponents.login) {
+                await LanguageBtn();
+                renderLogin();
+                appState.renderedComponents.login = true;
+            }
             break;
         default:
             if (!appState.user) {
@@ -79,23 +95,29 @@ export async function renderApp() {
             }
             switch(appState.currentView) {
                 case 'hero':
-                    await LanguageBtn();
-                    await renderHero();
-                    renderNavbar(appState.user);
+                    if (!appState.renderedComponents.hero || !appState.renderedComponents.navbar) {
+                        await LanguageBtn();
+                        await renderHero();
+                        renderNavbar(appState.user);
+                        appState.renderedComponents.hero = true;
+                        appState.renderedComponents.navbar = true;
+                    }
                     break;
                 case 'game':
-                    const game = await renderPong();
-                    const game2 = await renderRun();
-                    const roulette = await renderRoulette();
-                    const BlackJack = await renderBlackJack();
-                    const test = await renderBlackJack();
-                    const test2 = await renderRoulette();
-                    const test3 = await renderRoulette();
-                    await renderDiv([roulette, BlackJack, test, test2, game, game2], 'row');
-                    await LanguageBtn();
-                    //await renderDiv([game, game2], 'row');
-                    //console.log('appState.user game:', getUser());
-                    renderNavbar(appState.user);
+                    if (!appState.renderedComponents.game || !appState.renderedComponents.navbar) {
+                        const game = await renderPong();
+                        const game2 = await renderRun();
+                        const roulette = await renderRoulette();
+                        const BlackJack = await renderBlackJack();
+                        const test = await renderBlackJack();
+                        const test2 = await renderRoulette();
+                        const test3 = await renderRoulette();
+                        await renderDiv([roulette, BlackJack, test, test2, game, game2], 'row');
+                        await LanguageBtn();
+                        renderNavbar(appState.user);
+                        appState.renderedComponents.game = true;
+                        appState.renderedComponents.navbar = true;
+                    }
                     break;
                 case 'chat':
                     const chat = await renderChat();
