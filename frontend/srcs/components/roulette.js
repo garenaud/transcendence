@@ -496,12 +496,13 @@ export function spinWheel(ballAnim) {
   const wheel = rouletteElement.querySelector("#rouletteWheel");
 
   //document.body.appendChild(rouletteElement);
-  rouletteElement.querySelector('#playBtn').addEventListener('click', () => setupRoulette(rouletteElement));
+  rouletteElement.querySelector('#playBtn').addEventListener('click', () => loadRouletteScripts());
 
   return rouletteElement;
 }
   
   export function setupRoulette(rouletteElement) {
+    console.log("setupRoulette");
     const ballAnim = rouletteElement.querySelector(".ballAnim");
     spinWheel(ballAnim);
         let nums = ["00", 27,10,25,29,12,8,19,31,18,6,21,33,16,4,23,35,14,2,0,28,9,26,30,11,7,20,32,17,5,22,34,15,3,24,36,13,1];
@@ -587,5 +588,12 @@ export function spinWheel(ballAnim) {
           setupRoulette(rouletteElement);
         }); */
       } 
+      function loadRouletteScripts() {
+        const scriptRoulette = document.createElement('script');
+        scriptRoulette.type = 'module';
+        scriptRoulette.src = '../rouletteTool.js';  // Assurez-vous que le chemin vers le script est correct
+        scriptRoulette.setAttribute('data-roulette', 'dynamic');  // Marqueur pour identifier les scripts chargés dynamiquement
+        document.body.appendChild(scriptRoulette);
+    }
       
   
