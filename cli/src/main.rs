@@ -3,20 +3,20 @@ mod menu;
 mod user;
 mod pong;
 
-use std::io;
 use std::io::Write;
 use std::error::Error;
-use reqwest::blocking::Client;
 use colored::*;
 
+/**
+ * Ask for the server, ping it to ensure it's up, then login the user and display the menu
+ * 
+ */
 fn main() {
 
 	println!("{}", format!("Welcome to T_BOOL TRANSCENDENCE !").blue());
 	
-	let log_client: Client;
-	let log_csrf: String;
 	let mut max_try = 3;
-
+	// Ask for the server and try to ping it
 	let srv = loop {
 		let mut srv: String = String::new();
 		print!("Server: ");
@@ -69,6 +69,7 @@ fn main() {
 		}
 	};
 
+	// Login
 	let user: user::User;
 	loop {
 		match login::login(srv.clone()) {

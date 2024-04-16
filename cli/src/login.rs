@@ -1,13 +1,8 @@
 use std::io::Write;
 use std::time::Duration;
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 use pwhash::sha256_crypt;
-use reqwest::{
-	cookie::{Cookie, CookieStore, Jar},
-	Url,
-    header::HeaderValue,
-    blocking::Client,
-};
+use reqwest::cookie::Jar;
 use colored::Colorize;
 
 use crate::user::User;
@@ -62,7 +57,7 @@ fn connection(srv: String, login: String, password: String) -> Option<User> {
 		Ok(res) => {
 			if res.status().is_success() {
 				if res.headers().get("set-cookie").is_none() {
-					eprintln!("No CSRF-Token in the header");
+					eprintln!("{}", format!("No CSRF-Token in the header").red());
 					return None;
 				}
 				let csrf = res.headers().get("set-cookie").unwrap();
@@ -72,7 +67,7 @@ fn connection(srv: String, login: String, password: String) -> Option<User> {
 			}
 		},
 		Err(err) => {
-			eprintln!("Error in respond: {:#?}", err);
+			eprintln!("{}", format!("Error in respond: {:#?}", err).red());
 			return None;
 		}
 	};
@@ -100,11 +95,11 @@ fn connection(srv: String, login: String, password: String) -> Option<User> {
 			let res = match res {
 				Some(res) => res,
 				None => {
-					eprintln!("Error in respond: {:#?}", res);
+					eprintln!("{}", format!("Error in respond: {:#?}", res).red());
 					return None;
 				}
 			};
-			let res = match json::parse(&res) {
+			match json::parse(&res) {
 				Ok(res) => {
 					if res["message"] == -1 {
 						return None;
@@ -115,7 +110,7 @@ fn connection(srv: String, login: String, password: String) -> Option<User> {
 					eprintln!("Error in respond: {:#?}", err);
 					return None;
 				}
-			};
+			}
 		},
 		Err(err) => {
 			eprintln!("Error in respond: {:#?}", err);

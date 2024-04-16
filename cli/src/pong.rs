@@ -1,11 +1,8 @@
 use ncurses::*;
 use colored::Colorize;
-use reqwest::blocking::*;
-use tungstenite::{connect, Message, WebSocket};
+use tungstenite::Message;
 use tungstenite::Connector::NativeTls;
-use url::Url;
-use std::io::{stdout, Write};
-use std::thread;
+use std::io::Write;
 use std::thread::sleep;
 use std::time::Duration;
 use crate::user::User;
@@ -63,17 +60,18 @@ pub fn matchmaking(user: User) {
 	};
 
 	// Join the room provide by the server
-	let socket = connect_ws(user.clone(), room_id.to_string());
-	let mut socket = match socket {
+	let mut socket = match connect_ws(user.clone(), room_id.to_string()) {
 		Ok(socket) => {
 			socket
 		},
 		Err(err) => {
+			eprintln!("{}", format!("{:#?}", err).red());
 			return ;
 		}
 	};
 
 	_ = socket.send(Message::Text(r#"{"message":"public"}"#.to_string()));
+	println!("Waiting for the game to start...");
 	waiting_game(socket);
 }
 
@@ -84,28 +82,43 @@ pub fn matchmaking(user: User) {
  * 		user: User - The user
  */
 pub fn create_game(user: User) {
-	println!("Create a game !!!!!!!!!!!");
-	// CREATE A ROOM ON THE SERVER
 
-	// api/game/create/ -> return {"message": "ok"} == Id choisi est valide
-	//					-> return {"message": "ko", "id": "NEW_ID"} == Id choisi est invalide donc server en a choisi un autre
-	
-	// PRINT THE ROOM ID
+	// Ask the server for a room
+	let req = user.get_client().get("https://{server}/api/game/create/".replace("{server}", user.get_server().as_str()));
+	let req = req.build();
+	let res = user.get_client().execute(req.expect("ERROR WHILE EXECUTING THE REQUEST"));
+	let room_id = match res {
+		Ok(res) => {
+			if res.status().is_success() {
+				let body = res.text().expect("ERROR WHILE READING THE BODY");
+				let json = json::parse(body.as_str()).unwrap();
+				let room_id = &json["id"];
+				room_id.to_string()
+			} else {
+				eprintln!("{}", format!("Error while creating a game").red().bold());
+				return ;
+			}
+		},
+		Err(err) => {
+			eprintln!("{}", format!("{}", err).red());
+			return ;
+		}
+	};
+	println!("Your room ID is: {}", room_id);
 
-
-
-	// // Connect to the room
-	// let socket = connect_ws(user.clone(), room_id.to_string());
-	// let mut socket = match socket {
-	// 	Ok(socket) => {
-	// 		socket
-	// 	},
-	// 	Err(err) => {
-	// 		return ;
-	// 	}
-	// };
-	// _ = socket.send(Message::Text(r#"{"message":"private"}"#.to_string()));
-	// waiting_game(socket);
+	// Connect to the room
+	let mut socket = match connect_ws(user.clone(), room_id.to_string()) {
+		Ok(socket) => {
+			socket
+		},
+		Err(err) => {
+			eprintln!("{}", format!("{:#?}", err).red());
+			return ;
+		}
+	};
+	_ = socket.send(Message::Text(r#"{"message":"private"}"#.to_string()));
+	println!("Waiting for the other player...");
+	waiting_game(socket);
 }
 
 /**
@@ -155,8 +168,7 @@ pub fn join_game(user: User) {
 	}
 
 	// Connect to the room
-	let socket = connect_ws(user.clone(), room);
-	let mut socket = match socket {
+	let mut socket = match connect_ws(user.clone(), room) {
 		Ok(socket) => socket,
 		Err(err) => {
 			eprintln!("{}", format!("{:#?}", err).red());
@@ -165,6 +177,7 @@ pub fn join_game(user: User) {
 	};
 
 	_ = socket.send(Message::Text(r#"{"message":"private"}"#.to_string()));
+	println!("Waiting for the game to start...");
 	waiting_game(socket);
 }
 
@@ -197,7 +210,7 @@ fn connect_ws(user: User, room: String) -> Result<tungstenite::WebSocket<tungste
 	
 	// Open the websocket
 	match tungstenite::client_tls_with_config(("wss://{server}/ws/game/{room_id}/").replace("{server}", user.get_server().as_str()).replace("{room_id}", room.as_str()), stream, None, Some(NativeTls(connector))) {
-		Ok((socket, res)) => {
+		Ok((socket, _res)) => {
 			return Ok(socket);
 		},
 		Err(err) => {
@@ -214,7 +227,6 @@ fn connect_ws(user: User, room: String) -> Result<tungstenite::WebSocket<tungste
  * 		socket: WebSocket - The websocket connected to the game
  */
 fn waiting_game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<std::net::TcpStream>>) {
-	println!("Waiting for the game to start...");
 	loop {
 		match socket.read() {
 			Ok(msg) => {

@@ -1,12 +1,15 @@
 use std::io;
 use std::io::Write;
-use std::error::Error;
-use reqwest::blocking::Client;
-use colored::Colorize;
 
 use crate::user::User;
 use crate::pong;	
 
+/**
+ * Display the menu and handle the user's choice
+ * 
+ * Args:
+ * 		user: User - The user that is currently logged in
+ */
 pub fn menu(user: User) {
 	'menu: loop {
 		let mut choice = String::new();
@@ -40,15 +43,4 @@ pub fn menu(user: User) {
 			}
 		}
 	}
-
-
-
-
-
-
-
-
-
-
-	// pong::game();
 }
