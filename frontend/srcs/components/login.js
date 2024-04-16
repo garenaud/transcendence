@@ -188,17 +188,37 @@ function    setupButtonListener() {
         credentials: 'same-origin' 
     })
 		.then(response => {
-			const contentType = response.headers.get('content-type');
+			const contentType = response.headers.get("content-type");
 			if (!response.ok) {
-				throw new Error(`HTTP error! status: ${response.status}`);
-			} 
+			return response.json().then(data => {
+				console.log('Error data:', data);
+				let errorMessages = [];
+				if (data.errors) {
+					for (let key in data.errors) {
+						console.log(`Erreur dans ${key}: ${data.errors[key]}`);
+						let errortmp = `${data.errors[key]}`
+						errorMessages.push(errortmp);
+					}
+				}
+/* 				for (let key in data) {
+					if (data.hasOwnProperty(key)) {
+						console.log(`Erreur avec dans la boucle ${key}: ${data[key]}`);
+						let errortmp = `${data.errors[key]}`
+						errorMessages.push(errortmp);  // Ajoutez chaque message d'erreur au tableau
+					}
+				} */
+				let errorMessage = errorMessages.join(', ');
+				console.log("errormessage = ", errorMessage);  // Créez une seule chaîne à partir du tableau
+				throw new Error(`${errorMessage}`);
+			});
+			}
 			else if (!contentType || !contentType.includes('application/json')) {
 				throw new TypeError("Oops, we haven't got JSON!");
 			}
 			return response.json();
 		})
 		.then(data => {
-			console.log('Signup Success:', data);
+			//console.log('Signup Success:', data);
 			if (data.message === "Error") {
 				console.log('Signup Error:', data.errors);
 				document.getElementById('error-message').textContent = data.errors.join(', ');
@@ -208,6 +228,7 @@ function    setupButtonListener() {
 			{
 				console.log('Signup Success:', data);
 				document.getElementById('success-message').textContent = "Your account has been created successfully";
+				document.getElementById('error-message').style.display = 'none';
 				document.getElementById('success-message').style.display = 'block';
 				setTimeout(function() {
 					const loginElement = document.querySelector('.login-form');
@@ -218,8 +239,11 @@ function    setupButtonListener() {
 			}
 		})
 		.catch((error) => {
+			console.log('error dans le catch de signup:', error);
+			console.log('error message:', error.message);
 			console.error('Error:', error);
 			document.getElementById('error-message').textContent = error.message;
+			document.getElementById('error-message').style.display = 'block';
 		});
 	});
 }
