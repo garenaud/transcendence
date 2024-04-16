@@ -35,7 +35,7 @@ export function renderLogin() {
 		  </div>
 
 		  <div>
-		  <p class="mb-0"><span data-lang-key='noAccount'>Don't have an account?</span> <a href="#!" id="signup-btn-form" class="text-white-50 fw-bold">Sign Up</a></p>
+		  <p class="mb-0"><span data-lang-key='noAccount'>Don't have an account?</span> <a href="#login" id="signup-btn-form" class="text-white-50 fw-bold">Sign Up</a></p>
 			</p>
 		  </div>
 

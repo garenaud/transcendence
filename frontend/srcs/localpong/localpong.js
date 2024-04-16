@@ -29,6 +29,7 @@ let PaddleRight;
 let PaddleLeft;
 let ball;
 let ballVelocity;
+let finished = false;
 
 const KeyState = {
 	KeyW: false,
@@ -43,7 +44,7 @@ function displayvictory() {
     } else if (scoreRight === finalScore) {
 		displayvictoryElement.textContent = "Right player won !";
     }
-	return ;
+	finished = true;
 }
 
 function countdown() {
@@ -106,6 +107,7 @@ function init() {
 		// Animation loop
 		countdown();
 		animate();
+		return;
 }
 
 function handleText() {
@@ -348,6 +350,10 @@ function animate() {
 	controls.update();
 	composer.render(scene, camera);
 	requestAnimationFrame(animate);
+	if (finished == true)
+	{
+		return ;
+	}
 }
 
 document.addEventListener('keydown', handleKeyDown);
@@ -355,3 +361,4 @@ document.addEventListener('keyup', handleKeyUp);
 
 // Appel de la fonction d'initialisation
 init();
+console.log("return 2.0");

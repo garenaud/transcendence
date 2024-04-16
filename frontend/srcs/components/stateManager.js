@@ -32,6 +32,10 @@ function renderDiv(components, className) {
 
 // Fonction pour changer la vue actuelle de l'application
 export function changeView(newView) {
+    const savedState = localStorage.getItem('appState');
+    if (savedState) {
+        appState = JSON.parse(savedState);
+    }
     location.hash = newView;
     appState.currentView = newView;
     localStorage.setItem('appState', JSON.stringify(appState));
@@ -40,6 +44,7 @@ export function changeView(newView) {
 
 // Écouteur d'événement pour changer la vue lorsque l'URL change (rajoute le # à l'URL lorsqu'on change de vue)
 window.addEventListener("hashchange", function() {
+    console.log('hashchange event triggered');
     appState.currentView = location.hash.substring(1);
     renderApp();
 });
@@ -102,6 +107,3 @@ export async function renderApp() {
     }
 }
 renderApp();
- /*loadUser().then(() => {
-    renderApp();
-}); */
