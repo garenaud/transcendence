@@ -67,6 +67,7 @@ function displayScore() {
         console.error('displayScoreElement is not defined');
     }
 }
+
 function init() {
 	// Renderer
 	renderer = new THREE.WebGLRenderer({
@@ -107,7 +108,6 @@ function init() {
 		// Animation loop
 		countdown();
 		animate();
-		return;
 }
 
 function handleText() {
@@ -285,7 +285,7 @@ function handlePaddleCollision() {
 			isColliding = false;
 	}
 
-const finalScore = 5;
+const finalScore = 1;
 	
 function handleWallColision() {
 		if (ball.position.z > ballLimit || ball.position.z < -ballLimit) {
@@ -341,6 +341,8 @@ function handleBackground() {
     scene.background = color;
 }
 
+let animationId;
+
 function animate() {
 	handlePaddleLeft();
 	handlePaddleRight();
@@ -349,11 +351,13 @@ function animate() {
 		updateBall();
 	controls.update();
 	composer.render(scene, camera);
-	requestAnimationFrame(animate);
+	animationId = requestAnimationFrame(animate);
 	if (finished == true)
-	{
-		return ;
-	}
+		stopAnimation();
+}
+
+function stopAnimation() {
+	cancelAnimationFrame(animationId);
 }
 
 document.addEventListener('keydown', handleKeyDown);
@@ -361,4 +365,3 @@ document.addEventListener('keyup', handleKeyUp);
 
 // Appel de la fonction d'initialisation
 init();
-console.log("return 2.0");
