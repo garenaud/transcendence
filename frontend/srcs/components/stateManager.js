@@ -66,6 +66,11 @@ export function getCurrentView() {
 
 // Fonction principale pour rendre l'application en fonction de l'état actuel
 export async function renderApp() {
+    if (!location.hash) {
+        location.hash = '#login';
+        await renderApp();
+        return;
+    }
     const savedState = localStorage.getItem('appState');
     if (savedState) {
         appState = JSON.parse(savedState);
@@ -75,7 +80,7 @@ export async function renderApp() {
         appState.currentView = ['login', 'hero', 'game', 'chat'].includes(view) ? view : 'login';
         appState.language = 'fr';
     }
-    appState.currentView = location.hash.substring(1);
+    appState.currentView = location.hash.substring(1) || 'login';
     document.body.innerHTML = '';
     if (!appState.renderedComponents) {
         appState.renderedComponents = {};
