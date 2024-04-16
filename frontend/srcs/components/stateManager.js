@@ -92,6 +92,10 @@ export async function renderApp() {
                 renderLogin();
                 appState.renderedComponents.login = true;
             }
+            else {
+                await LanguageBtn();
+                renderLogin();
+            }
             break;
         default:
             if (!appState.user) {
