@@ -108,12 +108,13 @@ export function renderLogin() {
 }
 
 function    setupButtonListener() {
-	document.getElementById('loginBtn').addEventListener('click', function() {
+	document.getElementById('loginBtn').addEventListener('click', function(event) {
+		event.preventDefault();
 		const email = document.getElementById('typeEmailX').value;
 		const password = document.getElementById('typePasswordX').value;
 		let csrf = getCookie("csrftoken");
 		console.log('csrf:', csrf);
-		fetch('/auth/test/', {
+		fetch('auth/test/', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -163,28 +164,29 @@ function    setupButtonListener() {
 
 	document.getElementById('signupBtn').addEventListener('click', function() {
 		const username = document.getElementById('signupUsername').value;
-		const firstName = document.getElementById('signupFirstName').value;
-		const lastName = document.getElementById('signupLastName').value;
-		const email = document.getElementById('signupEmail').value;
-		const password1 = document.getElementById('signupPassword1').value;
-		const password2 = document.getElementById('signupPassword2').value;
-		fetch('auth/register/', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/x-www-form-urlencoded',
-				'X-CSRFToken': getCookie("csrftoken"),
-			},
-			body: new URLSearchParams({
-				'username': username,
-				'first_name': firstName,
-				'last_name': lastName,
-				'email': email,
-				'password1': password1,
-				'password2': password2,
-				'csrfmiddlewaretoken': getCookie("csrftoken"),
-			}),
-			credentials: 'same-origin' 
-		})
+    const firstName = document.getElementById('signupFirstName').value;
+    const lastName = document.getElementById('signupLastName').value;
+    const email = document.getElementById('signupEmail').value;
+    const password1 = document.getElementById('signupPassword1').value;
+    const password2 = document.getElementById('signupPassword2').value;
+
+    let formData = new FormData();
+    formData.append('username', username);
+    formData.append('first_name', firstName);
+    formData.append('last_name', lastName);
+    formData.append('email', email);
+    formData.append('password1', password1);
+    formData.append('password2', password2);
+    formData.append('csrfmiddlewaretoken', getCookie("csrftoken"));
+	console.log('csrf signup:', getCookie("csrftoken"));
+    fetch('auth/register/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie("csrftoken"),
+        },
+        body: formData,
+        credentials: 'same-origin' 
+    })
 		.then(response => {
 			const contentType = response.headers.get('content-type');
 			if (!response.ok) {
@@ -206,8 +208,13 @@ function    setupButtonListener() {
 			{
 				console.log('Signup Success:', data);
 				document.getElementById('success-message').textContent = "Your account has been created successfully";
-				document.getElementById('error-message').style.display = 'block';
-				changeView('hero');
+				document.getElementById('success-message').style.display = 'block';
+				setTimeout(function() {
+					const loginElement = document.querySelector('.login-form');
+					const signupElement = document.querySelector('.signup');
+					loginElement.style.display = 'block';
+					signupElement.style.display = 'none';
+				}, 2000);
 			}
 		})
 		.catch((error) => {
