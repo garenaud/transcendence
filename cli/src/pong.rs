@@ -16,11 +16,14 @@ const PADDLE_HEIGHT: f64 = 6.5;
 struct Paddle {
 	x: f64,
 	y: f64,
+	old_y: f64
 }
 
 struct Ball {
 	x: f64,
 	y: f64,
+	old_x: f64,
+	old_y: f64
 }
 
 struct Score {
@@ -117,7 +120,7 @@ pub fn create_game(user: User) {
 		}
 	};
 	_ = socket.send(Message::Text(r#"{"message":"private"}"#.to_string()));
-	println!("Waiting for the other player...");
+	println!("Waiting for  the other player...");
 	waiting_game(socket);
 }
 
@@ -289,9 +292,9 @@ fn waiting_game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTls
 fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<std::net::TcpStream>>) {
 	let _ = clearscreen::clear();
 
-	let mut paddle_l = Paddle { x: 0.0, y: 0.0 };
-	let mut paddle_r = Paddle { x: 0.0, y: 0.0 };
-	let mut ball = Ball { x: 0.0, y: 0.0 };
+	let mut paddle_l = Paddle { x: 0.0, y: 0.0, old_y: 0.0 };
+	let mut paddle_r = Paddle { x: 0.0, y: 0.0, old_y: 0.0 };
+	let mut ball = Ball { x: 0.0, y: 0.0, old_x: 0.0, old_y: 0.0};
 	let mut score = Score { score1: 0, score2: 0 };
 	let mut term: Console;
 	if let Some((w, h)) = term_size::dimensions() {
@@ -309,11 +312,12 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
 
 	// Init ncurses to get the user's input
 	initscr();
-	raw();
 	keypad(stdscr(), true);
+	cbreak();
 	noecho();
-	timeout(0);
-
+	nodelay(stdscr(), true);
+	curs_set(CURSOR_VISIBILITY::CURSOR_INVISIBLE);
+	
 	// game loop
 	loop {
 		sleep(Duration::from_millis(5));
@@ -326,19 +330,27 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
 					let json = json::parse(msg).unwrap();
 					match json["action"].as_str().unwrap() {
 						"game" => {
+							ball.old_x = ball.x;
+							ball.old_y = ball.y;
 							ball.x = (json["bx"].as_f64().unwrap() + 18.0) / 36.0 * term.width;
 							ball.y = (json["bz"].as_f64().unwrap() + 9.5) / 19.0 * term.height;
+							paddle_l.old_y = paddle_l.y;
+							paddle_r.old_y = paddle_r.y;
 							paddle_l.y = (json["plz"].as_f64().unwrap() + 9.5) / 19.0 * term.height - (PADDLE_HEIGHT / 2.0);
 							paddle_r.y = (json["prz"].as_f64().unwrap() + 9.5) / 19.0 * term.height - (PADDLE_HEIGHT / 2.0);
 						},
 						"ball" => {
+							ball.old_x = ball.x;
+							ball.old_y = ball.y;
 							ball.x = (json["bx"].as_f64().unwrap() + 18.0) / 36.0 * term.width;
 							ball.y = (json["bz"].as_f64().unwrap() + 9.5) / 19.0 * term.height;
 						},
 						"paddle1" => { // RIGHT ONE
+							paddle_r.old_y = paddle_r.y;
 							paddle_r.y = (json["prz"].as_f64().unwrap() + 9.5) / 19.0 * term.height - (PADDLE_HEIGHT / 2.0);
 						},
 						"paddle2" => { // LEFT ONE
+							paddle_l.old_y = paddle_l.y;
 							paddle_l.y = (json["plz"].as_f64().unwrap() + 9.5) / 19.0 * term.height - (PADDLE_HEIGHT / 2.0);
 						},
 						"score" => {
@@ -395,7 +407,7 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
 		match getch() {
 			27 => {
 				endwin();
-				let _ = clearscreen::clear();
+				let _ = clear();
 				break;
 			},
 			ch => {
@@ -426,25 +438,28 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
  * 		score: &Score - The score
  */
 fn render(term: &Console, paddle_l: &Paddle, paddle_r: &Paddle, ball: &Ball, score: &Score) {
-	match term_cursor::clear() {
-		Ok(_) => {
-			// Print the score
-			_ = term_cursor::set_pos(((term.width / 2.0 - 3.0) as i32).try_into().unwrap(), 1);
-			println!("{} - {}", score.score1, score.score2);
-			_ = term_cursor::set_pos(0, 2);
-			for _ in 0..term.width as i32 {
-				print!("-");
-			}
-			println!();
-			print_paddle(&paddle_l);
-			print_paddle(&paddle_r);
-			print_ball(&ball);
-		},
-		Err(err) => {
-			eprintln!("{:?}", err);
-			return ;
-		}
-	}
+
+	// // Print the score
+	// _ = term_cursor::set_pos(((term.width / 2.0 - 3.0) as i32).try_into().unwrap(), 1);
+	// println!("{} - {}", score.score1, score.score2);
+	// _ = term_cursor::set_pos(0, 2);
+	// for _ in 0..term.width as i32 {
+	// 	print!("-");
+	// }
+	// println!();
+	// print_paddle(&paddle_l);
+	// print_paddle(&paddle_r);
+	// erase_ball(&old_ball);
+	// print_ball(&ball);
+	// refresh();
+
+	mvaddstr(0, ((term.width / 2.0 - 3.0) as i32).try_into().unwrap(), &format!("{} - {}", score.score1, score.score2));
+	mvaddstr(1, 0, &"-".repeat(term.width as usize));
+
+ 	print_paddle(&paddle_l);
+	print_paddle(&paddle_r);
+	print_ball(&ball);
+	refresh();
 }
 
 /**
@@ -454,13 +469,20 @@ fn render(term: &Console, paddle_l: &Paddle, paddle_r: &Paddle, ball: &Ball, sco
  * 		paddle: &Paddle - Ref to paddle struct to print
  */
 fn print_paddle(paddle: &Paddle) {
-	let x = paddle.x as i32;
-	let y = paddle.y as i32;
+	// let x = paddle.x as i32;
+	// let y = paddle.y as i32;
+	// for i in 0..PADDLE_HEIGHT as i32 {
+	// 	_ = term_cursor::set_pos(x, y + i + 2);
+	// 	print!("|");
+	// }
+	// println!();
+
 	for i in 0..PADDLE_HEIGHT as i32 {
-		_ = term_cursor::set_pos(x, y + i + 2);
-		print!("|");
+		mvaddch((paddle.old_y + i as f64) as i32, paddle.x as i32, ' ' as u32);
 	}
-	println!();
+	for i in 0..PADDLE_HEIGHT as i32 {
+		mvaddch((paddle.y + i as f64) as i32, paddle.x as i32, '|' as u32);
+	}
 }
 
 /**
@@ -470,9 +492,12 @@ fn print_paddle(paddle: &Paddle) {
  * 		ball: &Ball - Ref to ball struct to print
  */
 fn print_ball(ball: &Ball) {
-	let x = ball.x as i32;
-	let y = ball.y as i32;
-	_ = term_cursor::set_pos(x, y + 2);
-	print!("o");
-	println!();
+	// let x = ball.x as i32;
+	// let y = ball.y as i32;
+	// _ = term_cursor::set_pos(x, y + 2);
+	// print!("o");
+	// println!();
+
+	mvaddch(ball.old_y as i32, ball.old_x as i32, ' ' as u32);
+	mvaddch(ball.y as i32, ball.x as i32, 'o' as u32);
 }

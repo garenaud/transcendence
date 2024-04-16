@@ -49,8 +49,15 @@ fn main() {
 			.header("User-Agent", "cli_rust")
 			.header("Accept", "application/json")
 			.timeout(std::time::Duration::from_secs(1));
-
-		let res = client.execute(ping_req.build().expect("ERROR WHILE BUILDING THE REQUEST"));
+		let ping_req = match ping_req.build() {
+			Ok(ping_req) => ping_req,
+			Err(err) => {
+				eprintln!("{}", format!("{}", err).red());
+				continue;
+			}
+		};
+		
+		let res = client.execute(ping_req);
 		match res {
 			Ok(res) => {
 				if res.status().is_success() {

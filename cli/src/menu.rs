@@ -3,6 +3,7 @@ use std::io::Write;
 
 use crate::user::User;
 use crate::pong;	
+use colored::Colorize;
 
 /**
  * Display the menu and handle the user's choice
@@ -39,7 +40,7 @@ pub fn menu(user: User) {
 				break 'menu;
 			},
 			_ => {
-				println!("Invalid choice");
+				println!("{}", format!("Invalid choice").red());
 			}
 		}
 	}

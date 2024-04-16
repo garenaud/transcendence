@@ -20,7 +20,14 @@ pub fn login(srv: String) -> Option<User> {
 	
 	println!("Password: ");
 
-	let password = rpassword::read_password().unwrap();
+	let password = match rpassword::read_password() {
+		Ok(str) => str,
+		Err(_) => {
+			eprintln!("{}", format!("ERREUR LORS DE LA LECTURE DU MOT DE PASSE").red());
+			return None;
+		}
+	
+	};
 	// let password = match sha256_crypt::hash(rpassword::read_password().unwrap()) {
 	// 	Ok(str) => String::from(str),
 	// 	Err(_) => {
