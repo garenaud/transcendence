@@ -1,4 +1,4 @@
-//import { initPong } from "../pong/javascript/pong.js";
+// import { init } from "../localpong/localpong.js";
 //import * as PongMenu from "./pong_menu.js";
 
 const errorLink = document.getElementById('error');
@@ -49,10 +49,6 @@ export function renderPong() {
 
                         <!-- origPongContent -->
                         <div id="origPong" class="card-game-inside" style="background-image: url(Design/PongCoverImage.webp);">
-                            <div class="goldTitle">
-                                <div class="bg">Pong</div>
-                                <div class="fg">Pong</div>
-                            </div>
                             <div class="d-flex flex-row justify-content-between pong-glowing-btn">
                                 <button id='localPongBtn' class='glowing-btn'><span class='glowing-txt'>L<span class='faulty-letter'>O</span>CAL</span></button>
                                 <button id='multiPongBtn' class='glowing-btn'><span class='glowing-txt'>M<span class='faulty-letter'>U</span>LTIPLAYER</span></button>
@@ -94,7 +90,6 @@ export function renderPong() {
 						</div>
 						</div>
 						</div>
-						<script type="module" src="pong/javascript/pong_menu.js"></script>
 						`;
     const pongElement = document.createElement('div');
     pongElement.classList.add('col-12', 'col-md-6');
@@ -142,13 +137,11 @@ export function renderPong() {
                   if (data['message'] == "ko") {
                 gameid = data['id'];
                 sessionStorage.setItem("gameid", gameid);
-                //loadModalContent("/pong/pong.html");
                   } else if (data['message'] == 'ok'){
                       sessionStorage.setItem("gameid", gameid);
                       document.querySelectorAll('.card-game-inside > div').forEach(div => {
                         div.classList.add('d-none');
                       });
-                      //const pongLocal = document.querySelector('#pongLocal');
                       pongLocal.classList.remove('d-none');
                   }
               })
@@ -187,13 +180,22 @@ export function renderPong() {
         
           pongModal.addEventListener('show.bs.modal', function () {
             console.log('Modal is about to be shown');
+			document.querySelectorAll('.card-game-inside > div').forEach(div => {
+				div.classList.remove('d-none');
+			});
+			// loadScripts();
+			origPong.classList.remove('d-none');
         });
         
         pongModal.addEventListener('hidden.bs.modal', function () {
             console.log('Modal is hidden or closed');
             document.querySelectorAll('.card-game-inside > div').forEach(div => {
+				console.log(div);
                 div.classList.add('d-none');
             });
+			unloadScript();
+			const pongLocal = element.querySelector('#pongLocal');
+    		pongLocal.classList.add('d-none');
             origPong.classList.remove('d-none');
         });
 
@@ -253,21 +255,25 @@ function changeDivContent(newContent) {
 
 // Pour load les scripts lorsque l'on presse le bouton
 
-function loadScripts() {
-    // Supprime les anciens scripts si nécessaire
-    document.querySelectorAll('script[type="module"][data-pong="dynamic"]').forEach(script => script.remove());
+function unloadScript() {
+	document.querySelectorAll('script[type="module"][data-pong="dynamic"]').forEach(script => console.log(script.id));
+	document.querySelectorAll('script[type="module"][data-pong="dynamic"]').forEach(script => script.remove());
+	document.querySelectorAll('script[type="module"][data-pong="dynamic"]').forEach(script => console.log(script));
+}
 
+function loadScripts() {
+    // Supprime les anciens scripts si nécessaire	
     // Créer et ajouter le script localpong.js
     const scriptLocalPong = document.createElement('script');
     scriptLocalPong.type = 'module';
     scriptLocalPong.src = '../localpong/localpong.js';
     scriptLocalPong.setAttribute('data-pong', 'dynamic');  // Marqueur pour identifier les scripts chargés dynamiquement
     document.body.appendChild(scriptLocalPong);
-
+	
     // Créer et ajouter le script ModelHelper.js
-    const scriptModelHelper = document.createElement('script');
-    scriptModelHelper.type = 'module';
-    scriptModelHelper.src = '../localpong/ModelHelper.js';
-    scriptModelHelper.setAttribute('data-pong', 'dynamic');
-    document.body.appendChild(scriptModelHelper);
+    // const scriptModelHelper = document.createElement('script');
+    // scriptModelHelper.type = 'module';
+    // scriptModelHelper.src = '../localpong/ModelHelper.js';
+    // scriptModelHelper.setAttribute('data-pong', 'dynamic');
+    // document.body.appendChild(scriptModelHelper);
 }
