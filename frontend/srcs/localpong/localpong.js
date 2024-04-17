@@ -71,6 +71,7 @@ function displayScore() {
 
 function init() {
 	// Renderer
+	resetScore();
 	renderer = new THREE.WebGLRenderer({
 		canvas: document.querySelector('#background'),
 		antialias: true,
@@ -118,6 +119,17 @@ function handleText() {
 	const scoreRight = scene.getObjectByName('Text001');
 	scene.add(scoreRight);
 	scene.remove(scoreRight);
+}
+
+function resetScore() {
+	scoreLeft = 0;
+	scoreRight = 0;
+	if (displayScoreElement) {
+        displayScoreElement.textContent = 'Score: ' + scoreLeft + ' - ' + scoreRight;
+    } else {
+        console.error('displayScoreElement is not defined');
+    }
+	displayvictoryElement.textContent = "";
 }
 
 function handleBall() {
@@ -345,16 +357,17 @@ function handleBackground() {
 let animationId;
 
 function animate() {
-	console.log(scriptStarted);
 	if (scriptStarted) {
 		handlePaddleLeft();
 		handlePaddleRight();
-		handleBackground();
 		if (countdownValue == 0)
 			updateBall();
 		controls.update();
 		composer.render(scene, camera);
 		animationId = requestAnimationFrame(animate);
+	}
+	else {
+		stopAnimation();
 	}
 }
 
