@@ -121,10 +121,10 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
                 await self.stop_game()
 
             # Check collision with left and right paddles
-            print(self.game.bv.x)
-            print(self.game.bv.z)
             check_collision(self, self.game.plx, self.game.plz)  # Left paddle
             check_collision(self, self.game.prx, self.game.prz)  # Right paddle
+            print(self.game.bv.z)
+            print(self.game.bv.x)
             balllimit = 8.5
             if self.game.bpz > balllimit or self.game.bpz < -balllimit:
                 self.game.bv.z *= -1
@@ -133,13 +133,6 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
                     self.game.scorep2 += 1
                 elif self.game.bpx < -15:
                     self.game.scorep1 += 1
-                await self.channel_layer.group_send(
-                self.room_group_name,
-                    {
-                        'type' : 'update',
-                        "message": {'action' : 'score', 'scorep1' : self.game.scorep1, 'scorep2' : self.game.scorep2}
-                    }
-                )
                 self.game.bpx = 0.0
                 self.game.bpz = 0.0
                 self.game.sif = 0.4
@@ -177,9 +170,6 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             self.room_group_name,
             {"type": "update", "message": {'action' : 'game', 'bx' : self.game.bpx, 'bz' : self.game.bpz, 'plx' : self.game.plx ,'plz' : self.game.plz, 'prx' : self.game.prx ,'prz' : self.game.prz}}
             )
-        # if message == "Start" and self.game.started == False:
-        #     self.game.started = True
-        #     self.task = asyncio.create_task(self.loop())
         elif message == "Stop" or self.game.finished == True:
             try:
                 self.task.cancel()
