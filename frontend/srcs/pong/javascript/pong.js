@@ -98,7 +98,6 @@ function init() {
 	composer = initPostprocessing();
 
 	// Load the GLTF model and handle the PaddleRight
-	// TODO waiting room;
 	LoadGLTFByPath(scene)
 		.then(() => {
 			handleGround();
@@ -295,13 +294,13 @@ gameSocket.onmessage = function(e) {
 		const ball = scene.getObjectByName('Ball');
 		const PaddleLeft = scene.getObjectByName("LeftPaddle");
 		const PaddleRight = scene.getObjectByName("RightPaddle");
-		if (game_data.action == 'paddle1') {
+		if (game_data.action == 'paddle1' && PaddleRight) {
 			PaddleRight.position.x = parseFloat(game_data.prx);
 			PaddleRight.position.z = parseFloat(game_data.prz);
-		} else if (game_data.action == 'paddle2') {
+		} else if (game_data.action == 'paddle2' && PaddleLeft) {
 			PaddleLeft.position.x = parseFloat(game_data.plx);
 			PaddleLeft.position.z = parseFloat(game_data.plz);
-		} else if (game_data.action == 'ball') {
+		} else if (game_data.action == 'ball' && ball) {
 			ball.position.x = parseFloat(game_data.bx);
 			ball.position.z = parseFloat(game_data.bz);
 		} else if (game_data.action == 'Stop') {
@@ -323,27 +322,9 @@ gameSocket.onmessage = function(e) {
 	}
 };
 
-function update_game_data() {
-	const PaddleRightName = 'RightPaddle';
-	const PaddleLeftName = 'LeftPaddle';
-	ball = scene.getObjectByName('Ball');
-	PaddleRight = scene.getObjectByName(PaddleRightName);
-	PaddleLeft = scene.getObjectByName(PaddleLeftName);
-	// console.log(PaddleRight);
-	// console.log(ball);
-	PaddleRight.position.x = parseFloat(game_data.paddleright_position_x);
-	PaddleRight.position.z = parseFloat(game_data.paddleright_position_z);
-	PaddleLeft.position.x = parseFloat(game_data.paddleleft_position_x);
-	PaddleLeft.position.z = parseFloat(game_data.paddleleft_position_z);
-	//PaddleLeft.position.z = parseFloat(game_data.paddleleft_position_z);
-	ball.position.x = parseFloat(game_data.ball_position_x);
-	ball.position.z = parseFloat(game_data.ball_position_z);
-
-}
-
 function animate() {
 	requestAnimationFrame(animate);
-	handleBackground();
+	// handleBackground();
 	controls.update();
 	composer.render(scene, camera);
 }
