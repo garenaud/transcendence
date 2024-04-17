@@ -106,14 +106,13 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
                 self.game.bpx < 15):
                 self.game.bv.x *= -1
                 self.game.sif += 0.1
-
+        await asyncio.sleep(4)
+        await self.send_counter()
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {"type": "update", "message": {'action' : 'start'}}
+        )
         while self.game.finished == False:
-            await asyncio.sleep(4)
-            await self.send_counter()
-            await self.channel_layer.group_send(
-                self.room_group_name,
-                {"type": "update", "message": {'action' : 'start'}}
-            )
             if self.game.scorep1 == 5 or self.game.scorep2 == 5:
                 self.game.finished = True
                 self.game.dbgame.finished = True
@@ -133,6 +132,13 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
                     self.game.scorep2 += 1
                 elif self.game.bpx < -15:
                     self.game.scorep1 += 1
+                await self.channel_layer.group_send(
+                self.room_group_name,
+                    {
+                        'type' : 'update',
+                        "message": {'action' : 'score', 'scorep1' : self.game.scorep1, 'scorep2' : self.game.scorep2}
+                    }
+                )
                 self.game.bpx = 0.0
                 self.game.bpz = 0.0
                 self.game.sif = 0.4
