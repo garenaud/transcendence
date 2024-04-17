@@ -1,4 +1,4 @@
-RUST_FILES = main.rs menu.rs login.rs pong.rs
+RUST_FILES = main.rs menu.rs login.rs pong.rs user.rs
 RUST_SOURCE = $(addprefix cli/src/, $(RUST_FILES))
 
 all:
