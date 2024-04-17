@@ -18,6 +18,7 @@ body {
 }
 
 #countdown {
+    user-select: none;
     font-family: 'Roboto Condensed', sans-serif;
     width: 200px;
     height: 100px;

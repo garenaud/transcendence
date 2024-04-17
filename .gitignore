@@ -26,3 +26,5 @@ target/
 *.pdb
 
 .vscode
+
+.DS_Store

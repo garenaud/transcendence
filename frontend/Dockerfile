@@ -7,7 +7,6 @@ RUN apk add -u nghttp2
 RUN apk add npm
 
 RUN npm install --save three
-
 RUN npm install --save vite
 
 

@@ -13,17 +13,16 @@ export function renderNavbar(){
     function displayUserInfo(user) {
         console.log('on commence les user info');
         console.log(user);
-        let currentUser = user[0];
         const userInfoDiv = document.getElementById('nav-user');
         if (userInfoDiv) {
             userInfoDiv.innerHTML = `
             <div class="nav-user-info">
-            <h4>${currentUser.name}</h4>
-            <h6>${currentUser.points} pts</h6>
+            <h4>${appState.user.username}</h4>
+            <h6>${appState.user.pts} pts</h6>
             </div>
             <div class="nav-user-img">
                     <div class="img_cont_nav">
-                    <img src="${currentUser.profilePicture}" alt="User Image">
+                    <img src="${appState.user.profilePicture}" alt="User Image">
                     </div>
             </div>
             `;
