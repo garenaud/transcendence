@@ -13,7 +13,7 @@ import random
 from channels.db import database_sync_to_async
 from.game_class import gameData
 
-gameTab = [None] * 1000
+gameTab = [None] * 10000
 
 channel_layer = channels.layers.get_channel_layer()
 
@@ -49,6 +49,13 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
         await self.accept()
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type' : 'update',
+                "message": {'action' : 'private'}
+            }
+        )
 
         
 
@@ -78,6 +85,15 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             }
         )
 
+    async def send_counter(self):
+        for num in range(6, 0, -1):
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {"type": "update", "message": {'action': 'counter', 'num': num}}
+            )
+            await asyncio.sleep(1.5)
+
+
     async def loop(self):
         def check_collision(self, paddle_x, paddle_z):
             paddle_size_x = 0.1
@@ -90,8 +106,13 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
                 self.game.bpx < 15):
                 self.game.bv.x *= -1
                 self.game.sif += 0.1
-
-        while not self.game.finished:
+        await asyncio.sleep(4)
+        await self.send_counter()
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {"type": "update", "message": {'action' : 'start'}}
+        )
+        while self.game.finished == False:
             if self.game.scorep1 == 5 or self.game.scorep2 == 5:
                 self.game.finished = True
                 self.game.dbgame.finished = True
@@ -101,8 +122,9 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             # Check collision with left and right paddles
             check_collision(self, self.game.plx, self.game.plz)  # Left paddle
             check_collision(self, self.game.prx, self.game.prz)  # Right paddle
+            print(self.game.bv.z)
+            print(self.game.bv.x)
             balllimit = 8.5
-            print(self.game.bpx)
             if self.game.bpz > balllimit or self.game.bpz < -balllimit:
                 self.game.bv.z *= -1
             elif self.game.bpx > 15 or self.game.bpx < -15:
@@ -110,17 +132,23 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
                     self.game.scorep2 += 1
                 elif self.game.bpx < -15:
                     self.game.scorep1 += 1
+                await self.channel_layer.group_send(
+                self.room_group_name,
+                    {
+                        'type' : 'update',
+                        "message": {'action' : 'score', 'scorep1' : self.game.scorep1, 'scorep2' : self.game.scorep2}
+                    }
+                )
                 self.game.bpx = 0.0
                 self.game.bpz = 0.0
                 self.game.sif = 0.4
-
             self.game.bvx = self.game.bv.x
             self.game.bvz = self.game.bv.z
             self.game.bpx += self.game.bvx * self.game.sif
             self.game.bpz += self.game.bvz * self.game.sif
             await self.ball_update({'bpx' : self.game.bpx, 'bpz' : self.game.bpz})
             await asyncio.sleep(1 / 120)
-
+            
     async def disconnect(self, close_code):
         self.channel_layer.group_discard(
             self.room_group_name, self.channel_name
@@ -136,15 +164,18 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         jsondata = json.loads(text_data)
         message = jsondata['message']
-        #print(f"message is {message}")
+        if message == 'private' or message == 'public':
+            if message == 'private':
+                self.game.dbgame.private = True
+                await sync_to_async(self.saveGame)(self.game.dbgame)
+            if self.game.dbgame.full == True:
+                self.game.started = True 
+                self.task = asyncio.create_task(self.loop())
         if message == 'ball_update':
             await self.channel_layer.group_send(
             self.room_group_name,
             {"type": "update", "message": {'action' : 'game', 'bx' : self.game.bpx, 'bz' : self.game.bpz, 'plx' : self.game.plx ,'plz' : self.game.plz, 'prx' : self.game.prx ,'prz' : self.game.prz}}
             )
-        if message == "Start" and self.game.started == False:
-            self.game.started = True
-            self.task = asyncio.create_task(self.loop())
         elif message == "Stop" or self.game.finished == True:
             try:
                 self.task.cancel()

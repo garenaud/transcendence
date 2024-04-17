@@ -1762,9 +1762,7 @@ animation: loadingC 1s 0.3s linear infinite;
 	font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 	transform: translate(-50%, -50%);
 	font-size: 3em;
-	animation-name: rainbow;
-	animation-duration: 4s;
-	animation-iteration-count: infinite;
+	color: blueviolet;
 }
 
 #displayscore {
@@ -1775,9 +1773,7 @@ animation: loadingC 1s 0.3s linear infinite;
 	transform: translateX(-50%);
 	font-size: 2em;
 	z-index: 100;
-	animation-name: rainbow;
-	animation-duration: 4s;
-	animation-iteration-count: infinite;
+	color:blueviolet;
 }
 
 #displayvictory {
@@ -2085,4 +2081,5 @@ div.modal-footer, div.modal-body, div.modal-header{
 
 .form-scratch {
   padding: 20px;
+	color: blueviolet;
 }

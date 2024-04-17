@@ -4,6 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { scriptStarted } from '../components/pongComponent.js';
 
 // main
 let scene;
@@ -70,6 +71,7 @@ function displayScore() {
 
 function init() {
 	// Renderer
+	resetScore();
 	renderer = new THREE.WebGLRenderer({
 		canvas: document.querySelector('#background'),
 		antialias: true,
@@ -117,6 +119,17 @@ function handleText() {
 	const scoreRight = scene.getObjectByName('Text001');
 	scene.add(scoreRight);
 	scene.remove(scoreRight);
+}
+
+function resetScore() {
+	scoreLeft = 0;
+	scoreRight = 0;
+	if (displayScoreElement) {
+        displayScoreElement.textContent = 'Score: ' + scoreLeft + ' - ' + scoreRight;
+    } else {
+        console.error('displayScoreElement is not defined');
+    }
+	displayvictoryElement.textContent = "";
 }
 
 function handleBall() {
@@ -285,7 +298,7 @@ function handlePaddleCollision() {
 			isColliding = false;
 	}
 
-const finalScore = 1;
+const finalScore = 5;
 	
 function handleWallColision() {
 		if (ball.position.z > ballLimit || ball.position.z < -ballLimit) {
@@ -344,16 +357,18 @@ function handleBackground() {
 let animationId;
 
 function animate() {
-	handlePaddleLeft();
-	handlePaddleRight();
-	handleBackground();
-	if (countdownValue == 0)
-		updateBall();
-	controls.update();
-	composer.render(scene, camera);
-	animationId = requestAnimationFrame(animate);
-	if (finished == true)
+	if (scriptStarted) {
+		handlePaddleLeft();
+		handlePaddleRight();
+		if (countdownValue == 0)
+			updateBall();
+		controls.update();
+		composer.render(scene, camera);
+		animationId = requestAnimationFrame(animate);
+	}
+	else {
 		stopAnimation();
+	}
 }
 
 function stopAnimation() {

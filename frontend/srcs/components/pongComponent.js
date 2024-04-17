@@ -4,6 +4,8 @@
 const errorLink = document.getElementById('error');
 let gameid;
 
+export let scriptStarted;
+
 function makeid(length) {
 	let result = '';
 	const characters = '0123456789';
@@ -180,18 +182,19 @@ export function renderPong() {
         
           pongModal.addEventListener('show.bs.modal', function () {
             console.log('Modal is about to be shown');
+			console.log(scriptStarted);
+			scriptStarted = true;
 			document.querySelectorAll('.card-game-inside > div').forEach(div => {
 				div.classList.remove('d-none');
 			});
-			// loadScripts();
 			origPong.classList.remove('d-none');
         });
-        
         pongModal.addEventListener('hidden.bs.modal', function () {
-            console.log('Modal is hidden or closed');
+			console.log('Modal is hidden or closed');
+			console.log(scriptStarted);
+			scriptStarted = false;
             document.querySelectorAll('.card-game-inside > div').forEach(div => {
 				console.log(div);
-                div.classList.add('d-none');
             });
 			unloadScript();
 			const pongLocal = element.querySelector('#pongLocal');
@@ -256,24 +259,33 @@ function changeDivContent(newContent) {
 // Pour load les scripts lorsque l'on presse le bouton
 
 function unloadScript() {
-	document.querySelectorAll('script[type="module"][data-pong="dynamic"]').forEach(script => console.log(script.id));
-	document.querySelectorAll('script[type="module"][data-pong="dynamic"]').forEach(script => script.remove());
-	document.querySelectorAll('script[type="module"][data-pong="dynamic"]').forEach(script => console.log(script));
+    // Désactiver les scripts chargés dynamiquement
+    document.querySelectorAll('script[type="module"][data-pong="dynamic"]').forEach(script => {
+        script.setAttribute('data-disabled', 'true');
+        script.removeAttribute('type');
+        script.remove(); // Supprimer le script du DOM
+    });
 }
 
+
 function loadScripts() {
-    // Supprime les anciens scripts si nécessaire	
+    // Supprime les anciens scripts si nécessaire    
     // Créer et ajouter le script localpong.js
+    document.querySelectorAll('script[data-disabled="true"]').forEach(script => {
+        script.setAttribute('type', 'module');
+        script.removeAttribute('data-disabled');
+    });
     const scriptLocalPong = document.createElement('script');
     scriptLocalPong.type = 'module';
-    scriptLocalPong.src = '../localpong/localpong.js';
+    scriptLocalPong.src = '../localpong/localpong.js?' + new Date().getTime(); // Ajoute un horodatage à l'URL
+    console.log('loading');
     scriptLocalPong.setAttribute('data-pong', 'dynamic');  // Marqueur pour identifier les scripts chargés dynamiquement
     document.body.appendChild(scriptLocalPong);
-	
+    
     // Créer et ajouter le script ModelHelper.js
     // const scriptModelHelper = document.createElement('script');
     // scriptModelHelper.type = 'module';
-    // scriptModelHelper.src = '../localpong/ModelHelper.js';
+    // scriptModelHelper.src = '../localpong/ModelHelper.js?' + new Date().getTime(); // Ajoute un horodatage à l'URL
     // scriptModelHelper.setAttribute('data-pong', 'dynamic');
     // document.body.appendChild(scriptModelHelper);
 }

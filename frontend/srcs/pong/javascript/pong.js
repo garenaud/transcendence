@@ -11,6 +11,7 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 
 let active = false;
 let gameid = sessionStorage.getItem('gameid');
+let privategame = sessionStorage.getItem('privategame');
 let game_data;
 let renderer;
 let scene;
@@ -25,6 +26,7 @@ let scoreLeft;
 let scoreRight;
 let ballVelocity;
 let gameSocket;
+let currentNum = 7;
 
 const KeyState = {
 	KeyW: false,
@@ -46,35 +48,33 @@ function makeid(length) {
 }
 
 
-if (gameid == null)
-{
-	console.log("null");
-	gameSocket = new WebSocket(
-	'ws://'
+if (gameid == null) {
+	//console.log("null");
+	gameid = makeid(4);
+}
+gameSocket = new WebSocket(
+	'wss://'
 	+ window.location.host
 	+ '/ws/'
 	+ 'game'
 	+ '/'
-	+ makeid(3)
+	+ gameid
 	+ '/'
 	);
+
+const gameidElement = document.getElementById("gameID");
+gameidElement.textContent = "Game ID : " + gameid;
+//console.log(privategame);
+
+//console.log(`ID IS ${gameid}`);
+
+function addClassDelayed(element, className, delay) {
+    setTimeout(function() {
+        element.classList.add(className);
+    }, delay);
 }
-else
-{
-	console.log("pas null");
-	gameSocket = new WebSocket(
-		'ws://'
-		+ window.location.host
-		+ '/ws/'
-		+ 'game'
-		+ '/'
-		+ gameid
-		+ '/'
-		);
-}
-console.log(`ID IS ${gameid}`);
-		
-		function init() {
+
+function init() {
 	// Renderer
 	renderer = new THREE.WebGLRenderer({
 		canvas: document.querySelector('#background'),
@@ -98,7 +98,6 @@ console.log(`ID IS ${gameid}`);
 	composer = initPostprocessing();
 
 	// Load the GLTF model and handle the PaddleRight
-	// TODO waiting room;
 	LoadGLTFByPath(scene)
 		.then(() => {
 			handleGround();
@@ -121,6 +120,20 @@ function handleText() {
 	scoreRight = scene.getObjectByName('Text001');
 	scene.add(scoreRight);
 	scene.remove(scoreRight);
+}
+
+function handleBall() {
+	const ballName = 'Ball';
+	ball = scene.getObjectByName(ballName);
+	if (ball) {
+		ball.castShadow = true;
+		// ball.receiveShadow = true;
+		ball.position.set(0, 0, 0);
+		ballVelocity = new THREE.Vector3(Math.cos(initialAngle) * speed, 0, Math.sin(initialAngle) * speed);
+	} else {
+		console.error('Ball not found');
+	}
+	
 }
 
 function handleLight() {
@@ -177,6 +190,7 @@ function handleGround() {
 
 // Fonction pour gérer l'appui sur une touche
 function handleKeyDown(event) {
+	if (currentNum < 0) {
 		if (event.code == 'ArrowUp')
 		{
 			gameSocket.send(JSON.stringify({
@@ -213,6 +227,7 @@ function handleKeyDown(event) {
 			'message' : 'Stop'
 			}));
 		}
+	}
 }
 
 // Fonction pour gérer le relâchement d'une touche
@@ -239,51 +254,77 @@ function handleBackground() {
     scene.background = color;
 }
 
+function anim() {
+    if (currentNum >= 0) {
+        addClassDelayed(document.getElementById("countdown"), "puffer", 600);
+        currentNum--;
+        if (currentNum > 0) {
+            document.getElementById("countdown").innerHTML = currentNum;
+        } else if (currentNum == 0) {
+            document.getElementById("countdown").innerHTML = "GO !";
+        } else {
+            document.getElementById("countdown").innerHTML = "";
+            document.getElementById("countdown").classList.remove("puffer");
+            return;
+        }
+        document.getElementById("countdown").classList.remove("puffer");
+    } else {
+        return;
+    }
+}
 
 gameSocket.onmessage = function(e) {
 	game_data = JSON.parse(e.data);
-	console.log(game_data.action);
-	const ball = scene.getObjectByName('Ball');
-	const PaddleLeft = scene.getObjectByName("LeftPaddle");
-	const PaddleRight = scene.getObjectByName("RightPaddle");
-	if (game_data.action == 'paddle1')
+	if (game_data.action == "private")
 	{
-		PaddleRight.position.x = parseFloat(game_data.prx);
-		PaddleRight.position.z = parseFloat(game_data.prz);
+		if (privategame == 'true')
+		{
+			gameSocket.send(JSON.stringify({
+			'message' : 'private'
+			}));
+		}
+		else
+		{
+			gameSocket.send(JSON.stringify({
+			'message' : 'public'
+			}));
+		}
 	}
-	else if (game_data.action == 'paddle2')
-	{
-		PaddleLeft.position.x = parseFloat(game_data.plx);
-		PaddleLeft.position.z = parseFloat(game_data.plz);
+	else {	
+		const ball = scene.getObjectByName('Ball');
+		const PaddleLeft = scene.getObjectByName("LeftPaddle");
+		const PaddleRight = scene.getObjectByName("RightPaddle");
+		if (game_data.action == 'paddle1' && PaddleRight) {
+			PaddleRight.position.x = parseFloat(game_data.prx);
+			PaddleRight.position.z = parseFloat(game_data.prz);
+		} else if (game_data.action == 'paddle2' && PaddleLeft) {
+			PaddleLeft.position.x = parseFloat(game_data.plx);
+			PaddleLeft.position.z = parseFloat(game_data.plz);
+		} else if (game_data.action == 'ball' && ball) {
+			ball.position.x = parseFloat(game_data.bx);
+			ball.position.z = parseFloat(game_data.bz);
+		} else if (game_data.action == 'Stop') {
+			sessionStorage.setItem("gameid", null);
+		} else if (game_data.action == 'score') {
+			if (game_data.scorep1 != undefined && game_data.scorep2 != undefined) {
+				const scoreElement = document.getElementById("score");
+				scoreElement.textContent = game_data.scorep2 + " - " + game_data.scorep1;
+			}
+		} else if (game_data.action == 'counter') {
+			if (game_data.num < currentNum) {
+				currentNum = game_data.num;
+				if (currentNum >= 0) {
+					setTimeout(function() {}, 1500);
+					setInterval(function() { anim(); }, 1325);
+				}
+			}
+		}
 	}
-	else if (game_data.action == 'ball')
-	{
-		ball.position.x = parseFloat(game_data.bx);
-		ball.position.z = parseFloat(game_data.bz);
-	}
-	else if (game_data.action == 'Stop')
-	{
-		sessionStorage.setItem("gameid", null);
-	}
-	// gameSocket.send(JSON.stringify({
-	// 	'message' : 'update'
-	// 	}));
-	//console.log(`hello from room ${game_data.room_name} in group ${game_data.room_group_name}`);
-	//update_game_data();
 };
 
 function animate() {
 	requestAnimationFrame(animate);
-	handleBackground();
-	// handleAIPaddleRight();
-	//updateBall();
-	// console.log(ball.position.x);
-	// console.log(ball.position.z);
-	// gameSocket.send(JSON.stringify(
-	// 	{
-	// 		"message" : "ball_update"
-	// 	})
-	// );
+	// handleBackground();
 	controls.update();
 	composer.render(scene, camera);
 }
