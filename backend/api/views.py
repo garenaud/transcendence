@@ -30,18 +30,20 @@ def get_user_list(request):
 @api_view(['GET', 'PUT'])
 def user_by_id(request, id):
 	if (request.method == 'GET'):
-		user = Users.objects.get(id=id)
-		serializer = UsersSerializer(user)
+		user = User.objects.get(id=id)
+		serializer = UserSerializer(user)
 		return Response(serializer.data, status=status.HTTP_200_OK)
 	elif (request.method == 'PUT'):
-		queryset = Users.objects.filter(id=id)
-		serializer = UsersSerializer(data=request.data)
+		queryset = User.objects.filter(id=id)
+		serializer = UserSerializer(data=request.data)
 		if serializer.is_valid():
 			user = queryset[0]
-			user.name = serializer.data['name']
-			user.login = serializer.data['login']
+			user.first_name = serializer.data['first_name']
+			user.last_name = serializer.data['last_name']
+			user.username = serializer.data['username']
+			user.email = serializer.data['email']
 			user.password = serializer.data['password']
-			user.save(update_fields=['name', 'login', 'password'])
+			user.save(update_fields=['first_name', 'last_name', 'username', 'email', 'password'])
 			return Response(serializer.data, status=status.HTTP_200_OK)
 	else:
 		return Response("Method not allowed", status=status.HTTP_405_METHOD_NOT_ALLOWED)
@@ -91,9 +93,9 @@ def get_game_list(request):
 @api_view(['GET'])
 def get_game_by_id(request, gameid):
 	if (request.method == 'GET'):
-		game = Games.objects.filter(room_id=gameid, private=True).count()
+		game = Games.objects.filter(room_id=gameid).count()
 		if game == 0:
-			return Response({"message" : "Not found"}, status=status.HTTP_404_NOT_FOUND)
+			return Response({"message" : "Not found"})
 		else:
 			try:
 				game = Games.objects.get(room_id=gameid, finished=False)
@@ -108,14 +110,14 @@ def get_game_by_id(request, gameid):
 @api_view(['GET'])
 def create_game(request, gameid):
 	if request.method == 'GET':
-		game = Games.objects.filter(room_id=gameid, finished=False).count()
+		game = Games.objects.filter(room_id=gameid).count()
 		if game == 0:
 			return Response({"message" : "ok"})
 		else:
-			newid = random.randint(1, 9999)
+			newid = random.randint(1, 999)
 			while Games.objects.filter(room_id=newid).count() != 0:
-				newid = random.randint(1, 9999)
-			return Response({"message" : "ko", 'id' : newid})
+				newid = random.randint(1, 999)
+			return Response({"message" : "id exists", 'id' : newid})
 	else:
 		return Response("Unauthorized method", status=status.HTTP_401_UNAUTHORIZED)
 	
@@ -123,15 +125,12 @@ def create_game(request, gameid):
 @api_view(['GET'])
 def search_game(request):
 	if request.method == 'GET':
-		try:
-			#ajouter le nombre de user actuellement en recherche de game dans la db
-			games = Games.objects.filter(started=False, finished=False, full=False, private=False)
-			id = games[0].room_id
-			return Response({"message" : "ok", 'id' : id})
-		except:
-			newid = random.randint(1, 9999)
-			while Games.objects.filter(room_id=newid).count() != 0:
-				newid = random.randint(1, 9999)
-			return Response({"message" : "ko", 'id' : newid})
+		while True:
+			try:
+				games = Games.objects.filter(started=False, finished=False, full=False)
+				id = games[0].room_id
+				return Response({"message" : "ok", 'id' : id})
+			except:
+				pass
 	else:
 		return Response("Unauthorized method", status=status.HTTP_401_UNAUTHORIZED)

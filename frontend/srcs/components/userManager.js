@@ -6,15 +6,17 @@ import { renderApp, appState } from './stateManager.js';
 }; */
 
 function updateUserOnServer(user) {
-    console.log(user.id);
-    getUserFromServer(user.id);
+    console.log(user);
     let csrfToken = getCookie('csrftoken');
     let userForBackend = {
-        name: user.username,  // Assumant que 'username' est le nom d'utilisateur
-        login: user.email,  // Assumant que 'email' est le login
+        first_name: user.first_name,
+        last_name: user.last_name,
+        username: user.username,  // Assumant que 'username' est le nom d'utilisateur
+        email: user.email,  // Assumant que 'email' est le login
         password: user.password  // Vous devez vous assurer que le mot de passe est correctement géré
     };
-    fetch('/api/user/' + user.id, {
+    console.log('Updating user:', userForBackend);
+    fetch('https://localhost/api/user/' + user.id, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -31,6 +33,7 @@ function updateUserOnServer(user) {
     })
     .then(data => {
         console.log('User updated:', data);
+        getUserFromServer(user.id);
     })
     .catch((error) => {
         console.error('Error:', error);
@@ -44,6 +47,7 @@ function getCookie(name) {
 }
 
 function getUserFromServer(userId) {
+    console.log('Fetching user with id:', userId);
     fetch('/api/user/' + userId)
     .then(response => {
         if (!response.ok) {
