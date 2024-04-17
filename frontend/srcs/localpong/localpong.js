@@ -4,6 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { scriptStarted } from '../components/pongComponent.js';
 
 // main
 let scene;
@@ -285,7 +286,7 @@ function handlePaddleCollision() {
 			isColliding = false;
 	}
 
-const finalScore = 1;
+const finalScore = 5;
 	
 function handleWallColision() {
 		if (ball.position.z > ballLimit || ball.position.z < -ballLimit) {
@@ -344,16 +345,17 @@ function handleBackground() {
 let animationId;
 
 function animate() {
-	handlePaddleLeft();
-	handlePaddleRight();
-	handleBackground();
-	if (countdownValue == 0)
-		updateBall();
-	controls.update();
-	composer.render(scene, camera);
-	animationId = requestAnimationFrame(animate);
-	if (finished == true)
-		stopAnimation();
+	console.log(scriptStarted);
+	if (scriptStarted) {
+		handlePaddleLeft();
+		handlePaddleRight();
+		handleBackground();
+		if (countdownValue == 0)
+			updateBall();
+		controls.update();
+		composer.render(scene, camera);
+		animationId = requestAnimationFrame(animate);
+	}
 }
 
 function stopAnimation() {

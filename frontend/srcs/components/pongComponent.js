@@ -4,6 +4,8 @@
 const errorLink = document.getElementById('error');
 let gameid;
 
+export let scriptStarted;
+
 function makeid(length) {
 	let result = '';
 	const characters = '0123456789';
@@ -180,6 +182,7 @@ export function renderPong() {
         
           pongModal.addEventListener('show.bs.modal', function () {
             console.log('Modal is about to be shown');
+			scriptStarted = true;
 			document.querySelectorAll('.card-game-inside > div').forEach(div => {
 				div.classList.remove('d-none');
 			});
@@ -189,11 +192,10 @@ export function renderPong() {
         
         pongModal.addEventListener('hidden.bs.modal', function () {
             console.log('Modal is hidden or closed');
+			scriptStarted = false;
             document.querySelectorAll('.card-game-inside > div').forEach(div => {
 				console.log(div);
-                div.classList.add('d-none');
             });
-			unloadScript();
 			const pongLocal = element.querySelector('#pongLocal');
     		pongLocal.classList.add('d-none');
             origPong.classList.remove('d-none');
@@ -254,12 +256,6 @@ function changeDivContent(newContent) {
 }
 
 // Pour load les scripts lorsque l'on presse le bouton
-
-function unloadScript() {
-	document.querySelectorAll('script[type="module"][data-pong="dynamic"]').forEach(script => console.log(script.id));
-	document.querySelectorAll('script[type="module"][data-pong="dynamic"]').forEach(script => script.remove());
-	document.querySelectorAll('script[type="module"][data-pong="dynamic"]').forEach(script => console.log(script));
-}
 
 function loadScripts() {
     // Supprime les anciens scripts si nécessaire	
