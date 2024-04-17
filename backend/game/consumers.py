@@ -108,50 +108,18 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
                 self.game.sif += 0.1
 
         while not self.game.finished:
-        await asyncio.sleep(4)
-        await self.send_counter()
-        await self.channel_layer.group_send(
-        self.room_group_name,
-        {"type": "update", "message": {'action' : 'start'}}
-        )
+            await asyncio.sleep(4)
+            await self.send_counter()
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {"type": "update", "message": {'action' : 'start'}}
+            )
         while self.game.finished == False:
             if self.game.scorep1 == 5 or self.game.scorep2 == 5:
                 self.game.finished = True
                 self.game.dbgame.finished = True
                 await sync_to_async(self.saveGame)(self.game.dbgame)
                 await self.stop_game()
-            paddle_size_x = 0.20000000298023224
-            paddle_size_z = 3.1
-            max_angle_adjustment = math.pi / 6
-            min_angle_adjustment = (math.pi * -1) / 6
-            #verifier la collision avec le paddle gauche
-            if (self.game.bpx - self.game.bradius < self.game.plx + paddle_size_x / 2 and
-                self.game.bpx + self.game.bradius > self.game.plx - paddle_size_x / 2 and
-                self.game.bpz + self.game.bradius > self.game.plz - paddle_size_z / 2 and
-                self.game.bpz - self.game.bradius < self.game.plz + paddle_size_z / 2
-                ):
-                relative_position = (self.game.bpz - self.game.plz) / paddle_size_z
-                angleadjustment = (relative_position - 0.5) * (max_angle_adjustment - min_angle_adjustment) * 0.6
-                # Ajuster la direction de la balle en fonction de l'angl
-                angle = math.pi / 4 + angleadjustment
-                self.game.bv.x = math.cos(angle) * (0.15 * self.game.sif)
-                self.game.bv.x = math.sin(angle) * (0.15 * self.game.sif)
-                #self.game.sif += 0.1
-                # print("collision detectee a gauche")
-            #verifier la collision avec le paddle droit
-            if (self.game.bpx - self.game.bradius < self.game.prx + paddle_size_x / 2 and
-                self.game.bpx + self.game.bradius > self.game.prx - paddle_size_x / 2 and
-                self.game.bpz + self.game.bradius > self.game.prz - paddle_size_z / 2 and
-                self.game.bpz - self.game.bradius < self.game.prz + paddle_size_z / 2
-                ):
-                relative_position = (self.game.bpz - self.game.prz) / paddle_size_z
-                angleadjustment = (relative_position - 0.5) * (max_angle_adjustment - min_angle_adjustment) * 0.3
-                # Ajuster la direction de la balle en fonction de l'angle
-                angle = (math.pi * -1) / 4 - angleadjustment
-                self.game.bv.x = (math.cos(angle) * -1) * (0.15 * self.game.sif)
-                self.game.bv.z = (math.sin(angle) * -1) * (0.15 * self.game.sif)
-                #self.game.sif += 0.1
-                # print("collision detectee a droite")
 
             # Check collision with left and right paddles
             check_collision(self, self.game.plx, self.game.plz)  # Left paddle
@@ -175,7 +143,6 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
                 self.game.bpx = 0.0
                 self.game.bpz = 0.0
                 self.game.sif = 0.4
-
             self.game.bvx = self.game.bv.x
             self.game.bvz = self.game.bv.z
             self.game.bpx += self.game.bvx * self.game.sif
