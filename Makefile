@@ -6,7 +6,7 @@ all:
 down: 
 	docker-compose down
 
-debug:
+debug: all
 	docker-compose logs -f
 
 look:

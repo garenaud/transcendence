@@ -108,13 +108,21 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
                 self.game.sif += 0.1
 
         while self.game.finished == False:
+            await asyncio.sleep(4)
+            await self.send_counter()
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {"type": "update", "message": {'action' : 'start'}}
+            )
             if self.game.scorep1 == 5 or self.game.scorep2 == 5:
                 self.game.finished = True
                 self.game.dbgame.finished = True
                 await sync_to_async(self.saveGame)(self.game.dbgame)
                 await self.stop_game()
-            print(self.game.prx);
+
             # Check collision with left and right paddles
+            print(self.game.bv.x)
+            print(self.game.bv.z)
             check_collision(self, self.game.plx, self.game.plz)  # Left paddle
             check_collision(self, self.game.prx, self.game.prz)  # Right paddle
             balllimit = 8.5
@@ -141,7 +149,7 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             self.game.bpz += self.game.bvz * self.game.sif
             await self.ball_update({'bpx' : self.game.bpx, 'bpz' : self.game.bpz})
             await asyncio.sleep(1 / 120)
-
+            
     async def disconnect(self, close_code):
         self.channel_layer.group_discard(
             self.room_group_name, self.channel_name
