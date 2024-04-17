@@ -12,7 +12,7 @@ function updateUserOnServer(user) {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': csrfToken
+            'X-CSRFToken': csrfToken,
         },
         body: JSON.stringify(user),
     })

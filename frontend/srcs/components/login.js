@@ -108,12 +108,13 @@ export function renderLogin() {
 }
 
 function    setupButtonListener() {
-	document.getElementById('loginBtn').addEventListener('click', function() {
+	document.getElementById('loginBtn').addEventListener('click', function(event) {
+		event.preventDefault();
 		const email = document.getElementById('typeEmailX').value;
 		const password = document.getElementById('typePasswordX').value;
 		let csrf = getCookie("csrftoken");
 		console.log('csrf:', csrf);
-		fetch('/auth/test/', {
+		fetch('auth/test/', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -163,40 +164,61 @@ function    setupButtonListener() {
 
 	document.getElementById('signupBtn').addEventListener('click', function() {
 		const username = document.getElementById('signupUsername').value;
-		const firstName = document.getElementById('signupFirstName').value;
-		const lastName = document.getElementById('signupLastName').value;
-		const email = document.getElementById('signupEmail').value;
-		const password1 = document.getElementById('signupPassword1').value;
-		const password2 = document.getElementById('signupPassword2').value;
-		fetch('auth/register/', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/x-www-form-urlencoded',
-				'X-CSRFToken': getCookie("csrftoken"),
-			},
-			body: new URLSearchParams({
-				'username': username,
-				'first_name': firstName,
-				'last_name': lastName,
-				'email': email,
-				'password1': password1,
-				'password2': password2,
-				'csrfmiddlewaretoken': getCookie("csrftoken"),
-			}),
-			credentials: 'same-origin' 
-		})
+    const firstName = document.getElementById('signupFirstName').value;
+    const lastName = document.getElementById('signupLastName').value;
+    const email = document.getElementById('signupEmail').value;
+    const password1 = document.getElementById('signupPassword1').value;
+    const password2 = document.getElementById('signupPassword2').value;
+
+    let formData = new FormData();
+    formData.append('username', username);
+    formData.append('first_name', firstName);
+    formData.append('last_name', lastName);
+    formData.append('email', email);
+    formData.append('password1', password1);
+    formData.append('password2', password2);
+    formData.append('csrfmiddlewaretoken', getCookie("csrftoken"));
+	console.log('csrf signup:', getCookie("csrftoken"));
+    fetch('auth/register/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie("csrftoken"),
+        },
+        body: formData,
+        credentials: 'same-origin' 
+    })
 		.then(response => {
-			const contentType = response.headers.get('content-type');
+			const contentType = response.headers.get("content-type");
 			if (!response.ok) {
-				throw new Error(`HTTP error! status: ${response.status}`);
-			} 
+			return response.json().then(data => {
+				console.log('Error data:', data);
+				let errorMessages = [];
+				if (data.errors) {
+					for (let key in data.errors) {
+						console.log(`Erreur dans ${key}: ${data.errors[key]}`);
+						let errortmp = `${data.errors[key]}`
+						errorMessages.push(errortmp);
+					}
+				}
+/* 				for (let key in data) {
+					if (data.hasOwnProperty(key)) {
+						console.log(`Erreur avec dans la boucle ${key}: ${data[key]}`);
+						let errortmp = `${data.errors[key]}`
+						errorMessages.push(errortmp);  // Ajoutez chaque message d'erreur au tableau
+					}
+				} */
+				let errorMessage = errorMessages.join(', ');
+				console.log("errormessage = ", errorMessage);  // Créez une seule chaîne à partir du tableau
+				throw new Error(`${errorMessage}`);
+			});
+			}
 			else if (!contentType || !contentType.includes('application/json')) {
 				throw new TypeError("Oops, we haven't got JSON!");
 			}
 			return response.json();
 		})
 		.then(data => {
-			console.log('Signup Success:', data);
+			//console.log('Signup Success:', data);
 			if (data.message === "Error") {
 				console.log('Signup Error:', data.errors);
 				document.getElementById('error-message').textContent = data.errors.join(', ');
@@ -206,13 +228,22 @@ function    setupButtonListener() {
 			{
 				console.log('Signup Success:', data);
 				document.getElementById('success-message').textContent = "Your account has been created successfully";
-				document.getElementById('error-message').style.display = 'block';
-				changeView('hero');
+				document.getElementById('error-message').style.display = 'none';
+				document.getElementById('success-message').style.display = 'block';
+				setTimeout(function() {
+					const loginElement = document.querySelector('.login-form');
+					const signupElement = document.querySelector('.signup');
+					loginElement.style.display = 'block';
+					signupElement.style.display = 'none';
+				}, 2000);
 			}
 		})
 		.catch((error) => {
+			console.log('error dans le catch de signup:', error);
+			console.log('error message:', error.message);
 			console.error('Error:', error);
 			document.getElementById('error-message').textContent = error.message;
+			document.getElementById('error-message').style.display = 'block';
 		});
 	});
 }

@@ -17,19 +17,22 @@ def home_page(request):
 	return render(request, "login/home.html")
 
 def signup_form(request):
-	if request.method == 'POST':
-		form = SignupForm(request.POST)
-		if form.is_valid():
-			form.save()
-			messages.success(request, "Your account has been created successfully")
-			return JsonResponse({"message" : "OK"})
-		else:
-			messages.error(request, "Error")
-			return JsonResponse({"message" : "Error", "errors": form.errors}, status=400)
-	else:
-		form = SignupForm()
-		return JsonResponse({"message" : "Invalid request method"}, status=400)
-	return render(request, "login/signup.html", {'form' : form})
+    if request.method == 'POST':
+        form = SignupForm(request.POST)
+        if form.is_valid():
+            try:
+                form.save()
+                messages.success(request, "Your account has been created successfully")
+                return JsonResponse({"message" : "OK"})
+            except Exception as e:
+                return JsonResponse({"message" : str(e)}, status=500)
+        else:
+            messages.error(request, "Error")
+            return JsonResponse({"message" : "Error", "errors": form.errors}, status=400)
+    else:
+        form = SignupForm()
+        return JsonResponse({"message" : "Invalid request method"}, status=400)
+    return render(request, "login/signup.html", {'form' : form})
 
 
 def login_form(request):
@@ -59,21 +62,21 @@ def logout_form(request):
 
 
 def test(request):
-	if request.method == 'POST':
-		data = json.load(request)
-		username = data['email']
-		password = data['password']
-		request.session['user_id'] = -1
-		user = authenticate(username=username, password=password)
-		if user is not None:
-			request.session['user_id'] = User.objects.get(username=username).id
-			auth.login(request, user)
-			user = User.objects.get(username=username)
-			return JsonResponse({"message" : "OK", "id" : user.id, "username" : user.username, "first_name" : user.first_name, "last_name" : user.last_name, "email" : user.email, "password" : user.password, "logged_in" : user.is_authenticated, "session_username" : request.session['user_id']}, safe=False)
-		else:
-			return JsonResponse({"message" : request.session['user_id']})
-	else:
-		return JsonResponse({"message" : "KO"})
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        username = data['email']
+        password = data['password']
+        request.session['user_id'] = -1
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            request.session['user_id'] = User.objects.get(username=username).id
+            auth.login(request, user)
+            user = User.objects.get(username=username)
+            return JsonResponse({"message" : "OK", "id" : user.id, "username" : user.username, "first_name" : user.first_name, "last_name" : user.last_name, "email" : user.email, "password" : user.password, "logged_in" : user.is_authenticated, "session_username" : request.session['user_id']}, safe=False)
+        else:
+            return JsonResponse({"message" : request.session['user_id']})
+    else:
+        return JsonResponse({"message" : "KO"})
 	
 def get_session_username(request):
 	return JsonResponse({'user_id' : request.session['user_id']})

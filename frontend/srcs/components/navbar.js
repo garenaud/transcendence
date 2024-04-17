@@ -172,12 +172,22 @@ function    setupButtonListener() {
   document.getElementById('logoutBtn').addEventListener('click', function() {
     // Supprimez les informations de l'utilisateur de appState
     appState.user = null;
-
     // Supprimez les informations de l'utilisateur du localStorage
     localStorage.removeItem('appState');
-
-    // Redirigez l'utilisateur vers la page de connexion
-    changeView('login');
+    // Effectuez une requête à l'URL de déconnexion
+    fetch('auth/logout/', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => {
+        if (response.ok) {
+            changeView('login');
+        } else {
+            console.error('Logout failed');
+        }
+    });
 });
 
   document.querySelector('.close-menu-button').addEventListener('click', function() {
