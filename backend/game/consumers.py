@@ -122,10 +122,11 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
                 await self.stop_game()
 
             # Check collision with left and right paddles
+            print(self.game.bv.z)
+            print(self.game.bv.x)
             check_collision(self, self.game.plx, self.game.plz)  # Left paddle
             check_collision(self, self.game.prx, self.game.prz)  # Right paddle
             balllimit = 8.5
-            print(self.game.bpx)
             if self.game.bpz > balllimit or self.game.bpz < -balllimit:
                 self.game.bv.z *= -1
             elif self.game.bpx > 15 or self.game.bpx < -15:

@@ -16,8 +16,8 @@ class gameData:
 		angle1_deg = random.uniform(40, 60)
 		angle1_rad = math.radians(angle1_deg)
 		# Calculer les composantes x et z de la vitesse de la balle pour la première direction
-		bv1_x = math.cos(angle1_rad) * 0.25
-		bv1_z = math.sin(angle1_rad) * 0.25
+		bv1_x = math.cos(angle1_rad) * 0.8
+		bv1_z = math.sin(angle1_rad) * 0.8
 		# Générer un angle aléatoire entre 120 et 140 degrés pour la deuxième direction
 		angle2_deg = random.uniform(120, 140)
 		angle2_rad = math.radians(angle2_deg)
