@@ -27,5 +27,6 @@
     "roulette": "Roulette",
     "createRoomPong": "CREATE A ROOM",
     "joinRoomPong": "JOIN A ROOM",
-    "joinRandomRoomPong": "JOIN A RANDOM ROOM"
+    "joinRandomRoomPong": "JOIN A RANDOM ROOM",
+    "game": "GAME"
 }

@@ -5,10 +5,10 @@ import { renderPong } from './pongComponent.js';
 import { renderChat } from './chat.js';
 import { renderRoulette, setupRoulette, runRoulette } from './roulette.js';
 import { renderLogin } from './login.js';
-import { renderBlackJack } from './BlackJack.js';
 import { renderRun } from './runGame.js';
 import { renderUserMenu } from './userMenu.js';
 import { LanguageBtn, loadLanguage } from './languageManager.js';
+import { renderScratchGame } from './scratchGame.js';
 //import { renderSlotMachine } from './slotMachine.js';
 
 // Initialisation de l'état de l'application et du current user
@@ -117,11 +117,10 @@ export async function renderApp() {
                         const game = await renderPong();
                         const game2 = await renderRun();
                         const roulette = await renderRoulette();
-                        const BlackJack = await renderBlackJack();
-                        const test = await renderBlackJack();
+                        const test = await renderRoulette();
                         const test2 = await renderRoulette();
                         const test3 = await renderRoulette();
-                        await renderDiv([roulette, BlackJack, test, test2, game, game2], 'row');
+                        await renderDiv([roulette, test, test2, test3, game, game2], 'row');
                         await LanguageBtn();
                         renderNavbar(appState.user);
                         appState.renderedComponents.game = true;

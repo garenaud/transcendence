@@ -143,6 +143,7 @@ function    setupButtonListener() {
 			}
 		})
 		.catch((error) => {
+			console.log('error dans le catch:', error);
 			console.error('Error:', error);
 		});
 	});

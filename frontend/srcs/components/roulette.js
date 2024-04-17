@@ -85,7 +85,7 @@ export function spinWheel(ballAnim) {
             <div class="fg" data-lang-key='roulette'>Roulette</div>
           </div>
           <button type="button" class="btn btn-primary glowing-btn center mx-auto d-block" data-bs-toggle="modal" data-bs-target="#roulette">
-          <span id="playBtn" class='glowing-txt' data-lang-key='playBtn'>JOUER</span></button>
+          <span id="playBtnRoulette" class='glowing-txt' data-lang-key='playBtn'>JOUER</span></button>
         </div>
       </div>
             
@@ -478,7 +478,7 @@ export function spinWheel(ballAnim) {
                       <div>
                       </div>
                       <div class="modal-footer">
-                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                       <button type="button" class="btn btn-primary">Save changes</button>
                   </div>
               </div>
@@ -496,7 +496,7 @@ export function spinWheel(ballAnim) {
   const wheel = rouletteElement.querySelector("#rouletteWheel");
 
   //document.body.appendChild(rouletteElement);
-  rouletteElement.querySelector('#playBtn').addEventListener('click', () => loadRouletteScripts());
+  rouletteElement.querySelector('#playBtnRoulette').addEventListener('click', () => loadRouletteScripts());
 
   return rouletteElement;
 }

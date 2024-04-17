@@ -126,10 +126,10 @@ function displayUserInfo(user) {
     <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
       <ul class="nav-div-btn navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-glowing-btn">
-          <button id='navChatBtn' class='glowing-btn'><span class='glowing-txt' data-lang-key='ranking'>CLASSEMENT</span></button>
+          <button id='navChatBtn' class='glowing-btn'><span class='glowing-txt' data-lang-key='home'>HOME</span></button>
         </li>
         <li class="nav-glowing-btn">
-          <button id='navGameBtn' class='glowing-btn'><span class='glowing-txt' data-lang-key='home'>HOME</span></button>
+          <button id='navGameBtn' class='glowing-btn'><span class='glowing-txt' data-lang-key='game'>GAME</span></button>
         </li>
       </ul>
     </div>
