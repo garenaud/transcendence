@@ -1,5 +1,6 @@
 import { changeView, appState } from './stateManager.js';
 import { getUser, setUserProfilePicture, setUsername } from './userManager.js';
+import { createButtonComponent } from './globalComponent.js';
 
 
 function escapeHTML(unsafeText) {
@@ -36,6 +37,7 @@ function displayUserInfo(user) {
   function renderUserMenu(user) {
     const userMenuHTML = `
         <div id="user-menu" class="user-menu-hidden">
+
             <div class="user-menu-img">
                 <img src="${user.profilePicture}" alt="User Image">
                 <button type="button" class="close close-menu-button" aria-label="Close"> <span aria-hidden="true">&times;</span> </button>
@@ -93,7 +95,7 @@ function displayUserInfo(user) {
         </div>
 
         <!-- Modal add a friend -->
-        <div class="modal fade" id="addFriend" tabindex="-1" role="dialog" aria-labelledby="addFriendLabel" aria-hidden="true">
+        <div class="modal fade modal-dialog modal-lg" id="addFriend" tabindex="-1" role="dialog" aria-labelledby="addFriendLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -250,6 +252,44 @@ function    setupButtonListener() {
   });
 }
 
+const profileHeaderHTML = `
+<div class="profile-header-container">   
+    <div class="profile-header-img">
+        <img class="rounded-circle" src="//lh3.googleusercontent.com/-6V8xOA6M7BA/AAAAAAAAAAI/AAAAAAAAAAA/rzlHcD0KYwo/photo.jpg?sz=120" />
+        <!-- badge -->
+        <div class="rank-label-container">
+            <span class="label label-default rank-label">100 pts</span>
+        </div>
+    </div>
+</div>
+`;
+
+function createPhotoComponent(imageSrc, points) {
+  const photoContainer = document.createElement('div');
+  const profileHeader = document.createElement('div');
+  profileHeader.innerHTML = profileHeaderHTML;
+  profileHeader.querySelector('.profile-header-img img').src = imageSrc;
+  profileHeader.querySelector('.rank-label-container .rank-label').textContent = points + ' pts';
+  photoContainer.appendChild(profileHeader);
+  return photoContainer;
+}
+
+/* export function createButtonComponent(text, buttonId, dataLangKey, onClickFunction) {
+  const glowingBtnHTML = `
+    <button id='${buttonId}' class='glowing-btn h-100'><span class='glowing-txt' data-lang-key='${dataLangKey}'>${text}</span></button>
+  `;
+  const div = document.createElement('div');
+  div.className = 'd-flex justify-content-center align-items-center';
+  div.innerHTML = glowingBtnHTML;
+  const button = div.querySelector('button');
+  button.addEventListener('click', function(event) {
+    if (onClickFunction) {
+      onClickFunction(event);
+    }
+  });
+  return div;
+} */
+
 function  showUserList() {
   const users = appState.users;
   const modalBody = document.querySelector('#addFriend .modal-body');
@@ -261,13 +301,22 @@ function  showUserList() {
     const idCell = document.createElement('td');
     const emailCell = document.createElement('td');
     const buttonCell = document.createElement('td');
+    const photoCell = document.createElement('td');
+    const photoComponent = createPhotoComponent('./Design/User/Max-R_Headshot.jpg', 100);
+    const buttonComponent = createButtonComponent('+', 'addFriendButton', '+', (event) => {
+      console.log(`Button clicked for user ${user.id}`);});
     idCell.textContent = user.id;
     nameCell.textContent = user.username;
     emailCell.textContent = user.email;
+    photoCell.appendChild(photoComponent);
+    buttonCell.appendChild(buttonComponent);
+    row.appendChild(photoCell);
     row.appendChild(idCell);
     row.appendChild(nameCell);
     row.appendChild(emailCell);
+    row.appendChild(buttonCell);
     table.appendChild(row);
+
   });
   modalBody.appendChild(table);
 }

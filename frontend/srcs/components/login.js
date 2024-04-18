@@ -1,5 +1,5 @@
 import { changeView, appState } from './stateManager.js';
-import { getUser, loadUser } from './userManager.js';
+import { loadUser } from './userManager.js';
 
 export function renderLogin() {
     const loginHTML = `

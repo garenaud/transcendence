@@ -1552,20 +1552,23 @@ background-size: 70px 120px;
 .userlist-table {
   width: 100%;
 }
+.userlist-table tr {
+  height: 15px;
+}
 
 .userlist-table td {
   padding: 10px;
   border: 1px solid #ddd;
 }
 
-.userlist-table button {
+/* .userlist-table button {
   background-color: #4CAF50;
   color: white;
   padding: 10px 20px;
   margin: 10px 0;
   border: none;
   cursor: pointer;
-}
+} */
 
 
 /* modale pour changer les informations de l'utilisateur */
@@ -2082,4 +2085,54 @@ div.modal-footer, div.modal-body, div.modal-header{
 .form-scratch {
   padding: 20px;
 	color: blueviolet;
+}
+
+
+
+
+
+
+/*-------------------------------- Profile picture --------------------------------*/
+.profile-header-container{
+  margin: 0 auto;
+  text-align: center;
+}
+
+/* .profile-header-img{
+  padding: 54px;
+} */
+
+.profile-header-img img {
+  height: 60px;
+  object-fit: cover;
+}
+
+.profile-header-img > img.img-circle {
+  width: 80px;
+  height: 80px;
+  border: 2px solid #F6428E;
+}
+
+.profile-header {
+  margin-top: 43px;
+}
+
+/**
+* Ranking component
+*/
+.rank-label-container {
+  margin-top: -12px;
+  /* z-index: 1000; */
+  text-align: center;
+}
+
+.label.label-default.rank-label {
+  background-color: #F6428E;
+  padding: 2px 5px 2px 5px;
+  border-radius: 27px;
+  font-size: 10px;
+}
+
+.toast {
+  z-index: 9999;
 }

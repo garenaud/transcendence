@@ -63,12 +63,22 @@ function getUserFromServer(userId) {
     });
 }
 
-function getUser() {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-        appState.user = JSON.parse(storedUser);
+async function loadUserFromServer() {
+    const userId = localStorage.getItem('userId');
+    if (userId) {
+        const user = await getUserFromServer(userId);
+        localStorage.setItem('user', JSON.stringify(user));
     }
-    return appState.user;
+}
+
+export function getCurrentUser() {
+    const storedUser = localStorage.getItem('user');
+    return storedUser ? JSON.parse(storedUser) : null;
+}
+
+// Fonction pour définir l'utilisateur actuellement connecté
+export function setCurrentUser(user) {
+    localStorage.setItem('user', JSON.stringify(user));
 }
 
 function setUsername(username) {
@@ -87,6 +97,13 @@ function setUserProfilePicture(profilePicture){
     appState.user.profilePicture = profilePicture;
     localStorage.setItem('user', JSON.stringify(appState.user));
     console.log('appState.user apres setProfilePicture:', appState.user);
+}
+
+function getUser() {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+        appState.user = JSON.parse(storedUser);
+    }
 }
 
 export { getUser, setUsername, setUserPoints, setUserProfilePicture };
