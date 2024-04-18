@@ -230,6 +230,7 @@ fn connect_ws(user: User, room: String) -> Result<tungstenite::WebSocket<tungste
  * 		socket: WebSocket - The websocket connected to the game
  */
 fn waiting_game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<std::net::TcpStream>>) {
+	_ = socket.send(Message::Text(r#"{"message":"load"}"#.to_string()));
 	loop {
 		match socket.read() {
 			Ok(msg) => {
@@ -257,9 +258,7 @@ fn waiting_game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTls
 										1 => {
 											println!("1");
 										},
-										nu => {
-											println!("{}", nu)
-										}
+										_ => {}
 									},
 									None => {}
 								}
@@ -321,8 +320,6 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
 	
 	// game loop
 	loop {
-		sleep(Duration::from_millis(5));
-
 		// Handle the server's messages
 		match socket.read() {
 			Ok(msg) => match msg {
@@ -403,7 +400,6 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
 				}
 			}
 		}
-
 		// Send the user's input to the server
 		match getch() {
 			27 => {
@@ -423,6 +419,7 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
 				}
 			}
 		}
+		sleep(Duration::from_millis(5));
 	}
 }
 
