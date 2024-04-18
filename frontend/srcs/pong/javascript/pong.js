@@ -55,11 +55,10 @@ function makeid(length) {
     return result;
 }
 
-
-if (gameid == null) {
-	//console.log("null");
-	gameid = makeid(4);
+if (gameid === "null" || gameid === undefined) {
+	window.location.href = "https://localhost/";
 }
+
 gameSocket = new WebSocket(
 	'wss://'
 	+ window.location.host
@@ -68,12 +67,11 @@ gameSocket = new WebSocket(
 	+ '/'
 	+ gameid
 	+ '/'
-	);
+);
 
 const gameidElement = document.getElementById("gameID");
 gameidElement.textContent = "Game ID : " + gameid;
 //console.log(privategame);
-
 //console.log(`ID IS ${gameid}`);
 
 function addClassDelayed(element, className, delay) {
