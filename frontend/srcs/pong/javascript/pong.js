@@ -213,7 +213,7 @@ function initPostprocessing() {
 function handleGround() {
 	const groundName = 'Ground';
 	const Ground = scene.getObjectByName(groundName);
-	Ground.position.y = -1.9;
+	Ground.position.y = -0.5;
 	// Ground.roughness = 1.8;
 	Ground.receiveShadow = true;
 }
