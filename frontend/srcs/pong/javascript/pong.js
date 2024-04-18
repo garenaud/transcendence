@@ -72,8 +72,6 @@ gameSocket = new WebSocket(
 const loadingElement = document.getElementById('loading');
 loadingElement.innerHTML = "[WAITING FOR OPPONENT]<br>Game ID : " + gameid;
 
-const gameidElement = document.getElementById("gameID");
-gameidElement.textContent = "Game ID : " + gameid;
 //console.log(privategame);
 //console.log(`ID IS ${gameid}`);
 
@@ -121,9 +119,9 @@ function init() {
 			gameSocket.send(JSON.stringify({
 				'message' : 'load'
 			}));
-			const container = document.querySelector('.container');
+			const container = document.querySelector('.container3');
 			if (container) {
-				container.style.display = 'block';
+				container.style.display = 'flex';
 			}
 			// createScoreTexts();
 		})
@@ -507,8 +505,10 @@ gameSocket.onmessage = function(e) {
 		document.getElementById("myModal").style.display = "block";
 	} else if (game_data.action == 'score') {
 		if (game_data.scorep1 != undefined && game_data.scorep2 != undefined) {
-			const scoreElement = document.getElementById("score");
-			scoreElement.textContent = game_data.scorep2 + " - " + game_data.scorep1;
+			const scoreL = document.getElementById("scoreHome");
+			scoreL.textContent = game_data.scorep2;
+			const scoreR = document.getElementById("scoreGuest");
+			scoreR.textContent = game_data.scorep1;
 		}
 	} else if (game_data.action == 'counter') {
 		if (game_data.num < currentNum) {
