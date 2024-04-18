@@ -36,6 +36,7 @@ document.getElementById('createBtn').addEventListener('click', function() {
 
 document.getElementById('joinBtn').addEventListener('click', function() {
 	errorLink.textContent = "";
+	errorLink.style.display = "block";
 	const gameIdInput = document.getElementById('gameCodeInput');
 	gameid = gameIdInput.value.trim();
 	let url = '/api/game/' + gameid;
@@ -63,7 +64,10 @@ document.getElementById('joinBtn').addEventListener('click', function() {
 	} else {
 		errorLink.textContent = `La partie ${gameid} n'existe pas, veuillez reessayer`;
 	}
-});
+	setTimeout(function() {
+		errorLink.style.display = "none";
+	}, 4000);
+	});
 
 
 document.getElementById('searchBtn').addEventListener('click', function() {
