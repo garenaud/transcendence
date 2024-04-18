@@ -1,4 +1,5 @@
 // import { init } from "../localpong/localpong.js";
+// import { makeid } from "../pong/javascript/pong.js"
 //import * as PongMenu from "./pong_menu.js";
 
 const errorLink = document.getElementById('error');
@@ -59,12 +60,14 @@ export function renderPong() {
                         </div>
 
                         <!-- multiplayerModalContent -->
+						<link rel="stylesheet" type="text/css" href="/pong/css/pong_menu.css">
                         <div id="pongMulti" class="h-100 align-items-center d-none">
-                            <button id="createBtn">Create Game</button>
-                            <button id="joinBtn">Join Game</button>
-                            <button id="searchBtn">List Game</button>
-                            <input type="text" id="gameCodeInput" placeholder="Enter Game Code"><br>
-                            <p><a id="error"></a></p>
+						<div id="menu">
+							<button id="createBtn">Create Game</button>
+							<button id="joinBtn">Join Game</button>
+							<button id="searchBtn">Search Game</button>
+							<input type="text" id="gameCodeInput" placeholder="Enter Game Code"><br>
+							<a id="error"></a>
                         </div>
 
                         <!-- pongLocalContent -->
@@ -113,6 +116,15 @@ export function renderPong() {
         multiPongBtn.addEventListener('click', toggleVisibility);
         localPongBtn.addEventListener('click', toggleVisibility);
 
+		function toggleVisibilityMulti() {
+			origPong.classList.add('d-none');
+			pongMulti.classList.remove('d-none');
+		}
+		
+		// Ajoutez cet événement à l'intérieur de la fonction addEventListeners pour le bouton Multiplayer
+		multiPongBtn.addEventListener('click', toggleVisibilityMulti);
+
+		//* LOCALPONG
         localPongBtn.addEventListener('click', function() {
             pongMulti.classList.add('d-none');
             document.querySelectorAll('.card-game-inside > div').forEach(div => {
@@ -124,6 +136,7 @@ export function renderPong() {
 			document.querySelector('#pongLocal').innerHTML = data;
             loadScripts();
         });
+		//* 
         pongElement.querySelector('#createBtn').addEventListener('click', function() {
             pongMulti.classList.add('d-none');
             gameid = makeid(3);
@@ -181,8 +194,6 @@ export function renderPong() {
           });
         
           pongModal.addEventListener('show.bs.modal', function () {
-            console.log('Modal is about to be shown');
-			console.log(scriptStarted);
 			scriptStarted = true;
 			document.querySelectorAll('.card-game-inside > div').forEach(div => {
 				div.classList.remove('d-none');
@@ -190,12 +201,7 @@ export function renderPong() {
 			origPong.classList.remove('d-none');
         });
         pongModal.addEventListener('hidden.bs.modal', function () {
-			console.log('Modal is hidden or closed');
-			console.log(scriptStarted);
 			scriptStarted = false;
-            document.querySelectorAll('.card-game-inside > div').forEach(div => {
-				console.log(div);
-            });
 			unloadScript();
 			const pongLocal = element.querySelector('#pongLocal');
     		pongLocal.classList.add('d-none');
@@ -269,7 +275,6 @@ function unloadScript() {
 
 
 function loadScripts() {
-    // Supprime les anciens scripts si nécessaire    
     // Créer et ajouter le script localpong.js
     document.querySelectorAll('script[data-disabled="true"]').forEach(script => {
         script.setAttribute('type', 'module');
@@ -281,11 +286,15 @@ function loadScripts() {
     console.log('loading');
     scriptLocalPong.setAttribute('data-pong', 'dynamic');  // Marqueur pour identifier les scripts chargés dynamiquement
     document.body.appendChild(scriptLocalPong);
-    
-    // Créer et ajouter le script ModelHelper.js
-    // const scriptModelHelper = document.createElement('script');
-    // scriptModelHelper.type = 'module';
-    // scriptModelHelper.src = '../localpong/ModelHelper.js?' + new Date().getTime(); // Ajoute un horodatage à l'URL
-    // scriptModelHelper.setAttribute('data-pong', 'dynamic');
-    // document.body.appendChild(scriptModelHelper);
+
+	document.querySelectorAll('script[data-disabled="true"]').forEach(script => {
+        script.setAttribute('type', 'module');
+        script.removeAttribute('data-disabled');
+    });
+    const scriptMultiPong = document.createElement('script');
+    scriptMultiPong.type = 'module';
+    scriptMultiPong.src = '../pong/javascript/pong.js?' + new Date().getTime(); // Ajoute un horodatage à l'URL
+    console.log('loading');
+    scriptMultiPong.setAttribute('data-pong', 'dynamic');  // Marqueur pour identifier les scripts chargés dynamiquement
+    document.body.appendChild(scriptMultiPong);
 }
