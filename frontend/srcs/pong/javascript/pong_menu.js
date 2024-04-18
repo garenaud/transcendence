@@ -69,16 +69,6 @@ document.getElementById('joinBtn').addEventListener('click', function() {
 document.getElementById('searchBtn').addEventListener('click', function() {
 	let url = '/api/game/search/';
 	console.log(url);
-	document.getElementsByTagName('body')[0].innerHTML = `
-		<div class="container">
-		<div class="load-3">
-			<p id="loading">[SEARCHING FOR OPPONENT]</p>
-			<div class="line"></div>
-			<div class="line"></div>
-			<div class="line"></div>
-		</div>
-		</div>
-	`;
 	fetch(url, {
 		method: 'GET',
 		credentials: 'same-origin' 

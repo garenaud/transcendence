@@ -94,7 +94,7 @@ function init() {
 
 	// Scene
 	scene = new THREE.Scene();
-	scene.background = new THREE.Color('purple');
+	//scene.background = new THREE.Color('purple');
 
 	// Camera
 	camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight);
@@ -110,6 +110,10 @@ function init() {
 	// TODO waiting room;
 	LoadGLTFByPath(scene)
 		.then(() => {
+			const container2 = document.querySelector('.container2');
+			if (container2) {
+				container2.style.display = 'none';
+			}
 			handleGround();
 			handleLight();
 			handleText();
@@ -449,7 +453,7 @@ function handleBackground() {
     const color = new THREE.Color().setHSL(hue / 360, saturation / 100, lightness / 100);
 
     // Appliquez la couleur au fond de la scène
-    scene.background = color;
+   scene.background = color;
 }
 
 function anim() {
@@ -475,10 +479,6 @@ gameSocket.onmessage = function(e) {
 	game_data = JSON.parse(e.data);
 	console.log(game_data);
 	if (game_data.action == "allin") {
-		const container2 = document.querySelector('.container2');
-		if (container2) {
-			container2.style.display = 'none';
-		}
 		// Appel de la fonction d'initialisation
 		init();
 	}
@@ -554,7 +554,7 @@ function animate() {
 	//handlePaddleLeft();
 	//handlePaddleRight();
 	//handleAIPaddle();
-	handleBackground();
+	//handleBackground(); COLOR BACKGROUND
 	// handleAIPaddleRight();
 	//updateBall();
 	// console.log(ball.position.x);
