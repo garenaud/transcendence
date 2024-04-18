@@ -71,7 +71,7 @@ fn main() {
 			Err(err) => {
 				let err = err.source().unwrap().source().unwrap();
 				let err = err.to_string();
-				eprintln!("Error: {}", err);
+				eprintln!("{}", format!("{}", err).red());
 			}
 		}
 	};

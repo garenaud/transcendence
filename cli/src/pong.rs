@@ -87,7 +87,7 @@ pub fn matchmaking(user: User) {
 pub fn create_game(user: User) {
 
 	// Ask the server for a room
-	let req = user.get_client().get("https://{server}/api/game/create/".replace("{server}", user.get_server().as_str()));
+	let req = user.get_client().get("https://{server}/api/game/create/42".replace("{server}", user.get_server().as_str()));
 	let req = req.build();
 	let res = user.get_client().execute(req.expect("ERROR WHILE EXECUTING THE REQUEST"));
 	let room_id = match res {
@@ -290,13 +290,14 @@ fn waiting_game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTls
  * 		socket: WebSocket - The websocket connected to the game
  */
 fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<std::net::TcpStream>>) {
-	let _ = clearscreen::clear();
+	let _ = clear();
 
 	let mut paddle_l = Paddle { x: 0.0, y: 0.0, old_y: 0.0 };
 	let mut paddle_r = Paddle { x: 0.0, y: 0.0, old_y: 0.0 };
 	let mut ball = Ball { x: 0.0, y: 0.0, old_x: 0.0, old_y: 0.0};
 	let mut score = Score { score1: 0, score2: 0 };
 	let mut term: Console;
+
 	if let Some((w, h)) = term_size::dimensions() {
 		term = Console {
 			width: w as f64,
@@ -357,14 +358,14 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
 							score.score1 = json["scorep1"].as_i32().unwrap();
 							score.score2 = json["scorep2"].as_i32().unwrap();
 						},
-						"private" => continue,
-						"stop" => {
+						// "private" => continue,
+						"Stop" => {
 							endwin();
-							_ = term_cursor::clear();
+							_ = clear();
 							if score.score1 > score.score2 {
-								println!("Player 1 wins !");
+								println!("{}", format!("Player 1 wins !").green().bold());
 							} else if score.score1 < score.score2 {
-								println!("Player 2 wins !");
+								println!("{}", format!("Player 2 wins !").green().bold());
 							} else {
 								println!("Draw !");
 							}
@@ -373,7 +374,7 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
 						"start" => continue,
 						_ => {
 							endwin();
-							_ = term_cursor::clear();
+							_ = clear();
 							println!("Unknown action: {}", json["action"]);
 							break ;
 						}
@@ -438,21 +439,6 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
  * 		score: &Score - The score
  */
 fn render(term: &Console, paddle_l: &Paddle, paddle_r: &Paddle, ball: &Ball, score: &Score) {
-
-	// // Print the score
-	// _ = term_cursor::set_pos(((term.width / 2.0 - 3.0) as i32).try_into().unwrap(), 1);
-	// println!("{} - {}", score.score1, score.score2);
-	// _ = term_cursor::set_pos(0, 2);
-	// for _ in 0..term.width as i32 {
-	// 	print!("-");
-	// }
-	// println!();
-	// print_paddle(&paddle_l);
-	// print_paddle(&paddle_r);
-	// erase_ball(&old_ball);
-	// print_ball(&ball);
-	// refresh();
-
 	mvaddstr(0, ((term.width / 2.0 - 3.0) as i32).try_into().unwrap(), &format!("{} - {}", score.score1, score.score2));
 	mvaddstr(1, 0, &"-".repeat(term.width as usize));
 
@@ -469,14 +455,6 @@ fn render(term: &Console, paddle_l: &Paddle, paddle_r: &Paddle, ball: &Ball, sco
  * 		paddle: &Paddle - Ref to paddle struct to print
  */
 fn print_paddle(paddle: &Paddle) {
-	// let x = paddle.x as i32;
-	// let y = paddle.y as i32;
-	// for i in 0..PADDLE_HEIGHT as i32 {
-	// 	_ = term_cursor::set_pos(x, y + i + 2);
-	// 	print!("|");
-	// }
-	// println!();
-
 	for i in 0..PADDLE_HEIGHT as i32 {
 		mvaddch((paddle.old_y + i as f64) as i32, paddle.x as i32, ' ' as u32);
 	}
@@ -492,12 +470,6 @@ fn print_paddle(paddle: &Paddle) {
  * 		ball: &Ball - Ref to ball struct to print
  */
 fn print_ball(ball: &Ball) {
-	// let x = ball.x as i32;
-	// let y = ball.y as i32;
-	// _ = term_cursor::set_pos(x, y + 2);
-	// print!("o");
-	// println!();
-
 	mvaddch(ball.old_y as i32, ball.old_x as i32, ' ' as u32);
 	mvaddch(ball.y as i32, ball.x as i32, 'o' as u32);
 }
