@@ -207,7 +207,6 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
         #     self.task = asyncio.create_task(self.loop())
         elif message == "load":
             self.game.count += 1
-            print(self.game.count)
             if self.game.count == 2:
                 self.task = asyncio.create_task(self.loop())
         elif message == "Stop" or self.game.finished == True:

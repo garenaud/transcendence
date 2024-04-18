@@ -69,6 +69,9 @@ gameSocket = new WebSocket(
 	+ '/'
 );
 
+const loadingElement = document.getElementById('loading');
+loadingElement.innerHTML = "[WAITING FOR OPPONENT]<br>Game ID : " + gameid;
+
 const gameidElement = document.getElementById("gameID");
 gameidElement.textContent = "Game ID : " + gameid;
 //console.log(privategame);
@@ -113,6 +116,10 @@ function init() {
 			gameSocket.send(JSON.stringify({
 				'message' : 'load'
 			}));
+			const container = document.querySelector('.container');
+			if (container) {
+				container.style.display = 'block';
+			}
 			// createScoreTexts();
 		})
 		.catch((error) => {
@@ -468,6 +475,10 @@ gameSocket.onmessage = function(e) {
 	game_data = JSON.parse(e.data);
 	console.log(game_data);
 	if (game_data.action == "allin") {
+		const container2 = document.querySelector('.container2');
+		if (container2) {
+			container2.style.display = 'none';
+		}
 		// Appel de la fonction d'initialisation
 		init();
 	}
