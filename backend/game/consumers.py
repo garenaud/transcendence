@@ -221,18 +221,18 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             {"type": "update", "message": {'action' : 'game', 'bx' : self.game.bpx, 'bz' : self.game.bpz, 'plx' : self.game.plx ,'plz' : self.game.plz, 'prx' : self.game.prx ,'prz' : self.game.prz}}
             )
         elif self.game.p1id == self.channel_name:
-            if message == 'Up' and self.game.prz - self.game.ms > -6.5:
+            if (message == 'Up' or message == 'o' or message == 'O') and self.game.prz - self.game.ms > -6.5:
                 self.game.prz -= self.game.ms
-            elif message == 'Down' and self.game.prz + self.game.ms < 6.5:
+            elif (message == 'Down' or message == 'l' or message == 'L') and self.game.prz + self.game.ms < 6.5:
                 self.game.prz += self.game.ms
             await self.channel_layer.group_send(
                 self.room_group_name,
                 {"type": "update", "message": {'action' : 'paddle1', 'prx' : self.game.prx ,'prz' : self.game.prz }}
             )
         elif self.game.p2id == self.channel_name:
-            if message == 'W' and self.game.plz - self.game.ms > -6.5:
+            if (message == 'W' or message == 'w') and self.game.plz - self.game.ms > -6.5:
                 self.game.plz -= self.game.ms
-            elif message == 'S' and self.game.plz + self.game.ms < 6.5:
+            elif (message == 'S' or message == 's')and self.game.plz + self.game.ms < 6.5:
                 self.game.plz += self.game.ms
             await self.channel_layer.group_send(
                 self.room_group_name,
