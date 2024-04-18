@@ -47,11 +47,10 @@ function makeid(length) {
     return result;
 }
 
-
-if (gameid == null) {
-	//console.log("null");
-	gameid = makeid(4);
+if (gameid === "null" || gameid === undefined) {
+	window.location.href = "https://localhost/";
 }
+
 gameSocket = new WebSocket(
 	'wss://'
 	+ window.location.host
@@ -60,12 +59,11 @@ gameSocket = new WebSocket(
 	+ '/'
 	+ gameid
 	+ '/'
-	);
+);
 
 const gameidElement = document.getElementById("gameID");
 gameidElement.textContent = "Game ID : " + gameid;
 //console.log(privategame);
-
 //console.log(`ID IS ${gameid}`);
 
 function addClassDelayed(element, className, delay) {
@@ -103,6 +101,10 @@ function init() {
 			handleGround();
 			handleLight();
 			handleText();
+			gameSocket.send(JSON.stringify({
+				'message' : 'load'
+			}));
+			// createScoreTexts();
 		})
 		.catch((error) => {
 			console.error('Error loading JSON scene:', error);
@@ -112,6 +114,7 @@ function init() {
 		// Animation loop
 		animate();
 }
+
 
 function handleText() {
 	scoreLeft = scene.getObjectByName('Text');
@@ -275,7 +278,12 @@ function anim() {
 
 gameSocket.onmessage = function(e) {
 	game_data = JSON.parse(e.data);
-	if (game_data.action == "private")
+	console.log(game_data);
+	if (game_data.action == "allin") {
+		// Appel de la fonction d'initialisation
+		init();
+	}
+	else if (game_data.action == "private")
 	{
 		if (privategame == 'true')
 		{
@@ -332,6 +340,3 @@ function animate() {
 document.addEventListener('keydown', handleKeyDown);
 document.addEventListener('keyup', handleKeyUp);
 
-// Appel de la fonction d'initialisation
-init();
-// 

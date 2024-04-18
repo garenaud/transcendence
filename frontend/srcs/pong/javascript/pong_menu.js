@@ -15,8 +15,7 @@ function makeid(length) {
   }
 
 document.getElementById('createBtn').addEventListener('click', function() {
-	gameid = makeid(4);
-	let url = '/api/game/create/' + gameid;
+	let url = '/api/game/create/';
 	console.log(url);
 	fetch(url, {
 		method: 'GET',
@@ -25,18 +24,10 @@ document.getElementById('createBtn').addEventListener('click', function() {
 	.then(response => response.json())
 	.then(data => {
 		console.log('Success:', data);
-		if (data['message'] == "ko") {
-			gameid = data['id'];
-			privategame = true;
-			sessionStorage.setItem("privategame", privategame);
-			sessionStorage.setItem("gameid", gameid);
-			window.location.href = "/pong/pong.html";
-		} else if (data['message'] == 'ok'){
-			privategame = true;
-			sessionStorage.setItem("gameid", gameid);
-			sessionStorage.setItem("privategame", privategame);
-			window.location.href = "/pong/pong.html";
-		}
+		privategame = true;
+		sessionStorage.setItem("privategame", privategame);
+		sessionStorage.setItem("gameid", data['id']);
+		window.location.href = "/pong/pong.html";
 	})
 	.catch((error) => {
 		console.error('Error:', error);

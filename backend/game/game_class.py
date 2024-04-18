@@ -6,6 +6,7 @@ class gameData:
 	def __init__(self, id):
 		self.bv = introcs.Vector3(0, 0, 0)
 		self.id = id
+		self.count = 0
 		self.finished = False
 		self.started = False
 		self.p1id = -1
