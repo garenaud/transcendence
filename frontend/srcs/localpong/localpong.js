@@ -49,6 +49,7 @@ function displayvictory() {
 }
 
 function countdown() {
+	countdownElement.style.display = 'block';
 	if (countdownValue > 0) {
 		countdownElement.textContent = countdownValue + '...';
 		countdownValue -= 1;
@@ -108,7 +109,6 @@ function init() {
 		scene.receiveShadow = true;
 
 		// Animation loop
-		countdown();
 		animate();
 }
 
@@ -122,14 +122,16 @@ function handleText() {
 }
 
 function resetScore() {
+	displayvictoryElement.textContent = "";
 	scoreLeft = 0;
 	scoreRight = 0;
 	if (displayScoreElement) {
-        displayScoreElement.textContent = 'Score: ' + scoreLeft + ' - ' + scoreRight;
-    } else {
-        console.error('displayScoreElement is not defined');
-    }
-	displayvictoryElement.textContent = "";
+		displayScoreElement.textContent = 'Score: ' + scoreLeft + ' - ' + scoreRight;
+	} else {
+		console.error('displayScoreElement is not defined');
+	}
+	countdownValue = 3;
+	countdown();
 }
 
 function handleBall() {
@@ -298,7 +300,7 @@ function handlePaddleCollision() {
 			isColliding = false;
 	}
 
-const finalScore = 5;
+const finalScore = 1;
 	
 function handleWallColision() {
 		if (ball.position.z > ballLimit || ball.position.z < -ballLimit) {
