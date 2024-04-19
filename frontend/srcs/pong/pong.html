@@ -32,11 +32,28 @@
 	</head>
 	<body>
 		<div id="countdown"></div>
-		<div class="container">
-			<div id="score">0 - 0</div>
-			<div id="gameID"></div>
+		<div class="container3">
+			<div class="row">
+				<div class="col col-display" id="scoreHome">0</div>
+			</div>
+			<div class="row">
+				<div class="col col-display" id="scoreGuest">0</div>
+			</div>
 		</div>
-		<!-- Canvas is necessary to hold a scene  -->
+		<div class="container2">
+			<div class="load-3">
+				<p id="loading">[WAITING FOR OPPONENT]</p>
+				<div class="line"></div>
+				<div class="line"></div>
+				<div class="line"></div>
+			</div>
+		</div>
+		<div id="myModal" class="modal">
+			<div class="modal-content">
+				<p id="error"></p>
+				<button onclick="window.location.href = 'pong_menu.html'">Revenir au menu</button>
+			</div>
+		</div>
 		<canvas id="background"></canvas>
 		<script type="module" src="javascript/pong.js"></script>
 	</body>

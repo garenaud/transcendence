@@ -36,6 +36,7 @@ document.getElementById('createBtn').addEventListener('click', function() {
 
 document.getElementById('joinBtn').addEventListener('click', function() {
 	errorLink.textContent = "";
+	errorLink.style.display = "block";
 	const gameIdInput = document.getElementById('gameCodeInput');
 	gameid = gameIdInput.value.trim();
 	let url = '/api/game/' + gameid;
@@ -63,22 +64,15 @@ document.getElementById('joinBtn').addEventListener('click', function() {
 	} else {
 		errorLink.textContent = `La partie ${gameid} n'existe pas, veuillez reessayer`;
 	}
-});
+	setTimeout(function() {
+		errorLink.style.display = "none";
+	}, 4000);
+	});
 
 
 document.getElementById('searchBtn').addEventListener('click', function() {
 	let url = '/api/game/search/';
 	console.log(url);
-	document.getElementsByTagName('body')[0].innerHTML = `
-		<div class="container">
-		<div class="load-3">
-			<p id="loading">[SEARCHING FOR OPPONENT]</p>
-			<div class="line"></div>
-			<div class="line"></div>
-			<div class="line"></div>
-		</div>
-		</div>
-	`;
 	fetch(url, {
 		method: 'GET',
 		credentials: 'same-origin' 

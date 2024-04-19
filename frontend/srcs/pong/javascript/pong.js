@@ -61,8 +61,9 @@ gameSocket = new WebSocket(
 	+ '/'
 );
 
-const gameidElement = document.getElementById("gameID");
-gameidElement.textContent = "Game ID : " + gameid;
+const loadingElement = document.getElementById('loading');
+loadingElement.innerHTML = "[WAITING FOR OPPONENT]<br>Game ID : " + gameid;
+
 //console.log(privategame);
 //console.log(`ID IS ${gameid}`);
 
@@ -83,7 +84,7 @@ function init() {
 
 	// Scene
 	scene = new THREE.Scene();
-	scene.background = new THREE.Color('purple');
+	//scene.background = new THREE.Color('purple');
 
 	// Camera
 	camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight);
@@ -98,12 +99,21 @@ function init() {
 	// Load the GLTF model and handle the PaddleRight
 	LoadGLTFByPath(scene)
 		.then(() => {
+			const container2 = document.querySelector('.container2');
+			if (container2) {
+				container2.style.display = 'none';
+			}
+			handleBackground();
 			handleGround();
 			handleLight();
 			handleText();
 			gameSocket.send(JSON.stringify({
 				'message' : 'load'
 			}));
+			const container = document.querySelector('.container3');
+			if (container) {
+				container.style.display = 'flex';
+			}
 			// createScoreTexts();
 		})
 		.catch((error) => {
@@ -187,7 +197,8 @@ function initPostprocessing() {
 function handleGround() {
 	const groundName = 'Ground';
 	const Ground = scene.getObjectByName(groundName);
-	Ground.position.y = -1.9;
+	Ground.position.y = -0.5;
+	// Ground.roughness = 1.8;
 	Ground.receiveShadow = true;
 }
 
@@ -254,13 +265,13 @@ function handleBackground() {
     const color = new THREE.Color().setHSL(hue / 360, saturation / 100, lightness / 100);
 
     // Appliquez la couleur au fond de la scène
-    scene.background = color;
+   scene.background = color;
 }
 
 function anim() {
     if (currentNum >= 0) {
         addClassDelayed(document.getElementById("countdown"), "puffer", 600);
-        currentNum--;
+		currentNum--;
         if (currentNum > 0) {
             document.getElementById("countdown").innerHTML = currentNum;
         } else if (currentNum == 0) {
@@ -278,9 +289,8 @@ function anim() {
 
 gameSocket.onmessage = function(e) {
 	game_data = JSON.parse(e.data);
-	console.log(game_data);
 	if (game_data.action == "allin") {
-		// Appel de la fonction d'initialisation
+		loadingElement.innerHTML = "[LOADING GAME ...]";
 		init();
 	}
 	else if (game_data.action == "private")
@@ -296,6 +306,30 @@ gameSocket.onmessage = function(e) {
 			gameSocket.send(JSON.stringify({
 			'message' : 'public'
 			}));
+		}
+	} else if (game_data.action == 'Stop') {
+		const errorElement = document.getElementById('error');
+		errorElement.textContent = "Final score : " + game_data.scorep2 + " - " + game_data.scorep1;
+		document.getElementById("myModal").style.display = "block";
+		sessionStorage.setItem("gameid", null);
+	} else if (game_data.action == "userleave") {
+		const errorElement = document.getElementById('error');
+		errorElement.textContent = "A user left the game";
+		document.getElementById("myModal").style.display = "block";
+	} else if (game_data.action == 'score') {
+		if (game_data.scorep1 != undefined && game_data.scorep2 != undefined) {
+			const scoreL = document.getElementById("scoreHome");
+			scoreL.textContent = game_data.scorep2;
+			const scoreR = document.getElementById("scoreGuest");
+			scoreR.textContent = game_data.scorep1;
+		}
+	} else if (game_data.action == 'counter') {
+		if (game_data.num < currentNum) {
+			currentNum = game_data.num;
+			if (currentNum >= 0) {
+				setTimeout(function() {}, 1500);
+				setInterval(function() { anim(); }, 1325);
+			}
 		}
 	}
 	else {	
@@ -330,9 +364,40 @@ gameSocket.onmessage = function(e) {
 	}
 };
 
+
+function update_game_data() {
+	const PaddleRightName = 'RightPaddle';
+	const PaddleLeftName = 'LeftPaddle';
+	ball = scene.getObjectByName('Ball');
+	PaddleRight = scene.getObjectByName(PaddleRightName);
+	PaddleLeft = scene.getObjectByName(PaddleLeftName);
+	// console.log(PaddleRight);
+	// console.log(ball);
+	PaddleRight.position.x = parseFloat(game_data.paddleright_position_x);
+	PaddleRight.position.z = parseFloat(game_data.paddleright_position_z);
+	PaddleLeft.position.x = parseFloat(game_data.paddleleft_position_x);
+	PaddleLeft.position.z = parseFloat(game_data.paddleleft_position_z);
+	//PaddleLeft.position.z = parseFloat(game_data.paddleleft_position_z);
+	ball.position.x = parseFloat(game_data.ball_position_x);
+	ball.position.z = parseFloat(game_data.ball_position_z);
+
+}
+
 function animate() {
 	requestAnimationFrame(animate);
-	// handleBackground();
+	//handlePaddleLeft();
+	//handlePaddleRight();
+	//handleAIPaddle();
+	//handleBackground(); COLOR BACKGROUND
+	// handleAIPaddleRight();
+	//updateBall();
+	// console.log(ball.position.x);
+	// console.log(ball.position.z);
+	// gameSocket.send(JSON.stringify(
+	// 	{
+	// 		"message" : "ball_update"
+	// 	})
+	// );
 	controls.update();
 	composer.render(scene, camera);
 }

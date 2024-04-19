@@ -149,6 +149,11 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
         self.channel_layer.group_discard(
             self.room_group_name, self.channel_name
         )
+        if self.game.finished == False:
+            await self.channel_layer.group_send(
+            self.room_group_name,
+            {"type": "update", "message": {'action' : 'userleave'}}
+            )   
         try:
             self.task.cancel()
         except:
@@ -176,7 +181,6 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
         #     self.task = asyncio.create_task(self.loop())
         elif message == "load":
             self.game.count += 1
-            print(self.game.count)
             if self.game.count == 2:
                 self.task = asyncio.create_task(self.loop())
         elif message == "Stop" or self.game.finished == True:

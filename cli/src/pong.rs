@@ -262,7 +262,7 @@ fn waiting_game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTls
 									},
 									None => {}
 								}
-							}
+							},
 							"start" => {
 								break ;
 							},
