@@ -35,18 +35,6 @@ const KeyState = {
 	ArrowDown: false,
 };
 
-function makeid(length) {
-    let result = '';
-    const characters = '0123456789';
-    const charactersLength = characters.length;
-    let counter = 0;
-    while (counter < length) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
-      counter += 1;
-    }
-    return result;
-}
-
 if (gameid === "null" || gameid === undefined) {
 	window.location.href = "https://localhost/";
 }
@@ -65,7 +53,6 @@ const loadingElement = document.getElementById('loading');
 loadingElement.innerHTML = "[WAITING FOR OPPONENT]<br>Game ID : " + gameid;
 
 //console.log(privategame);
-//console.log(`ID IS ${gameid}`);
 
 function addClassDelayed(element, className, delay) {
     setTimeout(function() {

@@ -51,24 +51,44 @@ export function renderPong() {
                         <div class="card-game-wrapper glowing inside-card-modal">
 
                         <!-- origPongContent -->
-                        <div id="origPong" class="card-game-inside" style="background-image: url(Design/PongCoverImage.webp);">
+                        <div id="origPong" class="card-game-inside" color: black;>
                             <div class="d-flex flex-row justify-content-between pong-glowing-btn">
-                                <button id='localPongBtn' class='glowing-btn'><span class='glowing-txt'>L<span class='faulty-letter'>O</span>CAL</span></button>
-                                <button id='multiPongBtn' class='glowing-btn'><span class='glowing-txt'>M<span class='faulty-letter'>U</span>LTIPLAYER</span></button>
-                                <button id='tourPongBtn' class='glowing-btn'><span class='glowing-txt'>T<span class='faulty-letter'>O</span>URNAMENT</span></button>
+							<link rel="stylesheet" type="text/css" href="../pong/css/pong_menu.css">
+								<div class="menugrid">
+									<nav class="nav">
+								  		<a  id="localPongBtn" class="nav-link">Local</a>
+								  		<a  id="multiPongBtn" class="nav-link">Create Private</a>
+								  			<div class="nav-link">
+												<a  id="joinBtn">Join Private</a>
+											<input type="text" id="gameCodeInput" class="inputGame" placeholder="Game ID">
+								  			</div>
+								  		<a id="error"></a>
+								  		<a id="searchBtn" class="nav-link">Online Matchmaking</a>
+								  		<a href="https://www.exit.ch/en/" target="_blank" class="nav-link">Exit</a>
+									</nav>
+								</div>
                             </div>
-                        </div>
 
                         <!-- multiplayerModalContent -->
-						<link rel="stylesheet" type="text/css" href="/pong/css/pong_menu.css">
                         <div id="pongMulti" class="h-100 align-items-center d-none">
-						<div id="menu">
-							<button id="createBtn">Create Game</button>
-							<button id="joinBtn">Join Game</button>
-							<button id="searchBtn">Search Game</button>
-							<input type="text" id="gameCodeInput" placeholder="Enter Game Code"><br>
-							<a id="error"></a>
-                        </div>
+						<link rel="stylesheet" type="text/css" href="/pong/css/pong_menu.css">
+						<div id="countdown"></div>
+						<div class="container3">
+							<div class="row">
+								<div class="col col-display" id="scoreHome">0</div>
+							</div>
+							<div class="row">
+								<div class="col col-display" id="scoreGuest">0</div>
+							</div>
+						</div>
+						<div class="container2">
+							<div class="load-3">
+								<p id="loading">[WAITING FOR OPPONENT]</p>
+								<div class="line"></div>
+								<div class="line"></div>
+								<div class="line"></div>
+							</div>
+						</div>
 
                         <!-- pongLocalContent -->
 
@@ -111,89 +131,33 @@ export function renderPong() {
         const localPongBtn = element.querySelector('#localPongBtn');
         const previousDiv = origPong ? pongMulti.previousElementSibling : null;
         const pongModal = element.querySelector('#pong');
-    
-        // Add event listener to the button
-        multiPongBtn.addEventListener('click', toggleVisibility);
-        localPongBtn.addEventListener('click', toggleVisibility);
-
-		function toggleVisibilityMulti() {
-			origPong.classList.add('d-none');
-			pongMulti.classList.remove('d-none');
-		}
 		
-		// Ajoutez cet événement à l'intérieur de la fonction addEventListeners pour le bouton Multiplayer
-		multiPongBtn.addEventListener('click', toggleVisibilityMulti);
-
 		//* LOCALPONG
         localPongBtn.addEventListener('click', function() {
             pongMulti.classList.add('d-none');
             document.querySelectorAll('.card-game-inside > div').forEach(div => {
                 div.classList.add('d-none');
             });
-
             pongLocal.classList.remove('d-none');
 			var data = document.querySelector('#pongLocal').innerHTML;
 			document.querySelector('#pongLocal').innerHTML = data;
-            loadScripts();
+            loadLocalPong();
         });
-		//* 
-        pongElement.querySelector('#createBtn').addEventListener('click', function() {
-            pongMulti.classList.add('d-none');
-            gameid = makeid(3);
-            let url = '/api/game/create/' + gameid;
-              console.log(url);
-              fetch(url, {
-                  method: 'GET',
-                  credentials: 'same-origin' 
-              })
-              .then(response => response.json())
-              .then(data => {
-                  console.log('Success:', data);
-                  if (data['message'] == "ko") {
-                gameid = data['id'];
-                sessionStorage.setItem("gameid", gameid);
-                  } else if (data['message'] == 'ok'){
-                      sessionStorage.setItem("gameid", gameid);
-                      document.querySelectorAll('.card-game-inside > div').forEach(div => {
-                        div.classList.add('d-none');
-                      });
-                      pongLocal.classList.remove('d-none');
-                  }
-              })
-              .catch((error) => {
-                  console.error('Error:', error);
-              });
-          });
-        
-        pongElement.querySelector('#joinBtn').addEventListener('click', function() {
-            errorLink.textContent = "";
-            const gameIdInput = document.getElementById('gameCodeInput');
-            gameid = gameIdInput.value.trim();
-            let url = '/api/game/' + gameid;
-              console.log(url);
-              fetch(url, {
-                  method: 'GET',
-                  credentials: 'same-origin' 
-              })
-              .then(response => response.json())
-              .then(data => {
-                  console.log('Success:', data);
-                  if (data['message'] == "Not found") {
-                    errorLink.textContent = `La partie ${gameid} n'existe pas, veuillez reessayer`;
-                  } else{
-                    sessionStorage.setItem("gameid", gameid);
-                    document.querySelectorAll('.card-game-inside > div').forEach(div => {
-                    div.classList.add('d-none');
-                    });
-                    pongLocal.classList.remove('d-none');
-                    }
-              })
-              .catch((error) => {
-                  console.error('Error:', error);
-              });
-          });
-        
-          pongModal.addEventListener('show.bs.modal', function () {
+
+		//* MULTIPONG
+        multiPongBtn.addEventListener('click', function() {
+    		origPong.classList.add('d-none');
+    		pong.classList.add('d-none');
+			document.querySelectorAll('.card-game-inside > div').forEach(div => {
+        	div.classList.add('d-none');
+    	});
+    		pongMulti.classList.remove('d-none');
+    		var data = document.querySelector('#pongMulti').innerHTML;
+    		document.querySelector('#pongMulti').innerHTML = data;
+    		loadMultiPong();
+		});  
+
+        pongModal.addEventListener('show.bs.modal', function () {
 			scriptStarted = true;
 			document.querySelectorAll('.card-game-inside > div').forEach(div => {
 				div.classList.remove('d-none');
@@ -207,40 +171,6 @@ export function renderPong() {
     		pongLocal.classList.add('d-none');
             origPong.classList.remove('d-none');
         });
-
-        pongElement.querySelector('#searchBtn').addEventListener('click', function() {
-            let url = '/api/game/search/';
-            console.log(url);
-            document.getElementsByTagName('body')[0].innerHTML = `
-            <div class="container">
-              <div class="load-3">
-                  <p id="loading">[SEARCHING FOR OPPONENT]</p>
-                  <div class="line"></div>
-                  <div class="line"></div>
-                  <div class="line"></div>
-              </div>
-            </div>
-          `;
-        
-              fetch(url, {
-                  method: 'GET',
-                  credentials: 'same-origin' 
-              })
-              .then(response => response.json())
-              .then(data => {
-                  console.log('Success:', data);
-                  if (data['message'] == "ok") {
-                    gameid = data['id'];
-                    sessionStorage.setItem("gameid", gameid);
-                    window.location.href = "/pong/pong.html";
-                  } else if (data['message'] == 'ko'){
-                    console.log("L'homme methode GET")
-                  }
-              })
-              .catch((error) => {
-                  console.error('Error:', error);
-              });
-          });
     
         // Define the event handler
         function toggleVisibility() {
@@ -262,8 +192,6 @@ function changeDivContent(newContent) {
     div.innerHTML = newContent;
 }
 
-// Pour load les scripts lorsque l'on presse le bouton
-
 function unloadScript() {
     // Désactiver les scripts chargés dynamiquement
     document.querySelectorAll('script[type="module"][data-pong="dynamic"]').forEach(script => {
@@ -274,7 +202,7 @@ function unloadScript() {
 }
 
 
-function loadScripts() {
+function loadLocalPong() {
     // Créer et ajouter le script localpong.js
     document.querySelectorAll('script[data-disabled="true"]').forEach(script => {
         script.setAttribute('type', 'module');
@@ -286,14 +214,16 @@ function loadScripts() {
     console.log('loading');
     scriptLocalPong.setAttribute('data-pong', 'dynamic');  // Marqueur pour identifier les scripts chargés dynamiquement
     document.body.appendChild(scriptLocalPong);
+}
 
+function loadMultiPong() {
 	document.querySelectorAll('script[data-disabled="true"]').forEach(script => {
         script.setAttribute('type', 'module');
         script.removeAttribute('data-disabled');
     });
     const scriptMultiPong = document.createElement('script');
     scriptMultiPong.type = 'module';
-    scriptMultiPong.src = '../pong/javascript/pong.js?' + new Date().getTime(); // Ajoute un horodatage à l'URL
+    scriptMultiPong.src = '../pong/javascript/pong.js'; //+ new Date().getTime(); // Ajoute un horodatage à l'URL
     console.log('loading');
     scriptMultiPong.setAttribute('data-pong', 'dynamic');  // Marqueur pour identifier les scripts chargés dynamiquement
     document.body.appendChild(scriptMultiPong);

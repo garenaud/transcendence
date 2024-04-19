@@ -122,14 +122,10 @@ function handleText() {
 }
 
 function resetScore() {
-	displayvictoryElement.textContent = "";
 	scoreLeft = 0;
 	scoreRight = 0;
-	if (displayScoreElement) {
+	if (displayScoreElement)
 		displayScoreElement.textContent = 'Score: ' + scoreLeft + ' - ' + scoreRight;
-	} else {
-		console.error('displayScoreElement is not defined');
-	}
 	countdownValue = 3;
 	countdown();
 }
@@ -375,6 +371,8 @@ function animate() {
 
 function stopAnimation() {
 	cancelAnimationFrame(animationId);
+	displayScoreElement.textContent = "";
+	displayvictoryElement.textContent = "";
 }
 
 document.addEventListener('keydown', handleKeyDown);
