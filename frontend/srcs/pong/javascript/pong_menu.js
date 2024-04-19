@@ -15,8 +15,7 @@ function makeid(length) {
   }
 
 document.getElementById('createBtn').addEventListener('click', function() {
-	gameid = makeid(4);
-	let url = '/api/game/create/' + gameid;
+	let url = '/api/game/create/';
 	console.log(url);
 	fetch(url, {
 		method: 'GET',
@@ -25,18 +24,10 @@ document.getElementById('createBtn').addEventListener('click', function() {
 	.then(response => response.json())
 	.then(data => {
 		console.log('Success:', data);
-		if (data['message'] == "ko") {
-			gameid = data['id'];
-			privategame = true;
-			sessionStorage.setItem("privategame", privategame);
-			sessionStorage.setItem("gameid", gameid);
-			window.location.href = "/pong/pong.html";
-		} else if (data['message'] == 'ok'){
-			privategame = true;
-			sessionStorage.setItem("gameid", gameid);
-			sessionStorage.setItem("privategame", privategame);
-			window.location.href = "/pong/pong.html";
-		}
+		privategame = true;
+		sessionStorage.setItem("privategame", privategame);
+		sessionStorage.setItem("gameid", data['id']);
+		window.location.href = "/pong/pong.html";
 	})
 	.catch((error) => {
 		console.error('Error:', error);
@@ -45,6 +36,7 @@ document.getElementById('createBtn').addEventListener('click', function() {
 
 document.getElementById('joinBtn').addEventListener('click', function() {
 	errorLink.textContent = "";
+	errorLink.style.display = "block";
 	const gameIdInput = document.getElementById('gameCodeInput');
 	gameid = gameIdInput.value.trim();
 	let url = '/api/game/' + gameid;
@@ -72,22 +64,15 @@ document.getElementById('joinBtn').addEventListener('click', function() {
 	} else {
 		errorLink.textContent = `La partie ${gameid} n'existe pas, veuillez reessayer`;
 	}
-});
+	setTimeout(function() {
+		errorLink.style.display = "none";
+	}, 4000);
+	});
 
 
 document.getElementById('searchBtn').addEventListener('click', function() {
 	let url = '/api/game/search/';
 	console.log(url);
-	document.getElementsByTagName('body')[0].innerHTML = `
-		<div class="container">
-		<div class="load-3">
-			<p id="loading">[SEARCHING FOR OPPONENT]</p>
-			<div class="line"></div>
-			<div class="line"></div>
-			<div class="line"></div>
-		</div>
-		</div>
-	`;
 	fetch(url, {
 		method: 'GET',
 		credentials: 'same-origin' 
