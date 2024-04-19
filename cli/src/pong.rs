@@ -87,7 +87,7 @@ pub fn matchmaking(user: User) {
 pub fn create_game(user: User) {
 
 	// Ask the server for a room
-	let req = user.get_client().get("https://{server}/api/game/create/42".replace("{server}", user.get_server().as_str()));
+	let req = user.get_client().get("https://{server}/api/game/create/".replace("{server}", user.get_server().as_str()));
 	let req = req.build();
 	let res = user.get_client().execute(req.expect("ERROR WHILE EXECUTING THE REQUEST"));
 	let room_id = match res {
@@ -290,7 +290,7 @@ fn waiting_game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTls
  */
 fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<std::net::TcpStream>>) {
 	let _ = clear();
-
+	
 	let mut paddle_l = Paddle { x: 0.0, y: 0.0, old_y: 0.0 };
 	let mut paddle_r = Paddle { x: 0.0, y: 0.0, old_y: 0.0 };
 	let mut ball = Ball { x: 0.0, y: 0.0, old_x: 0.0, old_y: 0.0};
@@ -308,7 +308,7 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
 	} else {
 		println!("Error\n");
 		return ;
-	}
+	}	
 
 	// Init ncurses to get the user's input
 	initscr();
@@ -378,7 +378,9 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
 					}
 					render(&term, &paddle_l, &paddle_r, &ball, &score);
 				},
-				_ => {}
+				_ => {
+					println!("Unknown message");
+				}
 			},
 			Err(err) => match err {
 				tungstenite::error::Error::Io(err) if err.kind() == std::io::ErrorKind::Interrupted => {
