@@ -8,7 +8,7 @@ urlpatterns = [
 	path("delete/<int:ind>", views.delete_user_by_id),
 	path("gamelist", views.get_game_list),
 	path("game/<int:gameid>", views.get_game_by_id),
-	path("game/create/<int:gameid>", views.create_game),
+	path("game/create/", views.create_game),
 	path("game/search/", views.search_game)
 ]
 

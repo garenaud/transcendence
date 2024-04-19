@@ -18,7 +18,6 @@ gameTab = [None] * 10000
 channel_layer = channels.layers.get_channel_layer()
 
 class AsyncGameConsumer(AsyncWebsocketConsumer):
-    
     def getGame(self):
         return Games.objects.filter(id=1).count()
 
@@ -49,13 +48,21 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
         await self.accept()
-        await self.channel_layer.group_send(
-            self.room_group_name,
+        await self.channel_layer.send(
+            self.channel_name,
             {
                 'type' : 'update',
                 "message": {'action' : 'private'}
             }
         )
+        if self.channel_name == self.game.p2id:
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type' : 'update',
+                    "message": {'action' : 'allin'}
+                }
+            )
 
         
 
@@ -86,6 +93,7 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
         )
 
     async def send_counter(self):
+        await asyncio.sleep(1.5)
         for num in range(6, 0, -1):
             await self.channel_layer.group_send(
                 self.room_group_name,
@@ -153,6 +161,11 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
         self.channel_layer.group_discard(
             self.room_group_name, self.channel_name
         )
+        if self.game.finished == False:
+            await self.channel_layer.group_send(
+            self.room_group_name,
+            {"type": "update", "message": {'action' : 'userleave'}}
+            )   
         try:
             self.task.cancel()
         except:
@@ -170,12 +183,18 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
                 await sync_to_async(self.saveGame)(self.game.dbgame)
             if self.game.dbgame.full == True:
                 self.game.started = True 
-                self.task = asyncio.create_task(self.loop())
         if message == 'ball_update':
             await self.channel_layer.group_send(
             self.room_group_name,
             {"type": "update", "message": {'action' : 'game', 'bx' : self.game.bpx, 'bz' : self.game.bpz, 'plx' : self.game.plx ,'plz' : self.game.plz, 'prx' : self.game.prx ,'prz' : self.game.prz}}
             )
+        # if message == "Start" and self.game.started == False:
+        #     self.game.started = True
+        #     self.task = asyncio.create_task(self.loop())
+        elif message == "load":
+            self.game.count += 1
+            if self.game.count == 2:
+                self.task = asyncio.create_task(self.loop())
         elif message == "Stop" or self.game.finished == True:
             try:
                 self.task.cancel()
@@ -187,18 +206,18 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             {"type": "update", "message": {'action' : 'game', 'bx' : self.game.bpx, 'bz' : self.game.bpz, 'plx' : self.game.plx ,'plz' : self.game.plz, 'prx' : self.game.prx ,'prz' : self.game.prz}}
             )
         elif self.game.p1id == self.channel_name:
-            if message == 'Up' and self.game.prz - self.game.ms > -6.5:
+            if (message == 'Up' or message == 'o' or message == 'O') and self.game.prz - self.game.ms > -6.5:
                 self.game.prz -= self.game.ms
-            elif message == 'Down' and self.game.prz + self.game.ms < 6.5:
+            elif (message == 'Down' or message == 'l' or message == 'L') and self.game.prz + self.game.ms < 6.5:
                 self.game.prz += self.game.ms
             await self.channel_layer.group_send(
                 self.room_group_name,
                 {"type": "update", "message": {'action' : 'paddle1', 'prx' : self.game.prx ,'prz' : self.game.prz }}
             )
         elif self.game.p2id == self.channel_name:
-            if message == 'W' and self.game.plz - self.game.ms > -6.5:
+            if (message == 'W' or message == 'w') and self.game.plz - self.game.ms > -6.5:
                 self.game.plz -= self.game.ms
-            elif message == 'S' and self.game.plz + self.game.ms < 6.5:
+            elif (message == 'S' or message == 's')and self.game.plz + self.game.ms < 6.5:
                 self.game.plz += self.game.ms
             await self.channel_layer.group_send(
                 self.room_group_name,
