@@ -63,8 +63,14 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
                     "message": {'action' : 'allin'}
                 }
             )
-
-        
+        else:
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type' : 'update',
+                    "message": {'action' : 'p1'}
+                }
+            )
 
     def ball_calc(self):
         pass
