@@ -56,3 +56,13 @@ export function renderDiv(components, className) {
     }
     document.body.appendChild(div);
 }
+
+export function createPhotoComponent(imageSrc, points) {
+  const photoContainer = document.createElement('div');
+  const profileHeader = document.createElement('div');
+  profileHeader.innerHTML = profileHeaderHTML;
+  profileHeader.querySelector('.profile-header-img img').src = imageSrc;
+  profileHeader.querySelector('.rank-label-container .rank-label').textContent = points + ' pts';
+  photoContainer.appendChild(profileHeader);
+  return photoContainer;
+}
