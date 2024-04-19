@@ -231,6 +231,7 @@ fn connect_ws(user: User, room: String) -> Result<tungstenite::WebSocket<tungste
  */
 fn waiting_game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<std::net::TcpStream>>) {
 	_ = socket.send(Message::Text(r#"{"message":"load"}"#.to_string()));
+	let mut player = "p2".to_string();
 	loop {
 		match socket.read() {
 			Ok(msg) => {
@@ -266,6 +267,9 @@ fn waiting_game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTls
 							"start" => {
 								break ;
 							},
+							"p1" => {
+								player = "p1".to_string();
+							},
 							_ => {}
 						}
 					},
@@ -278,7 +282,7 @@ fn waiting_game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTls
 			}
 		}
 	}
-	game(socket);
+	game(socket, player);
 }
 
 /**
@@ -288,7 +292,7 @@ fn waiting_game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTls
  * Args:
  * 		socket: WebSocket - The websocket connected to the game
  */
-fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<std::net::TcpStream>>) {
+fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<std::net::TcpStream>>, player: String) {
 	let _ = clear();
 	
 	let mut paddle_l = Paddle { x: 0.0, y: 0.0, old_y: 0.0 };
@@ -360,11 +364,17 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
 							endwin();
 							_ = clear();
 							if score.score1 > score.score2 {
-								println!("{}", format!("Player 1 wins !").green().bold());
-							} else if score.score1 < score.score2 {
-								println!("{}", format!("Player 2 wins !").green().bold());
+								if player == "p1" {
+									println!("{}", format!("You won!").green());
+								} else {
+									println!("{}", format!("You lost!").red());
+								}
 							} else {
-								println!("Draw !");
+								if player == "p2" {
+									println!("{}", format!("You won!").green());
+								} else {
+									println!("{}", format!("You lost!").red());
+								}
 							}
 							break ;
 						},
@@ -379,7 +389,7 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
 					render(&term, &paddle_l, &paddle_r, &ball, &score);
 				},
 				_ => {
-					println!("Unknown message");
+					// println!("Unknown message");
 				}
 			},
 			Err(err) => match err {
