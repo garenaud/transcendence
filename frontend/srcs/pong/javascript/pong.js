@@ -69,7 +69,7 @@ gameSocket = new WebSocket(
 	+ '/'
 );
 
-const loadingElement = document.getElementById('loading');
+const loadingElement = document.getElementById('loading_txt');
 loadingElement.innerHTML = "[WAITING FOR OPPONENT]<br>Game ID : " + gameid;
 
 //console.log(privategame);
@@ -79,6 +79,10 @@ function addClassDelayed(element, className, delay) {
     setTimeout(function() {
         element.classList.add(className);
     }, delay);
+}
+
+function scaleCam() {
+	return (50 - (window.innerWidth - 300) / 240);
 }
 
 function init() {
@@ -96,7 +100,7 @@ function init() {
 
 	// Camera
 	camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight);
-	camera.position.set(0, 5, 5);
+	camera.position.set(0, scaleCam(), scaleCam());
 
 	// Controls
 	controls = initControls();
@@ -108,9 +112,9 @@ function init() {
 	// TODO waiting room;
 	LoadGLTFByPath(scene)
 		.then(() => {
-			const container2 = document.querySelector('.container2');
-			if (container2) {
-				container2.style.display = 'none';
+			const div_loading = document.querySelector('.loading');
+			if (div_loading) {
+				div_loading.style.display = 'none';
 			}
 			handleBackground();
 			handleGround();
@@ -119,9 +123,9 @@ function init() {
 			gameSocket.send(JSON.stringify({
 				'message' : 'load'
 			}));
-			const container = document.querySelector('.container3');
-			if (container) {
-				container.style.display = 'flex';
+			const div_scoreboard = document.querySelector('.scoreboard');
+			if (div_scoreboard) {
+				div_scoreboard.style.display = 'flex';
 			}
 			// createScoreTexts();
 		})
@@ -184,11 +188,11 @@ function handleLight() {
 	scene.add( rectLightUp );
 }
 
-function updateCameraAspect(selectedCamera) {
-	const width = window.innerWidth;
-	const height = window.innerHeight;
-	selectedCamera.aspect = width / height;
-	selectedCamera.updateProjectionMatrix();
+function onWindowResize() {
+	camera.position.set(0, scaleCam(), scaleCam());
+	camera.aspect = window.innerWidth / window.innerHeight;
+	camera.updateProjectionMatrix();
+	renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
 function initControls() {
@@ -572,9 +576,10 @@ function animate() {
 	// 	})
 	// );
 	controls.update();
-	composer.render(scene, camera);
+	//composer.render(scene, camera);
+	renderer.render(scene, camera);
 }
 
 document.addEventListener('keydown', handleKeyDown);
 document.addEventListener('keyup', handleKeyUp);
-
+window.addEventListener('resize', onWindowResize);
