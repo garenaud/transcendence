@@ -51,13 +51,13 @@ export function renderPong() {
                         <div class="card-game-wrapper glowing inside-card-modal">
 
                         <!-- origPongContent -->
-                        <div id="origPong" class="card-game-inside" color: black;>
+                        <div id="origPong" class="card-game-inside">
                             <div class="d-flex flex-row justify-content-between pong-glowing-btn">
 							<link rel="stylesheet" type="text/css" href="../pong/css/pong_menu.css">
 								<div class="menugrid">
 									<nav class="nav">
-								  		<a  id="localPongBtn" class="nav-link">Local</a>
-								  		<a  id="multiPongBtn" class="nav-link">Create Private</a>
+								  		<a id="localPongBtn" class="nav-link">Local</a>
+								  		<a id="multiPongBtn" class="nav-link">Create Private</a>
 								  			<div class="nav-link">
 												<a  id="joinBtn">Join Private</a>
 											<input type="text" id="gameCodeInput" class="inputGame" placeholder="Game ID">
@@ -68,10 +68,11 @@ export function renderPong() {
 									</nav>
 								</div>
                             </div>
+						</div>
 
                         <!-- multiplayerModalContent -->
-                        <div id="pongMulti" class="h-100 align-items-center d-none">
 						<link rel="stylesheet" type="text/css" href="/pong/css/pong_menu.css">
+                        <div id="pongMulti" class="h-100 align-items-center d-none">
 						<div id="countdown"></div>
 						<div class="container3">
 							<div class="row">
@@ -91,11 +92,10 @@ export function renderPong() {
 						</div>
 
                         <!-- pongLocalContent -->
-
                     	<div id="pongLocal" class="h-100 align-items-center d-none">
-						<canvas id="background" class="h-100 w-100"></canvas>
-						<div id="countdown"></div>
-						<div id="displayscore"></div>
+							<canvas id="background" class="h-100 w-100"></canvas>
+							<div id="countdown"></div>
+							<div id="displayscore"></div>
 						<div id ="displayvictory"></div>
 						</div>
 						
@@ -132,9 +132,11 @@ export function renderPong() {
         const previousDiv = origPong ? pongMulti.previousElementSibling : null;
         const pongModal = element.querySelector('#pong');
 		
+		localPongBtn.addEventListener('click', toggleVisibility);
 		//* LOCALPONG
         localPongBtn.addEventListener('click', function() {
-            pongMulti.classList.add('d-none');
+			origPong.classList.add('d-none');
+            // pongMulti.classList.add('d-none');
             document.querySelectorAll('.card-game-inside > div').forEach(div => {
                 div.classList.add('d-none');
             });
@@ -144,20 +146,10 @@ export function renderPong() {
             loadLocalPong();
         });
 
-		//* MULTIPONG
-        multiPongBtn.addEventListener('click', function() {
-    		origPong.classList.add('d-none');
-    		pong.classList.add('d-none');
-			document.querySelectorAll('.card-game-inside > div').forEach(div => {
-        	div.classList.add('d-none');
-    	});
-    		pongMulti.classList.remove('d-none');
-    		var data = document.querySelector('#pongMulti').innerHTML;
-    		document.querySelector('#pongMulti').innerHTML = data;
-    		loadMultiPong();
-		});  
-
+		
+		
         pongModal.addEventListener('show.bs.modal', function () {
+			console.log('modal');
 			scriptStarted = true;
 			document.querySelectorAll('.card-game-inside > div').forEach(div => {
 				div.classList.remove('d-none');
@@ -171,7 +163,18 @@ export function renderPong() {
     		pongLocal.classList.add('d-none');
             origPong.classList.remove('d-none');
         });
-    
+		
+		//* MULTIPONG
+		multiPongBtn.addEventListener('click', function() {
+			pongLocal.classList.add('d-none');
+			document.querySelectorAll('.card-game-inside > div').forEach(div => {
+				div.classList.add('d-none');
+		});
+			pongMulti.classList.remove('d-none');
+			var data = document.querySelector('#pongMulti').innerHTML;
+			document.querySelector('#pongMulti').innerHTML = data;
+			loadMultiPong();
+		});
         // Define the event handler
         function toggleVisibility() {
             pongMulti.classList.toggle('d-none');
