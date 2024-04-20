@@ -237,7 +237,6 @@ function handlePaddleRight() {
 		// PaddleRight.receiveShadow = true;
 		if (KeyState['ArrowUp'] && PaddleRight.position.z - mooveSpeed > -wallLimit) {
 			PaddleRight.position.z -= mooveSpeed;
-			console.log("aled");
 		}
 		if (KeyState['ArrowDown'] && PaddleRight.position.z + mooveSpeed < wallLimit) {
 			PaddleRight.position.z += mooveSpeed;
