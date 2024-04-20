@@ -85,6 +85,38 @@ function scaleCam() {
 	return (50 - (window.innerWidth - 300) / 240);
 }
 
+function displayRotateMessage() {
+    var diplayRotate = document.createElement('div');
+    diplayRotate.innerHTML = "Veuillez tourner votre téléphone en mode paysage pour une meilleure expérience.";
+	diplayRotate.id = "rotate-message";
+    diplayRotate.style.position = 'absolute';
+    diplayRotate.style.top = '50%';
+    diplayRotate.style.left = '50%';
+    diplayRotate.style.transform = 'translate(-50%, -50%)';
+    diplayRotate.style.fontSize = '18px';
+    diplayRotate.style.color = '#ffffff';
+    diplayRotate.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+    diplayRotate.style.padding = '20px';
+    diplayRotate.style.borderRadius = '5px';
+    diplayRotate.style.zIndex = '9999';
+    document.body.appendChild(diplayRotate);
+}
+
+function hideRotateMessage() {
+    var diplayRotate = document.getElementById('rotate-message');
+    if (diplayRotate) {
+        diplayRotate.remove();
+    }
+}
+
+function checkPortraitMode() {
+	if (window.innerHeight > window.innerWidth) {
+		displayRotateMessage();
+	} else {
+		hideRotateMessage();
+	}
+}
+
 function init() {
 	// Renderer
 	renderer = new THREE.WebGLRenderer({
@@ -101,7 +133,6 @@ function init() {
 	// Camera
 	camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight);
 	camera.position.set(0, scaleCam(), scaleCam());
-
 	// Controls
 	controls = initControls();
 
@@ -127,6 +158,7 @@ function init() {
 			if (div_scoreboard) {
 				div_scoreboard.style.display = 'flex';
 			}
+			checkPortraitMode();
 			// createScoreTexts();
 		})
 		.catch((error) => {
@@ -189,6 +221,7 @@ function handleLight() {
 }
 
 function onWindowResize() {
+	checkPortraitMode();
 	camera.position.set(0, scaleCam(), scaleCam());
 	camera.aspect = window.innerWidth / window.innerHeight;
 	camera.updateProjectionMatrix();
