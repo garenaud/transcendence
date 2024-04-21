@@ -1,4 +1,4 @@
-FROM nginx:1.19.0-alpine-perl
+FROM nginx:1.19.0-alpine
 
 RUN apk add openssl
 
