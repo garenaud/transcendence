@@ -77,7 +77,7 @@ body {
   }
   
 .soon:hover::before {
-    content: "Comming soon";
+    content: "Coming soon";
 }
 
   @keyframes bg-anim {
