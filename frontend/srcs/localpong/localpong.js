@@ -24,7 +24,7 @@ let countdownValue = 3;
 let speedIncreaseFactor = 0.7; // Facteur d'augmentation de la vitesse
 let displayvictoryElement = document.getElementById('displayvictory');
 let displayScoreElement = document.getElementById('displayscore');
-let countdownElement = document.getElementById('countdown');
+let countdownElement = document.getElementById('countdownPong');
 // const deltaTime = 30;
 let PaddleRight;
 let PaddleLeft;
@@ -372,6 +372,7 @@ function stopAnimation() {
 	cancelAnimationFrame(animationId);
 	displayScoreElement.textContent = "";
 	displayvictoryElement.textContent = "";
+	countdownElement.textContent = "";
 }
 
 document.addEventListener('keydown', handleKeyDown);

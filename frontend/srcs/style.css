@@ -1755,14 +1755,14 @@ animation: loadingC 1s 0.3s linear infinite;
 }
 
 
-#countdown {
+#countdownPong {
 	position: absolute;
 	top: 50%;
 	left: 50%;
 	font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 	transform: translate(-50%, -50%);
 	font-size: 3em;
-	color: blueviolet;
+	color: blue;
 }
 
 #displayscore {

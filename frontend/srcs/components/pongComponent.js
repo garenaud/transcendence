@@ -90,14 +90,16 @@ export function renderPong() {
 								<div class="line"></div>
 							</div>
 						</div>
+						</div>
 
                         <!-- pongLocalContent -->
                     	<div id="pongLocal" class="h-100 align-items-center d-none">
 							<canvas id="background" class="h-100 w-100"></canvas>
-							<div id="countdown"></div>
+							<div id="countdownPong"></div>
 							<div id="displayscore"></div>
-						<div id ="displayvictory"></div>
-						</div>
+							<div id ="displayvictory"></div>
+							</div>
+
 						
                         <!-- joinPongContent -->
 						<div id="joinPong" class="h-100 align-items-center d-none">
@@ -136,7 +138,7 @@ export function renderPong() {
 		//* LOCALPONG
         localPongBtn.addEventListener('click', function() {
 			origPong.classList.add('d-none');
-            // pongMulti.classList.add('d-none');
+            pongMulti.classList.add('d-none');
             document.querySelectorAll('.card-game-inside > div').forEach(div => {
                 div.classList.add('d-none');
             });
@@ -165,16 +167,16 @@ export function renderPong() {
         });
 		
 		//* MULTIPONG
-		multiPongBtn.addEventListener('click', function() {
-			pongLocal.classList.add('d-none');
-			document.querySelectorAll('.card-game-inside > div').forEach(div => {
-				div.classList.add('d-none');
-		});
-			pongMulti.classList.remove('d-none');
-			var data = document.querySelector('#pongMulti').innerHTML;
-			document.querySelector('#pongMulti').innerHTML = data;
-			loadMultiPong();
-		});
+		// multiPongBtn.addEventListener('click', function() {
+		// 	pongLocal.classList.add('d-none');
+		// 	document.querySelectorAll('.card-game-inside > div').forEach(div => {
+		// 		div.classList.add('d-none');
+		// });
+		// 	pongMulti.classList.remove('d-none');
+		// 	var data = document.querySelector('#pongMulti').innerHTML;
+		// 	document.querySelector('#pongMulti').innerHTML = data;
+		// 	loadMultiPong();
+		// });
         // Define the event handler
         function toggleVisibility() {
             pongMulti.classList.toggle('d-none');
