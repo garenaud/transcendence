@@ -1,3 +1,17 @@
+export function createListCardComponent(listItems) {
+    const listCardHTML = `
+    <div class="card-game-wrapper glowing">
+        <div class="card-game-test">
+          ${listItems}
+        </div>
+    </div>
+    `;
+
+    return listCardHTML;
+}
+
+
+
 export function createToastComponent(className, title, body, autohide = true, delay = 5000) {
     const toastHTML = `
       <div class="toast" role="success" aria-live="assertive" aria-atomic="true" data-autohide="${autohide}" data-delay="${delay}">

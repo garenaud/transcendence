@@ -22,15 +22,7 @@ export function renderLogin() {
 		  			<label class="form-label" for="typePasswordX"  data-lang-key='password'>Password</label>
 		  		</div>
 
-			<p class="small mb-3 pb-lg-2"><a class="text-white-50" href="#!" data-lang-key='forgotPass'>Forgot password?</a></p>
-
 			<button id='loginBtn' class="btn btn-outline-light btn-lg px-5" type="submit" data-lang-key='login'>Login</button>
-
-			<div class="d-flex justify-content-center text-center mt-2 pt-1">
-			  <a href="#!" class="text-white"><i class="fab fa-facebook-f fa-lg"></i></a>
-			  <a href="#!" class="text-white"><i class="fab fa-twitter fa-lg mx-4 px-2"></i></a>
-			  <a href="#!" class="text-white"><i class="fab fa-google fa-lg"></i></a>
-			</div>
 
 		  </div>
 
@@ -82,16 +74,7 @@ export function renderLogin() {
 		  		</div>
 				<div id="error-message" class="alert alert-danger" role="alert"></div>
 				<div id="success-message" class="alert alert-success" role="alert"></div>
-
-			<p class="small mb-3 pb-lg-2"><a class="text-white-50" href="#!" data-lang-key='forgotPass'>Forgot password?</a></p>
-
 			<button id='signupBtn' class="btn btn-outline-light btn-lg px-5" type="submit" data-lang-key='signup'>signup</button>
-
-			<div class="d-flex justify-content-center text-center mt-2 pt-1">
-			  <a href="#!" class="text-white"><i class="fab fa-facebook-f fa-lg"></i></a>
-			  <a href="#!" class="text-white"><i class="fab fa-twitter fa-lg mx-4 px-2"></i></a>
-			  <a href="#!" class="text-white"><i class="fab fa-google fa-lg"></i></a>
-			</div>
 
 		  </div>
 

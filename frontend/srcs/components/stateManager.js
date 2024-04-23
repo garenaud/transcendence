@@ -1,4 +1,4 @@
-import { getUser, loadUser, getCurrentUser } from './userManager.js';
+import { getUser, loadUser, getCurrentUser, loadGameList } from './userManager.js';
 import { renderNavbar } from './navbar.js'; 
 import { renderHero } from './hero.js';
 import { renderPong } from './pongComponent.js';
@@ -9,7 +9,8 @@ import { renderRun } from './runGame.js';
 import { renderUserMenu } from './userMenu.js';
 import { LanguageBtn, loadLanguage } from './languageManager.js';
 import { renderScratchGame } from './scratchGame.js';
-import { createToastComponent, createButtonComponent, renderDiv } from './globalComponent.js';
+import { createToastComponent, createButtonComponent, createPhotoComponent, createListCardComponent, renderDiv } from './globalComponent.js';
+import { showUserList, showGameList } from './listComponent.js';
 
 // Initialisation de l'état de l'application et du current user
 export let appState = {
@@ -85,10 +86,11 @@ export async function renderApp() {
             if (!appState.user) {
                 console.log('loading user');
                 await loadUser();
+                await loadGameList();
             }
             switch(appState.currentView) {
                 case 'hero':
-                    if (!appState.renderedComponents.hero || !appState.renderedComponents.navbar) {
+                    if (!document.querySelector('.navbar')) {
                         await LanguageBtn();
                         await renderHero();
                         renderNavbar(appState.user);
@@ -102,7 +104,7 @@ export async function renderApp() {
                     }
                     break;
                 case 'game':
-                    if (!appState.renderedComponents.game || !appState.renderedComponents.navbar) {
+                    if (!document.querySelector('.navbar')) {
                         const game = await renderPong();
                         const game2 = await renderRun();
                         const roulette = await renderRoulette();

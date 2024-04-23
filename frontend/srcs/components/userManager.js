@@ -124,7 +124,6 @@ export function loadUser() {
             console.log('userId:', userId);
             appState.user = users.find(user => user.id === userId);
             if (!appState.user.profilePicture) {
-                console.log('je mets la photo par defaut');
                 appState.user.profilePicture = 'Design/User/Max-R_Headshot.jpg';
             }
             else {
@@ -137,5 +136,24 @@ export function loadUser() {
         .catch(error => {
             console.error('Erreur lors du chargement des données utilisateur:', error);
             //console.log('Données utilisateur:', getUser());
+        });
+}
+
+export function loadGameList() {
+    return fetch('/api/gamelist')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(games => {
+            console.log('Données de jeu chargées avec succès:', games);
+            appState.games = games;
+            return games;
+            //console.log('appState.games:', appState.games);
+        })
+        .catch(error => {
+            console.error('Erreur lors du chargement des données de jeu:', error);
         });
 }

@@ -1,7 +1,7 @@
 import { changeView, appState } from './stateManager.js';
 import { getUser, setUserProfilePicture, setUsername } from './userManager.js';
-import { createButtonComponent } from './globalComponent.js';
-
+import { createButtonComponent, createPhotoComponent } from './globalComponent.js';
+import { showGameList, showUserList } from './listComponent.js';
 
 function escapeHTML(unsafeText) {
   let div = document.createElement('div');
@@ -48,10 +48,13 @@ function displayUserInfo(user) {
                 <h4>${user.pts} pts</h4>
             </div>
             <div class="user-menu-info">
-                <button type="button" class="user-menu-li" aria-label="Edit" data-bs-toggle="modal" data-bs-target="#addFriend"> 
-                    <i class="fas fa-user-plus"></i><h4 data-lang-key='addFriend'>ajouter un ami</h4>
-                </button>
-                <button type="button" class="user-menu-li" aria-label="Edit" data-bs-toggle="modal" data-bs-target="#editPicture">
+            <button type="button" class="user-menu-li" aria-label="Edit" data-bs-toggle="modal" data-bs-target="#addFriend"> 
+                <i class="fas fa-user-plus"></i><h4 data-lang-key='addFriend'>ajouter un ami</h4>
+            </button>
+            <button type="button" class="user-menu-li" aria-label="Edit" data-bs-toggle="modal" data-bs-target="#gameList"> 
+              <i class="fas fa-user-plus"></i><h4 data-lang-key='addFriend'>voir la liste des parties</h4>
+            </button>
+            <button type="button" class="user-menu-li" aria-label="Edit" data-bs-toggle="modal" data-bs-target="#editPicture">
                     <i class="fas fa-cog"></i><h4 data-lang-key='setProfile'>Editer le profil</h4>
                 </button>
             </div>
@@ -151,6 +154,7 @@ function displayUserInfo(user) {
   renderUserMenu(user);
   setupButtonListener();
   showUserList();
+  showGameList();
 }
 
 function    setupButtonListener() {
@@ -264,16 +268,6 @@ const profileHeaderHTML = `
 </div>
 `;
 
-function createPhotoComponent(imageSrc, points) {
-  const photoContainer = document.createElement('div');
-  const profileHeader = document.createElement('div');
-  profileHeader.innerHTML = profileHeaderHTML;
-  profileHeader.querySelector('.profile-header-img img').src = imageSrc;
-  profileHeader.querySelector('.rank-label-container .rank-label').textContent = points + ' pts';
-  photoContainer.appendChild(profileHeader);
-  return photoContainer;
-}
-
 /* export function createButtonComponent(text, buttonId, dataLangKey, onClickFunction) {
   const glowingBtnHTML = `
     <button id='${buttonId}' class='glowing-btn h-100'><span class='glowing-txt' data-lang-key='${dataLangKey}'>${text}</span></button>
@@ -289,34 +283,3 @@ function createPhotoComponent(imageSrc, points) {
   });
   return div;
 } */
-
-function  showUserList() {
-  const users = appState.users;
-  const modalBody = document.querySelector('#addFriend .modal-body');
-  const table = document.createElement('table');
-  table.className = 'userlist-table';
-  users.forEach(user => {
-    const row = document.createElement('tr');
-    const nameCell = document.createElement('td');
-    const idCell = document.createElement('td');
-    const emailCell = document.createElement('td');
-    const buttonCell = document.createElement('td');
-    const photoCell = document.createElement('td');
-    const photoComponent = createPhotoComponent('./Design/User/Max-R_Headshot.jpg', 100);
-    const buttonComponent = createButtonComponent('+', 'addFriendButton', '+', (event) => {
-      console.log(`Button clicked for user ${user.id}`);});
-    idCell.textContent = user.id;
-    nameCell.textContent = user.username;
-    emailCell.textContent = user.email;
-    photoCell.appendChild(photoComponent);
-    buttonCell.appendChild(buttonComponent);
-    row.appendChild(photoCell);
-    row.appendChild(idCell);
-    row.appendChild(nameCell);
-    row.appendChild(emailCell);
-    row.appendChild(buttonCell);
-    table.appendChild(row);
-
-  });
-  modalBody.appendChild(table);
-}
