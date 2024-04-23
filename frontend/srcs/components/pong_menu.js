@@ -14,7 +14,8 @@ function makeid(length) {
 	return result;
   }
 
-document.getElementById('createBtn').addEventListener('click', function() {
+document.getElementById('multiPongBtn').addEventListener('click', function() {
+	console.log('ici');
 	let url = '/api/game/create/';
 	console.log(url);
 	fetch(url, {
@@ -27,7 +28,7 @@ document.getElementById('createBtn').addEventListener('click', function() {
 		privategame = true;
 		sessionStorage.setItem("privategame", privategame);
 		sessionStorage.setItem("gameid", data['id']);
-		window.location.href = "/pong/pong.html";
+		window.location.href = "./pong/pong.html";
 	})
 	.catch((error) => {
 		console.error('Error:', error);

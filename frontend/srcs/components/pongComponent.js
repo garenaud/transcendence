@@ -4,6 +4,8 @@
 
 const errorLink = document.getElementById('error');
 let gameid;
+let privategame = false;
+
 
 export let scriptStarted;
 
@@ -69,62 +71,62 @@ export function renderPong() {
 								</div>
                             </div>
 						</div>
-
+						
                         <!-- multiplayerModalContent -->
-						<link rel="stylesheet" type="text/css" href="/pong/css/pong_menu.css">
                         <div id="pongMulti" class="h-100 align-items-center d-none">
+						<link rel="stylesheet" type="text/css" href="/pong/css/pong_menu.css">
 						<div id="countdown"></div>
 						<div class="container3">
-							<div class="row">
-								<div class="col col-display" id="scoreHome">0</div>
-							</div>
-							<div class="row">
-								<div class="col col-display" id="scoreGuest">0</div>
-							</div>
+						<div class="row">
+						<div class="col col-display" id="scoreHome">0</div>
+						</div>
+						<div class="row">
+						<div class="col col-display" id="scoreGuest">0</div>
+						</div>
 						</div>
 						<div class="container2">
-							<div class="load-3">
-								<p id="loading">[WAITING FOR OPPONENT]</p>
-								<div class="line"></div>
-								<div class="line"></div>
-								<div class="line"></div>
+						<div class="load-3">
+						<p id="loading">[WAITING FOR OPPONENT]</p>
+						<div class="line"></div>
+						<div class="line"></div>
+						<div class="line"></div>
 							</div>
-						</div>
-						</div>
-
-                        <!-- pongLocalContent -->
-                    	<div id="pongLocal" class="h-100 align-items-center d-none">
+							</div>
+							</div>
+							
+							<!-- pongLocalContent -->
+							<div id="pongLocal" class="h-100 align-items-center d-none">
 							<canvas id="background" class="h-100 w-100"></canvas>
 							<div id="countdownPong"></div>
 							<div id="displayscore"></div>
 							<div id ="displayvictory"></div>
 							</div>
-
-						
-                        <!-- joinPongContent -->
-						<div id="joinPong" class="h-100 align-items-center d-none">
-                        <input id="chat-message-input" type="text" size="20"><br>
-                        <input id="chat-message-submit" type="button" value="Send">
-						</div>
-						
-						
-                        </div>
-                        <div class="modal-footer">
-						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-						<button type="button" class="btn btn-primary">Save changes</button>
-                        </div>
-						</div>
-						</div>
-						</div>
-						</div>
-						`;
-    const pongElement = document.createElement('div');
-    pongElement.classList.add('col-12', 'col-md-6');
-    pongElement.innerHTML = pongHTML;
-
-    addEventListeners(pongElement);
-
-    function addEventListeners(element) {
+							
+							
+							<!-- joinPongContent -->
+							<div id="joinPong" class="h-100 align-items-center d-none">
+							<input id="chat-message-input" type="text" size="20"><br>
+							<input id="chat-message-submit" type="button" value="Send">
+							</div>
+							
+							
+							</div>
+							<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+							<button type="button" class="btn btn-primary">Save changes</button>
+							</div>
+							</div>
+							</div>
+							</div>
+							</div>
+							`;
+							const pongElement = document.createElement('div');
+							pongElement.classList.add('col-12', 'col-md-6');
+							pongElement.innerHTML = pongHTML;
+							
+							addEventListeners(pongElement);
+							
+							function addEventListeners(element) {
         const origPong = element.querySelector('#origPong');
         const multiPongBtn = element.querySelector('#multiPongBtn');
         const pongMulti = element.querySelector('#pongMulti');
@@ -148,11 +150,42 @@ export function renderPong() {
             loadLocalPong();
         });
 
+		//* MULTIPONG
+		multiPongBtn.addEventListener('click', toggleVisibility);		
+		multiPongBtn.addEventListener('click', function() {
+			console.log('ici');
+			let url = '/api/game/create/';
+			console.log(url);
+			fetch(url, {
+				method: 'GET',
+				credentials: 'same-origin' 
+			})
+			.then(response => response.json())
+			.then(data => {
+				console.log('Success:', data);
+				privategame = true;
+				sessionStorage.setItem("privategame", privategame);
+				sessionStorage.setItem("gameid", data['id']);
+			})
+			.catch((error) => {
+				console.error('Error:', error);
+			});
+			pongLocal.classList.add('d-none');
+			origPong.classList.add('d-none');
+			document.querySelectorAll('.card-game-inside > div').forEach(div => {
+				div.classList.add('d-none');
+			});
+			pongMulti.classList.remove('d-none');
+			var data = document.querySelector('#pongMulti').innerHTML;
+			document.querySelector('#pongMulti').innerHTML = data;
+			loadMultiPong();
+		});
 		
 		
         pongModal.addEventListener('show.bs.modal', function () {
 			console.log('modal');
 			scriptStarted = true;
+			loadPongMenuScript();
 			document.querySelectorAll('.card-game-inside > div').forEach(div => {
 				div.classList.remove('d-none');
 			});
@@ -166,17 +199,6 @@ export function renderPong() {
             origPong.classList.remove('d-none');
         });
 		
-		//* MULTIPONG
-		// multiPongBtn.addEventListener('click', function() {
-		// 	pongLocal.classList.add('d-none');
-		// 	document.querySelectorAll('.card-game-inside > div').forEach(div => {
-		// 		div.classList.add('d-none');
-		// });
-		// 	pongMulti.classList.remove('d-none');
-		// 	var data = document.querySelector('#pongMulti').innerHTML;
-		// 	document.querySelector('#pongMulti').innerHTML = data;
-		// 	loadMultiPong();
-		// });
         // Define the event handler
         function toggleVisibility() {
             pongMulti.classList.toggle('d-none');
@@ -229,7 +251,17 @@ function loadMultiPong() {
     const scriptMultiPong = document.createElement('script');
     scriptMultiPong.type = 'module';
     scriptMultiPong.src = '../pong/javascript/pong.js'; //+ new Date().getTime(); // Ajoute un horodatage à l'URL
-    console.log('loading');
+    console.log('loadingMulti');
     scriptMultiPong.setAttribute('data-pong', 'dynamic');  // Marqueur pour identifier les scripts chargés dynamiquement
     document.body.appendChild(scriptMultiPong);
+	loadPongMenuScript();
+}
+
+function loadPongMenuScript() {
+	console.log('loadmenu');
+    const scriptPongMenu = document.createElement('script');
+    scriptPongMenu.type = 'module';
+    scriptPongMenu.src = './pong_menu.js'; // Mettez à jour avec le chemin correct si nécessaire
+	console.log(scriptPongMenu);
+    document.body.appendChild(scriptPongMenu);
 }
