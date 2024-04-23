@@ -139,6 +139,7 @@ export function renderPong() {
 		localPongBtn.addEventListener('click', toggleVisibility);
 		//* LOCALPONG
         localPongBtn.addEventListener('click', function() {
+			console.log(pongLocal);
 			origPong.classList.add('d-none');
             pongMulti.classList.add('d-none');
             document.querySelectorAll('.card-game-inside > div').forEach(div => {
@@ -170,6 +171,7 @@ export function renderPong() {
 			.catch((error) => {
 				console.error('Error:', error);
 			});
+			console.log(pongMulti);
 			pongLocal.classList.add('d-none');
 			origPong.classList.add('d-none');
 			document.querySelectorAll('.card-game-inside > div').forEach(div => {

@@ -1630,23 +1630,9 @@ div.fg{
     margin-right: 100px;
   }
 }
-
-/*-------------------------------- Pong --------------------------------*/
-/* .canvasPong {
-  margin: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background-color: #000;
-  color: #fff;
-} */
+/* PONG */
 .pong-game {
   position: relative;
-}
-
-#pongLocal {
-	z-index: 1060;
 }
 
 #menu {

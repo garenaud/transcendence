@@ -2,39 +2,6 @@ const errorLink = document.getElementById('error');
 let gameid;
 let privategame = false;
 
-function makeid(length) {
-	let result = '';
-	const characters = '0123456789';
-	const charactersLength = characters.length;
-	let counter = 0;
-	while (counter < length) {
-	  result += characters.charAt(Math.floor(Math.random() * charactersLength));
-	  counter += 1;
-	}
-	return result;
-  }
-
-document.getElementById('multiPongBtn').addEventListener('click', function() {
-	console.log('ici');
-	let url = '/api/game/create/';
-	console.log(url);
-	fetch(url, {
-		method: 'GET',
-		credentials: 'same-origin' 
-	})
-	.then(response => response.json())
-	.then(data => {
-		console.log('Success:', data);
-		privategame = true;
-		sessionStorage.setItem("privategame", privategame);
-		sessionStorage.setItem("gameid", data['id']);
-		window.location.href = "./pong/pong.html";
-	})
-	.catch((error) => {
-		console.error('Error:', error);
-	});
-  });
-
 document.getElementById('joinBtn').addEventListener('click', function() {
 	errorLink.textContent = "";
 	errorLink.style.display = "block";
@@ -56,7 +23,6 @@ document.getElementById('joinBtn').addEventListener('click', function() {
 				privategame = true;
 				sessionStorage.setItem("privategame", privategame);
 				sessionStorage.setItem("gameid", gameid);
-				window.location.href = "/pong/pong.html";
 			}
 		})
 		.catch((error) => {

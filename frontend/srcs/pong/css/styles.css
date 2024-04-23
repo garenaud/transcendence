@@ -171,6 +171,7 @@ body {
 
 .pong-game {
     position: relative;
+	z-index: 1050;
 }
 
 .pong-table {
