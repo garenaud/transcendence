@@ -49,14 +49,11 @@ function displayUserInfo(user) {
             </div>
             <div class="user-menu-info">
             <button type="button" class="user-menu-li" aria-label="Edit" data-bs-toggle="modal" data-bs-target="#addFriend"> 
-                <i class="fas fa-user-plus"></i><h4 data-lang-key='addFriend'>ajouter un ami</h4>
-            </button>
-            <button type="button" class="user-menu-li" aria-label="Edit" data-bs-toggle="modal" data-bs-target="#gameList"> 
-              <i class="fas fa-user-plus"></i><h4 data-lang-key='addFriend'>voir la liste des parties</h4>
+                <i class="fas fa-user-plus"></i><h6 data-lang-key='addFriend'>ajouter un ami</h6>
             </button>
             <button type="button" class="user-menu-li" aria-label="Edit" data-bs-toggle="modal" data-bs-target="#editPicture">
-                    <i class="fas fa-cog"></i><h4 data-lang-key='setProfile'>Editer le profil</h4>
-                </button>
+                    <i class="fas fa-cog"></i><h6 data-lang-key='setProfile'>Editer le profil</h6>
+            </button>
             </div>
             <div class="user-menu-logout">
               <button id="logoutBtn" class="btn btn-logout btn-outline-light btn-lg px-5" data-lang-key='logout'>Déconnexion</button>
@@ -154,7 +151,6 @@ function displayUserInfo(user) {
   renderUserMenu(user);
   setupButtonListener();
   showUserList();
-  showGameList();
 }
 
 function    setupButtonListener() {
@@ -256,17 +252,7 @@ function    setupButtonListener() {
   });
 }
 
-const profileHeaderHTML = `
-<div class="profile-header-container">   
-    <div class="profile-header-img">
-        <img class="rounded-circle" src="//lh3.googleusercontent.com/-6V8xOA6M7BA/AAAAAAAAAAI/AAAAAAAAAAA/rzlHcD0KYwo/photo.jpg?sz=120" />
-        <!-- badge -->
-        <div class="rank-label-container">
-            <span class="label label-default rank-label">100 pts</span>
-        </div>
-    </div>
-</div>
-`;
+
 
 /* export function createButtonComponent(text, buttonId, dataLangKey, onClickFunction) {
   const glowingBtnHTML = `

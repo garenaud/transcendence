@@ -257,7 +257,6 @@ document.body.addEventListener('keydown', function(event) {
     }
 });
 
-
 /* document.addEventListener('DOMContentLoaded', (event) => {
     const loginForm = document.querySelector('.login-form');
     loginForm.addEventListener('keydown', function(event) {

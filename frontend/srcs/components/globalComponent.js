@@ -72,6 +72,17 @@ export function renderDiv(components, className) {
 }
 
 export function createPhotoComponent(imageSrc, points) {
+  const profileHeaderHTML = `
+  <div class="profile-header-container">   
+      <div class="profile-header-img">
+          <img class="rounded-circle" src="//lh3.googleusercontent.com/-6V8xOA6M7BA/AAAAAAAAAAI/AAAAAAAAAAA/rzlHcD0KYwo/photo.jpg?sz=120" />
+          <!-- badge -->
+          <div class="rank-label-container">
+              <span class="label label-default rank-label">100 pts</span>
+          </div>
+      </div>
+  </div>
+  `;
   const photoContainer = document.createElement('div');
   const profileHeader = document.createElement('div');
   profileHeader.innerHTML = profileHeaderHTML;

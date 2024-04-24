@@ -1,5 +1,6 @@
 import { createButtonComponent, createToastComponent, renderDiv, createPhotoComponent } from "./globalComponent.js";
 import { loadGameList } from "./userManager.js";
+import { appState } from "./stateManager.js";
 
 export function  showUserList() {
     const users = appState.users;

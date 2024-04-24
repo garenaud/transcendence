@@ -1,4 +1,4 @@
-import { appState } from "./stateManager.js";
+import { appState, renderApp } from "./stateManager.js";
 
 export function LanguageBtn() {
     const languageBtnHTML = `
@@ -19,11 +19,13 @@ export function LanguageBtn() {
 
     document.querySelectorAll('.dropdown-item').forEach(item => {
         item.addEventListener('click', (event) => {
+            console.log('click on language');
             const lang = event.currentTarget.getAttribute('data-lang');
-            loadLanguage(lang);
             dropdownButton.innerHTML = event.currentTarget.innerHTML;
             appState.language = lang;
+            console.log('Language changed:', lang);
             localStorage.setItem('appState', JSON.stringify(appState));
+            loadLanguage(lang);
         });
     });
 }
@@ -48,5 +50,7 @@ export function loadLanguage(lang) {
                     flagIcon.classList.add('flag-icon', 'flag-icon-' + lang); // ajouter les classes pour le drapeau de la langue
                 }
             }
+            // renderApp();
+            // LanguageBtn();
         });
 }

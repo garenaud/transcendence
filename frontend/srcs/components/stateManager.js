@@ -32,12 +32,16 @@ export function changeView(newView) {
     }
     location.hash = newView;
     localStorage.setItem('appState', JSON.stringify(appState));
+
+    history.pushState({ view: newView }, '');
 }
 
 // Écouteur d'événement pour changer la vue lorsque l'URL change (rajoute le # à l'URL lorsqu'on change de vue)
 window.addEventListener("hashchange", function() {
     appState.currentView = location.hash.substring(1);
     renderApp();
+
+    history.pushState({ view: appState.currentView }, '');
 });
 
 // Fonction pour que l'historique du navigateur fonctionne correctement avec les vues de l'application
@@ -48,6 +52,18 @@ window.addEventListener("popstate", function() {
 export function getCurrentView() {
     return appState.currentView;
 }
+
+window.addEventListener('beforeunload', function (e) {
+    // Vérifiez si l'utilisateur est connecté et si l'état précédent était la page de connexion
+    if (appState.user && history.state && history.state.view === 'login') {
+        // Annulez l'événement par défaut et affichez une boîte de dialogue de confirmation
+        console.error('User is logged in and going back to login page');
+        e.preventDefault();
+        var confirmationMessage = 'Si vous revenez à cette page, vous serez déconnecté. Êtes-vous sûr de vouloir continuer ?';
+        e.returnValue = confirmationMessage; // Gecko, Trident, Chrome 34+
+        return confirmationMessage; // Gecko, WebKit, Chrome <34
+    }
+});
 
 // Fonction principale pour rendre l'application en fonction de l'état actuel
 export async function renderApp() {
@@ -94,11 +110,6 @@ export async function renderApp() {
                         await LanguageBtn();
                         await renderHero();
                         renderNavbar(appState.user);
-                        const toastBtn = createButtonComponent('test', 'test', 'test', (event) => {
-                            const toast = createToastComponent(null, 'cooooool', '<p>rigolo</p>');
-                            document.body.appendChild(toast);
-                          });
-                        renderDiv([toastBtn], 'row');
                         appState.renderedComponents.hero = true;
                         appState.renderedComponents.navbar = true;
                     }
@@ -128,3 +139,20 @@ export async function renderApp() {
     }
 }
 renderApp();
+
+/* window.addEventListener('beforeunload', function (e) {
+    // Vérifiez si l'utilisateur est connecté et n'est pas sur la page de connexion
+    if (appState.user && window.location.hash !== '#login') {
+        // Annulez l'événement par défaut et affichez une boîte de dialogue de confirmation
+        e.preventDefault();
+        var confirmationMessage = 'Si vous revenez à cette page, vous serez déconnecté. Êtes-vous sûr de vouloir continuer ?';
+        e.returnValue = confirmationMessage; // Gecko, Trident, Chrome 34+
+        return confirmationMessage; // Gecko, WebKit, Chrome <34
+    }
+});
+
+window.addEventListener('unload', function () {
+    // Déconnectez l'utilisateur
+    appState.user = null;
+    localStorage.removeItem('appState');
+}); */
