@@ -92,7 +92,7 @@ export function renderPong() {
 						<div class="line"></div>
 							</div>
 							</div>
-							</div>
+						</div>
 							
 							<!-- pongLocalContent -->
 							<div id="pongLocal" class="h-100 align-items-center d-none">
@@ -253,7 +253,7 @@ function loadMultiPong() {
     });
     const scriptMultiPong = document.createElement('script');
     scriptMultiPong.type = 'module';
-    scriptMultiPong.src = '../pong/javascript/pong.js?' + new Date().getTime(); // Ajoute un horodatage à l'URL
+    scriptMultiPong.src = '../pong/javascript/pong.js'; // + new Date().getTime(); // Ajoute un horodatage à l'URL
     console.log('loadingMulti');
     scriptMultiPong.setAttribute('data-pong', 'dynamic');  // Marqueur pour identifier les scripts chargés dynamiquement
     document.body.appendChild(scriptMultiPong);
