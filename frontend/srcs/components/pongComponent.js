@@ -171,7 +171,6 @@ export function renderPong() {
 			.catch((error) => {
 				console.error('Error:', error);
 			});
-			console.log(pongMulti);
 			pongLocal.classList.add('d-none');
 			origPong.classList.add('d-none');
 			document.querySelectorAll('.card-game-inside > div').forEach(div => {
@@ -187,7 +186,6 @@ export function renderPong() {
         pongModal.addEventListener('show.bs.modal', function () {
 			console.log('modal');
 			scriptStarted = true;
-			loadPongMenuScript();
 			document.querySelectorAll('.card-game-inside > div').forEach(div => {
 				div.classList.remove('d-none');
 			});
@@ -224,10 +222,13 @@ function changeDivContent(newContent) {
 function unloadScript() {
     // Désactiver les scripts chargés dynamiquement
     document.querySelectorAll('script[type="module"][data-pong="dynamic"]').forEach(script => {
-        script.setAttribute('data-disabled', 'true');
+		script.setAttribute('data-disabled', 'true');
         script.removeAttribute('type');
         script.remove(); // Supprimer le script du DOM
     });
+	document.querySelectorAll('script[type="module"][data-pong="dynamic"]').forEach(script => {
+		console.log(script);
+	});
 }
 
 
@@ -252,18 +253,8 @@ function loadMultiPong() {
     });
     const scriptMultiPong = document.createElement('script');
     scriptMultiPong.type = 'module';
-    scriptMultiPong.src = '../pong/javascript/pong.js'; //+ new Date().getTime(); // Ajoute un horodatage à l'URL
+    scriptMultiPong.src = '../pong/javascript/pong.js?' + new Date().getTime(); // Ajoute un horodatage à l'URL
     console.log('loadingMulti');
     scriptMultiPong.setAttribute('data-pong', 'dynamic');  // Marqueur pour identifier les scripts chargés dynamiquement
     document.body.appendChild(scriptMultiPong);
-	loadPongMenuScript();
-}
-
-function loadPongMenuScript() {
-	console.log('loadmenu');
-    const scriptPongMenu = document.createElement('script');
-    scriptPongMenu.type = 'module';
-    scriptPongMenu.src = './pong_menu.js'; // Mettez à jour avec le chemin correct si nécessaire
-	console.log(scriptPongMenu);
-    document.body.appendChild(scriptPongMenu);
 }

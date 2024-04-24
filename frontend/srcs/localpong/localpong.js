@@ -235,10 +235,10 @@ function handlePaddleRight() {
 	if (PaddleRight) {
 		PaddleRight.castShadow = true;
 		// PaddleRight.receiveShadow = true;
-		if (KeyState['ArrowUp'] && PaddleRight.position.z - mooveSpeed > -wallLimit) {
+		if (KeyState['ArrowUp'] && PaddleRight.position.z - mooveSpeed > -wallLimit && finished == false) {
 			PaddleRight.position.z -= mooveSpeed;
 		}
-		if (KeyState['ArrowDown'] && PaddleRight.position.z + mooveSpeed < wallLimit) {
+		if (KeyState['ArrowDown'] && PaddleRight.position.z + mooveSpeed < wallLimit && finished == false) {
 			PaddleRight.position.z += mooveSpeed;
 		}	
 	}
@@ -251,10 +251,10 @@ function handlePaddleLeft() {
 	if (PaddleLeft) {
 		PaddleLeft.castShadow = true;
 		// PaddleLeft.receiveShadow = true;
-		if (KeyState['KeyW'] && PaddleLeft.position.z - mooveSpeed > -wallLimit) {
+		if (KeyState['KeyW'] && PaddleLeft.position.z - mooveSpeed > -wallLimit && finished == false) {
 			PaddleLeft.position.z -= mooveSpeed;
 		}
-		if (KeyState['KeyS'] && PaddleLeft.position.z + mooveSpeed < wallLimit) {
+		if (KeyState['KeyS'] && PaddleLeft.position.z + mooveSpeed < -wallLimit && finished == false) {
 			PaddleLeft.position.z += mooveSpeed;
 		}
 	} 
