@@ -1,13 +1,24 @@
-export function createListCardComponent(listItems) {
-    const listCardHTML = `
-    <div class="card-game-wrapper glowing">
-        <div class="card-game-test">
-          ${listItems}
-        </div>
-    </div>
-    `;
+import { showGameList } from "./listComponent.js";
 
-    return listCardHTML;
+export async function createListCardComponent() {
+  const gameListHTML = await showGameList();
+  const listCardHTML = `
+  <div class="card-game-wrapper glowing">
+      <div class="card-game-list">
+      <div class="goldTitle">
+        <div class="bg">Pong</div>
+        <div class="fg">Pong</div>
+      </div>
+        ${gameListHTML}
+      </div>
+  </div>
+  `;
+
+  const gameList = document.createElement('div');
+  gameList.classList.add('col-12', 'col-md-6');
+  gameList.innerHTML = listCardHTML;
+
+  return gameList;
 }
 
 

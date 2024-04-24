@@ -862,6 +862,7 @@ margin-bottom: 15px !important;
 }
 
 .card-game-test {
+  height: 300px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -872,6 +873,25 @@ margin-bottom: 15px !important;
   z-index: 1;
   border-radius: 15px;
   overflow: hidden;
+  background-color: white;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.card-game-list {
+  height: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 30vh;
+  padding: 10px;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  border-radius: 15px;
+  overflow-y: auto;
+  background-color: white;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -1560,6 +1580,39 @@ background-size: 70px 120px;
 .userlist-table td {
   padding: 10px;
   border: 1px solid #ddd;
+}
+
+.game-list-table{
+  background-color: white;
+  padding: 5px;
+  margin: 2px;
+  height: 200px;
+  overflow-y: scroll;
+}
+
+.game-list-table tr {
+  padding: 5px;
+}
+
+.status-game {
+  display: inline-block;
+  padding: .25em .4em;
+  font-size: 75%;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: .25rem;
+  color: #fff;
+}
+
+.status-game.bg-success {
+  background-color: #198754; /* Green */
+}
+
+.status-game.bg-danger {
+  background-color: #dc3545; /* Red */
 }
 
 /* .userlist-table button {

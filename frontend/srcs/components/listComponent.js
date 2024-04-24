@@ -33,59 +33,47 @@ export function  showUserList() {
     modalBody.appendChild(table);
   }
 
-// finished: true
-// ​​
-// id: 1
-// ​​
-// p1_id: 1
-// ​​
-// p1_score: 0
-// ​​
-// p2_id: 2
-// ​​
-// p2_score: 0
-// ​​
-// room_group_name: "game_7818"
-// ​​
-// room_id: 7818
-
-export async function showGameList() {
-  const games = await loadGameList();
-  const table = document.createElement('table');
-  table.className = 'game-list-table';
-
-  games.forEach(game => {
-      const row = document.createElement('tr');
-      const p1Cell = document.createElement('td');
-      const p2Cell = document.createElement('td');
-      const statusCell = document.createElement('td');
-
-      const p1PhotoComponent = createPhotoComponent('./Design/User/Max-R_Headshot.jpg', game.p1_id);
-      const p2PhotoComponent = createPhotoComponent('./Design/User/Max-R_Headshot.jpg', game.p2_id);
-
-      p1Cell.appendChild(p1PhotoComponent);
-      p1Cell.appendChild(document.createTextNode(`Score: ${game.p1_score}`));
-      p2Cell.appendChild(p2PhotoComponent);
-      p2Cell.appendChild(document.createTextNode(`Score: ${game.p2_score}`));
-
-      statusCell.textContent = game.finished ? 'Finished' : 'In Progress';
-
-      if (game.p1_score > game.p2_score) {
-          p1Cell.style.backgroundColor = 'green';
-          p2Cell.style.backgroundColor = 'red';
-      } else if (game.p1_score < game.p2_score) {
-          p1Cell.style.backgroundColor = 'red';
-          p2Cell.style.backgroundColor = 'green';
-      } else if (game.p1_score === game.p2_score) {
-          p1Cell.style.backgroundColor = 'yellow';
-          p2Cell.style.backgroundColor = 'yellow';
-      }
-
-      row.appendChild(p1Cell);
-      row.appendChild(statusCell);
-      row.appendChild(p2Cell);
-      table.appendChild(row);
-  });
-
-  return table.outerHTML;
-}
+  export async function showGameList() {
+    const games = await loadGameList();
+    const table = document.createElement('table');
+    table.className = 'game-list-table';
+  
+    games.forEach(game => {
+        const row = document.createElement('tr');
+        const p1Cell = document.createElement('td');
+        const p2Cell = document.createElement('td');
+        const statusCell = document.createElement('td');
+  
+        const p1PhotoComponent = createPhotoComponent('./Design/User/Max-R_Headshot.jpg', game.p1_id);
+        const p2PhotoComponent = createPhotoComponent('./Design/User/Max-R_Headshot.jpg', game.p2_id);
+  
+        p1Cell.appendChild(p1PhotoComponent);
+        p1Cell.appendChild(document.createTextNode(`Score: ${game.p1_score}`));
+        p2Cell.appendChild(p2PhotoComponent);
+        p2Cell.appendChild(document.createTextNode(`Score: ${game.p2_score}`));
+  
+        // Create a span for the game status
+        const statusSpan = document.createElement('span');
+        statusSpan.className = `status-game bg-${game.finished ? 'success' : 'danger'}`;
+        statusSpan.textContent = game.finished ? 'Finished' : 'In Progress';
+        statusCell.appendChild(statusSpan);
+  
+        if (game.p1_score > game.p2_score) {
+            p1Cell.style.backgroundColor = 'green';
+            p2Cell.style.backgroundColor = 'red';
+        } else if (game.p1_score < game.p2_score) {
+            p1Cell.style.backgroundColor = 'red';
+            p2Cell.style.backgroundColor = 'green';
+        } else if (game.p1_score === game.p2_score) {
+            p1Cell.style.backgroundColor = 'yellow';
+            p2Cell.style.backgroundColor = 'yellow';
+        }
+  
+        row.appendChild(p1Cell);
+        row.appendChild(statusCell);
+        row.appendChild(p2Cell);
+        table.appendChild(row);
+    });
+  
+    return table.outerHTML;
+  }

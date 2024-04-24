@@ -53,7 +53,7 @@ export function getCurrentView() {
     return appState.currentView;
 }
 
-window.addEventListener('beforeunload', function (e) {
+/* window.addEventListener('beforeunload', function (e) {
     // Vérifiez si l'utilisateur est connecté et si l'état précédent était la page de connexion
     if (appState.user && history.state && history.state.view === 'login') {
         // Annulez l'événement par défaut et affichez une boîte de dialogue de confirmation
@@ -63,7 +63,7 @@ window.addEventListener('beforeunload', function (e) {
         e.returnValue = confirmationMessage; // Gecko, Trident, Chrome 34+
         return confirmationMessage; // Gecko, WebKit, Chrome <34
     }
-});
+}); */
 
 // Fonction principale pour rendre l'application en fonction de l'état actuel
 export async function renderApp() {
@@ -115,14 +115,16 @@ export async function renderApp() {
                     }
                     break;
                 case 'game':
-                    if (!document.querySelector('.navbar')) {
+                    console.log(document.querySelector('.navbar-expand-lg'));
+                    console.log(appState.currentView);
+                    if (!document.querySelector('.navbar') || !appState.currentView == "game") {                        console.log('ben pas trouve navbar...');
                         const game = await renderPong();
                         const game2 = await renderRun();
                         const roulette = await renderRoulette();
-                        const test = await renderRoulette();
-                        const test2 = await renderRoulette();
+                        //const test = await renderRoulette();
+                        const test = await createListCardComponent();
                         const test3 = await renderRoulette();
-                        await renderDiv([roulette, test, test2, test3, game, game2], 'row');
+                        await renderDiv([roulette, test, test3, game, game2], 'row');
                         await LanguageBtn();
                         renderNavbar(appState.user);
                         appState.renderedComponents.game = true;
