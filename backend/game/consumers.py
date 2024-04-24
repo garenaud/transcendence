@@ -5,7 +5,7 @@ import introcs
 import asyncio
 import time
 import threading
-from database.models import Games
+from database.models import Games, Tournament
 from django.contrib.auth.models import User
 import channels.layers
 from asgiref.sync import async_to_sync, sync_to_async
@@ -13,7 +13,9 @@ import random
 from channels.db import database_sync_to_async
 from.game_class import gameData
 
+
 gameTab = [None] * 10000
+tournament_gametab = [None] * 10000
 
 channel_layer = channels.layers.get_channel_layer()
 
@@ -247,6 +249,41 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
     async def update(self, event):
         data = event['message']
         await self.send(text_data=json.dumps(data))
+
+
+class AsyncTournamentConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        self.tournament_id = self.scope["url_route"]["kwargs"]["room_id"]
+        self.room_group_name = f'tournament_{self.tournament_id}'
+        try:
+            self.tournoi = Tournament.objects.get(tournament_id=self.tournament_id)
+        except:
+            print("l'homme methode socket")
+            self.close()
+        self.playerid = 0
+
+
+        await self.channel_layer.group_add(
+            self.room_group_name,
+            self.channel_name
+        )
+        await self.accept()
+        await self.send(text_data=json.dumps({'message' : self.tournament_id}))
+
+    async def disconnect(self, close_code):
+        pass
+    async def receive(self, text_data):
+        pass
+
+    async def update(self, event):
+        data = event['message']
+        await self.send(text_data=json.dumps(data))
+    #des la connexion au websocket ouverte, recuperer l'id du joueur afin de set le p2, p3 et p4 id dans l'objet tournoi de la db
+    
+    
+    #quand tout le monde est connecter envoyer un message 
+    #ainsi que l'id de la game a chaque joueur pour quils puissent rejoindre la bonne game et set le tournoi a full=True
+    #recuperer le gagnant de chaquee game afin de savoir quel joueur aura acces a la finale et disconnect les autres joueur du tournoi
 
 class ChatConsumer(WebsocketConsumer):
     lolmessage = "superlol"

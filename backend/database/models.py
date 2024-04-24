@@ -8,7 +8,7 @@ class Users(models.Model):
 	name = models.CharField(max_length=20)
 	login = models.CharField(max_length=20)
 	password = models.CharField(max_length=100)
- 
+	
 	def __str__(self) -> str:
 		return self.name
 	
@@ -28,5 +28,22 @@ class Games(models.Model):
 	p2_score = models.IntegerField(default=0)
 	room_group_name = models.CharField(max_length=100, default="")
 	room_id = models.IntegerField(default=-1)
+	tournament_id = models.IntegerField(default=-1)
 	def __str__(self):
 		return self.code
+
+class Tournament(models.Model):
+	tournament_id = models.IntegerField(default=-1)
+	p1_id = models.IntegerField(default=-1)
+	p2_id = models.IntegerField(default=-1)
+	p3_id = models.IntegerField(default=-1)
+	p4_id = models.IntegerField(default=-1)
+	p1_alias = models.CharField(max_length=100, default="")
+	p2_alias = models.CharField(max_length=100, default="")
+	p3_alias = models.CharField(max_length=100, default="")
+	p4_alias = models.CharField(max_length=100, default="")
+	game1_id = models.IntegerField(default=-1)
+	game2_id = models.IntegerField(default=-1)
+	game3_id = models.IntegerField(default=-1)
+	full = models.BooleanField(default=False)
+	finished = models.BooleanField(default=False)

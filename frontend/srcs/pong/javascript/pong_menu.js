@@ -16,7 +16,7 @@ function makeid(length) {
 
 document.getElementById('createBtn').addEventListener('click', function() {
 	let url = '/api/game/create/';
-	console.log(url);
+	// console.log(url);
 	fetch(url, {
 		method: 'GET',
 		credentials: 'same-origin' 

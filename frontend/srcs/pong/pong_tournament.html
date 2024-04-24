@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+
+	<link rel="stylesheet" type="text/css" href="css/styles.css">
+	<head lang="en">
+		<meta charset="utf-8">
+		<title>My first three.js app</title>
+		<style>
+			body { margin: 0; }
+		</style>
+		<!-- 
+			Import map is not available in all browsers.
+			This is necessary to serve the three path so that other imports can access it. 
+		-->
+		<script type="importmap">
+			{
+				"imports": {
+					"three": "https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js",
+						"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.161.0/examples/jsm/"
+				}
+			}
+		</script>
+	</head>
+	<body>
+		<div id="countdown"></div>
+		<div class="scoreboard">
+			<div class="row">
+				<div class="col col-display" id="scoreHome">0</div>
+			</div>
+			<div class="row">
+				<div class="col col-display" id="scoreGuest">0</div>
+			</div>
+		</div>
+		<div class="loading">
+			<div class="load-3">
+				<p id="loading_txt">[WAITING FOR OPPONENT]</p>
+				<div class="line"></div>
+				<div class="line"></div>
+				<div class="line"></div>
+			</div>
+		</div>
+		<div id="myModal" class="modal">
+			<div class="modal-content">
+				<p id="error"></p>
+				<button onclick="window.location.href = 'pong_tournament.html'">Revenir au menu</button>
+			</div>
+		</div>
+		<canvas id="background"></canvas>
+		<script type="module" src="javascript/pong_tournament.js"></script>
+	</body>
+</html>
