@@ -252,28 +252,72 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
 
 
 class AsyncTournamentConsumer(AsyncWebsocketConsumer):
+    
+    def saveGame(self,game):
+            game.save()
+    
     async def connect(self):
         self.tournament_id = self.scope["url_route"]["kwargs"]["room_id"]
         self.room_group_name = f'tournament_{self.tournament_id}'
-        try:
-            self.tournoi = Tournament.objects.get(tournament_id=self.tournament_id)
-        except:
-            print("l'homme methode socket")
-            self.close()
+        self.tournoi = await sync_to_async(Tournament.objects.get)(tournament_id=self.tournament_id)
         self.playerid = 0
-
-
+        self.playernb = 0
+        print('aosfsadfsadfasdfsadgadfgas')
         await self.channel_layer.group_add(
             self.room_group_name,
             self.channel_name
         )
+        
         await self.accept()
         await self.send(text_data=json.dumps({'message' : self.tournament_id}))
+        if self.tournoi.p1_id == -1:
+            self.playernb = 1
+            self.tournoi.p1_id = 1
+            print('1')
+        elif self.tournoi.p2_id == -1:
+            self.playernb = 2
+            self.tournoi.p2_id = 2
+            print('2')
+        elif self.tournoi.p3_id == -1:
+            self.playernb = 3
+            self.tournoi.p3_id = 3
+            print('3')
+        elif self.tournoi.p4_id == -1:
+            self.playernb = 4  
+            self.tournoi.p4_id = 4
+            print('4')
+            await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+               'type' : 'update',
+               "message": {'action' : 'startTournament'}
+            }
+            )
+        print('AVANT SENDDDDDD')
+        await self.send(text_data=json.dumps({'action' : 'playernb','playernb' : self.playernb}))
+        await sync_to_async(self.saveGame)(self.tournoi)
+        await self.channel_layer.group_send(
+        self.room_group_name,
+        {
+            'type' : 'update',
+            "message": {'action' : 'connect', 'connected' : self.playernb}
+        }
+        )
+        print('APRESSS SENDDDDDD')
 
     async def disconnect(self, close_code):
         pass
     async def receive(self, text_data):
-        pass
+        jsondata = json.loads(text_data)
+        message = jsondata['message']
+        if message == 'getGameId':
+            playernb = jsondata['playernb']
+            if playernb == 1 or playernb == 3:
+                gameid = self.tournoi.game1_id
+                await self.send(text_data=json.dumps({'action' : 'gameid', 'gameid' : gameid}))
+            if playernb == 2 or playernb == 4:
+                gameid = self.tournoi.game2_id
+                await self.send(text_data=json.dumps({'action' : 'gameid', 'gameid' : gameid}))
 
     async def update(self, event):
         data = event['message']

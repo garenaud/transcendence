@@ -9,8 +9,10 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 //import { tournament_id } from './join.js';
 // import { RectAreaLightHelper } from 'three/addons/helpers/RectAreaLightHelper.js';
 
+let tournament_data;
 let active = false;
 let tournament_id = sessionStorage.getItem('tournament_id');
+let gameid;
 let game_data;
 let renderer;
 let scene;
@@ -32,7 +34,20 @@ let scoreLeft;
 let scoreRight;
 let ballVelocity;
 let gameSocket;
+let tournamentSocket;
 let currentNum = 7;
+let connected = 1;
+let playernb = 0;
+
+tournamentSocket = new WebSocket(
+	'wss://'
+	+ window.location.host
+	+ '/ws/'
+	+ 'tournament'
+	+ '/'
+	+ tournament_id
+	+ '/'
+);
 
 const KeyState = {
 	KeyW: false,
@@ -43,13 +58,13 @@ const KeyState = {
 };
 
 function makeid(length) {
-    let result = '';
+	let result = '';
     const characters = '0123456789';
     const charactersLength = characters.length;
     let counter = 0;
     while (counter < length) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
-      counter += 1;
+		result += characters.charAt(Math.floor(Math.random() * charactersLength));
+		counter += 1;
     }
     return result;
 }
@@ -58,18 +73,11 @@ if (tournament_id === "null" || tournament_id === undefined) {
 	window.location.href = "https://localhost/";
 }
 
-gameSocket = new WebSocket(
-	'wss://'
-	+ window.location.host
-	+ '/ws/'
-	+ 'tournament'
-	+ '/'
-	+ tournament_id
-	+ '/'
-);
+
+
 
 const loadingElement = document.getElementById('loading_txt');
-loadingElement.innerHTML = "[WAITING FOR OPPONENT]<br>Game ID : " + tournament_id;
+loadingElement.innerHTML = "[WAITING FOR OPPONENT]<br>Game ID : " + tournament_id + '<br>' + 'Currently connected : ' + connected + '/4';
 
 //console.log(privategame);
 //console.log(`ID IS ${tournament_id}`);
@@ -302,127 +310,6 @@ function handleKeyUp(event) {
 		KeyState[event.code] = false;
 	}
 }
-
-// document.addEventListener('keydown', function(e){
-// 	if (e.key == 'ArrowUp')
-// 	{
-// 		gameSocket.send(JSON.stringify({
-// 			'message' : 'Up'
-// 		}));
-// 	}
-// 	else if (e.key == 'ArrowDown')
-// 	{
-// 		gameSocket.send(JSON.stringify({
-// 			'message' : 'Down'
-// 		}));
-// 	}
-// });
-
-// function handlePaddleRight() {
-// 	const PaddleRightName = 'RightPaddle';
-// 	PaddleRight = scene.getObjectByName(PaddleRightName);
-	
-// 	// console.log(PaddleRight);4
-// 	// x === 15
-	
-// 	if (PaddleRight) {
-// 		PaddleRight.castShadow = true;
-// 		// PaddleRight.receiveShadow = true;
-// 		if (KeyState['ArrowUp'] && PaddleRight.position.z - mooveSpeed > -wallLimit) {
-// 			PaddleRight.position.z -= mooveSpeed;
-// 		}
-// 		if (KeyState['ArrowDown'] && PaddleRight.position.z + mooveSpeed < wallLimit) {
-// 			PaddleRight.position.z += mooveSpeed;
-// 		}	
-// 	}
-// }
-
-// function handlePaddleLeft() {
-// 	const PaddleLeftName = 'LeftPaddle';
-// 	PaddleLeft = scene.getObjectByName(PaddleLeftName);
-// 	// console.log(PaddleLeft);
-	
-// 	// TODO condition si 2player alors mouvement, sinon IA;
-// 	if (PaddleLeft) {
-// 		PaddleLeft.castShadow = true;
-// 		// PaddleLeft.receiveShadow = true;
-// 		if (KeyState['KeyW'] && PaddleLeft.position.z - mooveSpeed > -wallLimit) {
-// 			PaddleLeft.position.z -= mooveSpeed;
-// 		}
-// 		if (KeyState['KeyS'] && PaddleLeft.position.z + mooveSpeed < wallLimit) {
-// 			PaddleLeft.position.z += mooveSpeed;
-// 		}
-// 	} 
-// }
-
-// let speedIncreaseFactor = 1.1; // Facteur d'augmentation de la vitesse
-
-// // TODO: Reajuster l'angle de la balle.
-// function handlePaddleCollision() {
-// 	const ballRadius = ball.geometry.boundingSphere.radius;
-// 	const PaddleSizeX = PaddleLeft.geometry.boundingBox.max.x;
-// 	const PaddleSizeZ = PaddleLeft.geometry.boundingBox.max.z + 0.6;
-// 	const maxAngleAdjustment = Math.PI / 6; // Angle maximal d'ajustement
-// 	const minAngleAdjustment = -Math.PI / 6; // Angle minimal d'ajustement
-// 	if (PaddleLeft && PaddleRight) {
-// 		// Vérifier la collision avec le paddle gauche
-// 		if (
-// 			ball.position.x - ballRadius < PaddleLeft.position.x + PaddleSizeX / 2 &&
-// 			ball.position.x + ballRadius > PaddleLeft.position.x - PaddleSizeX / 2 &&
-// 			ball.position.z + ballRadius > PaddleLeft.position.z - PaddleSizeZ / 2 &&
-// 			ball.position.z - ballRadius < PaddleLeft.position.z + PaddleSizeZ / 2
-// 			) {
-// 				const relativePosition = (ball.position.z - PaddleLeft.position.z) / PaddleSizeZ;
-// 				const angleAdjustment = (relativePosition - 0.5) * (maxAngleAdjustment - minAngleAdjustment) * 0.6;
-				
-// 				// Ajuster la direction de la balle en fonction de l'angle
-// 				const angle = Math.PI / 4 + angleAdjustment; // ou toute autre formule d'ajustement
-// 				ballVelocity.x = Math.cos(angle) * (0.2 * speedIncreaseFactor);
-// 				ballVelocity.z = Math.sin(angle) * (0.2 * speedIncreaseFactor);
-// 				speedIncreaseFactor += 0.1;
-// 			}
-// 		// Vérifier la collision avec le paddle droit
-// 		if (
-// 			ball.position.x - ballRadius < PaddleRight.position.x + PaddleSizeX / 2 &&
-// 			ball.position.x + ballRadius > PaddleRight.position.x - PaddleSizeX / 2 &&
-// 			ball.position.z + ballRadius > PaddleRight.position.z - PaddleSizeZ / 2 &&
-// 			ball.position.z - ballRadius < PaddleRight.position.z + PaddleSizeZ / 2
-// 			) {
-// 				const relativePosition = (ball.position.z - PaddleRight.position.z) / PaddleSizeZ;
-// 				const angleAdjustment = (relativePosition - 0.5) * (maxAngleAdjustment - minAngleAdjustment) * 0.3;
-				
-// 				// Ajuster la direction de la balle en fonction de l'angle
-// 				const angle = -Math.PI / 4 - angleAdjustment; // ou toute autre formule d'ajustement
-// 				ballVelocity.x = -Math.cos(angle) * (0.2 * speedIncreaseFactor);
-// 				ballVelocity.z = -Math.sin(angle) * (0.2 * speedIncreaseFactor);
-// 				speedIncreaseFactor += 0.1;
-// 			}
-// 		}
-// 	}
-	
-// 	function handleWallColision() {
-// 		if (ball.position.z > ballLimit || ball.position.z < -ballLimit) {
-// 			ballVelocity.z *= -1;
-// 		} else if (ball.position.x > 18 || ball.position.x < -18) {
-// 			ball.position.x = 0;
-// 			ball.position.y = 0;
-// 			ball.position.z = 0;
-// 			console.log('youpi');
-// 			speedIncreaseFactor = 1.1;
-// 			ballVelocity = new THREE.Vector3(Math.cos(initialAngle) * speed, 0, Math.sin(initialAngle) * speed);
-// 		}
-// 	}
-	
-// 	function updateBall() {
-// 		if (ball) {
-// 			// ball.position.z += ballVelocity.z;
-// 			// ball.position.x += ballVelocity.x;
-
-// 			//console.log(speedIncreaseFactor);
-// 			handlePaddleCollision();
-// 			handleWallColision();
-// 		}
-// 	}
 	
 	// Fonction pour gérer le mouvement du paddle de l'IA
 	function handleAIPaddle() {
@@ -511,6 +398,7 @@ function anim() {
 }
 
 gameSocket.onmessage = function(e) {
+	console.log("##########GAME#############");
 	game_data = JSON.parse(e.data);
 	if (game_data.action == "allin") {
 		loadingElement.innerHTML = "[LOADING GAME ...]";
@@ -534,7 +422,7 @@ gameSocket.onmessage = function(e) {
 		const errorElement = document.getElementById('error');
 		errorElement.textContent = "Final score : " + game_data.scorep2 + " - " + game_data.scorep1;
 		document.getElementById("myModal").style.display = "block";
-		sessionStorage.setItem("tournament_id", null);
+		sessionStorage.setItem("game_id", null);
 	} else if (game_data.action == "userleave") {
 		const errorElement = document.getElementById('error');
 		errorElement.textContent = "A user left the game";
@@ -572,6 +460,46 @@ gameSocket.onmessage = function(e) {
 	}
 };
 
+tournamentSocket.onmessage = function(e) {
+	console.log("##########TOURNAMENT#############");
+	tournament_data = JSON.parse(e.data);
+	console.log(tournament_data);
+	if (tournament_data.action == 'connect')
+	{
+		console.log(tournament_data.action);
+		connected = tournament_data['connected'];
+		loadingElement.innerHTML = "[WAITING FOR OPPONENT]<br>Game ID : " + tournament_id + '<br>' + 'Currently connected : ' + connected + '/4';
+	}
+	if (tournament_data.action == 'start_tournament')
+	{
+
+	}
+	else if (tournament_data.action == 'playernb')
+	{
+		playernb = tournament_data['playernb'];
+	}
+	else if (tournament_data.action == 'startTournament')
+	{
+		tournamentSocket.send(JSON.stringify({
+			'message' : 'getGameId',
+			'playernb' : playernb
+			}));
+	}
+	else if (tournament_data.action == 'gameid')
+	{
+		gameid = tournament_data['gameid'];
+		console.log(`game id for player ${playernb} is ${gameid}`);
+		gameSocket = new WebSocket(
+			'wss://'
+			+ window.location.host
+			+ '/ws/'
+			+ 'game'
+			+ '/'
+			+ gameid
+			+ '/'
+			);
+	}
+}
 
 function update_game_data() {
 	const PaddleRightName = 'RightPaddle';

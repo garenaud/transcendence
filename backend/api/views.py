@@ -151,20 +151,21 @@ def join_tournament(request, tournamentid):
 	if request.method == 'POST':
 		data = json.load(request)
 		tournamentid = data['tournamentid']
-		playerid = data['id']
+		playerid = data['userid']
+		playernb = 0
 		try:
 			qs = Tournament.objects.filter(tournament_id=tournamentid, full=False, finished=False)
 			tournoi = qs[0]
 			if tournoi.p2_id == -1:
-				tournoi.p2_id = playerid
+				playernb = 2
 			elif tournoi.p3_id == -1:
-				tournoi.p3_id = playerid
+				playernb = 3
 			else:
-				tournoi.p4_id = playerid
 				tournoi.full = True
+				playernb = 4
 			
 			tournoi.save()
-			return Response({'game1id' : tournoi.game1_id, 'game2id' : tournoi.game2_id, 'game3id' : tournoi.game3_id})
+			return Response({'message' : 'ok', 'game1id' : tournoi.game1_id, 'game2id' : tournoi.game2_id, 'game3id' : tournoi.game3_id, 'playernb' : playernb})
 
 		except:
 			return Response({'message' : 'ko'}, status=status.HTTP_404_NOT_FOUND)
@@ -178,7 +179,7 @@ def create_random_game_id(start, end):
 		newid = random.randint(start, end)
 	return newid
 
-def create_random_game_id(start, end):
+def create_random_tournament_id(start, end):
 	newid = random.randint(start, end)
 	while Tournament.objects.filter(tournament_id=newid, finished=False).count() != 0:
 		newid = random.randint(start, end)

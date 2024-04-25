@@ -47,3 +47,4 @@ class Tournament(models.Model):
 	game3_id = models.IntegerField(default=-1)
 	full = models.BooleanField(default=False)
 	finished = models.BooleanField(default=False)
+	connected = models.IntegerField(default=0)
