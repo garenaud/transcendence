@@ -29,5 +29,6 @@
     "joinRoomPong": "REJOINDRE UNE PARTIE",
     "joinRandomRoomPong": "REJOINDRE UNE PARTIE ALÉATOIRE",
     "game": "Jeu",
-    "+": "+"
+    "+": "+",
+    "pongPlayed": "Historique des parties"
 }

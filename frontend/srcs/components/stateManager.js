@@ -18,7 +18,7 @@ export let appState = {
     user: null,
     users: [],
     renderedComponents: {},
-    language: 'fr',
+    language: 'fr'
 };
 
 // Fonction pour changer la vue actuelle de l'application
@@ -28,7 +28,13 @@ export function changeView(newView) {
         appState = JSON.parse(savedState);
     }
     if (appState.currentView !== newView) {
-        appState.renderedComponents = {};
+        // Supprimez les composants de la vue précédente de appState.renderedComponents
+        for (let component in appState.renderedComponents) {
+            if (component.startsWith(appState.currentView)) {
+                delete appState.renderedComponents[component];
+            }
+        }
+        localStorage.setItem('renderedComponents', JSON.stringify(appState.renderedComponents));
     }
     location.hash = newView;
     localStorage.setItem('appState', JSON.stringify(appState));
@@ -75,6 +81,7 @@ export async function renderApp() {
     const savedState = localStorage.getItem('appState');
     if (savedState) {
         appState = JSON.parse(savedState);
+        appState.renderedComponents = JSON.parse(localStorage.getItem('renderedComponents')) || {};
         loadLanguage(appState.language);
     } else {
         const view = window.location.pathname.substring(1);
@@ -116,19 +123,24 @@ export async function renderApp() {
                     break;
                 case 'game':
                     console.log(document.querySelector('.navbar-expand-lg'));
-                    console.log(appState.currentView);
-                    if (!document.querySelector('.navbar') || !appState.currentView == "game") {                        console.log('ben pas trouve navbar...');
+                    console.log("appstate dans game: ", appState);
+                    loadLanguage(appState.language);
+                    if (!appState.renderedComponents.game) {
+                        await LanguageBtn();
+                        loadLanguage(appState.language);
+                        renderNavbar(appState.user);
                         const game = await renderPong();
                         const game2 = await renderRun();
                         const roulette = await renderRoulette();
-                        //const test = await renderRoulette();
-                        const test = await createListCardComponent();
+                        const listHTML = await showGameList();
+                        const test = await createListCardComponent('pongPlayed', 'Historique', listHTML);
                         const test3 = await renderRoulette();
                         await renderDiv([roulette, test, test3, game, game2], 'row');
-                        await LanguageBtn();
-                        renderNavbar(appState.user);
+                        loadLanguage(appState.language);
                         appState.renderedComponents.game = true;
                         appState.renderedComponents.navbar = true;
+                    } else {
+                        renderNavbar(appState.user);
                     }
                     break;
                 case 'chat':

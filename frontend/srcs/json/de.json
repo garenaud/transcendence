@@ -29,5 +29,6 @@
     "joinRoomPong": "EINEM SPIEL BEITRETEN",
     "joinRandomRoomPong": "EINEM ZUFÄLLIGEN SPIEL BEITRETEN",
     "game": "SPIEL",
-    "+": "+"
+    "+": "+",
+    "pongPlayed": "Spielverlauf"
 }

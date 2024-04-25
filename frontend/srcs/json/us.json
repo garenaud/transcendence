@@ -29,5 +29,6 @@
     "joinRoomPong": "JOIN A ROOM",
     "joinRandomRoomPong": "JOIN A RANDOM ROOM",
     "game": "GAME",
-    "+": "+"
+    "+": "+",
+    "pongPlayed": "Game History"
 }
