@@ -60,11 +60,10 @@ export function renderPong() {
 									<nav class="nav">
 								  		<a id="localPongBtn" class="nav-link">Local</a>
 								  		<a id="multiPongBtn" class="nav-link">Create Private</a>
-								  			<div class="nav-link">
-												<a  id="joinBtn">Join Private</a>
+										  <div class="nav-link">
+										  	<a  id="joinPongBtn">Join Private</a>
 											<input type="text" id="gameCodeInput" class="inputGame" placeholder="Game ID">
 								  			</div>
-								  		<a id="error"></a>
 								  		<a id="searchBtn" class="nav-link">Online Matchmaking</a>
 								  		<a href="https://www.exit.ch/en/" target="_blank" class="nav-link">Exit</a>
 									</nav>
@@ -77,34 +76,35 @@ export function renderPong() {
 						<canvas id="background" class="h-100 w-100"></canvas>
 							<div id="countdown"></div>
 							<div class="container3">
-							<div class="row">
-							<div class="col col-display" id="scoreHome">0</div>
+								<div class="row">
+									<div class="col col-display" id="scoreHome">0</div>
+								</div>
+								<div class="row">
+									<div class="col col-display" id="scoreGuest">0</div>
+								</div>
 							</div>
-							<div class="row">
-							<div class="col col-display" id="scoreGuest">0</div>
-							</div>
-							</div>
-							<div class="container2">
-							<div class="load-3">
-							<p id="loading">[WAITING FOR OPPONENT]</p>
-							<div class="line"></div>
-							<div class="line"></div>
-							<div class="line"></div>
-							</div>
+								<div class="container2">
+									<div class="load-3">
+										<p id="loading">[WAITING FOR OPPONENT]</p>
+									<div class="line"></div>
+									<div class="line"></div>
+									<div class="line"></div>
+								</div>
 							</div>
 						</div>
 							
 							<!-- pongLocalContent -->
 							<div id="pongLocal" class="h-100 align-items-center d-none">
 							<canvas id="background" class="h-100 w-100"></canvas>
-							<div id="countdownPong"></div>
-							<div id="displayscore"></div>
-							<div id ="displayvictory"></div>
+								<div id="countdownPong"></div>
+								<div id="displayscore"></div>
+								<div id ="displayvictory"></div>
 							</div>
 							
 							
 							<!-- joinPongContent -->
 							<div id="joinPong" class="h-100 align-items-center d-none">
+							<a id="error"></a>
 							<input id="chat-message-input" type="text" size="20"><br>
 							<input id="chat-message-submit" type="button" value="Send">
 							</div>
@@ -129,13 +129,51 @@ export function renderPong() {
 							function addEventListeners(element) {
         const origPong = element.querySelector('#origPong');
         const multiPongBtn = element.querySelector('#multiPongBtn');
+        const joinPongBtn = element.querySelector('#joinPongBtn');
         const pongMulti = element.querySelector('#pongMulti');
         const joinPong = element.querySelector('#joinPong');
         const pongLocal = element.querySelector('#pongLocal');
         const localPongBtn = element.querySelector('#localPongBtn');
         const previousDiv = origPong ? pongMulti.previousElementSibling : null;
         const pongModal = element.querySelector('#pong');
-		
+
+		// * JoinBtn 
+		joinPongBtn.addEventListener('click', function() {
+			const gameIdInput = document.getElementById('gameCodeInput');
+			gameid = gameIdInput.value.trim();
+			let url = '/api/game/' + gameid;
+			if (!isNaN(gameid) && gameid > 0 && gameid <= 9999) {	
+				console.log(url);
+				fetch(url, {
+					method: 'GET',
+					credentials: 'same-origin' 
+				})
+				.then(response => response.json())
+				.then(data => {
+					console.log('Success:', data);
+					if (data['message'] == "Not found") {
+						errorLink.textContent = `La partie ${gameid} n'existe pas, veuillez reessayer`;
+					} else{
+						privategame = true;
+						sessionStorage.setItem("privategame", privategame);
+						sessionStorage.setItem("gameid", gameid);
+					}
+				})
+				.catch((error) => {
+					console.error('Error:', error);
+				});
+			}
+			pongLocal.classList.add('d-none');
+			origPong.classList.add('d-none');
+			document.querySelectorAll('.card-game-inside > div').forEach(div => {
+				div.classList.add('d-none');
+			});
+			pongMulti.classList.remove('d-none');
+			var data = document.querySelector('#pongMulti').innerHTML;
+			document.querySelector('#pongMulti').innerHTML = data;
+			loadMultiPong();		
+		});
+			
 		localPongBtn.addEventListener('click', toggleVisibility);
 		//* LOCALPONG
         localPongBtn.addEventListener('click', function() {
@@ -197,7 +235,9 @@ export function renderPong() {
 			scriptStarted = false;
 			unloadScript();
 			const pongLocal = element.querySelector('#pongLocal');
+			const pongMulti = element.querySelector('#pongMulti');
     		pongLocal.classList.add('d-none');
+			pongMulti.classList.add('d-none');
             origPong.classList.remove('d-none');
         });
 		
@@ -224,13 +264,12 @@ function changeDivContent(newContent) {
 function unloadScript() {
     // Désactiver les scripts chargés dynamiquement
     document.querySelectorAll('script[type="module"][data-pong="dynamic"]').forEach(script => {
+		console.log(script);
 		script.setAttribute('data-disabled', 'true');
         script.removeAttribute('type');
         script.remove(); // Supprimer le script du DOM
+		console.log(script + 'end');
     });
-	document.querySelectorAll('script[type="module"][data-pong="dynamic"]').forEach(script => {
-		console.log(script);
-	});
 }
 
 
@@ -255,7 +294,7 @@ function loadMultiPong() {
     });
     const scriptMultiPong = document.createElement('script');
     scriptMultiPong.type = 'module';
-    scriptMultiPong.src = '../pong/javascript/pong.js'; // + new Date().getTime(); // Ajoute un horodatage à l'URL
+    scriptMultiPong.src = '../pong/javascript/pong.js?' + new Date().getTime(); // Ajoute un horodatage à l'URL
     console.log('loadingMulti');
     scriptMultiPong.setAttribute('data-pong', 'dynamic');  // Marqueur pour identifier les scripts chargés dynamiquement
     document.body.appendChild(scriptMultiPong);

@@ -11,6 +11,7 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 
 let active = false;
 let gameid = sessionStorage.getItem('gameid');
+console.log(gameid);
 let privategame = sessionStorage.getItem('privategame');
 let game_data;
 let renderer;
