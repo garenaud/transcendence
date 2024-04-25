@@ -396,69 +396,70 @@ function anim() {
         return;
     }
 }
-
-gameSocket.onmessage = function(e) {
-	console.log("##########GAME#############");
-	game_data = JSON.parse(e.data);
-	if (game_data.action == "allin") {
-		loadingElement.innerHTML = "[LOADING GAME ...]";
-		init();
-	}
-	else if (game_data.action == "private")
-	{
-		if (privategame == 'true')
+if (gameSocket) {
+	gameSocket.onmessage = function(e) {
+		console.log("##########GAME#############");
+		game_data = JSON.parse(e.data);
+		if (game_data.action == "allin") {
+			loadingElement.innerHTML = "[LOADING GAME ...]";
+			init();
+		}
+		else if (game_data.action == "private")
 		{
-			gameSocket.send(JSON.stringify({
-			'message' : 'private'
-			}));
-		}
-		else
-		{
-			gameSocket.send(JSON.stringify({
-			'message' : 'public'
-			}));
-		}
-	} else if (game_data.action == 'Stop') {
-		const errorElement = document.getElementById('error');
-		errorElement.textContent = "Final score : " + game_data.scorep2 + " - " + game_data.scorep1;
-		document.getElementById("myModal").style.display = "block";
-		sessionStorage.setItem("game_id", null);
-	} else if (game_data.action == "userleave") {
-		const errorElement = document.getElementById('error');
-		errorElement.textContent = "A user left the game";
-		document.getElementById("myModal").style.display = "block";
-	} else if (game_data.action == 'score') {
-		if (game_data.scorep1 != undefined && game_data.scorep2 != undefined) {
-			const scoreL = document.getElementById("scoreHome");
-			scoreL.textContent = game_data.scorep2;
-			const scoreR = document.getElementById("scoreGuest");
-			scoreR.textContent = game_data.scorep1;
-		}
-	} else if (game_data.action == 'counter') {
-		if (game_data.num < currentNum) {
-			currentNum = game_data.num;
-			if (currentNum >= 0) {
-				setTimeout(function() {}, 1500);
-				setInterval(function() { anim(); }, 1325);
+			if (privategame == 'true')
+			{
+				gameSocket.send(JSON.stringify({
+				'message' : 'private'
+				}));
+			}
+			else
+			{
+				gameSocket.send(JSON.stringify({
+				'message' : 'public'
+				}));
+			}
+		} else if (game_data.action == 'Stop') {
+			const errorElement = document.getElementById('error');
+			errorElement.textContent = "Final score : " + game_data.scorep2 + " - " + game_data.scorep1;
+			document.getElementById("myModal").style.display = "block";
+			sessionStorage.setItem("game_id", null);
+		} else if (game_data.action == "userleave") {
+			const errorElement = document.getElementById('error');
+			errorElement.textContent = "A user left the game";
+			document.getElementById("myModal").style.display = "block";
+		} else if (game_data.action == 'score') {
+			if (game_data.scorep1 != undefined && game_data.scorep2 != undefined) {
+				const scoreL = document.getElementById("scoreHome");
+				scoreL.textContent = game_data.scorep2;
+				const scoreR = document.getElementById("scoreGuest");
+				scoreR.textContent = game_data.scorep1;
+			}
+		} else if (game_data.action == 'counter') {
+			if (game_data.num < currentNum) {
+				currentNum = game_data.num;
+				if (currentNum >= 0) {
+					setTimeout(function() {}, 1500);
+					setInterval(function() { anim(); }, 1325);
+				}
 			}
 		}
-	}
-	else {	
-		const ball = scene.getObjectByName('Ball');
-		const PaddleLeft = scene.getObjectByName("LeftPaddle");
-		const PaddleRight = scene.getObjectByName("RightPaddle");
-		if (game_data.action == 'paddle1') {
-			PaddleRight.position.x = parseFloat(game_data.prx);
-			PaddleRight.position.z = parseFloat(game_data.prz);
-		} else if (game_data.action == 'paddle2') {
-			PaddleLeft.position.x = parseFloat(game_data.plx);
-			PaddleLeft.position.z = parseFloat(game_data.plz);
-		} else if (game_data.action == 'ball') {
-			ball.position.x = parseFloat(game_data.bx);
-			ball.position.z = parseFloat(game_data.bz);
-		} 
-	}
-};
+		else {	
+			const ball = scene.getObjectByName('Ball');
+			const PaddleLeft = scene.getObjectByName("LeftPaddle");
+			const PaddleRight = scene.getObjectByName("RightPaddle");
+			if (game_data.action == 'paddle1') {
+				PaddleRight.position.x = parseFloat(game_data.prx);
+				PaddleRight.position.z = parseFloat(game_data.prz);
+			} else if (game_data.action == 'paddle2') {
+				PaddleLeft.position.x = parseFloat(game_data.plx);
+				PaddleLeft.position.z = parseFloat(game_data.plz);
+			} else if (game_data.action == 'ball') {
+				ball.position.x = parseFloat(game_data.bx);
+				ball.position.z = parseFloat(game_data.bz);
+			} 
+		}
+	};
+}
 
 tournamentSocket.onmessage = function(e) {
 	console.log("##########TOURNAMENT#############");

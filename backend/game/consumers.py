@@ -58,6 +58,7 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             }
         )
         if self.channel_name == self.game.p2id:
+            print('allin')
             await self.channel_layer.group_send(
                 self.room_group_name,
                 {
