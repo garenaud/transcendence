@@ -74,22 +74,22 @@ export function renderPong() {
 						
                         <!-- multiplayerModalContent -->
                         <div id="pongMulti" class="h-100 align-items-center d-none">
-						<link rel="stylesheet" type="text/css" href="/pong/css/pong_menu.css">
-						<div id="countdown"></div>
-						<div class="container3">
-						<div class="row">
-						<div class="col col-display" id="scoreHome">0</div>
-						</div>
-						<div class="row">
-						<div class="col col-display" id="scoreGuest">0</div>
-						</div>
-						</div>
-						<div class="container2">
-						<div class="load-3">
-						<p id="loading">[WAITING FOR OPPONENT]</p>
-						<div class="line"></div>
-						<div class="line"></div>
-						<div class="line"></div>
+						<canvas id="background" class="h-100 w-100"></canvas>
+							<div id="countdown"></div>
+							<div class="container3">
+							<div class="row">
+							<div class="col col-display" id="scoreHome">0</div>
+							</div>
+							<div class="row">
+							<div class="col col-display" id="scoreGuest">0</div>
+							</div>
+							</div>
+							<div class="container2">
+							<div class="load-3">
+							<p id="loading">[WAITING FOR OPPONENT]</p>
+							<div class="line"></div>
+							<div class="line"></div>
+							<div class="line"></div>
 							</div>
 							</div>
 						</div>
@@ -181,6 +181,8 @@ export function renderPong() {
 			document.querySelector('#pongMulti').innerHTML = data;
 			loadMultiPong();
 		});
+
+		
 		
 		
         pongModal.addEventListener('show.bs.modal', function () {

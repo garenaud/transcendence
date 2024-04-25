@@ -5,6 +5,7 @@ body {
     background-color: rgb(0, 20, 1);
     color: #fff;
 	display: flex;
+	z-index: 9999;
 }
 
 #error {
