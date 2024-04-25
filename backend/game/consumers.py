@@ -36,13 +36,13 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             self.game.p1id = self.channel_name
             self.game.dbgame = Games(p1_id=1, p2_id=2, room_id=self.room_id, room_group_name=self.room_group_name)
             await sync_to_async(self.saveGame)(self.game.dbgame)
-            print("p1")
+            print("GAME P1")
         else:
             self.game = gameTab[self.room_id]
             self.game.p2id = self.channel_name
             self.game.dbgame.full = True
             await sync_to_async(self.saveGame)(self.game.dbgame)
-            print("p2")
+            print("GAME P2")
         
             
         await self.channel_layer.group_add(
@@ -58,7 +58,6 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             }
         )
         if self.channel_name == self.game.p2id:
-            print('allin')
             await self.channel_layer.group_send(
                 self.room_group_name,
                 {
@@ -274,19 +273,19 @@ class AsyncTournamentConsumer(AsyncWebsocketConsumer):
         if self.tournoi.p1_id == -1:
             self.playernb = 1
             self.tournoi.p1_id = 1
-            print('1')
+            print('TOURNAMENT P1')
         elif self.tournoi.p2_id == -1:
             self.playernb = 2
             self.tournoi.p2_id = 2
-            print('2')
+            print('TOURNAMENT P2')
         elif self.tournoi.p3_id == -1:
             self.playernb = 3
             self.tournoi.p3_id = 3
-            print('3')
+            print('TOURNAMENT P3')
         elif self.tournoi.p4_id == -1:
             self.playernb = 4  
             self.tournoi.p4_id = 4
-            print('4')
+            print('TOURNAMENT P4')
             await self.channel_layer.group_send(
             self.room_group_name,
             {
@@ -294,7 +293,6 @@ class AsyncTournamentConsumer(AsyncWebsocketConsumer):
                "message": {'action' : 'startTournament'}
             }
             )
-        print('AVANT SENDDDDDD')
         await self.send(text_data=json.dumps({'action' : 'playernb','playernb' : self.playernb}))
         await sync_to_async(self.saveGame)(self.tournoi)
         await self.channel_layer.group_send(
@@ -304,7 +302,6 @@ class AsyncTournamentConsumer(AsyncWebsocketConsumer):
             "message": {'action' : 'connect', 'connected' : self.playernb}
         }
         )
-        print('APRESSS SENDDDDDD')
 
     async def disconnect(self, close_code):
         pass

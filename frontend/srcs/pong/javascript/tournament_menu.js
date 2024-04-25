@@ -1,3 +1,4 @@
+const errorLink = document.getElementById('error');
 
 document.getElementById('createBtn').addEventListener('click', function (){
 	let url = '/api/tournament/create/';
@@ -20,30 +21,38 @@ document.getElementById('joinBtn').addEventListener('click', function() {
 	const tournamentid = document.getElementById('gameCodeInput').value;
 	let userid = 667;
 	let csrf = getCookie("csrftoken");
-	fetch(`/api/tournament/join/${tournamentid}`, {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-			'X-CSRFToken': csrf,
-		},
-		body: JSON.stringify({ tournamentid, userid }),
-		credentials: 'same-origin' 
-	})
-	.then(response => response.json())
-	.then(data => {
-		if(data['message'] == 'ok')
-		{
-			sessionStorage.setItem("tournament_id", tournamentid);
-			window.location.href = "/pong/pong_tournament.html";
-		}
-		else
-		{
-			console.log("l'homme methode post :(");
-		}
-	})
-	.catch((error) => {
-		console.error('Error:', error);
-	});
+	if (!isNaN(tournamentid) && tournamentid > 0 && tournamentid <= 9999)
+	{
+		fetch(`/api/tournament/join/${tournamentid}`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-CSRFToken': csrf,
+			},
+			body: JSON.stringify({ tournamentid, userid }),
+			credentials: 'same-origin' 
+		})
+		.then(response => response.json())
+		.then(data => {
+			if(data['message'] == 'ok')
+			{
+				sessionStorage.setItem("tournament_id", tournamentid);
+				window.location.href = "/pong/pong_tournament.html";
+			}
+			else
+			{
+				errorLink.textContent = `La partie ${tournamentid} n'existe pas, veuillez reessayer`;
+				console.log("l'homme methode post :(");
+				setTimeout(function() {
+					errorLink.style.display = "none";
+				}, 4000);
+			}
+		})
+		.catch((error) => {
+			console.error('Error:', error);
+		});
+
+	}
 });
 
 
