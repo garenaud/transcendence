@@ -126,7 +126,7 @@ export function renderPong() {
 							
 							addEventListeners(pongElement);
 							
-							function addEventListeners(element) {
+function addEventListeners(element) {
         const origPong = element.querySelector('#origPong');
         const multiPongBtn = element.querySelector('#multiPongBtn');
         const joinPongBtn = element.querySelector('#joinPongBtn');
@@ -174,8 +174,8 @@ export function renderPong() {
 			loadMultiPong();		
 		});
 			
-		localPongBtn.addEventListener('click', toggleVisibility);
 		//* LOCALPONG
+		localPongBtn.addEventListener('click', toggleVisibility);
         localPongBtn.addEventListener('click', function() {
 			console.log(pongLocal);
 			origPong.classList.add('d-none');
