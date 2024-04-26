@@ -5,7 +5,7 @@ import introcs
 import asyncio
 import time
 import threading
-from database.models import Games
+from database.models import Games, Tournament
 from django.contrib.auth.models import User
 import channels.layers
 from asgiref.sync import async_to_sync, sync_to_async
@@ -13,7 +13,9 @@ import random
 from channels.db import database_sync_to_async
 from.game_class import gameData
 
+
 gameTab = [None] * 10000
+tournament_gametab = [None] * 10000
 
 channel_layer = channels.layers.get_channel_layer()
 
@@ -28,26 +30,28 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
         self.task = None
         self.room_id = self.scope["url_route"]["kwargs"]["room_id"]
         self.room_group_name = f"game_{self.room_id}"
+        await self.accept()
         if gameTab[self.room_id] is None:
             gameTab[self.room_id] = gameData(self.room_id)
             self.game = gameTab[self.room_id]
             self.game.p1id = self.channel_name
             self.game.dbgame = Games(p1_id=1, p2_id=2, room_id=self.room_id, room_group_name=self.room_group_name)
             await sync_to_async(self.saveGame)(self.game.dbgame)
-            print("p1")
+            await self.send(text_data=json.dumps({'action' : 'playernumber', 'playernumber' : 1}))
+            print("GAME P1")
         else:
             self.game = gameTab[self.room_id]
             self.game.p2id = self.channel_name
             self.game.dbgame.full = True
             await sync_to_async(self.saveGame)(self.game.dbgame)
-            print("p2")
+            await self.send(text_data=json.dumps({'action' : 'playernumber', 'playernumber' : 2}))
+            print("GAME P2")
         
             
         await self.channel_layer.group_add(
             self.room_group_name,
             self.channel_name
         )
-        await self.accept()
         await self.channel_layer.send(
             self.channel_name,
             {
@@ -228,6 +232,92 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
     async def update(self, event):
         data = event['message']
         await self.send(text_data=json.dumps(data))
+
+
+class AsyncTournamentConsumer(AsyncWebsocketConsumer):
+    
+    def saveGame(self,game):
+            game.save()
+    
+    async def connect(self):
+        self.tournament_id = self.scope["url_route"]["kwargs"]["room_id"]
+        self.room_group_name = f'tournament_{self.tournament_id}'
+        self.tournoi = await sync_to_async(Tournament.objects.get)(tournament_id=self.tournament_id)
+        self.playerid = 0
+        self.playernb = 0
+        await self.channel_layer.group_add(
+            self.room_group_name,
+            self.channel_name
+        )
+        
+        await self.accept()
+        await self.send(text_data=json.dumps({'message' : self.tournament_id}))
+        if self.tournoi.p1_id == -1:
+            self.playernb = 1
+            self.tournoi.p1_id = 1
+            print('TOURNAMENT P1')
+        elif self.tournoi.p2_id == -1:
+            self.playernb = 2
+            self.tournoi.p2_id = 2
+            print('TOURNAMENT P2')
+        elif self.tournoi.p3_id == -1:
+            self.playernb = 3
+            self.tournoi.p3_id = 3
+            print('TOURNAMENT P3')
+        elif self.tournoi.p4_id == -1:
+            self.playernb = 4  
+            self.tournoi.p4_id = 4
+            print('TOURNAMENT P4')
+            await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+               'type' : 'update',
+               "message": {'action' : 'startTournament'}
+            }
+            )
+        await self.send(text_data=json.dumps({'action' : 'playernb','playernb' : self.playernb}))
+        await sync_to_async(self.saveGame)(self.tournoi)
+        await self.channel_layer.group_send(
+        self.room_group_name,
+        {
+            'type' : 'update',
+            "message": {'action' : 'connect', 'connected' : self.playernb}
+        }
+        )
+
+    async def disconnect(self, close_code):
+        print(f'player {self.playernb} disconnected from tournament {close_code}')
+
+    async def receive(self, text_data):
+        jsondata = json.loads(text_data)
+        message = jsondata['message']
+        if message == 'getGameId':
+            playernb = jsondata['playernb']
+            if playernb == 1 or playernb == 3:
+                gameid = self.tournoi.game1_id
+                await self.send(text_data=json.dumps({'action' : 'gameid', 'gameid' : gameid}))
+            if playernb == 2 or playernb == 4:
+                gameid = self.tournoi.game2_id
+                await self.send(text_data=json.dumps({'action' : 'gameid', 'gameid' : gameid}))
+        elif message == 'winner':
+            if jsondata['finalid'] == -1:
+                print(f'{self.playernb} has won and can play the final')
+                await self.send(text_data=json.dumps({'action' : 'finalid', 'finalid' : self.tournoi.game3_id}))
+            else:
+                print(f'tournament is finished, player {self.playernb} has won')
+        elif message == 'looser':
+            print(f'{self.playernb} has lost and cannot play the final')
+            await self.disconnect(1)
+
+    async def update(self, event):
+        data = event['message']
+        await self.send(text_data=json.dumps(data))
+    #des la connexion au websocket ouverte, recuperer l'id du joueur afin de set le p2, p3 et p4 id dans l'objet tournoi de la db
+    
+    
+    #quand tout le monde est connecter envoyer un message 
+    #ainsi que l'id de la game a chaque joueur pour quils puissent rejoindre la bonne game et set le tournoi a full=True
+    #recuperer le gagnant de chaquee game afin de savoir quel joueur aura acces a la finale et disconnect les autres joueur du tournoi
 
 class ChatConsumer(WebsocketConsumer):
     lolmessage = "superlol"

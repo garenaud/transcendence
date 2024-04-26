@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
-from database.models import Users, Games
+from database.models import Users, Games, Tournament
 from database.serializers import UsersSerializer, CreateUserSerializer, UserSerializer, GamesSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -130,3 +130,56 @@ def search_game(request):
 				pass
 	else:
 		return Response("Unauthorized method", status=status.HTTP_401_UNAUTHORIZED)
+	
+
+@api_view(['GET'])
+def create_tournament(request):
+	if request.method == 'GET':
+		tournamentid = create_random_tournament_id(1, 9999)
+		game1id = create_random_game_id(1, 9999)
+		game2id = create_random_game_id(1, 9999)
+		game3id = create_random_game_id(1, 9999)
+		tournoi = Tournament(game1_id=game1id, game2_id=game2id, game3_id=game3id, tournament_id=tournamentid)
+		tournoi.save()
+		return Response({'tournamentid' : tournamentid, 'game1id' : game1id, 'game2id' : game2id, 'game3id' : game3id})
+	else:
+		return Response("Unauthorized method", status=status.HTTP_401_UNAUTHORIZED)
+	
+@api_view(['POST'])
+def join_tournament(request, tournamentid):
+	if request.method == 'POST':
+		data = json.load(request)
+		tournamentid = data['tournamentid']
+		playerid = data['userid']
+		playernb = 0
+		try:
+			qs = Tournament.objects.filter(tournament_id=tournamentid, full=False, finished=False)
+			tournoi = qs[0]
+			if tournoi.p2_id == -1:
+				playernb = 2
+			elif tournoi.p3_id == -1:
+				playernb = 3
+			else:
+				tournoi.full = True
+				playernb = 4
+			
+			tournoi.save()
+			return Response({'message' : 'ok', 'game1id' : tournoi.game1_id, 'game2id' : tournoi.game2_id, 'game3id' : tournoi.game3_id, 'playernb' : playernb})
+
+		except:
+			return Response({'message' : 'ko'}, status=status.HTTP_404_NOT_FOUND)
+	else:
+		return Response("Unauthorized method", status=status.HTTP_401_UNAUTHORIZED)
+	
+
+def create_random_game_id(start, end):
+	newid = random.randint(start, end)
+	while Games.objects.filter(room_id=newid, finished=False).count() != 0:
+		newid = random.randint(start, end)
+	return newid
+
+def create_random_tournament_id(start, end):
+	newid = random.randint(start, end)
+	while Tournament.objects.filter(tournament_id=newid, finished=False).count() != 0:
+		newid = random.randint(start, end)
+	return newid
