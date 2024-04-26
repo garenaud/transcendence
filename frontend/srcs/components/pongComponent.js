@@ -73,7 +73,7 @@ export function renderPong() {
 						
 						<!-- pongLocalContent -->
 						<div id="pongLocal" class="h-100 align-items-center d-none">
-						<canvas id="background" class="h-100 w-100"></canvas>
+						<canvas id="backgroundLocal" class="h-100 w-100"></canvas>
 							<div id="countdownPong"></div>
 							<div id="displayscore"></div>
 							<div id ="displayvictory"></div>

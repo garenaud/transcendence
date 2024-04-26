@@ -74,7 +74,7 @@ function init() {
 	// Renderer
 	resetScore();
 	renderer = new THREE.WebGLRenderer({
-		canvas: document.querySelector('#background'),
+		canvas: document.querySelector('#backgroundLocal'),
 		antialias: true,
 	});
 	renderer.setSize(window.innerWidth, window.innerHeight);
