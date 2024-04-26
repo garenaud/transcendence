@@ -8,7 +8,7 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 //import { tournament_id } from './join.js';
 // import { RectAreaLightHelper } from 'three/addons/helpers/RectAreaLightHelper.js';
-
+let finalid = -1;
 let tournament_data;
 let active = false;
 let tournament_id = sessionStorage.getItem('tournament_id');
@@ -38,6 +38,7 @@ let tournamentSocket;
 let currentNum = 7;
 let connected = 1;
 let playernb = 0;
+let playernumber = 0;
 
 tournamentSocket = new WebSocket(
 	'wss://'
@@ -402,25 +403,35 @@ function onMessageHandler(e) {
 		loadingElement.innerHTML = "[LOADING GAME ...]";
 		init();
 	}
+	else if (game_data.action == "playernumber")
+	{
+		playernumber = game_data.playernumber;
+	}
 	else if (game_data.action == "private")
 	{
-		if (privategame == 'true')
+		gameSocket.send(JSON.stringify({
+		'message' : 'private'
+		}));
+	} else if (game_data.action == 'Stop') {
+		// const errorElement = document.getElementById('error');
+		// errorElement.textContent = "Final score : " + game_data.scorep2 + " - " + game_data.scorep1;
+		// document.getElementById("myModal").style.display = "block";
+		sessionStorage.setItem("game_id", null);
+		if ((playernumber == 1 && game_data.scorep1 > game_data.scorep2) || (playernumber == 1 && game_data.scorep1 < game_data.scorep2))
 		{
-			gameSocket.send(JSON.stringify({
-			'message' : 'private'
+			tournamentSocket.send(JSON.stringify({
+			'message' : 'winner',
+			'finalid' : finalid
 			}));
 		}
 		else
 		{
-			gameSocket.send(JSON.stringify({
-			'message' : 'public'
+			tournamentSocket.send(JSON.stringify({
+			'message' : 'looser'
 			}));
+			gameSocket.close();
+			gameSocket = null;
 		}
-	} else if (game_data.action == 'Stop') {
-		const errorElement = document.getElementById('error');
-		errorElement.textContent = "Final score : " + game_data.scorep2 + " - " + game_data.scorep1;
-		document.getElementById("myModal").style.display = "block";
-		sessionStorage.setItem("game_id", null);
 	} else if (game_data.action == "userleave") {
 		const errorElement = document.getElementById('error');
 		errorElement.textContent = "A user left the game";
@@ -499,6 +510,55 @@ tournamentSocket.onmessage = function(e) {
 			onMessageHandler(event);
 		};
 	}
+	else if (tournament_data.action == 'finalid')
+	{
+		console.log('je suis en finale');
+		//clearThreeJS();
+		gameSocket.close();
+		gameSocket = null;
+		finalid = tournament_data['finalid'];
+		console.log(`game id for player ${playernb} is ${gameid}`);
+		gameSocket = new WebSocket(
+			'wss://'
+			+ window.location.host
+			+ '/ws/'
+			+ 'game'
+			+ '/'
+			+ finalid
+			+ '/'
+		);
+		gameSocket.onmessage = function(event) {
+			onMessageHandler(event);
+		};
+	}
+}
+
+function clearThreeJS() {
+    // Supprimer les objets de la scène
+    scene.traverse(obj => {
+        if (obj instanceof THREE.Mesh) {
+            scene.remove(obj);
+            obj.geometry.dispose();
+            obj.material.dispose();
+        }
+    });
+
+    // Supprimer les textures
+    renderer.dispose();
+
+    // Réinitialiser les variables
+    renderer = null;
+    scene = null;
+    camera = null;
+    controls = null;
+    composer = null;
+    scoreText1 = null;
+    scoreText2 = null;
+    player1Score = 0;
+    player2Score = 0;
+    ballVelocity = null;
+    gameSocket = null;
+    currentNum = 7;
 }
 
 function update_game_data() {
