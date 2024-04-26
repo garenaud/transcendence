@@ -6,54 +6,107 @@ import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-//import { gameid } from './join.js';
-// import { RectAreaLightHelper } from 'three/addons/helpers/RectAreaLightHelper.js';
 
+
+let finalid = -1;
+let tournament_data;
 let active = false;
-let gameid = sessionStorage.getItem('gameid');
-console.log(gameid);
-let privategame = sessionStorage.getItem('privategame');
+let tournament_id = sessionStorage.getItem('tournament_id');
+let gameid;
 let game_data;
 let renderer;
 let scene;
 let camera;
 let controls;
+let cameraList = [];
 let composer;
+let scoreText1, scoreText2;
 let player1Score = 0;
 let player2Score = 0;
-const initialAngle = 0.45;
+const initialAngle = 0;
 const speed = 0.25;
+const mooveSpeed = 0.1;
+const wallLimit = 6.5;
+const ballLimit = 8.5;
+const maxAngleAdjustment = 0.5;
+const deltaTime = 30;
 let scoreLeft;
 let scoreRight;
 let ballVelocity;
 let gameSocket;
+let tournamentSocket;
 let currentNum = 7;
+let connected = 1;
+let playernb = 0;
+let playernumber = 0;
+
+const startBtn = document.getElementById('myModal2');
+const nextBtn = document.getElementById('myModal3');
+
+startBtn.style.display = 'none';
+nextBtn.style.display = 'none';
+
+function nextBtnFunction(){
+	gameSocket = new WebSocket(
+		'wss://'
+		+ window.location.host
+		+ '/ws/'
+		+ 'game'
+		+ '/'
+		+ finalid
+		+ '/'
+	);
+	gameSocket.onmessage = function(event) {
+		onMessageHandler(event);
+	};
+	nextBtn.style.display = 'none';
+}
+
+function startBtnFunction(){
+	
+}
+
+nextBtn.addEventListener('click', nextBtnFunction);
+
+tournamentSocket = new WebSocket(
+	'wss://'
+	+ window.location.host
+	+ '/ws/'
+	+ 'tournament'
+	+ '/'
+	+ tournament_id
+	+ '/'
+);
 
 const KeyState = {
 	KeyW: false,
 	KeyS: false,
 	ArrowUp: false,
 	ArrowDown: false,
+	Escape: false,
 };
 
-if (gameid === "null" || gameid === undefined) {
+function makeid(length) {
+	let result = '';
+    const characters = '0123456789';
+    const charactersLength = characters.length;
+    let counter = 0;
+    while (counter < length) {
+		result += characters.charAt(Math.floor(Math.random() * charactersLength));
+		counter += 1;
+    }
+    return result;
+}
+
+if (tournament_id === "null" || tournament_id === undefined) {
 	window.location.href = "https://localhost/";
 }
 
-gameSocket = new WebSocket(
-	'wss://'
-	+ window.location.host
-	+ '/ws/'
-	+ 'game'
-	+ '/'
-	+ gameid
-	+ '/'
-);
-
 const loadingElement = document.getElementById('loading_txt');
-loadingElement.innerHTML = "[WAITING FOR OPPONENT]<br>Game ID : " + gameid;
+loadingElement.innerHTML = "[WAITING FOR OPPONENT]<br>Tournament ID : " + tournament_id + '<br>' + 'Currently connected : ' + connected + '/4';
 
 //console.log(privategame);
+//console.log(`ID IS ${tournament_id}`);
 
 function addClassDelayed(element, className, delay) {
     setTimeout(function() {
@@ -120,6 +173,7 @@ function init() {
 	composer = initPostprocessing();
 
 	// Load the GLTF model and handle the PaddleRight
+	// TODO waiting room;
 	LoadGLTFByPath(scene)
 		.then(() => {
 			const div_loading = document.querySelector('.loading');
@@ -282,7 +336,57 @@ function handleKeyUp(event) {
 		KeyState[event.code] = false;
 	}
 }
+	
+	// Fonction pour gérer le mouvement du paddle de l'IA
+function handleAIPaddle() {
+		
+		// Déclaration des variables locales
+		const PaddleLeftName = 'LeftPaddle';
+		const PaddleLeft = scene.getObjectByName(PaddleLeftName);
+		const direction = new THREE.Vector3(0, 0, 0);
+		
+		// Calcul de la direction une seule fois par frame
+		if (PaddleLeft) {
+			direction.subVectors(ball.position, PaddleLeft.position).normalize();
+		}
+		direction.x = 0;
+		// Mouvement fluide du paddle
+		if (PaddleLeft) {
+			const newPosition = PaddleLeft.position.clone().addScaledVector(direction, mooveSpeed * deltaTime);
+			PaddleLeft.position.lerp(newPosition, 0.1);
+		}
+		
+		// Limiter la position du paddle
+		if (PaddleLeft) {
+			const paddleLimit = wallLimit - 1;
+			PaddleLeft.position.z += direction.z * mooveSpeed * deltaTime;
+		}
+}
+	
+function handleAIPaddleRight() {
+		
+		// Déclaration des variables locales
+		// const PaddleLeftName = 'LeftPaddle';
+		// const PaddleLeft = scene.getObjectByName(PaddleLeftName);
+		const direction = new THREE.Vector3(0, 0, 0);
 
+    // Calcul de la direction une seule fois par frame
+    if (PaddleRight) {
+        direction.subVectors(ball.position, PaddleRight.position).normalize();
+    }
+	direction.x = 0;
+    // Mouvement fluide du paddle
+    if (PaddleRight) {
+        const newPosition = PaddleRight.position.clone().addScaledVector(direction, mooveSpeed * deltaTime);
+        PaddleRight.position.lerp(newPosition, 0.1);
+    }
+
+    // Limiter la position du paddle
+    if (PaddleRight) {
+        const paddleLimit = wallLimit - 1;
+        PaddleRight.position.z += direction.z * mooveSpeed * deltaTime;
+    }
+}
 
 function handleBackground() {
 	// scene.background += new THREE.Color(Math.random() % 21);
@@ -319,31 +423,43 @@ function anim() {
     }
 }
 
-gameSocket.onmessage = function(e) {
+function onMessageHandler(e) {	
 	game_data = JSON.parse(e.data);
 	if (game_data.action == "allin") {
 		loadingElement.innerHTML = "[LOADING GAME ...]";
 		init();
 	}
+	else if (game_data.action == "playernumber")
+	{
+		playernumber = game_data.playernumber;
+	}
 	else if (game_data.action == "private")
 	{
-		if (privategame == 'true')
+		gameSocket.send(JSON.stringify({
+		'message' : 'private'
+		}));
+	} else if (game_data.action == 'Stop') {
+		const errorElement = document.getElementById('error');
+		errorElement.textContent = "Final score : " + game_data.scorep2 + " - " + game_data.scorep1;
+		// document.getElementById("myModal").style.display = "block";
+		nextBtn.style.display = "block";
+		// startBtn.style.display = "block";
+		sessionStorage.setItem("game_id", null);
+		if ((playernumber == 1 && game_data.scorep1 > game_data.scorep2) || (playernumber == 1 && game_data.scorep1 < game_data.scorep2))
 		{
-			gameSocket.send(JSON.stringify({
-			'message' : 'private'
+			tournamentSocket.send(JSON.stringify({
+			'message' : 'winner',
+			'finalid' : finalid
 			}));
 		}
 		else
 		{
-			gameSocket.send(JSON.stringify({
-			'message' : 'public'
+			tournamentSocket.send(JSON.stringify({
+			'message' : 'looser'
 			}));
+			gameSocket.close();
+			gameSocket = null;
 		}
-	} else if (game_data.action == 'Stop') {
-		const errorElement = document.getElementById('error');
-		errorElement.textContent = "Final score : " + game_data.scorep2 + " - " + game_data.scorep1;
-		document.getElementById("myModal").style.display = "block";
-		sessionStorage.setItem("gameid", null);
 	} else if (game_data.action == "userleave") {
 		const errorElement = document.getElementById('error');
 		errorElement.textContent = "A user left the game";
@@ -368,21 +484,133 @@ gameSocket.onmessage = function(e) {
 		const ball = scene.getObjectByName('Ball');
 		const PaddleLeft = scene.getObjectByName("LeftPaddle");
 		const PaddleRight = scene.getObjectByName("RightPaddle");
-		if (game_data.action == 'paddle1' && PaddleRight) {
+		if (game_data.action == 'paddle1') {
 			PaddleRight.position.x = parseFloat(game_data.prx);
 			PaddleRight.position.z = parseFloat(game_data.prz);
-		} else if (game_data.action == 'paddle2' && PaddleLeft) {
+		} else if (game_data.action == 'paddle2') {
 			PaddleLeft.position.x = parseFloat(game_data.plx);
 			PaddleLeft.position.z = parseFloat(game_data.plz);
-		} else if (game_data.action == 'ball' && ball) {
+		} else if (game_data.action == 'ball') {
 			ball.position.x = parseFloat(game_data.bx);
 			ball.position.z = parseFloat(game_data.bz);
 		} 
 	}
 };
 
+
+tournamentSocket.onmessage = function(e) {
+	tournament_data = JSON.parse(e.data);
+	if (tournament_data.action == 'connect')
+	{
+		console.log(tournament_data.action);
+		connected = tournament_data['connected'];
+		loadingElement.innerHTML = "[WAITING FOR OPPONENT]<br>Tournament ID : " + tournament_id + '<br>' + 'Currently connected : ' + connected + '/4';
+	}
+	if (tournament_data.action == 'start_tournament')
+	{
+
+	}
+	else if (tournament_data.action == 'playernb')
+	{
+		playernb = tournament_data['playernb'];
+	}
+	else if (tournament_data.action == 'startTournament')
+	{
+		tournamentSocket.send(JSON.stringify({
+			'message' : 'getGameId',
+			'playernb' : playernb
+			}));
+	}
+	else if (tournament_data.action == 'gameid')
+	{
+		gameid = tournament_data['gameid'];
+		console.log(`game id for player ${playernb} is ${gameid}`);
+		gameSocket = new WebSocket(
+			'wss://'
+			+ window.location.host
+			+ '/ws/'
+			+ 'game'
+			+ '/'
+			+ gameid
+			+ '/'
+		);
+		gameSocket.onmessage = function(event) {
+			onMessageHandler(event);
+		};
+	}
+	else if (tournament_data.action == 'finalid')
+	{
+		console.log('je suis en finale');
+		//clearThreeJS();
+		gameSocket.close();
+		gameSocket = null;
+		finalid = tournament_data['finalid'];
+		console.log(`game id for player ${playernb} is ${gameid}`);
+	}
+}
+
+function clearThreeJS() {
+    // Supprimer les objets de la scène
+    scene.traverse(obj => {
+        if (obj instanceof THREE.Mesh) {
+            scene.remove(obj);
+            obj.geometry.dispose();
+            obj.material.dispose();
+        }
+    });
+
+    // Supprimer les textures
+    renderer.dispose();
+
+    // Réinitialiser les variables
+    renderer = null;
+    scene = null;
+    camera = null;
+    controls = null;
+    composer = null;
+    scoreText1 = null;
+    scoreText2 = null;
+    player1Score = 0;
+    player2Score = 0;
+    ballVelocity = null;
+    gameSocket = null;
+    currentNum = 7;
+}
+
+function update_game_data() {
+	const PaddleRightName = 'RightPaddle';
+	const PaddleLeftName = 'LeftPaddle';
+	ball = scene.getObjectByName('Ball');
+	PaddleRight = scene.getObjectByName(PaddleRightName);
+	PaddleLeft = scene.getObjectByName(PaddleLeftName);
+	// console.log(PaddleRight);
+	// console.log(ball);
+	PaddleRight.position.x = parseFloat(game_data.paddleright_position_x);
+	PaddleRight.position.z = parseFloat(game_data.paddleright_position_z);
+	PaddleLeft.position.x = parseFloat(game_data.paddleleft_position_x);
+	PaddleLeft.position.z = parseFloat(game_data.paddleleft_position_z);
+	//PaddleLeft.position.z = parseFloat(game_data.paddleleft_position_z);
+	ball.position.x = parseFloat(game_data.ball_position_x);
+	ball.position.z = parseFloat(game_data.ball_position_z);
+
+}
+
 function animate() {
+	//update_game_data();
 	requestAnimationFrame(animate);
+	//handlePaddleLeft();
+	//handlePaddleRight();
+	//handleAIPaddle();
+	//handleBackground(); COLOR BACKGROUND
+	// handleAIPaddleRight();
+	//updateBall();
+	// console.log(ball.position.x);
+	// console.log(ball.position.z);
+	// gameSocket.send(JSON.stringify(
+	// 	{
+	// 		"message" : "ball_update"
+	// 	})
+	// );
 	controls.update();
 	//composer.render(scene, camera);
 	renderer.render(scene, camera);
@@ -391,6 +619,3 @@ function animate() {
 document.addEventListener('keydown', handleKeyDown);
 document.addEventListener('keyup', handleKeyUp);
 window.addEventListener('resize', onWindowResize);
-
-// Appel de la fonction d'initialisation
-init();

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+	<link rel="stylesheet" type="text/css" href="css/tournament_menu.css">
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<head lang="en">
+		<meta charset="utf-8">
+		<title>Pong Menu</title>
+	</head>
+	<body>
+		<div class="menugrid">
+			<nav class="nav">
+			  <a  id="createBtn" class="nav-link">Create Tournament</a>
+			  <div class="nav-link">
+				<a  id="joinBtn">Join Tournament</a>
+				<input type="text" id="gameCodeInput" class="inputGame" placeholder="Tournament ID">
+			  </div>
+			  <a id="error"></a>
+			  <a href="pong_menu.html" class="nav-link">Normal game</a>
+			  <a href="https://www.exit.ch/en/" target="_blank" class="nav-link">Exit</a>
+			</nav>
+		</div>
+		<script type="module" src="javascript/tournament_menu.js"></script>
+	</body>
+</html>
