@@ -83,6 +83,7 @@ fn main() {
 		match login::login(srv.clone()) {
 			Some(user_logged) => {
 				user = user_logged;
+				let _ = clearscreen::clear();
 				println!("{}", format!("Login successful !").green().bold());
 				break;
 			},
