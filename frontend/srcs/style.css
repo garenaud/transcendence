@@ -1687,23 +1687,9 @@ div.fg{
     margin-right: 100px;
   }
 }
-
-/*-------------------------------- Pong --------------------------------*/
-/* .canvasPong {
-  margin: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background-color: #000;
-  color: #fff;
-} */
+/* PONG */
 .pong-game {
   position: relative;
-}
-
-#pongLocal {
-	z-index: 1060;
 }
 
 #menu {
@@ -1812,14 +1798,14 @@ animation: loadingC 1s 0.3s linear infinite;
 }
 
 
-#countdown {
+#countdownPong {
 	position: absolute;
 	top: 50%;
 	left: 50%;
 	font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 	transform: translate(-50%, -50%);
 	font-size: 3em;
-	color: blueviolet;
+	color: blue;
 }
 
 #displayscore {

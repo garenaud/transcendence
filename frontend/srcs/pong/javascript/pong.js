@@ -11,6 +11,7 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 
 let active = false;
 let gameid = sessionStorage.getItem('gameid');
+console.log(gameid);
 let privategame = sessionStorage.getItem('privategame');
 let game_data;
 let renderer;
@@ -35,18 +36,6 @@ const KeyState = {
 	ArrowDown: false,
 };
 
-function makeid(length) {
-    let result = '';
-    const characters = '0123456789';
-    const charactersLength = characters.length;
-    let counter = 0;
-    while (counter < length) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
-      counter += 1;
-    }
-    return result;
-}
-
 if (gameid === "null" || gameid === undefined) {
 	window.location.href = "https://localhost/";
 }
@@ -65,7 +54,6 @@ const loadingElement = document.getElementById('loading');
 loadingElement.innerHTML = "[WAITING FOR OPPONENT]<br>Game ID : " + gameid;
 
 //console.log(privategame);
-//console.log(`ID IS ${gameid}`);
 
 function addClassDelayed(element, className, delay) {
     setTimeout(function() {
@@ -351,19 +339,6 @@ gameSocket.onmessage = function(e) {
 
 function animate() {
 	requestAnimationFrame(animate);
-	//handlePaddleLeft();
-	//handlePaddleRight();
-	//handleAIPaddle();
-	//handleBackground(); COLOR BACKGROUND
-	// handleAIPaddleRight();
-	//updateBall();
-	// console.log(ball.position.x);
-	// console.log(ball.position.z);
-	// gameSocket.send(JSON.stringify(
-	// 	{
-	// 		"message" : "ball_update"
-	// 	})
-	// );
 	controls.update();
 	composer.render(scene, camera);
 }
@@ -371,3 +346,5 @@ function animate() {
 document.addEventListener('keydown', handleKeyDown);
 document.addEventListener('keyup', handleKeyUp);
 
+// Appel de la fonction d'initialisation
+init();

@@ -103,6 +103,18 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
 
 
     async def loop(self):
+        def check_collision(self, paddle_x, paddle_z):
+            paddle_size_x = 0.1
+            paddle_size_z = 3.1
+            if (
+                self.game.bpx - self.game.bradius < paddle_x + paddle_size_x / 2 and
+                self.game.bpx + self.game.bradius > paddle_x - paddle_size_x / 2 and
+                self.game.bpz + self.game.bradius > paddle_z - paddle_size_z / 2 and
+                self.game.bpz - self.game.bradius < paddle_z + paddle_size_z / 2 and
+                self.game.bpx < 15):
+                self.game.bv.x *= -1
+                self.game.sif += 0.1
+        await asyncio.sleep(4)
         await self.send_counter()
         await self.channel_layer.group_send(
             self.room_group_name,

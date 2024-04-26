@@ -16,7 +16,7 @@ function makeid(length) {
 
 document.getElementById('createBtn').addEventListener('click', function() {
 	let url = '/api/game/create/';
-	console.log(url);
+	// console.log(url);
 	fetch(url, {
 		method: 'GET',
 		credentials: 'same-origin' 
@@ -27,7 +27,7 @@ document.getElementById('createBtn').addEventListener('click', function() {
 		privategame = true;
 		sessionStorage.setItem("privategame", privategame);
 		sessionStorage.setItem("gameid", data['id']);
-		window.location.href = "/pong/pong.html";
+		// window.location.href = "/pong/pong.html";
 	})
 	.catch((error) => {
 		console.error('Error:', error);

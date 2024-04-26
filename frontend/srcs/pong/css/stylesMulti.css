@@ -4,12 +4,12 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-color: #000;
+    background-color: rgb(0, 30, 1);
     color: #fff;
 }
 
 @import url("https://fonts.googleapis.com/css2?family=Silkscreen&display=swap");
-.container3 {
+.scoreboard {
     top: 0px;
     position: absolute;
     display: none;
@@ -30,7 +30,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-direction: column;
+    /* flex-direction: column; */
 }
 .col-display {
     width: 54px;
@@ -57,7 +57,6 @@ body {
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgba(0,0,0,0.5);
 }
 .modal-content {
     font-family: 'Roboto Condensed', sans-serif;
@@ -70,7 +69,7 @@ body {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
-.container2 {
+.loading {
     font-family: 'Roboto Condensed', sans-serif;
     position: absolute;
     top: 50%;
@@ -116,7 +115,6 @@ body {
     font-family: 'Roboto Condensed', sans-serif;
     display: none;
     position: absolute;
-    background-color: black;
     top: 0;
     padding: 15px;
     user-select: none;
@@ -167,43 +165,4 @@ body {
     -ms-transition: all 0.4s ease-out;
     -o-transition: all 0.4s ease-out;
     transition: all 0.4s ease-out;
-}
-
-.pong-game {
-    position: relative;
-}
-
-.pong-table {
-    position: relative;
-    width: 600px;
-    height: 400px;
-    background-color: #000;
-    border: 2px solid #fff;
-}
-
-.left-paddle, .right-paddle, .ball {
-    position: absolute;
-    background-color: #fff;
-}
-
-.left-paddle {
-    width: 10px;
-    height: 80px;
-    left: 10px;
-    top: 160px;
-}
-
-.right-paddle {
-    width: 10px;
-    height: 80px;
-    right: 10px;
-    top: 160px;
-}
-
-.ball {
-    width: 20px;
-    height: 20px;
-    left: 290px;
-    top: 190px;
-    border-radius: 50%;
 }
