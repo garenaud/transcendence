@@ -6,8 +6,8 @@ import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-//import { tournament_id } from './join.js';
-// import { RectAreaLightHelper } from 'three/addons/helpers/RectAreaLightHelper.js';
+
+
 let finalid = -1;
 let tournament_data;
 let active = false;
@@ -39,6 +39,34 @@ let currentNum = 7;
 let connected = 1;
 let playernb = 0;
 let playernumber = 0;
+
+const startBtn = document.getElementById('myModal2');
+const nextBtn = document.getElementById('myModal3');
+
+startBtn.style.display = 'none';
+nextBtn.style.display = 'none';
+
+function nextBtnFunction(){
+	gameSocket = new WebSocket(
+		'wss://'
+		+ window.location.host
+		+ '/ws/'
+		+ 'game'
+		+ '/'
+		+ finalid
+		+ '/'
+	);
+	gameSocket.onmessage = function(event) {
+		onMessageHandler(event);
+	};
+	nextBtn.style.display = 'none';
+}
+
+function startBtnFunction(){
+	
+}
+
+nextBtn.addEventListener('click', nextBtnFunction);
 
 tournamentSocket = new WebSocket(
 	'wss://'
@@ -73,9 +101,6 @@ function makeid(length) {
 if (tournament_id === "null" || tournament_id === undefined) {
 	window.location.href = "https://localhost/";
 }
-
-
-
 
 const loadingElement = document.getElementById('loading_txt');
 loadingElement.innerHTML = "[WAITING FOR OPPONENT]<br>Tournament ID : " + tournament_id + '<br>' + 'Currently connected : ' + connected + '/4';
@@ -313,7 +338,7 @@ function handleKeyUp(event) {
 }
 	
 	// Fonction pour gérer le mouvement du paddle de l'IA
-	function handleAIPaddle() {
+function handleAIPaddle() {
 		
 		// Déclaration des variables locales
 		const PaddleLeftName = 'LeftPaddle';
@@ -336,9 +361,9 @@ function handleKeyUp(event) {
 			const paddleLimit = wallLimit - 1;
 			PaddleLeft.position.z += direction.z * mooveSpeed * deltaTime;
 		}
-	}
+}
 	
-	function handleAIPaddleRight() {
+function handleAIPaddleRight() {
 		
 		// Déclaration des variables locales
 		// const PaddleLeftName = 'LeftPaddle';
@@ -397,6 +422,7 @@ function anim() {
         return;
     }
 }
+
 function onMessageHandler(e) {	
 	game_data = JSON.parse(e.data);
 	if (game_data.action == "allin") {
@@ -413,9 +439,11 @@ function onMessageHandler(e) {
 		'message' : 'private'
 		}));
 	} else if (game_data.action == 'Stop') {
-		// const errorElement = document.getElementById('error');
-		// errorElement.textContent = "Final score : " + game_data.scorep2 + " - " + game_data.scorep1;
+		const errorElement = document.getElementById('error');
+		errorElement.textContent = "Final score : " + game_data.scorep2 + " - " + game_data.scorep1;
 		// document.getElementById("myModal").style.display = "block";
+		nextBtn.style.display = "block";
+		// startBtn.style.display = "block";
 		sessionStorage.setItem("game_id", null);
 		if ((playernumber == 1 && game_data.scorep1 > game_data.scorep2) || (playernumber == 1 && game_data.scorep1 < game_data.scorep2))
 		{
@@ -518,18 +546,6 @@ tournamentSocket.onmessage = function(e) {
 		gameSocket = null;
 		finalid = tournament_data['finalid'];
 		console.log(`game id for player ${playernb} is ${gameid}`);
-		gameSocket = new WebSocket(
-			'wss://'
-			+ window.location.host
-			+ '/ws/'
-			+ 'game'
-			+ '/'
-			+ finalid
-			+ '/'
-		);
-		gameSocket.onmessage = function(event) {
-			onMessageHandler(event);
-		};
 	}
 }
 
