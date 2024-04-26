@@ -49,9 +49,9 @@ gameSocket = new WebSocket(
 	+ gameid
 	+ '/'
 );
-
-const loadingElement = document.getElementById('loading_txt');
-loadingElement.innerHTML = "[WAITING FOR OPPONENT]<br>Game ID : " + gameid;
+//* TODO 
+// const loadingElement = document.getElementById('loading_txt');
+// loadingElement.innerHTML = "[WAITING FOR OPPONENT]<br>Game ID : " + gameid;
 
 //console.log(privategame);
 
