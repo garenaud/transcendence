@@ -2,6 +2,7 @@ mod login;
 mod menu;
 mod user;
 mod pong;
+mod tournament;
 
 use std::io::Write;
 use std::error::Error;

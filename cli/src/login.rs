@@ -1,9 +1,10 @@
 use std::io::Write;
 use std::time::Duration;
 use std::sync::Arc;
-use pwhash::sha256_crypt;
 use reqwest::cookie::Jar;
 use colored::Colorize;
+
+use pwhash::sha256_crypt;
 
 use crate::user::User;
 
