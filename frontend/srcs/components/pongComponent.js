@@ -71,6 +71,14 @@ export function renderPong() {
                             </div>
 						</div>
 						
+						<!-- pongLocalContent -->
+						<div id="pongLocal" class="h-100 align-items-center d-none">
+						<canvas id="background" class="h-100 w-100"></canvas>
+							<div id="countdownPong"></div>
+							<div id="displayscore"></div>
+							<div id ="displayvictory"></div>
+						</div>
+
                         <!-- multiplayerModalContent -->
                         <div id="pongMulti" class="h-100 align-items-center d-none">
 						<canvas id="background" class="h-100 w-100"></canvas>
@@ -92,15 +100,6 @@ export function renderPong() {
 								</div>
 							</div>
 						</div>
-							
-							<!-- pongLocalContent -->
-							<div id="pongLocal" class="h-100 align-items-center d-none">
-							<canvas id="background" class="h-100 w-100"></canvas>
-								<div id="countdownPong"></div>
-								<div id="displayscore"></div>
-								<div id ="displayvictory"></div>
-							</div>
-							
 							
 							<!-- joinPongContent -->
 							<div id="joinPong" class="h-100 align-items-center d-none">
