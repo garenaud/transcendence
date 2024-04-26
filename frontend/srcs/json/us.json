@@ -28,5 +28,7 @@
     "createRoomPong": "CREATE A ROOM",
     "joinRoomPong": "JOIN A ROOM",
     "joinRandomRoomPong": "JOIN A RANDOM ROOM",
-    "game": "GAME"
+    "game": "GAME",
+    "+": "+",
+    "pongPlayed": "Game History"
 }

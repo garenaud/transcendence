@@ -28,5 +28,7 @@
     "createRoomPong": "CREER UNE PARTIE",
     "joinRoomPong": "REJOINDRE UNE PARTIE",
     "joinRandomRoomPong": "REJOINDRE UNE PARTIE ALÉATOIRE",
-    "game": "Jeu"
+    "game": "Jeu",
+    "+": "+",
+    "pongPlayed": "Historique des parties"
 }
