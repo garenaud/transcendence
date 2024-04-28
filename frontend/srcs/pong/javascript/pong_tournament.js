@@ -40,12 +40,15 @@ let connected = 1;
 let playernb = 0;
 let playernumber = 0;
 
-const startBtn = document.getElementById('myModal2');
-const nextBtn = document.getElementById('myModal3');
+const startBtn = document.getElementById('startGameBtn');
+const nextBtn = document.getElementById('nextGameBtn');
+const myModal2 = document.getElementById('myModal2');
+const myModal3 = document.getElementById('myModal3');
 
-startBtn.style.display = 'none';
-nextBtn.style.display = 'none';
 
+// rajouter condition pour faire apparaitre le bon bouton, 
+// si on a gagner le match, le bouton pour acceder a la finale apparait
+// , sinon, retour au menu apparait
 function nextBtnFunction(){
 	gameSocket = new WebSocket(
 		'wss://'
@@ -59,7 +62,7 @@ function nextBtnFunction(){
 	gameSocket.onmessage = function(event) {
 		onMessageHandler(event);
 	};
-	nextBtn.style.display = 'none';
+	myModal3.style.display = 'none';
 }
 
 function startBtnFunction(){
@@ -442,7 +445,7 @@ function onMessageHandler(e) {
 		const errorElement = document.getElementById('error');
 		errorElement.textContent = "Final score : " + game_data.scorep2 + " - " + game_data.scorep1;
 		// document.getElementById("myModal").style.display = "block";
-		nextBtn.style.display = "block";
+		myModal3.style.display = "block";
 		// startBtn.style.display = "block";
 		sessionStorage.setItem("game_id", null);
 		if ((playernumber == 1 && game_data.scorep1 > game_data.scorep2) || (playernumber == 1 && game_data.scorep1 < game_data.scorep2))

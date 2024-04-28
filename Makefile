@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: afrigger <afrigger@student.42.fr>          +#+  +:+       +#+         #
+#    By: kistod <kistod@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/02/22 11:53:18 by vgroux            #+#    #+#              #
-#    Updated: 2024/04/08 14:39:08 by afrigger         ###   ########.fr        #
+#    Updated: 2024/04/27 11:01:40 by kistod           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -41,9 +41,9 @@ fclean: down clean vol
 	
 vol:
 # docker volume rm ft_transcendence_backend
-	docker volume rm ft_transcendence_db
+	docker volume rm web42_db
 # docker volume rm ft_transcendence_frontend
-	rm -rf ~/data
+	sudo rm -rf ~/data
 
 re: fclean all
 	
