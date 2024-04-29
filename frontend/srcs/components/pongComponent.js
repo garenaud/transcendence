@@ -4,11 +4,6 @@ import { joinGame } from "./pong_menu.js";
 // import { makeid } from "../pong/javascript/pong.js" 
 //import * as PongMenu from "./pong_menu.js";
 
-const errorLink = document.getElementById('error');
-let gameid;
-let privategame = false;
-
-
 export let scriptStarted;
 
 export function renderPong() {
@@ -150,7 +145,7 @@ function addEventListeners(element) {
 			pongMulti.classList.remove('d-none');
 			var data = document.querySelector('#pongMulti').innerHTML;
 			document.querySelector('#pongMulti').innerHTML = data;
-			loadMultiPong();		
+			// loadMultiPong();
 		});
 
 		//* MULTIPONG
@@ -165,7 +160,6 @@ function addEventListeners(element) {
 			pongMulti.classList.remove('d-none');
 			var data = document.querySelector('#pongMulti').innerHTML;
 			document.querySelector('#pongMulti').innerHTML = data;
-			loadMultiPong();
 		});
 
 		matchmakingBtn.addEventListener('click', toggleVisibility);
@@ -179,7 +173,6 @@ function addEventListeners(element) {
 			pongMulti.classList.remove('d-none');
 			var data = document.querySelector('#pongMulti').innerHTML;
 			document.querySelector('#pongMulti').innerHTML = data;
-			loadMultiPong();		
 		});
 		
 		
@@ -248,7 +241,7 @@ function loadLocalPong() {
     document.body.appendChild(scriptLocalPong);
 }
 
-function loadMultiPong() {
+export function loadMultiPong() {
 	document.querySelectorAll('script[data-disabled="true"]').forEach(script => {
         script.setAttribute('type', 'module');
         script.removeAttribute('data-disabled');
