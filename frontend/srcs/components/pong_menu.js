@@ -14,7 +14,7 @@ function makeid(length) {
 	return result;
   }
 
-document.getElementById('createBtn').addEventListener('click', function() {
+export function Multiplayer() {
 	let url = '/api/game/create/';
 	// console.log(url);
 	fetch(url, {
@@ -32,9 +32,9 @@ document.getElementById('createBtn').addEventListener('click', function() {
 	.catch((error) => {
 		console.error('Error:', error);
 	});
-  });
+  }
 
-document.getElementById('joinBtn').addEventListener('click', function() {
+export function joinGame() {
 	errorLink.textContent = "";
 	errorLink.style.display = "block";
 	const gameIdInput = document.getElementById('gameCodeInput');
@@ -55,7 +55,6 @@ document.getElementById('joinBtn').addEventListener('click', function() {
 				privategame = true;
 				sessionStorage.setItem("privategame", privategame);
 				sessionStorage.setItem("gameid", gameid);
-				window.location.href = "/pong/pong.html";
 			}
 		})
 		.catch((error) => {
@@ -67,10 +66,10 @@ document.getElementById('joinBtn').addEventListener('click', function() {
 	setTimeout(function() {
 		errorLink.style.display = "none";
 	}, 4000);
-	});
+}
 
-
-document.getElementById('searchBtn').addEventListener('click', function() {
+export function onlineMatchmaking() {
+// document.getElementById('searchBtn').addEventListener('click', function() {
 	let url = '/api/game/search/';
 	console.log(url);
 	fetch(url, {
@@ -85,25 +84,52 @@ document.getElementById('searchBtn').addEventListener('click', function() {
 			privategame = false;
 			sessionStorage.setItem("privategame", privategame);
 			sessionStorage.setItem("gameid", gameid);
-			window.location.href = "/pong/pong.html";
+			// window.location.href = "/pong/pong.html";
 		} else if (data['message'] == 'ko'){
 			gameid = data['id'];
 			privategame = false;
 			sessionStorage.setItem("privategame", privategame);
 			sessionStorage.setItem("gameid", gameid);
-			window.location.href = "/pong/pong.html";
+			// window.location.href = "/pong/pong.html";
 			
 			console.log("L'homme methode GET") // IMPORTANT NE PAS ENLEVER!!!
 		}
+		console.log('id search' + gameid);
 	})
 	.catch((error) => {
 		console.error('Error:', error);
 	});
-  });
-
+}
 
 function getCookie(name) {
 	const value = `; ${document.cookie}`;
 	const parts = value.split(`; ${name}=`);
 	if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
+function loadLocalPong() {
+    // Créer et ajouter le script localpong.js
+    document.querySelectorAll('script[data-disabled="true"]').forEach(script => {
+        script.setAttribute('type', 'module');
+        script.removeAttribute('data-disabled');
+    });
+    const scriptLocalPong = document.createElement('script');
+    scriptLocalPong.type = 'module';
+    scriptLocalPong.src = '../localpong/localpong.js?' + new Date().getTime(); // Ajoute un horodatage à l'URL
+    console.log('loading');
+    scriptLocalPong.setAttribute('data-pong', 'dynamic');  // Marqueur pour identifier les scripts chargés dynamiquement
+    document.body.appendChild(scriptLocalPong);
+}
+
+function loadMultiPong() {
+	document.querySelectorAll('script[data-disabled="true"]').forEach(script => {
+        script.setAttribute('type', 'module');
+        script.removeAttribute('data-disabled');
+    });
+    const scriptMultiPong = document.createElement('script');
+    scriptMultiPong.type = 'module';
+    scriptMultiPong.src = '../pong/javascript/pong.js?' + new Date().getTime(); // Ajoute un horodatage à l'URL
+    console.log('loadingMulti');
+    scriptMultiPong.setAttribute('data-pong', 'dynamic');  // Marqueur pour identifier les scripts chargés dynamiquement
+    document.body.appendChild(scriptMultiPong);
 }
