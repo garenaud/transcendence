@@ -318,7 +318,7 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
 	let mut score = Score { score1: 0, score2: 0 };
 		
 
-	println!("test");
+	println!("Waiting for the game to start...");
 
 	// Init ncurses to get the user's input
 	initscr();
@@ -327,8 +327,6 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
 	noecho();
 	nodelay(stdscr(), true);
 	curs_set(CURSOR_VISIBILITY::CURSOR_INVISIBLE);
-	
-	println!("test");
 	
 	let player = waiting_game(&mut socket, &term, &paddle_l, &paddle_r, &score);
 	let player = match player {
