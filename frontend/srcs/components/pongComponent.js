@@ -1,30 +1,10 @@
-// import { init } from "../localpong/localpong.js";
-// import { makeid } from "../pong/javascript/pong.js"
+import { onlineMatchmaking } from "./pong_menu.js";
+import { Multiplayer } from "./pong_menu.js";
+import { joinGame } from "./pong_menu.js";
+// import { makeid } from "../pong/javascript/pong.js" 
 //import * as PongMenu from "./pong_menu.js";
 
-const errorLink = document.getElementById('error');
-let gameid;
-let privategame = false;
-
-
 export let scriptStarted;
-
-function makeid(length) {
-	let result = '';
-	const characters = '0123456789';
-	const charactersLength = characters.length;
-	let counter = 0;
-	while (counter < length) {
-	  result += characters.charAt(Math.floor(Math.random() * charactersLength));
-	  counter += 1;
-	}
-	return result;
-  }
-  function getCookie(name) {
-      const value = `; ${document.cookie}`;
-      const parts = value.split(`; ${name}=`);
-      if (parts.length === 2) return parts.pop().split(';').shift();
-  }
 
 export function renderPong() {
     const pongHTML = `
@@ -61,9 +41,9 @@ export function renderPong() {
 								  		<a id="localPongBtn" class="nav-link">Local</a>
 								  		<a id="multiPongBtn" class="nav-link">Create Private</a>
 										  <div class="nav-link">
-										  	<a  id="joinPongBtn">Join Private</a>
-											<input type="text" id="gameCodeInput" class="inputGame" placeholder="Game ID">
-								  			</div>
+										  <a  id="joinPongBtn">Join Private</a>
+										  <input type="text" id="gameCodeInput" class="inputGame" placeholder="Game ID">
+										  </div>
 								  		<a id="searchBtn" class="nav-link">Online Matchmaking</a>
 								  		<a href="https://www.exit.ch/en/" target="_blank" class="nav-link">Exit</a>
 									</nav>
@@ -103,12 +83,14 @@ export function renderPong() {
 							
 							<!-- joinPongContent -->
 							<div id="joinPong" class="h-100 align-items-center d-none">
-							<a id="error"></a>
 							<input id="chat-message-input" type="text" size="20"><br>
 							<input id="chat-message-submit" type="button" value="Send">
 							</div>
 							
-							
+							<!-- onlineMatchmaking --!>
+							<div id="matchmaking" class="h-100 align-items-center d-none">
+							</div>
+
 							</div>
 							<div class="modal-footer">
 							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -135,33 +117,26 @@ function addEventListeners(element) {
         const localPongBtn = element.querySelector('#localPongBtn');
         const previousDiv = origPong ? pongMulti.previousElementSibling : null;
         const pongModal = element.querySelector('#pong');
+        const matchmakingBtn = element.querySelector('#searchBtn');
+		
+	//* LOCALPONG
+	localPongBtn.addEventListener('click', toggleVisibility);
+	localPongBtn.addEventListener('click', function() {
+		origPong.classList.add('d-none');
+		pongMulti.classList.add('d-none');
+		document.querySelectorAll('.card-game-inside > div').forEach(div => {
+			div.classList.add('d-none');
+		});
+		pongLocal.classList.remove('d-none');
+		var data = document.querySelector('#pongLocal').innerHTML;
+		document.querySelector('#pongLocal').innerHTML = data;
+		loadLocalPong();
+	});
 
-		// * JoinBtn 
+		// * JoinBtn
+		multiPongBtn.addEventListener('click', toggleVisibility);
 		joinPongBtn.addEventListener('click', function() {
-			const gameIdInput = document.getElementById('gameCodeInput');
-			gameid = gameIdInput.value.trim();
-			let url = '/api/game/' + gameid;
-			if (!isNaN(gameid) && gameid > 0 && gameid <= 9999) {	
-				console.log(url);
-				fetch(url, {
-					method: 'GET',
-					credentials: 'same-origin' 
-				})
-				.then(response => response.json())
-				.then(data => {
-					console.log('Success:', data);
-					if (data['message'] == "Not found") {
-						errorLink.textContent = `La partie ${gameid} n'existe pas, veuillez reessayer`;
-					} else{
-						privategame = true;
-						sessionStorage.setItem("privategame", privategame);
-						sessionStorage.setItem("gameid", gameid);
-					}
-				})
-				.catch((error) => {
-					console.error('Error:', error);
-				});
-			}
+			joinGame();
 			pongLocal.classList.add('d-none');
 			origPong.classList.add('d-none');
 			document.querySelectorAll('.card-game-inside > div').forEach(div => {
@@ -170,44 +145,13 @@ function addEventListeners(element) {
 			pongMulti.classList.remove('d-none');
 			var data = document.querySelector('#pongMulti').innerHTML;
 			document.querySelector('#pongMulti').innerHTML = data;
-			loadMultiPong();		
+			// loadMultiPong();
 		});
-			
-		//* LOCALPONG
-		localPongBtn.addEventListener('click', toggleVisibility);
-        localPongBtn.addEventListener('click', function() {
-			console.log(pongLocal);
-			origPong.classList.add('d-none');
-            pongMulti.classList.add('d-none');
-            document.querySelectorAll('.card-game-inside > div').forEach(div => {
-                div.classList.add('d-none');
-            });
-            pongLocal.classList.remove('d-none');
-			var data = document.querySelector('#pongLocal').innerHTML;
-			document.querySelector('#pongLocal').innerHTML = data;
-            loadLocalPong();
-        });
 
 		//* MULTIPONG
 		multiPongBtn.addEventListener('click', toggleVisibility);		
 		multiPongBtn.addEventListener('click', function() {
-			console.log('ici');
-			let url = '/api/game/create/';
-			console.log(url);
-			fetch(url, {
-				method: 'GET',
-				credentials: 'same-origin' 
-			})
-			.then(response => response.json())
-			.then(data => {
-				console.log('Success:', data);
-				privategame = true;
-				sessionStorage.setItem("privategame", privategame);
-				sessionStorage.setItem("gameid", data['id']);
-			})
-			.catch((error) => {
-				console.error('Error:', error);
-			});
+			Multiplayer();
 			pongLocal.classList.add('d-none');
 			origPong.classList.add('d-none');
 			document.querySelectorAll('.card-game-inside > div').forEach(div => {
@@ -216,9 +160,20 @@ function addEventListeners(element) {
 			pongMulti.classList.remove('d-none');
 			var data = document.querySelector('#pongMulti').innerHTML;
 			document.querySelector('#pongMulti').innerHTML = data;
-			loadMultiPong();
 		});
 
+		matchmakingBtn.addEventListener('click', toggleVisibility);
+		matchmakingBtn.addEventListener('click', function() {
+			onlineMatchmaking();
+			pongLocal.classList.add('d-none');
+			origPong.classList.add('d-none');
+			document.querySelectorAll('.card-game-inside > div').forEach(div => {
+				div.classList.add('d-none');
+			});
+			pongMulti.classList.remove('d-none');
+			var data = document.querySelector('#pongMulti').innerHTML;
+			document.querySelector('#pongMulti').innerHTML = data;
+		});
 		
 		
 		
@@ -286,7 +241,7 @@ function loadLocalPong() {
     document.body.appendChild(scriptLocalPong);
 }
 
-function loadMultiPong() {
+export function loadMultiPong() {
 	document.querySelectorAll('script[data-disabled="true"]').forEach(script => {
         script.setAttribute('type', 'module');
         script.removeAttribute('data-disabled');
