@@ -75,7 +75,7 @@ pub fn matchmaking(user: User) {
 
 	_ = socket.send(Message::Text(r#"{"message":"public"}"#.to_string()));
 	println!("Waiting for the game to start...");
-	waiting_game(socket);
+	game(socket);
 }
 
 /**
@@ -121,7 +121,7 @@ pub fn create_game(user: User) {
 	};
 	_ = socket.send(Message::Text(r#"{"message":"private"}"#.to_string()));
 	println!("Waiting for  the other player...");
-	waiting_game(socket);
+	game(socket);
 }
 
 /**
@@ -181,7 +181,7 @@ pub fn join_game(user: User) {
 
 	_ = socket.send(Message::Text(r#"{"message":"private"}"#.to_string()));
 	println!("Waiting for the game to start...");
-	waiting_game(socket);
+	game(socket);
 }
 
 /**
@@ -229,9 +229,9 @@ fn connect_ws(user: User, room: String) -> Result<tungstenite::WebSocket<tungste
  * Args:
  * 		socket: WebSocket - The websocket connected to the game
  */
-fn waiting_game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<std::net::TcpStream>>) {
+fn waiting_game(socket: &mut tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<std::net::TcpStream>>, term: &Console, paddle_l: &Paddle, paddle_r: &Paddle, score: &Score) -> Option<String> {
 	_ = socket.send(Message::Text(r#"{"message":"load"}"#.to_string()));
-	let mut player: String = "p1".to_string();
+	let mut player: String = "default".to_string();
 
 	loop {
 		match socket.read() {
@@ -243,41 +243,27 @@ fn waiting_game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTls
 						match json["action"].as_str().unwrap() {
 							"counter" => {
 								match json["num"].as_i32() {
-									Some(num) => match num {
-										5 => {
-											println!("The game will start...");
-											println!("5");
-										},
-										4 => {
-											println!("4");
-										},
-										3 => {
-											println!("3");
-										},
-										2 => {
-											println!("2");
-										},
-										1 => {
-											println!("1");
-										},
-										_ => {}
-									},
+									Some(num) => print_counter(term, num, paddle_l, paddle_r, score),
 									None => {}
 								}
 							},
 							"start" => {
-								break ;
+								if player == "default" {
+									return None;
+								} else {
+									return Some(player);
+								}
 							},
 							"playernumber" => {
 								player = match json["playernumber"].as_i32() {
 									Some(num) => match num {
 										1 => "p1".to_string(),
 										2 => "p2".to_string(),
-										_ => "p1".to_string()
+										_ => "default".to_string()
 									},
 									None => {
 										eprintln!("{}", format!("Error while getting the player number").red());
-										return ;
+										return None;
 									}
 								};
 							},
@@ -289,11 +275,19 @@ fn waiting_game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTls
 			},
 			Err(err) => {
 				eprintln!("{}", format!("{}", err).red());
-				return ;
+				return None;
 			}
 		}
 	}
-	game(socket, player);
+}
+
+fn print_counter(term: &Console, i: i32, paddle_l: &Paddle, paddle_r: &Paddle, score: &Score)
+{
+	print_score(term, score);
+	mvaddstr((term.height / 2.0) as i32, (term.width / 2.0) as i32, &format!("{}", i));
+	print_paddle(paddle_l);
+	print_paddle(paddle_r);
+	refresh();
 }
 
 /**
@@ -303,9 +297,7 @@ fn waiting_game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTls
  * Args:
  * 		socket: WebSocket - The websocket connected to the game
  */
-fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<std::net::TcpStream>>, player: String) {
-	// let _ = clear();
-	
+fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<std::net::TcpStream>>) {
 	let mut term: Console;
 
 	if let Some((w, h)) = term_size::dimensions() {
@@ -326,6 +318,8 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
 	let mut score = Score { score1: 0, score2: 0 };
 		
 
+	println!("test");
+
 	// Init ncurses to get the user's input
 	initscr();
 	keypad(stdscr(), true);
@@ -334,6 +328,17 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
 	nodelay(stdscr(), true);
 	curs_set(CURSOR_VISIBILITY::CURSOR_INVISIBLE);
 	
+	println!("test");
+	
+	let player = waiting_game(&mut socket, &term, &paddle_l, &paddle_r, &score);
+	let player = match player {
+		Some(player) => player,
+		None => {
+			endwin();
+			return ;
+		}
+	};
+
 	// game loop
 	loop {
 		// Handle the server's messages
@@ -461,13 +466,23 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
  * 		score: &Score - The score
  */
 fn render(term: &Console, paddle_l: &Paddle, paddle_r: &Paddle, ball: &Ball, score: &Score) {
-	mvaddstr(0, ((term.width / 2.0 - 3.0) as i32).try_into().unwrap(), &format!("{} - {}", score.score2, score.score1));
-	mvaddstr(1, 0, &"-".repeat(term.width as usize));
-
+	print_score(&term, &score);
  	print_paddle(&paddle_l);
 	print_paddle(&paddle_r);
 	print_ball(&ball);
 	refresh();
+}
+
+/**
+ * Print the score
+ * 
+ * Args:
+ *		term: &Console - The console struct
+ *		score: &Score - The score
+ */
+fn print_score(term: &Console, score: &Score) {
+	mvaddstr(0, ((term.width / 2.0 - 3.0) as i32).try_into().unwrap(), &format!("{} - {}", score.score2, score.score1));
+	mvaddstr(1, 0, &"-".repeat(term.width as usize));
 }
 
 /**
