@@ -283,6 +283,7 @@ fn waiting_game(socket: &mut tungstenite::WebSocket<tungstenite::stream::MaybeTl
 
 fn print_counter(term: &Console, i: i32, paddle_l: &Paddle, paddle_r: &Paddle, score: &Score)
 {
+	mvaddstr(0, 0, &" ".repeat(term.width as usize));
 	print_score(term, score);
 	mvaddstr((term.height / 2.0) as i32, (term.width / 2.0) as i32, &format!("{}", i));
 	print_paddle(paddle_l);
@@ -314,11 +315,8 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
 
 	let mut paddle_l = Paddle { x: paddle_offset, y: (term.height / 2.0 - 2.0), old_y: 0.0 };
 	let mut paddle_r = Paddle { x: (term.width - paddle_offset), y: (term.height / 2.0 - 2.0), old_y: 0.0 };
-	let mut ball = Ball { x: 0.0, y: 0.0, old_x: 0.0, old_y: 0.0};
+	let mut ball = Ball { x: 0.0, y: 0.0, old_x: 0.0, old_y: 0.0 };
 	let mut score = Score { score1: 0, score2: 0 };
-		
-
-	println!("Waiting for the game to start...");
 
 	// Init ncurses to get the user's input
 	initscr();
@@ -328,6 +326,9 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
 	nodelay(stdscr(), true);
 	curs_set(CURSOR_VISIBILITY::CURSOR_INVISIBLE);
 	
+	mvprintw(0, 0, "Waiting for the game to start...");
+	refresh();
+
 	let player = waiting_game(&mut socket, &term, &paddle_l, &paddle_r, &score);
 	let player = match player {
 		Some(player) => player,
@@ -336,6 +337,8 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
 			return ;
 		}
 	};
+
+	_ = clear();
 
 	// game loop
 	loop {
@@ -377,7 +380,7 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
 						// "private" => continue,
 						"Stop" => {
 							endwin();
-							_ = clear();
+							_ = clearscreen::clear();
 							if score.score1 > score.score2 {
 								if player == "p1" {
 									println!("{}", format!("You won!").green());
@@ -391,13 +394,12 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
 									println!("{}", format!("You lost!").red());
 								}
 							}
-							println!("You were player {}", player);
 							break ;
 						},
 						"start" => continue,
 						_ => {
-							endwin();
 							_ = clear();
+							endwin();
 							println!("Unknown action: {}", json["action"]);
 							break ;
 						}
@@ -423,7 +425,7 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
 				}
 				_ => {
 					endwin();
-					eprintln!("{}", format!("{}", err).red());
+					eprintln!("{}", format!("{}", err).red().bold());
 					break;
 				}
 			}
