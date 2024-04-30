@@ -18,6 +18,7 @@ function makeid(length) {
 
 export function Multiplayer() {
 	let url = '/api/game/create/';
+	// console.log(url);
 	fetch(url, {
 		method: 'GET',
 		credentials: 'same-origin' 
