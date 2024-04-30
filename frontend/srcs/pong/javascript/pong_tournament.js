@@ -8,6 +8,8 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 
 
+console.log('Tournament.js');
+
 let finalid = -1;
 let tournament_data;
 let active = false;
@@ -73,7 +75,7 @@ function startBtnFunction(){
 	
 }
 
-nextBtn.addEventListener('click', nextBtnFunction);
+// nextBtn.addEventListener('click', nextBtnFunction);
 
 tournamentSocket = new WebSocket(
 	'wss://'
@@ -109,8 +111,8 @@ if (tournament_id === "null" || tournament_id === undefined) {
 	window.location.href = "https://localhost/";
 }
 
-const loadingElement = document.getElementById('loading_txt');
-loadingElement.innerHTML = "[WAITING FOR OPPONENT]<br>Tournament ID : " + tournament_id + '<br>' + 'Currently connected : ' + connected + '/4';
+// const loadingElement = document.getElementById('loading_txt');
+// loadingElement.innerHTML = "[WAITING FOR OPPONENT]<br>Tournament ID : " + tournament_id + '<br>' + 'Currently connected : ' + connected + '/4';
 
 //console.log(privategame);
 //console.log(`ID IS ${tournament_id}`);
@@ -160,7 +162,7 @@ function checkPortraitMode() {
 function init() {
 	// Renderer
 	renderer = new THREE.WebGLRenderer({
-		canvas: document.querySelector('#background'),
+		canvas: document.querySelector('#backgroundTournament'),
 		antialias: true,
 	});
 	renderer.setSize(window.innerWidth, window.innerHeight);
@@ -168,7 +170,7 @@ function init() {
 
 	// Scene
 	scene = new THREE.Scene();
-	//scene.background = new THREE.Color('purple');
+	scene.background = new THREE.Color('purple');
 
 	// Camera
 	camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight);
@@ -207,6 +209,7 @@ function init() {
 		scene.castShadow = true;
 		scene.receiveShadow = true;
 		// Animation loop
+		console.log('help');
 		animate();
 }
 
@@ -524,7 +527,7 @@ tournamentSocket.onmessage = function(e) {
 	{
 		console.log(tournament_data.action);
 		connected = tournament_data['connected'];
-		loadingElement.innerHTML = "[WAITING FOR OPPONENT]<br>Tournament ID : " + tournament_id + '<br>' + 'Currently connected : ' + connected + '/4';
+		// loadingElement.innerHTML = "[WAITING FOR OPPONENT]<br>Tournament ID : " + tournament_id + '<br>' + 'Currently connected : ' + connected + '/4';
 	}
 	else if (tournament_data.action == 'playernb')
 	{
