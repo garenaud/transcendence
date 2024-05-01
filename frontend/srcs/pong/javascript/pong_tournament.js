@@ -75,7 +75,7 @@ function startBtnFunction(){
 	
 }
 
-// nextBtn.addEventListener('click', nextBtnFunction);
+nextBtn.addEventListener('click', nextBtnFunction);
 
 tournamentSocket = new WebSocket(
 	'wss://'
