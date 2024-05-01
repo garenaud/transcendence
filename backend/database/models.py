@@ -13,8 +13,8 @@ class Users(models.Model):
 		return self.name
 	
 class Games(models.Model):
-	player1 = models.ForeignKey(User, on_delete=models.CASCADE, related_name="player1", null=True)
-	player2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name="player2", null=True)
+	player1 = models.OneToOneField(User, on_delete=models.CASCADE, related_name="player1", null=True)
+	player2 = models.OneToOneField(User, on_delete=models.CASCADE, related_name="player2", null=True)
 	p1_id = models.IntegerField(default=-1)
 	p2_id = models.IntegerField(default=-1)
 	#code = models.CharField(max_length=10)
@@ -48,3 +48,13 @@ class Tournament(models.Model):
 	full = models.BooleanField(default=False)
 	finished = models.BooleanField(default=False)
 	connected = models.IntegerField(default=0)
+
+class userProfile(models.Model):
+	user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='user', null=False)
+	game_won = models.IntegerField(default=0)
+	game_lost = models.IntegerField(default=0)
+	tournament_won = models.IntegerField(default=0)
+	tournament_lost = models.IntegerField(default=0)
+	elo = models.IntegerField(default=0)
+	friendlist = models.ForeignKey(User, on_delete=models.CASCADE)
+	# profile_picture = models.ImageField(upload_to='./downloads')

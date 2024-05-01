@@ -96,8 +96,7 @@ function    setupButtonListener() {
 		const email = document.getElementById('typeEmailX').value;
 		const password = document.getElementById('typePasswordX').value;
 		let csrf = getCookie("csrftoken");
-		console.log('csrf:', csrf);
-		fetch('auth/test/', {
+		fetch('/auth/test/', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
