@@ -3,6 +3,7 @@ const errorLink = document.getElementById('error');
 
 export function Tournament()
 {
+	console.log(errorLink);
 	let url = '/api/tournament/create/';
 	fetch(url, {
 		method: 'GET',
@@ -21,7 +22,6 @@ export function Tournament()
 
 export function joinTournament(tournamentid) {
 	let userid = 667;
-	console.log(tournamentid);
 	let csrf = getCookie("csrftoken");
 	if (!isNaN(tournamentid) && tournamentid > 0 && tournamentid <= 9999)
 	{

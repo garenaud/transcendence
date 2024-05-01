@@ -101,6 +101,43 @@ export function renderPong() {
 							<!-- tournamentModalContent -->
 							<div id="pongTournament" class="h-100 align-items-center d-none">
 							<canvas id="backgroundTournament" class="h-100 w-100"></canvas>
+							<div id="countdown"></div>
+							<div class="scoreboard">
+								<div class="row">
+									<div class="col col-display" id="scoreHome">0</div>
+								</div>
+								<div class="row">
+									<div class="col col-display" id="scoreGuest">0</div>
+								</div>
+							</div>
+							<div class="loading">
+								<div class="load-3">
+									<p id="loading_txt">[C DU CACA]</p>
+									<div class="line"></div>
+									<div class="line"></div>
+									<div class="line"></div>
+								</div>
+							</div>
+							<div id="myModal" class="modal">
+								<div class="modal-content">
+									<p>DEFAITE</p>
+									<p id="error"></p>
+									<button onclick="window.location.reload();">Revenir au menu</button>
+								</div>
+							</div>
+							<div id="myModal2" class="modal2">
+								<div id="startBtnDiv" class="startBtn">
+									<p>VOUS AVEZ REMPORTEZ LE TOURNOI, FELICITATIONS</p>
+									<button id="winnerBtn" onclick="window.location.reload();">Revenir au menu</button>
+								</div>
+							</div>
+							<div id="myModal3" class="modal3">
+								<div id="nextBtnDiv" class="nextBtn">
+									<p>VICTOIRE</p>
+									<p id="score"></p>
+									<button id="nextGameBtn">Prochaine partie</button>
+								</div>
+							</div>
 							</div>
 
 							<div class="modal-footer">
@@ -135,7 +172,6 @@ function addEventListeners(element) {
 		// * TOURNAMENTPONG
 		createTournament.addEventListener('click', toggleVisibility);
 		createTournament.addEventListener('click', function() {
-			console.log(createTournament);
 			Tournament();
 			pongLocal.classList.add('d-none');
 			origPong.classList.add('d-none');
@@ -151,7 +187,17 @@ function addEventListeners(element) {
 		joinTournamentBtn.addEventListener('click', toggleVisibility);
 		joinTournamentBtn.addEventListener('click', function() {
 			const tournamentid = element.querySelector('#gameCodeInputTournament').value;
+			console.log(tournamentid);
 			joinTournament(tournamentid);
+			pongLocal.classList.add('d-none');
+			origPong.classList.add('d-none');
+			pongMulti.classList.add('d-none');
+			document.querySelectorAll('.card-game-inside > div').forEach(div => {
+				div.classList.add('d-none');
+			});
+			pongTournament.classList.remove('d-none');
+			var data = document.querySelector('#pongTournament').innerHTML;
+			document.querySelector('#pongTournament').innerHTML = data;
 		});
 
 	//* LOCALPONG
