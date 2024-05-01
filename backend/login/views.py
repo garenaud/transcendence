@@ -74,7 +74,7 @@ def test(request):
             user = User.objects.get(username=username)
             return JsonResponse({"message" : "OK", "id" : user.id, "username" : user.username, "first_name" : user.first_name, "last_name" : user.last_name, "email" : user.email, "password" : user.password, "logged_in" : user.is_authenticated, "session_username" : request.session['user_id']}, safe=False)
         else:
-            return JsonResponse({"message" : request.session['user_id']})
+            return JsonResponse({"message" : 'KO', 'sessionid' : request.session['user_id']})
     else:
         return JsonResponse({"message" : "KO"})
 	

@@ -115,14 +115,14 @@ function    setupButtonListener() {
 		})
 		.then(data => {
 			console.log('Success:', data);
-			if (data['message'] == "-1") {
+			if (data['message'] == "OK") {
 				let userId = data['id'];
 				console.log('userId avant:', userId);
 				localStorage.setItem('userId', userId);
 				loadUser();
 				changeView('hero');
 			} else {
-				console.log('error registering');
+				console.log('error logging in');
 			}
 		})
 		.catch((error) => {
