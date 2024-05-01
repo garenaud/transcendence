@@ -55,7 +55,7 @@ function    setupButtonListener() {
 		const password = document.getElementById('typePasswordX').value;
 		let csrf = getCookie("csrftoken");
 		fetch('/auth/test/', {
-			method: 'GET',
+			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
 				'X-CSRFToken': csrf,
@@ -67,9 +67,9 @@ function    setupButtonListener() {
 		.then(data => {
 			console.log('Success:', data);
 			if (data['message'] == "OK") {
-				changeView('hero');
+				console.log('good credentials');
 			} else if (data['message'] == "KO"){
-				
+				console.log('bad credentials');
 			}
 		})
 		.catch((error) => {
