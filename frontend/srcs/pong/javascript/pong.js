@@ -137,7 +137,7 @@ function init() {
 			if (div_scoreboard) {
 				div_scoreboard.style.display = 'flex';
 			}
-			checkPortraitMode();
+			// checkPortraitMode();
 			// createScoreTexts();
 		})
 		.catch((error) => {
@@ -200,7 +200,7 @@ function handleLight() {
 }
 
 function onWindowResize() {
-	checkPortraitMode();
+	// checkPortraitMode();
 	camera.position.set(0, scaleCam(), scaleCam());
 	camera.aspect = window.innerWidth / window.innerHeight;
 	camera.updateProjectionMatrix();
