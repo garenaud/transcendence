@@ -52,11 +52,11 @@ def user_by_id(request, id):
 @api_view(['POST'])
 def create_new_user(request):
 	if request.method == 'POST':
-		serializer = UsersSerializer(data=request.data)
+		serializer = UserSerializer(data=request.data)
 		if serializer.is_valid():
-			user = Users.objects.filter(login=serializer.data['login'])
+			user = User.objects.filter(login=serializer.data['login'])
 			if not user.exists():
-				user = Users(name=serializer.data['name'], login=serializer.data['login'], password=serializer.data['password'])
+				user = User(name=serializer.data['name'], login=serializer.data['login'], password=serializer.data['password'])
 				user.save()
 				return Response("User " + serializer.data['login'] + " has been added to database", status=status.HTTP_201_CREATED)
 			else:
@@ -70,7 +70,7 @@ def create_new_user(request):
 @api_view(['DELETE'])
 def delete_user_by_id(request, id):
 	if request.method == "DELETE":
-		queryset = Users.objects.filter(id=id)
+		queryset = User.objects.filter(id=id)
 		if queryset.exists():
 			user = queryset[0]
 			user.delete()

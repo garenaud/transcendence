@@ -96,8 +96,7 @@ function    setupButtonListener() {
 		const email = document.getElementById('typeEmailX').value;
 		const password = document.getElementById('typePasswordX').value;
 		let csrf = getCookie("csrftoken");
-		console.log('csrf:', csrf);
-		fetch('auth/test/', {
+		fetch('/auth/test/', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -115,14 +114,10 @@ function    setupButtonListener() {
 		})
 		.then(data => {
 			console.log('Success:', data);
-			if (data['message'] == "-1") {
-				let userId = data['id'];
-				console.log('userId avant:', userId);
-				localStorage.setItem('userId', userId);
-				loadUser();
-				changeView('hero');
-			} else {
-				console.log('error registering');
+			if (data['message'] == "OK") {
+				console.log('good credentials');
+			} else if (data['message'] == "KO"){
+				console.log('bad credentials');
 			}
 		})
 		.catch((error) => {

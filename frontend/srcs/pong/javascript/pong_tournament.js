@@ -40,12 +40,15 @@ let connected = 1;
 let playernb = 0;
 let playernumber = 0;
 
-const startBtn = document.getElementById('myModal2');
-const nextBtn = document.getElementById('myModal3');
+const startBtn = document.getElementById('startGameBtn');
+const nextBtn = document.getElementById('nextGameBtn');
+const myModal2 = document.getElementById('myModal2');
+const myModal3 = document.getElementById('myModal3');
 
-startBtn.style.display = 'none';
-nextBtn.style.display = 'none';
 
+// rajouter condition pour faire apparaitre le bon bouton, 
+// si on a gagner le match, le bouton pour acceder a la finale apparait
+// , sinon, retour au menu apparait
 function nextBtnFunction(){
 	gameSocket = new WebSocket(
 		'wss://'
@@ -59,7 +62,11 @@ function nextBtnFunction(){
 	gameSocket.onmessage = function(event) {
 		onMessageHandler(event);
 	};
-	nextBtn.style.display = 'none';
+	myModal3.style.display = 'none';
+	const scoreL = document.getElementById("scoreHome");
+	scoreL.textContent = 0;
+	const scoreR = document.getElementById("scoreGuest");
+	scoreR.textContent = 0;
 }
 
 function startBtnFunction(){
@@ -438,29 +445,42 @@ function onMessageHandler(e) {
 		gameSocket.send(JSON.stringify({
 		'message' : 'private'
 		}));
-	} else if (game_data.action == 'Stop') {
+	} else if (game_data.action == 'Stop') 
+	{
 		const errorElement = document.getElementById('error');
 		errorElement.textContent = "Final score : " + game_data.scorep2 + " - " + game_data.scorep1;
+		const scoreElement = document.getElementById('score');
+		scoreElement.textContent = "Final score : " + game_data.scorep2 + " - " + game_data.scorep1;
 		// document.getElementById("myModal").style.display = "block";
-		nextBtn.style.display = "block";
+		// myModal3.style.display = "block";
 		// startBtn.style.display = "block";
 		sessionStorage.setItem("game_id", null);
-		if ((playernumber == 1 && game_data.scorep1 > game_data.scorep2) || (playernumber == 1 && game_data.scorep1 < game_data.scorep2))
-		{
-			tournamentSocket.send(JSON.stringify({
-			'message' : 'winner',
-			'finalid' : finalid
+		gameSocket.send(JSON.stringify({
+			'message' : 'getWinner'
 			}));
+	} 
+	else if (game_data.action == 'winner')
+	{
+		console.log('jai gagner');
+		if (finalid == -1)
+		{
+			myModal3.style.display = "block";
+			tournamentSocket.send(JSON.stringify({
+				'message' : 'winner',
+				'finalid' : finalid
+			}))
 		}
 		else
 		{
-			tournamentSocket.send(JSON.stringify({
-			'message' : 'looser'
-			}));
-			gameSocket.close();
-			gameSocket = null;
+			myModal2.style.display = "block";
 		}
-	} else if (game_data.action == "userleave") {
+	}
+	else if (game_data.action == 'looser')
+	{
+		console.log('jai perdu');
+		document.getElementById("myModal").style.display = "block";
+	}
+	else if (game_data.action == "userleave") {
 		const errorElement = document.getElementById('error');
 		errorElement.textContent = "A user left the game";
 		document.getElementById("myModal").style.display = "block";
@@ -506,10 +526,6 @@ tournamentSocket.onmessage = function(e) {
 		connected = tournament_data['connected'];
 		loadingElement.innerHTML = "[WAITING FOR OPPONENT]<br>Tournament ID : " + tournament_id + '<br>' + 'Currently connected : ' + connected + '/4';
 	}
-	if (tournament_data.action == 'start_tournament')
-	{
-
-	}
 	else if (tournament_data.action == 'playernb')
 	{
 		playernb = tournament_data['playernb'];
@@ -546,6 +562,11 @@ tournamentSocket.onmessage = function(e) {
 		gameSocket = null;
 		finalid = tournament_data['finalid'];
 		console.log(`game id for player ${playernb} is ${gameid}`);
+	}
+	else if (tournament_data.action == 'wonTournament')
+	{
+		const errorElement = document.getElementById('error');
+		errorElement.textContent = "VOUS AVEZ REMPORTEZ LE TOURNOI, FELICITATIONS";
 	}
 }
 

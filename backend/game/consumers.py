@@ -192,6 +192,13 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             self.room_group_name,
             {"type": "update", "message": {'action' : 'game', 'bx' : self.game.bpx, 'bz' : self.game.bpz, 'plx' : self.game.plx ,'plz' : self.game.plz, 'prx' : self.game.prx ,'prz' : self.game.prz}}
             )
+        if message == 'getWinner':
+            if self.game.scorep1 > self.game.scorep2 and self.channel_name == self.game.p1id:
+                await self.send(text_data=json.dumps({'action' : 'winner'}))
+            elif self.game.scorep1 < self.game.scorep2 and self.channel_name == self.game.p2id:
+                await self.send(text_data=json.dumps({'action' : 'winner'}))
+            else:
+                await self.send(text_data=json.dumps({'action' : 'looser'}))
         # if message == "Start" and self.game.started == False:
         #     self.game.started = True
         #     self.task = asyncio.create_task(self.loop())
@@ -305,6 +312,7 @@ class AsyncTournamentConsumer(AsyncWebsocketConsumer):
                 await self.send(text_data=json.dumps({'action' : 'finalid', 'finalid' : self.tournoi.game3_id}))
             else:
                 print(f'tournament is finished, player {self.playernb} has won')
+                await self.send(text_data=json.dumps({'action' : 'wonTournament'}))
         elif message == 'looser':
             print(f'{self.playernb} has lost and cannot play the final')
             await self.disconnect(1)
