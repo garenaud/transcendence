@@ -7,7 +7,9 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 
-
+const PaddleRightName = 'RightPaddle';
+const PaddleLeftName = 'LeftPaddle';
+const BallName = 'Ball';
 let finalid = -1;
 let tournament_data;
 let active = false;
@@ -73,7 +75,7 @@ function startBtnFunction(){
 	
 }
 
-nextBtn.addEventListener('click', nextBtnFunction);
+// nextBtn.addEventListener('click', nextBtnFunction);
 
 tournamentSocket = new WebSocket(
 	'wss://'
@@ -108,9 +110,6 @@ function makeid(length) {
 if (tournament_id === "null" || tournament_id === undefined) {
 	window.location.href = "https://localhost/";
 }
-
-const loadingElement = document.getElementById('loading_txt');
-loadingElement.innerHTML = "[WAITING FOR OPPONENT]<br>Tournament ID : " + tournament_id + '<br>' + 'Currently connected : ' + connected + '/4';
 
 //console.log(privategame);
 //console.log(`ID IS ${tournament_id}`);
@@ -160,7 +159,7 @@ function checkPortraitMode() {
 function init() {
 	// Renderer
 	renderer = new THREE.WebGLRenderer({
-		canvas: document.querySelector('#background'),
+		canvas: document.querySelector('#backgroundTournament'),
 		antialias: true,
 	});
 	renderer.setSize(window.innerWidth, window.innerHeight);
@@ -168,7 +167,7 @@ function init() {
 
 	// Scene
 	scene = new THREE.Scene();
-	//scene.background = new THREE.Color('purple');
+	scene.background = new THREE.Color('purple');
 
 	// Camera
 	camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight);
@@ -207,6 +206,7 @@ function init() {
 		scene.castShadow = true;
 		scene.receiveShadow = true;
 		// Animation loop
+		console.log('help');
 		animate();
 }
 
@@ -433,7 +433,7 @@ function anim() {
 function onMessageHandler(e) {	
 	game_data = JSON.parse(e.data);
 	if (game_data.action == "allin") {
-		loadingElement.innerHTML = "[LOADING GAME ...]";
+		// loadingElement.innerHTML = "[LOADING GAME ...]";
 		init();
 	}
 	else if (game_data.action == "playernumber")
@@ -501,9 +501,9 @@ function onMessageHandler(e) {
 		}
 	}
 	else {	
-		const ball = scene.getObjectByName('Ball');
-		const PaddleLeft = scene.getObjectByName("LeftPaddle");
-		const PaddleRight = scene.getObjectByName("RightPaddle");
+		const PaddleLeft = scene.getObjectByName(PaddleLeftName);
+		const ball = scene.getObjectByName(BallName);
+		const PaddleRight = scene.getObjectByName(PaddleRightName);
 		if (game_data.action == 'paddle1') {
 			PaddleRight.position.x = parseFloat(game_data.prx);
 			PaddleRight.position.z = parseFloat(game_data.prz);
@@ -524,7 +524,7 @@ tournamentSocket.onmessage = function(e) {
 	{
 		console.log(tournament_data.action);
 		connected = tournament_data['connected'];
-		loadingElement.innerHTML = "[WAITING FOR OPPONENT]<br>Tournament ID : " + tournament_id + '<br>' + 'Currently connected : ' + connected + '/4';
+		// loadingElement.innerHTML = "[WAITING FOR OPPONENT]<br>Tournament ID : " + tournament_id + '<br>' + 'Currently connected : ' + connected + '/4';
 	}
 	else if (tournament_data.action == 'playernb')
 	{
@@ -599,9 +599,7 @@ function clearThreeJS() {
 }
 
 function update_game_data() {
-	const PaddleRightName = 'RightPaddle';
-	const PaddleLeftName = 'LeftPaddle';
-	ball = scene.getObjectByName('Ball');
+	ball = scene.getObjectByName(BallName);
 	PaddleRight = scene.getObjectByName(PaddleRightName);
 	PaddleLeft = scene.getObjectByName(PaddleLeftName);
 	// console.log(PaddleRight);
@@ -610,30 +608,14 @@ function update_game_data() {
 	PaddleRight.position.z = parseFloat(game_data.paddleright_position_z);
 	PaddleLeft.position.x = parseFloat(game_data.paddleleft_position_x);
 	PaddleLeft.position.z = parseFloat(game_data.paddleleft_position_z);
-	//PaddleLeft.position.z = parseFloat(game_data.paddleleft_position_z);
 	ball.position.x = parseFloat(game_data.ball_position_x);
 	ball.position.z = parseFloat(game_data.ball_position_z);
 
 }
 
 function animate() {
-	//update_game_data();
 	requestAnimationFrame(animate);
-	//handlePaddleLeft();
-	//handlePaddleRight();
-	//handleAIPaddle();
-	//handleBackground(); COLOR BACKGROUND
-	// handleAIPaddleRight();
-	//updateBall();
-	// console.log(ball.position.x);
-	// console.log(ball.position.z);
-	// gameSocket.send(JSON.stringify(
-	// 	{
-	// 		"message" : "ball_update"
-	// 	})
-	// );
 	controls.update();
-	//composer.render(scene, camera);
 	renderer.render(scene, camera);
 }
 

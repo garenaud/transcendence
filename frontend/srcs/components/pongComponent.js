@@ -1,6 +1,8 @@
 import { onlineMatchmaking } from "./pong_menu.js";
 import { Multiplayer } from "./pong_menu.js";
 import { joinGame } from "./pong_menu.js";
+import { Tournament } from "./tournament_menu.js";
+import { joinTournament } from "./tournament_menu.js";
 // import { makeid } from "../pong/javascript/pong.js" 
 //import * as PongMenu from "./pong_menu.js";
 
@@ -45,6 +47,11 @@ export function renderPong() {
 										  <input type="text" id="gameCodeInput" class="inputGame" placeholder="Game ID">
 										  </div>
 								  		<a id="searchBtn" class="nav-link">Online Matchmaking</a>
+										<a id="createTournament" class="nav-link">Create Tournament</a>
+										<div class="nav-link">
+											<a id="joinTournamentBtn">Join Tournament</a>
+												<input type="text" id="gameCodeInputTournament" class="inputGame" placeholder="Tournament ID">
+											</div>
 								  		<a href="https://www.exit.ch/en/" target="_blank" class="nav-link">Exit</a>
 									</nav>
 								</div>
@@ -91,7 +98,48 @@ export function renderPong() {
 							<div id="matchmaking" class="h-100 align-items-center d-none">
 							</div>
 
+							<!-- tournamentModalContent -->
+							<div id="pongTournament" class="h-100 align-items-center d-none">
+							<canvas id="backgroundTournament" class="h-100 w-100"></canvas>
+							<div id="countdown"></div>
+							<div class="scoreboard">
+								<div class="row">
+									<div class="col col-display" id="scoreHome">0</div>
+								</div>
+								<div class="row">
+									<div class="col col-display" id="scoreGuest">0</div>
+								</div>
 							</div>
+							<div class="loading">
+								<div class="load-3">
+									<p id="loading_txt">[C DU CACA]</p>
+									<div class="line"></div>
+									<div class="line"></div>
+									<div class="line"></div>
+								</div>
+							</div>
+							<div id="myModal" class="modal">
+								<div class="modal-content">
+									<p>DEFAITE</p>
+									<p id="error"></p>
+									<button onclick="window.location.reload();">Revenir au menu</button>
+								</div>
+							</div>
+							<div id="myModal2" class="modal2">
+								<div id="startBtnDiv" class="startBtn">
+									<p>VOUS AVEZ REMPORTEZ LE TOURNOI, FELICITATIONS</p>
+									<button id="winnerBtn" onclick="window.location.reload();">Revenir au menu</button>
+								</div>
+							</div>
+							<div id="myModal3" class="modal3">
+								<div id="nextBtnDiv" class="nextBtn">
+									<p>VICTOIRE</p>
+									<p id="score"></p>
+									<button id="nextGameBtn">Prochaine partie</button>
+								</div>
+							</div>
+							</div>
+
 							<div class="modal-footer">
 							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
 							<button type="button" class="btn btn-primary">Save changes</button>
@@ -112,16 +160,50 @@ function addEventListeners(element) {
         const multiPongBtn = element.querySelector('#multiPongBtn');
         const joinPongBtn = element.querySelector('#joinPongBtn');
         const pongMulti = element.querySelector('#pongMulti');
-        const joinPong = element.querySelector('#joinPong');
         const pongLocal = element.querySelector('#pongLocal');
         const localPongBtn = element.querySelector('#localPongBtn');
         const previousDiv = origPong ? pongMulti.previousElementSibling : null;
         const pongModal = element.querySelector('#pong');
         const matchmakingBtn = element.querySelector('#searchBtn');
-		
+		const pongTournament = element.querySelector('#pongTournament');
+		const joinTournamentBtn = element.querySelector('#joinTournamentBtn');
+		const createTournament = element.querySelector('#createTournament')
+
+		// * TOURNAMENTPONG
+		createTournament.addEventListener('click', toggleVisibility);
+		createTournament.addEventListener('click', function() {
+			Tournament();
+			pongLocal.classList.add('d-none');
+			origPong.classList.add('d-none');
+			pongMulti.classList.add('d-none');
+			document.querySelectorAll('.card-game-inside > div').forEach(div => {
+				div.classList.add('d-none');
+			});
+			pongTournament.classList.remove('d-none');
+			var data = document.querySelector('#pongTournament').innerHTML;
+			document.querySelector('#pongTournament').innerHTML = data;
+		});
+
+		joinTournamentBtn.addEventListener('click', toggleVisibility);
+		joinTournamentBtn.addEventListener('click', function() {
+			const tournamentid = element.querySelector('#gameCodeInputTournament').value;
+			console.log(tournamentid);
+			joinTournament(tournamentid);
+			pongLocal.classList.add('d-none');
+			origPong.classList.add('d-none');
+			pongMulti.classList.add('d-none');
+			document.querySelectorAll('.card-game-inside > div').forEach(div => {
+				div.classList.add('d-none');
+			});
+			pongTournament.classList.remove('d-none');
+			var data = document.querySelector('#pongTournament').innerHTML;
+			document.querySelector('#pongTournament').innerHTML = data;
+		});
+
 	//* LOCALPONG
 	localPongBtn.addEventListener('click', toggleVisibility);
 	localPongBtn.addEventListener('click', function() {
+		console.log(localPongBtn);
 		origPong.classList.add('d-none');
 		pongMulti.classList.add('d-none');
 		document.querySelectorAll('.card-game-inside > div').forEach(div => {
@@ -145,7 +227,6 @@ function addEventListeners(element) {
 			pongMulti.classList.remove('d-none');
 			var data = document.querySelector('#pongMulti').innerHTML;
 			document.querySelector('#pongMulti').innerHTML = data;
-			// loadMultiPong();
 		});
 
 		//* MULTIPONG
@@ -174,6 +255,7 @@ function addEventListeners(element) {
 			var data = document.querySelector('#pongMulti').innerHTML;
 			document.querySelector('#pongMulti').innerHTML = data;
 		});
+
 		
 		
 		
@@ -190,8 +272,10 @@ function addEventListeners(element) {
 			unloadScript();
 			const pongLocal = element.querySelector('#pongLocal');
 			const pongMulti = element.querySelector('#pongMulti');
+			const pongTournament = element.querySelector('#pongTournament');
     		pongLocal.classList.add('d-none');
 			pongMulti.classList.add('d-none');
+			pongTournament.classList.add('d-none');
             origPong.classList.remove('d-none');
         });
 		
@@ -252,4 +336,17 @@ export function loadMultiPong() {
     console.log('loadingMulti');
     scriptMultiPong.setAttribute('data-pong', 'dynamic');  // Marqueur pour identifier les scripts chargés dynamiquement
     document.body.appendChild(scriptMultiPong);
+}
+
+export function loadTournamentPong() {
+	document.querySelectorAll('script[data-disabled="true"]').forEach(script => {
+        script.setAttribute('type', 'module');
+        script.removeAttribute('data-disabled');
+    });
+    const scriptTournament = document.createElement('script');
+    scriptTournament.type = 'module';
+    scriptTournament.src = '../pong/javascript/pong_tournament.js?' + new Date().getTime(); // Ajoute un horodatage à l'URL
+    console.log('loadingTournament');
+    scriptTournament.setAttribute('data-pong', 'dynamic');  // Marqueur pour identifier les scripts chargés dynamiquement
+    document.body.appendChild(scriptTournament);
 }
