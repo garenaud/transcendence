@@ -115,7 +115,10 @@ function    setupButtonListener() {
 		.then(data => {
 			console.log('Success:', data);
 			if (data['message'] == "OK") {
-				console.log('good credentials');
+				let userId = data['id'];
+                localStorage.setItem('userId', userId);
+                loadUser();
+                changeView('hero');
 			} else if (data['message'] == "KO"){
 				console.log('bad credentials');
 			}

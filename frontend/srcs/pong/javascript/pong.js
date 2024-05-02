@@ -11,7 +11,7 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 
 let active = false;
 let gameid = sessionStorage.getItem('gameid');
-console.log(gameid);
+let userid = sessionStorage.getItem('userId');
 let privategame = sessionStorage.getItem('privategame');
 let game_data;
 let renderer;
@@ -320,8 +320,14 @@ function anim() {
 }
 
 gameSocket.onmessage = function(e) {
-	game_data = JSON.parse(e.data);
-	if (game_data.action == "allin") {
+	
+	if (game_data.action == "userid") {
+		gameSocket.send(JSON.stringify({
+			'message' : 'userid',
+			'userid' : userid
+		}));
+	} 
+	else if (game_data.action == "allin") {
 		loadingElement.innerHTML = "[LOADING GAME ...]";
 		init();
 	}
