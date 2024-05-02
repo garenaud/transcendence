@@ -93,16 +93,16 @@ export function renderLogin() {
 function    setupButtonListener() {
 	document.getElementById('loginBtn').addEventListener('click', function(event) {
 		event.preventDefault();
-		const email = document.getElementById('typeEmailX').value;
+		const username = document.getElementById('typeEmailX').value;
 		const password = document.getElementById('typePasswordX').value;
 		let csrf = getCookie("csrftoken");
-		fetch('/auth/test/', {
+		fetch('/auth/login/', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
 				'X-CSRFToken': csrf,
 			},
-			body: JSON.stringify({ email, password }),
+			body: JSON.stringify({ username, password }),
 			credentials: 'same-origin' 
 		})
 		.then(response => {

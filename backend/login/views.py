@@ -12,27 +12,30 @@ from django.contrib.auth.forms import UserCreationForm
 from .forms import SignupForm, LoginForm
 from django.http import JsonResponse
 import json
+from database.serializers import UserSerializer
+from django.contrib.auth.hashers import make_password
+
 
 def home_page(request):
 	return render(request, "login/home.html")
 
-def signup_form(request):
-    if request.method == 'POST':
-        form = SignupForm(request.POST)
-        if form.is_valid():
-            try:
-                form.save()
-                messages.success(request, "Your account has been created successfully")
-                return JsonResponse({"message" : "OK"})
-            except Exception as e:
-                return JsonResponse({"message" : str(e)}, status=500)
-        else:
-            messages.error(request, "Error")
-            return JsonResponse({"message" : "Error", "errors": form.errors}, status=400)
-    else:
-        form = SignupForm()
-        return JsonResponse({"message" : "Invalid request method"}, status=400)
-    return render(request, "login/signup.html", {'form' : form})
+def register(request):
+	if request.method == 'POST':
+		print(request.POST['password1'])
+		print(request.POST['password2'])
+		if request.POST['password1'] != request.POST['password2']:
+			return JsonResponse({ 'message' : 'Passwords did not match'}, status=403)
+		password = make_password(request.POST['password1'])
+		user = User.objects.filter(username=request.POST['username'])
+		if User.objects.filter(username=request.POST['username']).exists() or User.objects.filter(email=request.POST['email']).exists():
+			return JsonResponse({ "message" : "User with same username / email already exists in the database"}, status=409)
+		else:
+			user = User(username=request.POST['username'], first_name=request.POST['first_name'],  last_name=request.POST['last_name'], email=request.POST['email'], password=password)
+			user.save()
+			print(user.password)
+			return JsonResponse({ "message" : "User " + request.POST['username'] + " has been added to database"}, status=201)
+	else:
+		return JsonResponse({ "message" : "Method not allowed"}, status=405)
 
 
 def login_form(request):
@@ -55,16 +58,14 @@ def login_form(request):
 			return JsonResponse({"message" : "error"})
 	return render(request, "login/login.html", {'form' : form})
 		
-def logout_form(request):
+def logout(request):
 	auth.logout(request)
-	print(request)
-	return redirect("home_page")
 
 
-def test(request):
+def login(request):
     if request.method == 'POST':
         data = json.loads(request.body)
-        username = data['email']
+        username = data['username']
         password = data['password']
         request.session['user_id'] = -1
         user = authenticate(username=username, password=password)
@@ -74,7 +75,7 @@ def test(request):
             user = User.objects.get(username=username)
             return JsonResponse({"message" : "OK", "id" : user.id, "username" : user.username, "first_name" : user.first_name, "last_name" : user.last_name, "email" : user.email, "password" : user.password, "logged_in" : user.is_authenticated, "session_username" : request.session['user_id']}, safe=False)
         else:
-            return JsonResponse({"message" : 'KO', 'sessionid' : request.session['user_id']})
+            return JsonResponse({"message" : 'KO'})
     else:
         return JsonResponse({"message" : "KO"})
 	
