@@ -93,7 +93,7 @@ export function renderLogin() {
 function    setupButtonListener() {
 	document.getElementById('loginBtn').addEventListener('click', function(event) {
 		event.preventDefault();
-		const username = document.getElementById('typeEmailX').value;
+		const username = document.getElementById('typeUsername').value;
 		const password = document.getElementById('typePasswordX').value;
 		let csrf = getCookie("csrftoken");
 		fetch('/auth/login/', {

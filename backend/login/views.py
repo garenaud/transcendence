@@ -37,6 +37,21 @@ def register(request):
 	else:
 		return JsonResponse({ "message" : "Method not allowed"}, status=405)
 
+def login(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        username = data['username']
+        password = data['password']
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            request.session['user_id'] = User.objects.get(username=username).id
+            auth.login(request, user)
+            user = User.objects.get(username=username)
+            return JsonResponse({"message" : "OK", "id" : user.id, "username" : user.username, "first_name" : user.first_name, "last_name" : user.last_name, "email" : user.email, "password" : user.password, "logged_in" : user.is_authenticated, "session_username" : request.session['user_id']}, safe=False)
+        else:
+            return JsonResponse({"message" : 'KO'})
+    else:
+        return JsonResponse({"message" : "KO"})
 
 def login_form(request):
 	form = LoginForm()
@@ -62,22 +77,6 @@ def logout(request):
 	auth.logout(request)
 
 
-def login(request):
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        username = data['username']
-        password = data['password']
-        request.session['user_id'] = -1
-        user = authenticate(username=username, password=password)
-        if user is not None:
-            request.session['user_id'] = User.objects.get(username=username).id
-            auth.login(request, user)
-            user = User.objects.get(username=username)
-            return JsonResponse({"message" : "OK", "id" : user.id, "username" : user.username, "first_name" : user.first_name, "last_name" : user.last_name, "email" : user.email, "password" : user.password, "logged_in" : user.is_authenticated, "session_username" : request.session['user_id']}, safe=False)
-        else:
-            return JsonResponse({"message" : 'KO'})
-    else:
-        return JsonResponse({"message" : "KO"})
 	
 def get_session_username(request):
 	return JsonResponse({'user_id' : request.session['user_id']})
