@@ -52,7 +52,7 @@ export function renderPong() {
 											<a id="joinTournamentBtn">Join Tournament</a>
 												<input type="text" id="gameCodeInputTournament" class="inputGame" placeholder="Tournament ID">
 											</div>
-								  		<a href="https://www.exit.ch/en/" target="_blank" class="nav-link">Exit</a>
+								  		<a onclick="window.location.reload();" target="_blank" class="nav-link">Exit</a>
 									</nav>
 								</div>
                             </div>
@@ -183,21 +183,27 @@ function addEventListeners(element) {
 			var data = document.querySelector('#pongTournament').innerHTML;
 			document.querySelector('#pongTournament').innerHTML = data;
 		});
-
+		
+		//* JOINTOURNAMENT
 		joinTournamentBtn.addEventListener('click', toggleVisibility);
 		joinTournamentBtn.addEventListener('click', function() {
 			const tournamentid = element.querySelector('#gameCodeInputTournament').value;
-			console.log(tournamentid);
-			joinTournament(tournamentid);
-			pongLocal.classList.add('d-none');
-			origPong.classList.add('d-none');
-			pongMulti.classList.add('d-none');
-			document.querySelectorAll('.card-game-inside > div').forEach(div => {
-				div.classList.add('d-none');
-			});
-			pongTournament.classList.remove('d-none');
-			var data = document.querySelector('#pongTournament').innerHTML;
-			document.querySelector('#pongTournament').innerHTML = data;
+			if (tournamentid)
+			{
+				joinTournament(tournamentid);
+				pongLocal.classList.add('d-none');
+				origPong.classList.add('d-none');
+				pongMulti.classList.add('d-none');
+				document.querySelectorAll('.card-game-inside > div').forEach(div => {
+					div.classList.add('d-none');
+				});
+				pongTournament.classList.remove('d-none');
+				var data = document.querySelector('#pongTournament').innerHTML;
+				document.querySelector('#pongTournament').innerHTML = data;
+		}
+		else {
+			console.error('Please insert a ID');
+		}
 		});
 
 	//* LOCALPONG
@@ -218,15 +224,21 @@ function addEventListeners(element) {
 		// * JoinBtn
 		multiPongBtn.addEventListener('click', toggleVisibility);
 		joinPongBtn.addEventListener('click', function() {
-			joinGame();
-			pongLocal.classList.add('d-none');
-			origPong.classList.add('d-none');
-			document.querySelectorAll('.card-game-inside > div').forEach(div => {
-				div.classList.add('d-none');
-			});
-			pongMulti.classList.remove('d-none');
-			var data = document.querySelector('#pongMulti').innerHTML;
-			document.querySelector('#pongMulti').innerHTML = data;
+			const gameIdInput = document.getElementById('#gameCodeInput');
+			if (gameIdInput) {
+
+				joinGame(gameIdInput);
+				pongLocal.classList.add('d-none');
+				origPong.classList.add('d-none');
+				document.querySelectorAll('.card-game-inside > div').forEach(div => {
+					div.classList.add('d-none');
+				});
+				pongMulti.classList.remove('d-none');
+				var data = document.querySelector('#pongMulti').innerHTML;
+				document.querySelector('#pongMulti').innerHTML = data;
+			} else {
+				console.error('Please insert a ID');
+			}
 		});
 
 		//* MULTIPONG
@@ -243,6 +255,7 @@ function addEventListeners(element) {
 			document.querySelector('#pongMulti').innerHTML = data;
 		});
 
+		//* MATCHMAKING
 		matchmakingBtn.addEventListener('click', toggleVisibility);
 		matchmakingBtn.addEventListener('click', function() {
 			onlineMatchmaking();
@@ -256,8 +269,6 @@ function addEventListeners(element) {
 			document.querySelector('#pongMulti').innerHTML = data;
 		});
 
-		
-		
 		
         pongModal.addEventListener('show.bs.modal', function () {
 			console.log('modal');

@@ -36,11 +36,9 @@ export function Multiplayer() {
 	});
   }
 
-export function joinGame() {
+export function joinGame(gameid) {
 	errorLink.textContent = "";
 	errorLink.style.display = "block";
-	const gameIdInput = document.getElementById('gameCodeInput');
-	gameid = gameIdInput.value.trim();
 	let url = '/api/game/' + gameid;
 	if (!isNaN(gameid) && gameid > 0 && gameid <= 9999) {	
 		console.log(url);
