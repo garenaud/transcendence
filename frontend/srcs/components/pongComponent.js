@@ -271,7 +271,6 @@ function addEventListeners(element) {
 
 		
         pongModal.addEventListener('show.bs.modal', function () {
-			console.log('modal');
 			scriptStarted = true;
 			document.querySelectorAll('.card-game-inside > div').forEach(div => {
 				div.classList.remove('d-none');
