@@ -53,6 +53,7 @@ export function changeView(newView) {
     }
     location.hash = newView;
     appState.currentView = newView;
+    appState.urlHistory.push(newView);
 }
 
 // Écouteur d'événement pour changer la vue lorsque l'URL change (rajoute le # à l'URL lorsqu'on change de vue)
@@ -71,12 +72,12 @@ window.addEventListener("popstate", function() {
 });
 
 window.addEventListener('popstate', function(event) {
-    console.log('Bouton précédent pressé');
-    console.log('URL précédente:', appState.urlHistory[appState.urlHistory.length - 1]);
-    console.log('Historique:', history);
-    console.log('Longueur de l\'historique:', history.length);
-    console.log('État de l\'historique:', history.state);
-    console.log('Restauration du défilement:', history.scrollRestoration);
+    console.log('Bouton précédent pressé length = ', appState.urlHistory[appState.urlHistory.length]);
+    if (appState.urlHistory.length > 1) {
+        console.log('URL précédente:', appState.urlHistory[appState.urlHistory.length - 2]);
+    } else {
+        console.log('Pas d\'URL précédente');
+    }
 });
 
 export function getCurrentView() {

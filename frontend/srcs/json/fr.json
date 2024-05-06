@@ -30,5 +30,15 @@
     "joinRandomRoomPong": "REJOINDRE UNE PARTIE ALÉATOIRE",
     "game": "Jeu",
     "+": "+",
-    "pongPlayed": "Historique des parties"
+    "pongPlayed": "Historique des parties",
+    "waitOpponent": "[EN ATTENTE DE L'ADVERSAIRE]",
+    "win": "Victoire",
+    "nextGame": "prochaine partie",
+    "localGame": "Local",
+    "createPriv": "créer une partie privée",
+    "joinPriv": "rejoindre une partie privée",
+    "onlineMatchmaking": "appariement en ligne",
+    "createTourn": "créer un tournoi",
+    "joinTourn": "rejoindre un tournoi",
+    "wonTourn": "VOUS AVEZ GAGNÉ LE TOURNOI, FÉLICITATIONS"
 }
