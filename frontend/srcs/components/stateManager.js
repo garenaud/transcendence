@@ -1,73 +1,169 @@
-import { getUser, loadUser } from './userManager.js';
-import { renderNavbar } from './navbar.js'; // Ajustez le chemin selon l'organisation de vos fichiers
+import { getUser, loadUser, getCurrentUser, loadGameList } from './userManager.js';
+import { renderNavbar } from './navbar.js'; 
 import { renderHero } from './hero.js';
-import { renderGame } from './game.js';
+import { renderPong } from './pongComponent.js';
 import { renderChat } from './chat.js';
-import { renderRoulette, setupRoulette } from './roulette.js';
+import { renderRoulette, setupRoulette, runRoulette } from './roulette.js';
 import { renderLogin } from './login.js';
-import { renderBlackJack } from './BlackJack.js';
-//import { renderSlotMachine } from './slotMachine.js';
+import { renderRun } from './runGame.js';
+import { renderUserMenu } from './userMenu.js';
+import { LanguageBtn, loadLanguage } from './languageManager.js';
+import { renderScratchGame } from './scratchGame.js';
+import { createToastComponent, createButtonComponent, createPhotoComponent, createListCardComponent, renderDiv } from './globalComponent.js';
+import { showUserList, showGameList } from './listComponent.js';
 
-let appState = {
+// Initialisation de l'état de l'application et du current user
+export let appState = {
     currentView: 'login',
     user: null,
+    users: [],
+    renderedComponents: {},
+    language: 'fr'
 };
 
-function renderDiv(components, className) {
-    const div = document.createElement('div');
-    div.classList.add(className);
-    for (const component of components) {
-        div.appendChild(component);
-    }
-    document.body.appendChild(div);
-}
-
+// Fonction pour changer la vue actuelle de l'application
 export function changeView(newView) {
-    history.pushState({ view: newView }, "", newView);
-    appState.currentView = newView;
-    renderApp();
+    const savedState = localStorage.getItem('appState');
+    if (savedState) {
+        appState = JSON.parse(savedState);
+    }
+    if (appState.currentView !== newView) {
+        // Supprimez les composants de la vue précédente de appState.renderedComponents
+        for (let component in appState.renderedComponents) {
+            if (component.startsWith(appState.currentView)) {
+                delete appState.renderedComponents[component];
+            }
+        }
+        localStorage.setItem('renderedComponents', JSON.stringify(appState.renderedComponents));
+    }
+    location.hash = newView;
+    localStorage.setItem('appState', JSON.stringify(appState));
+
+    history.pushState({ view: newView }, '');
 }
 
-window.addEventListener("popstate", function(event) {
-    if (event.state) {
-        appState.currentView = event.state.view;
-        renderApp();
-    }
+// Écouteur d'événement pour changer la vue lorsque l'URL change (rajoute le # à l'URL lorsqu'on change de vue)
+window.addEventListener("hashchange", function() {
+    appState.currentView = location.hash.substring(1);
+    renderApp();
+
+    history.pushState({ view: appState.currentView }, '');
+});
+
+// Fonction pour que l'historique du navigateur fonctionne correctement avec les vues de l'application
+window.addEventListener("popstate", function() {
+    appState.currentView = location.hash.substring(1);
 });
 
 export function getCurrentView() {
     return appState.currentView;
 }
 
+/* window.addEventListener('beforeunload', function (e) {
+    // Vérifiez si l'utilisateur est connecté et si l'état précédent était la page de connexion
+    if (appState.user && history.state && history.state.view === 'login') {
+        // Annulez l'événement par défaut et affichez une boîte de dialogue de confirmation
+        console.error('User is logged in and going back to login page');
+        e.preventDefault();
+        var confirmationMessage = 'Si vous revenez à cette page, vous serez déconnecté. Êtes-vous sûr de vouloir continuer ?';
+        e.returnValue = confirmationMessage; // Gecko, Trident, Chrome 34+
+        return confirmationMessage; // Gecko, WebKit, Chrome <34
+    }
+}); */
+
+// Fonction principale pour rendre l'application en fonction de l'état actuel
 export async function renderApp() {
-    await loadUser();
-    appState.user = getUser();
+    if (!location.hash) {
+        location.hash = '#login';
+        await renderApp();
+        return;
+    }
+    const savedState = localStorage.getItem('appState');
+    if (savedState) {
+        appState = JSON.parse(savedState);
+        appState.renderedComponents = JSON.parse(localStorage.getItem('renderedComponents')) || {};
+        loadLanguage(appState.language);
+    } else {
+        const view = window.location.pathname.substring(1);
+        appState.currentView = ['login', 'hero', 'game', 'chat'].includes(view) ? view : 'login';
+        appState.language = 'fr';
+    }
+    appState.currentView = location.hash.substring(1) || 'login';
     document.body.innerHTML = '';
+    if (!appState.renderedComponents) {
+        appState.renderedComponents = {};
+    }
     switch(appState.currentView) {
         case 'login':
-            renderLogin();
+            if (!appState.renderedComponents.login) {
+                await LanguageBtn();
+                renderLogin();
+                appState.renderedComponents.login = true;
+            }
+            else {
+                await LanguageBtn();
+                renderLogin();
+            }
             break;
-        case 'hero':
-            renderRoulette();
-            await renderHero();
-            renderNavbar();
-            break;
-        case 'game':
-            const game = await renderGame();
-            const roulette = await renderRoulette();
-            const BlackJack = await renderBlackJack();
-            const test = await renderBlackJack();
-            const test2 = await renderRoulette();
-            const test3 = await renderRoulette();
-            await renderDiv([roulette, BlackJack, test, test2, test3], 'game-div');
-            renderNavbar();
-            break;
-        case 'chat':
-            const chat = await renderChat();
-            await renderDiv([chat], 'chat-div');
-            renderNavbar(); 
-            break;
+        default:
+            if (!appState.user) {
+                console.log('loading user');
+                await loadUser();
+                await loadGameList();
+            }
+            switch(appState.currentView) {
+                case 'hero':
+                    if (!document.querySelector('.navbar')) {
+                        await LanguageBtn();
+                        await renderHero();
+                        renderNavbar(appState.user);
+                        appState.renderedComponents.hero = true;
+                        appState.renderedComponents.navbar = true;
+                    }
+                    break;
+                case 'game':
+                    console.log(document.querySelector('.navbar-expand-lg'));
+                    console.log("appstate dans game: ", appState);
+                    loadLanguage(appState.language);
+                    if (!appState.renderedComponents.game) {
+                        await LanguageBtn();
+                        loadLanguage(appState.language);
+                        renderNavbar(appState.user);
+                        const game = await renderPong();
+                        const game2 = await renderRun();
+                        await renderDiv([game, game2], 'row');
+                        await LanguageBtn();
+                        // renderNavbar(appState.user);
+                        appState.renderedComponents.game = true;
+                        appState.renderedComponents.navbar = true;
+                    } else {
+                        renderNavbar(appState.user);
+                    }
+                    break;
+                case 'chat':
+                    const chat = await renderChat();
+                    await renderDiv([chat], 'chat-div');
+                    renderNavbar(appState.user);
+                    break;
+            }
+        break;
     }
 }
+renderApp();
 
-renderApp(); // Cela rendra la vue initiale basée sur l'état actuel
+/* window.addEventListener('beforeunload', function (e) {
+    // Vérifiez si l'utilisateur est connecté et n'est pas sur la page de connexion
+    if (appState.user && window.location.hash !== '#login') {
+        // Annulez l'événement par défaut et affichez une boîte de dialogue de confirmation
+        e.preventDefault();
+        var confirmationMessage = 'Si vous revenez à cette page, vous serez déconnecté. Êtes-vous sûr de vouloir continuer ?';
+        e.returnValue = confirmationMessage; // Gecko, Trident, Chrome 34+
+        return confirmationMessage; // Gecko, WebKit, Chrome <34
+    }
+});
+
+window.addEventListener('unload', function () {
+    // Déconnectez l'utilisateur
+    appState.user = null;
+    localStorage.removeItem('appState');
+}); */
