@@ -16,6 +16,7 @@ import { showUserList, showGameList } from './listComponent.js';
 export let appState = {
     currentView: 'login',
     user: null,
+    userId: null,
     users: [],
     renderedComponents: {},
     language: 'fr'
@@ -36,10 +37,25 @@ export function changeView(newView) {
         }
         localStorage.setItem('renderedComponents', JSON.stringify(appState.renderedComponents));
     }
+    // Si l'utilisateur revient à la page de connexion
+    if (newView === 'login' && appState.user) {
+        window.onpopstate = function (event) {
+            if (history.state && history.state.view === 'login') {
+                const confirmLogout = confirm('Si vous revenez à cette page, vous serez déconnecté. Êtes-vous sûr de vouloir continuer ?');
+                if (confirmLogout) {
+                    console.log('normalement logout')
+                } else {
+                    history.forward();
+                }
+            }
+        };
+        window.dispatchEvent(new PopStateEvent('popstate', { state: { view: newView } }));
+    } else {
+        window.onpopstate = null;
+    }
     location.hash = newView;
     localStorage.setItem('appState', JSON.stringify(appState));
 
-    history.pushState({ view: newView }, '');
 }
 
 // Écouteur d'événement pour changer la vue lorsque l'URL change (rajoute le # à l'URL lorsqu'on change de vue)
@@ -47,7 +63,7 @@ window.addEventListener("hashchange", function() {
     appState.currentView = location.hash.substring(1);
     renderApp();
 
-    history.pushState({ view: appState.currentView }, '');
+    //history.pushState({ view: appState.currentView }, '');
 });
 
 // Fonction pour que l'historique du navigateur fonctionne correctement avec les vues de l'application

@@ -7,6 +7,7 @@
 .menugrid {
     align-items: start;
     display: grid;
+    background-color: black;
     grid-template-areas: "stack";
     height: 100vh;
     overflow: hidden;
@@ -38,7 +39,7 @@
     flex-basis: auto;
     justify-content: flex-start;
     line-height: 26px;
-    height: 40px;
+    /* height: 40px; */
     margin-bottom: -1px;
     margin-top: -1px;
     overflow: hidden;
@@ -50,7 +51,7 @@
                  0.5px 1px 0 rgba(0, 0, 255, 0.5);
     text-transform: uppercase;
     transition: all 200ms;
-    width: 500px;
+    /* width: 500px; */
     z-index: 101;
   }
   
