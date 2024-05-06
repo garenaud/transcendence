@@ -107,13 +107,14 @@ export async function renderApp() {
             break;
         default:
             if (!appState.user) {
-                console.log('loading user');
+                console.log('loading user, appState = ', appState.user);
                 await loadUser();
                 await loadGameList();
             }
             switch(appState.currentView) {
                 case 'hero':
                     if (!document.querySelector('.navbar')) {
+                        console.log('appState = ', appState.user);
                         await LanguageBtn();
                         await renderHero();
                         renderNavbar(appState.user);

@@ -120,9 +120,9 @@ export function loadUser() {
             console.log('Données utilisateur chargées avec succès:', users);
             appState.users = users;
             //console.log('appState.users:', appState.users);
-            let userId = Number(localStorage.getItem('userId'));
-            console.log('userId:', userId);
-            appState.user = users.find(user => user.id === userId);
+            appState.userId = Number(localStorage.getItem('userId'));
+            console.log('userId:', appState.userId);
+            appState.user = users.find(user => user.id === appState.userId);
             if (!appState.user.profilePicture) {
                 appState.user.profilePicture = 'Design/User/Max-R_Headshot.jpg';
             }
