@@ -18,16 +18,14 @@ export let appState = {
     user: null,
     userId: null,
     users: [],
+    urlHistory: [],
     renderedComponents: {},
     language: 'fr'
 };
 
 // Fonction pour changer la vue actuelle de l'application
 export function changeView(newView) {
-    const savedState = localStorage.getItem('appState');
-    if (savedState) {
-        appState = JSON.parse(savedState);
-    }
+    console.log("test appState.currentview =", appState.currentView, " new view =", newView, " appState =", appState);
     if (appState.currentView !== newView) {
         // Supprimez les composants de la vue précédente de appState.renderedComponents
         for (let component in appState.renderedComponents) {
@@ -54,13 +52,13 @@ export function changeView(newView) {
         window.onpopstate = null;
     }
     location.hash = newView;
-    localStorage.setItem('appState', JSON.stringify(appState));
-
+    appState.currentView = newView;
 }
 
 // Écouteur d'événement pour changer la vue lorsque l'URL change (rajoute le # à l'URL lorsqu'on change de vue)
 window.addEventListener("hashchange", function() {
     appState.currentView = location.hash.substring(1);
+    appState.urlHistory.push(appState.currentView);
     renderApp();
 
     //history.pushState({ view: appState.currentView }, '');
@@ -69,6 +67,16 @@ window.addEventListener("hashchange", function() {
 // Fonction pour que l'historique du navigateur fonctionne correctement avec les vues de l'application
 window.addEventListener("popstate", function() {
     appState.currentView = location.hash.substring(1);
+    appState.urlHistory.pop();
+});
+
+window.addEventListener('popstate', function(event) {
+    console.log('Bouton précédent pressé');
+    console.log('URL précédente:', appState.urlHistory[appState.urlHistory.length - 1]);
+    console.log('Historique:', history);
+    console.log('Longueur de l\'historique:', history.length);
+    console.log('État de l\'historique:', history.state);
+    console.log('Restauration du défilement:', history.scrollRestoration);
 });
 
 export function getCurrentView() {
@@ -91,12 +99,13 @@ export function getCurrentView() {
 export async function renderApp() {
     if (!location.hash) {
         location.hash = '#login';
+        appState.urlHistory.push('login');
         await renderApp();
         return;
     }
-    const savedState = localStorage.getItem('appState');
-    if (savedState) {
-        appState = JSON.parse(savedState);
+    // const savedState = localStorage.getItem('appState');
+    if (appState) {
+        //appState = JSON.parse(savedState);
         appState.renderedComponents = JSON.parse(localStorage.getItem('renderedComponents')) || {};
         loadLanguage(appState.language);
     } else {
