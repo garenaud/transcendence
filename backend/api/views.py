@@ -114,7 +114,6 @@ def create_game(request):
 		return Response({"message" : "ok", 'id' : newid}, status=status.HTTP_200_OK)
 	else:
 		return Response("Unauthorized method", status=status.HTTP_401_UNAUTHORIZED)
-	
 
 @api_view(['GET'])
 def search_game(request):

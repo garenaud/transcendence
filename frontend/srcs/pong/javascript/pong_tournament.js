@@ -12,6 +12,7 @@ let finalid = -1;
 let tournament_data;
 let active = false;
 let tournament_id = sessionStorage.getItem('tournament_id');
+sessionStorage.setItem("tournament_id", null);
 let gameid;
 let game_data;
 let renderer;
@@ -85,6 +86,11 @@ tournamentSocket = new WebSocket(
 	+ '/'
 );
 
+tournamentSocket.onerror = function(e) {
+	window.location.href = "https://localhost/pong/tournament_menu.html";
+}
+
+
 const KeyState = {
 	KeyW: false,
 	KeyS: false,
@@ -103,10 +109,6 @@ function makeid(length) {
 		counter += 1;
     }
     return result;
-}
-
-if (tournament_id === "null" || tournament_id === undefined) {
-	window.location.href = "https://localhost/";
 }
 
 const loadingElement = document.getElementById('loading_txt');
@@ -520,6 +522,10 @@ function onMessageHandler(e) {
 
 tournamentSocket.onmessage = function(e) {
 	tournament_data = JSON.parse(e.data);
+	if (tournament_data.message == 'tounamentIdNotFound')
+	{
+		window.location.href = "https://localhost/pong/tournament_menu.html";
+	}
 	if (tournament_data.action == 'connect')
 	{
 		console.log(tournament_data.action);

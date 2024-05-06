@@ -69,6 +69,11 @@ gameSocket = new WebSocket(
 	+ '/'
 );
 
+gameSocket.onerror = function(e) {
+	console.log("salut");
+	window.location.href = "https://localhost/pong/pong_menu.html";
+}
+
 const loadingElement = document.getElementById('loading_txt');
 loadingElement.innerHTML = "[WAITING FOR OPPONENT]<br>Game ID : " + gameid;
 

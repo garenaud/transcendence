@@ -268,48 +268,51 @@ class AsyncTournamentConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.tournament_id = self.scope["url_route"]["kwargs"]["room_id"]
         self.room_group_name = f'tournament_{self.tournament_id}'
-        self.tournoi = await sync_to_async(Tournament.objects.get)(tournament_id=self.tournament_id)
         self.playerid = 0
         self.playernb = 0
         await self.channel_layer.group_add(
             self.room_group_name,
             self.channel_name
         )
-        
         await self.accept()
-        await self.send(text_data=json.dumps({'message' : self.tournament_id}))
-        if self.tournoi.p1_id == -1:
-            self.playernb = 1
-            self.tournoi.p1_id = 1
-            print('TOURNAMENT P1')
-        elif self.tournoi.p2_id == -1:
-            self.playernb = 2
-            self.tournoi.p2_id = 2
-            print('TOURNAMENT P2')
-        elif self.tournoi.p3_id == -1:
-            self.playernb = 3
-            self.tournoi.p3_id = 3
-            print('TOURNAMENT P3')
-        elif self.tournoi.p4_id == -1:
-            self.playernb = 4  
-            self.tournoi.p4_id = 4
-            print('TOURNAMENT P4')
+        try :
+            self.tournoi = await sync_to_async(Tournament.objects.get)(tournament_id=self.tournament_id)
+            await self.send(text_data=json.dumps({'message' : self.tournament_id}))
+            if self.tournoi.p1_id == -1:
+                self.playernb = 1
+                self.tournoi.p1_id = 1
+                print('TOURNAMENT P1')
+            elif self.tournoi.p2_id == -1:
+                self.playernb = 2
+                self.tournoi.p2_id = 2
+                print('TOURNAMENT P2')
+            elif self.tournoi.p3_id == -1:
+                self.playernb = 3
+                self.tournoi.p3_id = 3
+                print('TOURNAMENT P3')
+            elif self.tournoi.p4_id == -1:
+                self.playernb = 4  
+                self.tournoi.p4_id = 4
+                print('TOURNAMENT P4')
+                await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                'type' : 'update',
+                "message": {'action' : 'startTournament'}
+                }
+                )
+            await self.send(text_data=json.dumps({'action' : 'playernb','playernb' : self.playernb}))
+            await sync_to_async(self.saveGame)(self.tournoi)
             await self.channel_layer.group_send(
             self.room_group_name,
             {
-               'type' : 'update',
-               "message": {'action' : 'startTournament'}
+                'type' : 'update',
+                "message": {'action' : 'connect', 'connected' : self.playernb}
             }
             )
-        await self.send(text_data=json.dumps({'action' : 'playernb','playernb' : self.playernb}))
-        await sync_to_async(self.saveGame)(self.tournoi)
-        await self.channel_layer.group_send(
-        self.room_group_name,
-        {
-            'type' : 'update',
-            "message": {'action' : 'connect', 'connected' : self.playernb}
-        }
-        )
+        except :
+            await self.send(text_data=json.dumps({'message' : 'tounamentIdNotFound'}))
+            await self.close()
 
     async def disconnect(self, close_code):
         print(f'player {self.playernb} disconnected from tournament {close_code}')
