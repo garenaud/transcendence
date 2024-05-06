@@ -33,7 +33,7 @@ pub fn login(srv: String) -> Option<User> {
 	// 	Ok(str) => String::from(str),
 	// 	Err(_) => {
 	// 		eprintln!("ERREUR LORS DU HASHAGE DU MOT DE PASSE");
-	// 		return false;
+	// 		return None;
 	// 	}
 	// };
 	return connection(srv, login, password);
@@ -63,16 +63,12 @@ fn connection(srv: String, login: String, password: String) -> Option<User> {
 	let res_csrf = client.execute(crsf.expect("ERROR WHILE BUILDING THE REQUEST"));
 	let csrf = match res_csrf {
 		Ok(res) => {
-			if res.status().is_success() {
-				if res.headers().get("set-cookie").is_none() {
-					eprintln!("{}", format!("No CSRF-Token in the header").red());
-					return None;
-				}
-				let csrf = res.headers().get("set-cookie").unwrap();
-				csrf.to_str().unwrap().to_string()
-			} else {
+			if res.headers().get("set-cookie").is_none() {
+				eprintln!("{}", format!("No CSRF-Token in the header").red());
 				return None;
 			}
+			let csrf = res.headers().get("set-cookie").unwrap();
+			csrf.to_str().unwrap().to_string()
 		},
 		Err(err) => {
 			eprintln!("{}", format!("Error in respond: {:#?}", err).red());
@@ -83,7 +79,7 @@ fn connection(srv: String, login: String, password: String) -> Option<User> {
 	let csrf_token = csrf_token.as_str();
 
 	let req = client
-		.post(("https://{server}/auth/test/").replace("{server}", &srv))
+		.post(("https://{server}/auth/").replace("{server}", &srv))
 		.header("User-Agent", "cli_rust")
 		.header("Accept", "application/json")
 		.header("X-CSRFToken", csrf_token)
@@ -96,9 +92,11 @@ fn connection(srv: String, login: String, password: String) -> Option<User> {
 	let mut user = User::new();
 	match res {
 		Ok(res) => {
+			eprintln!("{}", format!("RESPONSE: {:#?}", res).red());
 			if !res.status().is_success() {
 				return None;
 			}
+			eprintln!("{}", format!("ERROR REQUEST FOR LOGIN NEAR HERE").green());
 			let res = res.text().ok();
 			let res = match res {
 				Some(res) => res,
@@ -107,6 +105,7 @@ fn connection(srv: String, login: String, password: String) -> Option<User> {
 					return None;
 				}
 			};
+			eprintln!("{}", format!("RESPONSE: {:#?}", res).green());
 			match json::parse(&res) {
 				Ok(res) => {
 					if res["message"] == -1 {
