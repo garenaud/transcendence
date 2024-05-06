@@ -49,9 +49,14 @@ gameSocket = new WebSocket(
 	+ gameid
 	+ '/'
 );
-//* TODO 
-// const loadingElement = document.getElementById('loading_txt');
-// loadingElement.innerHTML = "[WAITING FOR OPPONENT]<br>Game ID : " + gameid;
+
+gameSocket.onerror = function(e) {
+	console.log("salut");
+	window.location.href = "https://localhost/pong/pong_menu.html";
+}
+
+const loadingElement = document.getElementById('loading_txt');
+loadingElement.innerHTML = "[WAITING FOR OPPONENT]<br>Game ID : " + gameid;
 
 //console.log(privategame);
 
@@ -321,6 +326,8 @@ function anim() {
 
 gameSocket.onmessage = function(e) {
 	
+	game_data = JSON.parse(e.data);
+
 	if (game_data.action == "userid") {
 		gameSocket.send(JSON.stringify({
 			'message' : 'userid',
