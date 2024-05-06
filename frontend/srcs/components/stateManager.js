@@ -131,12 +131,9 @@ export async function renderApp() {
                         renderNavbar(appState.user);
                         const game = await renderPong();
                         const game2 = await renderRun();
-                        const roulette = await renderRoulette();
-                        const listHTML = await showGameList();
-                        const test = await createListCardComponent('pongPlayed', 'Historique', listHTML);
-                        const test3 = await renderRoulette();
-                        await renderDiv([roulette, test, test3, game, game2], 'row');
-                        loadLanguage(appState.language);
+                        await renderDiv([game, game2], 'row');
+                        await LanguageBtn();
+                        // renderNavbar(appState.user);
                         appState.renderedComponents.game = true;
                         appState.renderedComponents.navbar = true;
                     } else {

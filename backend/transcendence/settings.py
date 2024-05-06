@@ -49,7 +49,6 @@ INSTALLED_APPS = [
 	'main',
 	'api',
 	'game',
-	'frontend'
 	
 ]
 

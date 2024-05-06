@@ -11,7 +11,7 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 
 let active = false;
 let gameid = sessionStorage.getItem('gameid');
-console.log(gameid);
+let userid = sessionStorage.getItem('userId');
 let privategame = sessionStorage.getItem('privategame');
 let game_data;
 let renderer;
@@ -137,7 +137,7 @@ function init() {
 			if (div_scoreboard) {
 				div_scoreboard.style.display = 'flex';
 			}
-			checkPortraitMode();
+			// checkPortraitMode();
 			// createScoreTexts();
 		})
 		.catch((error) => {
@@ -200,7 +200,7 @@ function handleLight() {
 }
 
 function onWindowResize() {
-	checkPortraitMode();
+	// checkPortraitMode();
 	camera.position.set(0, scaleCam(), scaleCam());
 	camera.aspect = window.innerWidth / window.innerHeight;
 	camera.updateProjectionMatrix();
@@ -320,8 +320,14 @@ function anim() {
 }
 
 gameSocket.onmessage = function(e) {
-	game_data = JSON.parse(e.data);
-	if (game_data.action == "allin") {
+	
+	if (game_data.action == "userid") {
+		gameSocket.send(JSON.stringify({
+			'message' : 'userid',
+			'userid' : userid
+		}));
+	} 
+	else if (game_data.action == "allin") {
 		loadingElement.innerHTML = "[LOADING GAME ...]";
 		init();
 	}

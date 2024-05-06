@@ -1,6 +1,9 @@
+import { loadTournamentPong } from "./pongComponent.js";
 const errorLink = document.getElementById('error');
 
-document.getElementById('createBtn').addEventListener('click', function (){
+export function Tournament()
+{
+	console.log(errorLink);
 	let url = '/api/tournament/create/';
 	fetch(url, {
 		method: 'GET',
@@ -10,15 +13,14 @@ document.getElementById('createBtn').addEventListener('click', function (){
 	.then(data => {
 		console.log('Success:', data);
 		sessionStorage.setItem("tournament_id", data['tournamentid']);
-		window.location.href = "/pong/pong_tournament.html";
+		loadTournamentPong();
 	})
 	.catch((error) => {
 		console.error('Error:', error);
 	});
-});
+}
 
-document.getElementById('joinBtn').addEventListener('click', function() {
-	const tournamentid = document.getElementById('gameCodeInput').value;
+export function joinTournament(tournamentid) {
 	let userid = 667;
 	let csrf = getCookie("csrftoken");
 	if (!isNaN(tournamentid) && tournamentid > 0 && tournamentid <= 9999)
@@ -37,7 +39,7 @@ document.getElementById('joinBtn').addEventListener('click', function() {
 			if(data['message'] == 'ok')
 			{
 				sessionStorage.setItem("tournament_id", tournamentid);
-				window.location.href = "/pong/pong_tournament.html";
+				loadTournamentPong();
 			}
 			else
 			{
@@ -51,10 +53,9 @@ document.getElementById('joinBtn').addEventListener('click', function() {
 		.catch((error) => {
 			console.error('Error:', error);
 		});
-
+		
 	}
-});
-
+}
 
 function getCookie(name) {
 	const value = `; ${document.cookie}`;

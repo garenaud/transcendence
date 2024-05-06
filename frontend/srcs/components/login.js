@@ -14,8 +14,8 @@ export function renderLogin() {
 		  		<p class="text-white-50 mb-3" data-lang-key='loginTxt'>Please enter your login and password!</p>
 
 		  		<div class="form-outline form-white mb-2">
-		  			<input type="text" id="typeEmailX" class="form-control form-control-lg" />
-		  			<label class="form-label" for="typeEmailX">Email</label>
+		  			<input type="text" id="typeUsername" class="form-control form-control-lg" />
+		  			<label class="form-label">Username</label>
 		  		</div>
 		  		<div class="form-outline form-white mb-2">
 		  			<input type="password" id="typePasswordX" class="form-control form-control-lg" />
@@ -93,17 +93,16 @@ export function renderLogin() {
 function    setupButtonListener() {
 	document.getElementById('loginBtn').addEventListener('click', function(event) {
 		event.preventDefault();
-		const email = document.getElementById('typeEmailX').value;
+		const username = document.getElementById('typeUsername').value;
 		const password = document.getElementById('typePasswordX').value;
 		let csrf = getCookie("csrftoken");
-		console.log('csrf:', csrf);
-		fetch('auth/test/', {
+		fetch('/auth/login/', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
 				'X-CSRFToken': csrf,
 			},
-			body: JSON.stringify({ email, password }),
+			body: JSON.stringify({ username, password }),
 			credentials: 'same-origin' 
 		})
 		.then(response => {
@@ -115,14 +114,13 @@ function    setupButtonListener() {
 		})
 		.then(data => {
 			console.log('Success:', data);
-			if (data['message'] == "-1") {
+			if (data['message'] == "OK") {
 				let userId = data['id'];
-				console.log('userId avant:', userId);
-				localStorage.setItem('userId', userId);
-				loadUser();
-				changeView('hero');
-			} else {
-				console.log('error registering');
+                localStorage.setItem('userId', userId);
+                loadUser();
+                changeView('hero');
+			} else if (data['message'] == "KO"){
+				console.log('bad credentials');
 			}
 		})
 		.catch((error) => {

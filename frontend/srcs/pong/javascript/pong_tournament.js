@@ -7,7 +7,9 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 
-
+const PaddleRightName = 'RightPaddle';
+const PaddleLeftName = 'LeftPaddle';
+const BallName = 'Ball';
 let finalid = -1;
 let tournament_data;
 let active = false;
@@ -40,12 +42,15 @@ let connected = 1;
 let playernb = 0;
 let playernumber = 0;
 
-const startBtn = document.getElementById('myModal2');
-const nextBtn = document.getElementById('myModal3');
+const startBtn = document.getElementById('startGameBtn');
+const nextBtn = document.getElementById('nextGameBtn');
+const myModal2 = document.getElementById('myModal2');
+const myModal3 = document.getElementById('myModal3');
 
-startBtn.style.display = 'none';
-nextBtn.style.display = 'none';
 
+// rajouter condition pour faire apparaitre le bon bouton, 
+// si on a gagner le match, le bouton pour acceder a la finale apparait
+// , sinon, retour au menu apparait
 function nextBtnFunction(){
 	gameSocket = new WebSocket(
 		'wss://'
@@ -59,7 +64,11 @@ function nextBtnFunction(){
 	gameSocket.onmessage = function(event) {
 		onMessageHandler(event);
 	};
-	nextBtn.style.display = 'none';
+	myModal3.style.display = 'none';
+	const scoreL = document.getElementById("scoreHome");
+	scoreL.textContent = 0;
+	const scoreR = document.getElementById("scoreGuest");
+	scoreR.textContent = 0;
 }
 
 function startBtnFunction(){
@@ -101,9 +110,6 @@ function makeid(length) {
 if (tournament_id === "null" || tournament_id === undefined) {
 	window.location.href = "https://localhost/";
 }
-
-const loadingElement = document.getElementById('loading_txt');
-loadingElement.innerHTML = "[WAITING FOR OPPONENT]<br>Tournament ID : " + tournament_id + '<br>' + 'Currently connected : ' + connected + '/4';
 
 //console.log(privategame);
 //console.log(`ID IS ${tournament_id}`);
@@ -153,7 +159,7 @@ function checkPortraitMode() {
 function init() {
 	// Renderer
 	renderer = new THREE.WebGLRenderer({
-		canvas: document.querySelector('#background'),
+		canvas: document.querySelector('#backgroundTournament'),
 		antialias: true,
 	});
 	renderer.setSize(window.innerWidth, window.innerHeight);
@@ -161,7 +167,7 @@ function init() {
 
 	// Scene
 	scene = new THREE.Scene();
-	//scene.background = new THREE.Color('purple');
+	scene.background = new THREE.Color('purple');
 
 	// Camera
 	camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight);
@@ -191,7 +197,7 @@ function init() {
 			if (div_scoreboard) {
 				div_scoreboard.style.display = 'flex';
 			}
-			checkPortraitMode();
+			// checkPortraitMode();
 			// createScoreTexts();
 		})
 		.catch((error) => {
@@ -200,6 +206,7 @@ function init() {
 		scene.castShadow = true;
 		scene.receiveShadow = true;
 		// Animation loop
+		console.log('help');
 		animate();
 }
 
@@ -254,7 +261,7 @@ function handleLight() {
 }
 
 function onWindowResize() {
-	checkPortraitMode();
+	// checkPortraitMode();
 	camera.position.set(0, scaleCam(), scaleCam());
 	camera.aspect = window.innerWidth / window.innerHeight;
 	camera.updateProjectionMatrix();
@@ -426,7 +433,7 @@ function anim() {
 function onMessageHandler(e) {	
 	game_data = JSON.parse(e.data);
 	if (game_data.action == "allin") {
-		loadingElement.innerHTML = "[LOADING GAME ...]";
+		// loadingElement.innerHTML = "[LOADING GAME ...]";
 		init();
 	}
 	else if (game_data.action == "playernumber")
@@ -438,29 +445,42 @@ function onMessageHandler(e) {
 		gameSocket.send(JSON.stringify({
 		'message' : 'private'
 		}));
-	} else if (game_data.action == 'Stop') {
+	} else if (game_data.action == 'Stop') 
+	{
 		const errorElement = document.getElementById('error');
 		errorElement.textContent = "Final score : " + game_data.scorep2 + " - " + game_data.scorep1;
+		const scoreElement = document.getElementById('score');
+		scoreElement.textContent = "Final score : " + game_data.scorep2 + " - " + game_data.scorep1;
 		// document.getElementById("myModal").style.display = "block";
-		nextBtn.style.display = "block";
+		// myModal3.style.display = "block";
 		// startBtn.style.display = "block";
 		sessionStorage.setItem("game_id", null);
-		if ((playernumber == 1 && game_data.scorep1 > game_data.scorep2) || (playernumber == 1 && game_data.scorep1 < game_data.scorep2))
-		{
-			tournamentSocket.send(JSON.stringify({
-			'message' : 'winner',
-			'finalid' : finalid
+		gameSocket.send(JSON.stringify({
+			'message' : 'getWinner'
 			}));
+	} 
+	else if (game_data.action == 'winner')
+	{
+		console.log('jai gagner');
+		if (finalid == -1)
+		{
+			myModal3.style.display = "block";
+			tournamentSocket.send(JSON.stringify({
+				'message' : 'winner',
+				'finalid' : finalid
+			}))
 		}
 		else
 		{
-			tournamentSocket.send(JSON.stringify({
-			'message' : 'looser'
-			}));
-			gameSocket.close();
-			gameSocket = null;
+			myModal2.style.display = "block";
 		}
-	} else if (game_data.action == "userleave") {
+	}
+	else if (game_data.action == 'looser')
+	{
+		console.log('jai perdu');
+		document.getElementById("myModal").style.display = "block";
+	}
+	else if (game_data.action == "userleave") {
 		const errorElement = document.getElementById('error');
 		errorElement.textContent = "A user left the game";
 		document.getElementById("myModal").style.display = "block";
@@ -481,9 +501,9 @@ function onMessageHandler(e) {
 		}
 	}
 	else {	
-		const ball = scene.getObjectByName('Ball');
-		const PaddleLeft = scene.getObjectByName("LeftPaddle");
-		const PaddleRight = scene.getObjectByName("RightPaddle");
+		const PaddleLeft = scene.getObjectByName(PaddleLeftName);
+		const ball = scene.getObjectByName(BallName);
+		const PaddleRight = scene.getObjectByName(PaddleRightName);
 		if (game_data.action == 'paddle1') {
 			PaddleRight.position.x = parseFloat(game_data.prx);
 			PaddleRight.position.z = parseFloat(game_data.prz);
@@ -504,11 +524,7 @@ tournamentSocket.onmessage = function(e) {
 	{
 		console.log(tournament_data.action);
 		connected = tournament_data['connected'];
-		loadingElement.innerHTML = "[WAITING FOR OPPONENT]<br>Tournament ID : " + tournament_id + '<br>' + 'Currently connected : ' + connected + '/4';
-	}
-	if (tournament_data.action == 'start_tournament')
-	{
-
+		// loadingElement.innerHTML = "[WAITING FOR OPPONENT]<br>Tournament ID : " + tournament_id + '<br>' + 'Currently connected : ' + connected + '/4';
 	}
 	else if (tournament_data.action == 'playernb')
 	{
@@ -547,6 +563,11 @@ tournamentSocket.onmessage = function(e) {
 		finalid = tournament_data['finalid'];
 		console.log(`game id for player ${playernb} is ${gameid}`);
 	}
+	else if (tournament_data.action == 'wonTournament')
+	{
+		const errorElement = document.getElementById('error');
+		errorElement.textContent = "VOUS AVEZ REMPORTEZ LE TOURNOI, FELICITATIONS";
+	}
 }
 
 function clearThreeJS() {
@@ -578,9 +599,7 @@ function clearThreeJS() {
 }
 
 function update_game_data() {
-	const PaddleRightName = 'RightPaddle';
-	const PaddleLeftName = 'LeftPaddle';
-	ball = scene.getObjectByName('Ball');
+	ball = scene.getObjectByName(BallName);
 	PaddleRight = scene.getObjectByName(PaddleRightName);
 	PaddleLeft = scene.getObjectByName(PaddleLeftName);
 	// console.log(PaddleRight);
@@ -589,30 +608,14 @@ function update_game_data() {
 	PaddleRight.position.z = parseFloat(game_data.paddleright_position_z);
 	PaddleLeft.position.x = parseFloat(game_data.paddleleft_position_x);
 	PaddleLeft.position.z = parseFloat(game_data.paddleleft_position_z);
-	//PaddleLeft.position.z = parseFloat(game_data.paddleleft_position_z);
 	ball.position.x = parseFloat(game_data.ball_position_x);
 	ball.position.z = parseFloat(game_data.ball_position_z);
 
 }
 
 function animate() {
-	//update_game_data();
 	requestAnimationFrame(animate);
-	//handlePaddleLeft();
-	//handlePaddleRight();
-	//handleAIPaddle();
-	//handleBackground(); COLOR BACKGROUND
-	// handleAIPaddleRight();
-	//updateBall();
-	// console.log(ball.position.x);
-	// console.log(ball.position.z);
-	// gameSocket.send(JSON.stringify(
-	// 	{
-	// 		"message" : "ball_update"
-	// 	})
-	// );
 	controls.update();
-	//composer.render(scene, camera);
 	renderer.render(scene, camera);
 }
 
