@@ -326,6 +326,8 @@ function anim() {
 
 gameSocket.onmessage = function(e) {
 	
+	game_data = JSON.parse(e.data);
+
 	if (game_data.action == "userid") {
 		gameSocket.send(JSON.stringify({
 			'message' : 'userid',

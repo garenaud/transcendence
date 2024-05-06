@@ -209,10 +209,10 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             if self.game.dbgame.full == True:
                 self.game.started = True 
         if message == 'userid':
-            if self.game.p1id == self.channel_name:
-                self.game.dbgame.p1_id = jsondata['userid']
-            elif self.game.p2id == self.channel_name:
-                self.game.dbgame.p1_id = jsondata['userid']
+            # if self.game.p1id == self.channel_name:
+                # self.game.dbgame.p1_id = jsondata['userid']
+            # elif self.game.p2id == self.channel_name:
+                # self.game.dbgame.p1_id = jsondata['userid']
             await sync_to_async(self.saveGame)(self.game.dbgame)
         if message == 'ball_update':
             await self.channel_layer.group_send(
