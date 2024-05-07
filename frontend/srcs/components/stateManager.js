@@ -18,65 +18,61 @@ export let appState = {
     user: null,
     userId: null,
     users: [],
-    urlHistory: [],
+    urlHistory: ['login'],
     renderedComponents: {},
     language: 'fr'
 };
 
 // Fonction pour changer la vue actuelle de l'application
 export function changeView(newView) {
-    console.log("test appState.currentview =", appState.currentView, " new view =", newView, " appState =", appState);
     if (appState.currentView !== newView) {
+        appState.currentView = newView;
+        if (appState.urlHistory[appState.urlHistory.length - 1] !== newView) { // Ajoutez cette condition
+            appState.urlHistory.push(newView);
+        }
         // Supprimez les composants de la vue précédente de appState.renderedComponents
         for (let component in appState.renderedComponents) {
             if (component.startsWith(appState.currentView)) {
                 delete appState.renderedComponents[component];
             }
         }
-        localStorage.setItem('renderedComponents', JSON.stringify(appState.renderedComponents));
-    }
-    // Si l'utilisateur revient à la page de connexion
-    if (newView === 'login' && appState.user) {
-        window.onpopstate = function (event) {
-            if (history.state && history.state.view === 'login') {
-                const confirmLogout = confirm('Si vous revenez à cette page, vous serez déconnecté. Êtes-vous sûr de vouloir continuer ?');
-                if (confirmLogout) {
-                    console.log('normalement logout')
-                } else {
-                    history.forward();
-                }
-            }
-        };
-        window.dispatchEvent(new PopStateEvent('popstate', { state: { view: newView } }));
-    } else {
-        window.onpopstate = null;
+        sessionStorage.setItem('renderedComponents', JSON.stringify(appState.renderedComponents));
     }
     location.hash = newView;
     appState.currentView = newView;
-    appState.urlHistory.push(newView);
+    if (appState.urlHistory[appState.urlHistory.length - 1] !== newView) { // Ajoutez cette condition
+        appState.urlHistory.push(newView);
+    }
 }
 
 // Écouteur d'événement pour changer la vue lorsque l'URL change (rajoute le # à l'URL lorsqu'on change de vue)
 window.addEventListener("hashchange", function() {
-    appState.currentView = location.hash.substring(1);
-    appState.urlHistory.push(appState.currentView);
+    const newView = location.hash.substring(1);
+    if (appState.currentView !== newView) {
+        appState.currentView = newView;
+    }
     renderApp();
-
-    //history.pushState({ view: appState.currentView }, '');
 });
 
-// Fonction pour que l'historique du navigateur fonctionne correctement avec les vues de l'application
+// Fonction pour que l'historique du navigateur fonctionne correctement avec les vues de l'application (popstate se declenche lorsque l'on presse sur precedent)
 window.addEventListener("popstate", function() {
-    appState.currentView = location.hash.substring(1);
-    appState.urlHistory.pop();
-});
-
-window.addEventListener('popstate', function(event) {
-    console.log('Bouton précédent pressé length = ', appState.urlHistory[appState.urlHistory.length]);
-    if (appState.urlHistory.length > 1) {
-        console.log('URL précédente:', appState.urlHistory[appState.urlHistory.length - 2]);
+    const newView = location.hash.substring(1);
+    if (newView === 'login' && appState.urlHistory.length === 2) {
+        const confirmLogout = window.confirm('Si vous revenez à cette page, vous serez déconnecté. Êtes-vous sûr de vouloir continuer ?');
+        if (confirmLogout) {
+            // Déconnectez l'utilisateur et mettez à jour l'état de l'application
+            // appState.user = null;
+            // appState.currentView = newView;
+            // appState.urlHistory.pop();
+            console.log('bye bye mon ami tu as choisi de nous quitter!!!!');
+        } else {
+            // Annulez l'action précédente
+            history.pushState(null, null, '#' + appState.urlHistory[appState.urlHistory.length - 1]);
+        }
     } else {
-        console.log('Pas d\'URL précédente');
+        appState.currentView = newView;
+        appState.urlHistory.pop();
+        console.log("!!!!!!!!!!!!!!!!!!!!! urlHistory = ", appState.urlHistory);
     }
 });
 
@@ -84,30 +80,18 @@ export function getCurrentView() {
     return appState.currentView;
 }
 
-/* window.addEventListener('beforeunload', function (e) {
-    // Vérifiez si l'utilisateur est connecté et si l'état précédent était la page de connexion
-    if (appState.user && history.state && history.state.view === 'login') {
-        // Annulez l'événement par défaut et affichez une boîte de dialogue de confirmation
-        console.error('User is logged in and going back to login page');
-        e.preventDefault();
-        var confirmationMessage = 'Si vous revenez à cette page, vous serez déconnecté. Êtes-vous sûr de vouloir continuer ?';
-        e.returnValue = confirmationMessage; // Gecko, Trident, Chrome 34+
-        return confirmationMessage; // Gecko, WebKit, Chrome <34
-    }
-}); */
-
 // Fonction principale pour rendre l'application en fonction de l'état actuel
 export async function renderApp() {
     if (!location.hash) {
         location.hash = '#login';
-        appState.urlHistory.push('login');
-        await renderApp();
-        return;
+        //appState.urlHistory.push('login');
+/*         await renderApp();
+        return; */
     }
-    // const savedState = localStorage.getItem('appState');
+    // const savedState = sessionStorage.getItem('appState');
     if (appState) {
         //appState = JSON.parse(savedState);
-        appState.renderedComponents = JSON.parse(localStorage.getItem('renderedComponents')) || {};
+        appState.renderedComponents = JSON.parse(sessionStorage.getItem('renderedComponents')) || {};
         loadLanguage(appState.language);
     } else {
         const view = window.location.pathname.substring(1);
@@ -192,5 +176,5 @@ renderApp();
 window.addEventListener('unload', function () {
     // Déconnectez l'utilisateur
     appState.user = null;
-    localStorage.removeItem('appState');
+    sessionStorage.removeItem('appState');
 }); */

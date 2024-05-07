@@ -174,8 +174,8 @@ function    setupButtonListener() {
   document.getElementById('logoutBtn').addEventListener('click', function() {
     // Supprimez les informations de l'utilisateur de appState
     appState.user = null;
-    // Supprimez les informations de l'utilisateur du localStorage
-    localStorage.removeItem('appState');
+    // Supprimez les informations de l'utilisateur du sessionStorage
+    sessionStorage.removeItem('appState');
     // Effectuez une requête à l'URL de déconnexion
     fetch('auth/logout/', {
         method: 'GET',
