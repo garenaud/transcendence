@@ -437,7 +437,14 @@ function anim() {
 
 function onMessageHandler(e) {	
 	game_data = JSON.parse(e.data);
-	if (game_data.action == "allin") {
+	if (game_data.action == "userid") {
+		gameSocket.send(JSON.stringify({
+			'message' : 'userid',
+			'userid' : appState.userId,
+			'playernb' : playernb
+		}));
+	} 
+	else if (game_data.action == "allin") {
 		// loadingElement.innerHTML = "[LOADING GAME ...]";
 		init();
 	}

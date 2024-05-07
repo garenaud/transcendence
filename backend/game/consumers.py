@@ -118,6 +118,8 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             if self.game.scorep1 == 5 or self.game.scorep2 == 5:
                 self.game.finished = True
                 self.game.dbgame.finished = True
+                self.game.dbgame.p1_score = self.game.scorep1
+                self.game.dbgame.p2_score = self.game.scorep2
                 await sync_to_async(self.saveGame)(self.game.dbgame)
                 await self.stop_game()
             paddle_size_x = 0.20000000298023224
