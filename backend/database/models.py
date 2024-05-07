@@ -57,4 +57,5 @@ class userProfile(models.Model):
 	tournament_lost = models.IntegerField(default=0)
 	friendlist = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
 	online = models.BooleanField(default=False)
+	tournament_alias = models.CharField(max_length=100, default='joueur')
 	#profile_picture = models.ImageField(upload_to='./downloads')

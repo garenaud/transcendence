@@ -56,8 +56,14 @@ def login(request):
 	else:
 		return JsonResponse({"message" : "KO"})
 
-def logout(request):
-	auth.logout(request)
+def logout(request, id):
+	user = User.objects.get(id=id)
+	if user.is_authenticated:
+		userprofile = userProfile.objects.get(user=user)
+		userprofile.online = False
+		userprofile.save()
+		auth.logout(request)
+		return JsonResponse({"message" : "OK"})
 
 def login_form(request):
 	form = LoginForm()

@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 class UserSerializer(serializers.ModelSerializer):
 	class Meta:
 		model =  User
-		fields = ['id', 'first_name', 'last_name', 'username', 'email', 'password']
+		fields = ['id', 'first_name', 'last_name', 'username', 'email', 'is_authenticated']
 
 class UsersSerializer(serializers.ModelSerializer):
 	class Meta:
@@ -25,4 +25,4 @@ class GamesSerializer(serializers.ModelSerializer):
 class UserProfileSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = userProfile
-		fields = ['user', 'game_won', 'game_lost', 'tournament_won', 'tournament_lost', 'friendlist', 'online']
+		fields = ['user', 'game_won', 'game_lost', 'tournament_alias','tournament_won', 'tournament_lost', 'friendlist', 'online']

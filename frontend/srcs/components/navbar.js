@@ -177,7 +177,7 @@ function    setupButtonListener() {
     // Supprimez les informations de l'utilisateur du localStorage
     localStorage.removeItem('appState');
     // Effectuez une requête à l'URL de déconnexion
-    fetch('auth/logout/', {
+    fetch('auth/logout/' + appState.userId, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
