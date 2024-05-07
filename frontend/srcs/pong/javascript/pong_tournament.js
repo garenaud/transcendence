@@ -6,6 +6,7 @@ import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { appState } from '../../components/stateManager.js';
 
 const PaddleRightName = 'RightPaddle';
 const PaddleLeftName = 'LeftPaddle';
@@ -13,6 +14,7 @@ const BallName = 'Ball';
 let finalid = -1;
 let tournament_data;
 let active = false;
+let userid = sessionStorage.getItem('userId');
 let tournament_id = sessionStorage.getItem('tournament_id');
 sessionStorage.setItem("tournament_id", null);
 let gameid;
@@ -440,8 +442,7 @@ function onMessageHandler(e) {
 	if (game_data.action == "userid") {
 		gameSocket.send(JSON.stringify({
 			'message' : 'userid',
-			'userid' : appState.userId,
-			'playernb' : playernb
+			'userid' : appState.userId
 		}));
 	} 
 	else if (game_data.action == "allin") {

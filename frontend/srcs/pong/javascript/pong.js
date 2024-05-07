@@ -333,8 +333,7 @@ gameSocket.onmessage = function(e) {
 	if (game_data.action == "userid") {
 		gameSocket.send(JSON.stringify({
 			'message' : 'userid',
-			'userid' : appState.userId,
-			'playernb' : playernb
+			'userid' : appState.userId
 		}));
 	} 
 	else if (game_data.action == "allin") {
