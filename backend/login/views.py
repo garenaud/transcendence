@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from database.models import Users, Games
+from database.models import Games, userProfile
 from django.shortcuts import render, redirect
 from rest_framework.response import Response
 from rest_framework import status
@@ -32,25 +32,29 @@ def register(request):
 		else:
 			user = User(username=request.POST['username'], first_name=request.POST['first_name'],  last_name=request.POST['last_name'], email=request.POST['email'], password=password)
 			user.save()
-			print(user.password)
+			userprofile = userProfile(user=user)
+			userprofile.save()
 			return JsonResponse({ "message" : "User " + request.POST['username'] + " has been added to database"}, status=201)
 	else:
 		return JsonResponse({ "message" : "Method not allowed"}, status=405)
 
 def login(request):
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        username = data['username']
-        password = data['password']
-        user = authenticate(username=username, password=password)
-        if user is not None:
-            auth.login(request, user)
-            user = User.objects.get(username=username)
-            return JsonResponse({"message" : "OK", "id" : user.id, "username" : user.username, "first_name" : user.first_name, "last_name" : user.last_name, "email" : user.email})
-        else:
-            return JsonResponse({"message" : 'KO'})
-    else:
-        return JsonResponse({"message" : "KO"})
+	if request.method == 'POST':
+		data = json.loads(request.body)
+		username = data['username']
+		password = data['password']
+		user = authenticate(username=username, password=password)
+		if user is not None:
+			auth.login(request, user)
+			user = User.objects.get(username=username)
+			userprofile = userProfile.objects.get(user=user)
+			userprofile.online = True
+			userprofile.save()
+			return JsonResponse({"message" : "OK", "id" : user.id, "username" : user.username, "first_name" : user.first_name, "last_name" : user.last_name, "email" : user.email})
+		else:
+			return JsonResponse({"message" : 'KO'})
+	else:
+		return JsonResponse({"message" : "KO"})
 
 def logout(request):
 	auth.logout(request)
