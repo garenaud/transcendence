@@ -116,7 +116,7 @@ function    setupButtonListener() {
 			console.log('Success:', data);
 			if (data['message'] == "OK") {
 				let userId = data['id'];
-                localStorage.setItem('userId', userId);
+                sessionStorage.setItem('userId', userId);
                 loadUser();
                 changeView('hero');
 			} else if (data['message'] == "KO"){
