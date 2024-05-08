@@ -227,7 +227,6 @@ function addEventListeners(element) {
 		joinPongBtn.addEventListener('click', function() {
 			const gameIdInput = document.getElementById('#gameCodeInput');
 			if (gameIdInput) {
-
 				joinGame(gameIdInput);
 				pongLocal.classList.add('d-none');
 				pongTournament.classList.add('d-none');
@@ -363,4 +362,5 @@ export function loadTournamentPong() {
     console.log('loadingTournament');
     scriptTournament.setAttribute('data-pong', 'dynamic');  // Marqueur pour identifier les scripts chargés dynamiquement
     document.body.appendChild(scriptTournament);
+	console.log(document.body.appendChild(scriptTournament));
 }

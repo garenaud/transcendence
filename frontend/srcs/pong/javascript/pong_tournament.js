@@ -587,6 +587,7 @@ tournamentSocket.onmessage = function(e) {
 	{
 		const errorElement = document.getElementById('error');
 		errorElement.textContent = "VOUS AVEZ REMPORTEZ LE TOURNOI, FELICITATIONS";
+		tournamentSocket.close();
 	}
 }
 
