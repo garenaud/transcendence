@@ -88,9 +88,7 @@ export async function renderApp() {
 /*         await renderApp();
         return; */
     }
-    // const savedState = sessionStorage.getItem('appState');
     if (appState) {
-        //appState = JSON.parse(savedState);
         appState.renderedComponents = JSON.parse(sessionStorage.getItem('renderedComponents')) || {};
         loadLanguage(appState.language);
     } else {
@@ -142,7 +140,10 @@ export async function renderApp() {
                         renderNavbar(appState.user);
                         const game = await renderPong();
                         const game2 = await renderRun();
-                        await renderDiv([game, game2], 'row');
+                        const gameListHTML = await showGameList();
+                        const gameListElement = document.createElement('div');
+                        gameListElement.innerHTML = gameListHTML;
+                        await renderDiv([game2, game], 'row');
                         await LanguageBtn();
                         // renderNavbar(appState.user);
                         appState.renderedComponents.game = true;
@@ -161,20 +162,3 @@ export async function renderApp() {
     }
 }
 renderApp();
-
-/* window.addEventListener('beforeunload', function (e) {
-    // Vérifiez si l'utilisateur est connecté et n'est pas sur la page de connexion
-    if (appState.user && window.location.hash !== '#login') {
-        // Annulez l'événement par défaut et affichez une boîte de dialogue de confirmation
-        e.preventDefault();
-        var confirmationMessage = 'Si vous revenez à cette page, vous serez déconnecté. Êtes-vous sûr de vouloir continuer ?';
-        e.returnValue = confirmationMessage; // Gecko, Trident, Chrome 34+
-        return confirmationMessage; // Gecko, WebKit, Chrome <34
-    }
-});
-
-window.addEventListener('unload', function () {
-    // Déconnectez l'utilisateur
-    appState.user = null;
-    sessionStorage.removeItem('appState');
-}); */
