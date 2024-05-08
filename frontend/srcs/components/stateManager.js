@@ -16,72 +16,80 @@ import { showUserList, showGameList } from './listComponent.js';
 export let appState = {
     currentView: 'login',
     user: null,
+    userId: null,
     users: [],
+    urlHistory: ['login'],
     renderedComponents: {},
     language: 'fr'
 };
 
 // Fonction pour changer la vue actuelle de l'application
 export function changeView(newView) {
-    const savedState = localStorage.getItem('appState');
-    if (savedState) {
-        appState = JSON.parse(savedState);
-    }
     if (appState.currentView !== newView) {
+        appState.currentView = newView;
+        if (appState.urlHistory[appState.urlHistory.length - 1] !== newView) { // Ajoutez cette condition
+            appState.urlHistory.push(newView);
+        }
         // Supprimez les composants de la vue précédente de appState.renderedComponents
         for (let component in appState.renderedComponents) {
             if (component.startsWith(appState.currentView)) {
                 delete appState.renderedComponents[component];
             }
         }
-        localStorage.setItem('renderedComponents', JSON.stringify(appState.renderedComponents));
+        sessionStorage.setItem('renderedComponents', JSON.stringify(appState.renderedComponents));
     }
     location.hash = newView;
-    localStorage.setItem('appState', JSON.stringify(appState));
-
-    history.pushState({ view: newView }, '');
+    appState.currentView = newView;
+    if (appState.urlHistory[appState.urlHistory.length - 1] !== newView) { // Ajoutez cette condition
+        appState.urlHistory.push(newView);
+    }
 }
 
 // Écouteur d'événement pour changer la vue lorsque l'URL change (rajoute le # à l'URL lorsqu'on change de vue)
 window.addEventListener("hashchange", function() {
-    appState.currentView = location.hash.substring(1);
+    const newView = location.hash.substring(1);
+    if (appState.currentView !== newView) {
+        appState.currentView = newView;
+    }
     renderApp();
-
-    history.pushState({ view: appState.currentView }, '');
 });
 
-// Fonction pour que l'historique du navigateur fonctionne correctement avec les vues de l'application
+// Fonction pour que l'historique du navigateur fonctionne correctement avec les vues de l'application (popstate se declenche lorsque l'on presse sur precedent)
 window.addEventListener("popstate", function() {
-    appState.currentView = location.hash.substring(1);
+    const newView = location.hash.substring(1);
+    if (newView === 'login' && appState.urlHistory.length === 2) {
+        const confirmLogout = window.confirm('Si vous revenez à cette page, vous serez déconnecté. Êtes-vous sûr de vouloir continuer ?');
+        if (confirmLogout) {
+            // Déconnectez l'utilisateur et mettez à jour l'état de l'application
+            // appState.user = null;
+            // appState.currentView = newView;
+            // appState.urlHistory.pop();
+            console.log('bye bye mon ami tu as choisi de nous quitter!!!!');
+        } else {
+            // Annulez l'action précédente
+            history.pushState(null, null, '#' + appState.urlHistory[appState.urlHistory.length - 1]);
+        }
+    } else {
+        appState.currentView = newView;
+        appState.urlHistory.pop();
+        console.log("!!!!!!!!!!!!!!!!!!!!! urlHistory = ", appState.urlHistory);
+    }
 });
 
 export function getCurrentView() {
     return appState.currentView;
 }
 
-/* window.addEventListener('beforeunload', function (e) {
-    // Vérifiez si l'utilisateur est connecté et si l'état précédent était la page de connexion
-    if (appState.user && history.state && history.state.view === 'login') {
-        // Annulez l'événement par défaut et affichez une boîte de dialogue de confirmation
-        console.error('User is logged in and going back to login page');
-        e.preventDefault();
-        var confirmationMessage = 'Si vous revenez à cette page, vous serez déconnecté. Êtes-vous sûr de vouloir continuer ?';
-        e.returnValue = confirmationMessage; // Gecko, Trident, Chrome 34+
-        return confirmationMessage; // Gecko, WebKit, Chrome <34
-    }
-}); */
-
 // Fonction principale pour rendre l'application en fonction de l'état actuel
 export async function renderApp() {
     if (!location.hash) {
         location.hash = '#login';
-        await renderApp();
-        return;
+        //appState.urlHistory.push('login');
+/*         await renderApp();
+        return; */
     }
-    const savedState = localStorage.getItem('appState');
-    if (savedState) {
-        appState = JSON.parse(savedState);
-        appState.renderedComponents = JSON.parse(localStorage.getItem('renderedComponents')) || {};
+    if (appState) {
+        appState.renderedComponents = JSON.parse(sessionStorage.getItem('renderedComponents')) || {};
         loadLanguage(appState.language);
     } else {
         const view = window.location.pathname.substring(1);
@@ -107,13 +115,14 @@ export async function renderApp() {
             break;
         default:
             if (!appState.user) {
-                console.log('loading user');
+                console.log('loading user, appState = ', appState.user);
                 await loadUser();
                 await loadGameList();
             }
             switch(appState.currentView) {
                 case 'hero':
                     if (!document.querySelector('.navbar')) {
+                        console.log('appState = ', appState.user);
                         await LanguageBtn();
                         await renderHero();
                         renderNavbar(appState.user);
@@ -131,7 +140,10 @@ export async function renderApp() {
                         renderNavbar(appState.user);
                         const game = await renderPong();
                         const game2 = await renderRun();
-                        await renderDiv([game, game2], 'row');
+                        const gameListHTML = await showGameList();
+                        const gameListElement = document.createElement('div');
+                        gameListElement.innerHTML = gameListHTML;
+                        await renderDiv([game2, game], 'row');
                         await LanguageBtn();
                         // renderNavbar(appState.user);
                         appState.renderedComponents.game = true;
@@ -150,20 +162,3 @@ export async function renderApp() {
     }
 }
 renderApp();
-
-/* window.addEventListener('beforeunload', function (e) {
-    // Vérifiez si l'utilisateur est connecté et n'est pas sur la page de connexion
-    if (appState.user && window.location.hash !== '#login') {
-        // Annulez l'événement par défaut et affichez une boîte de dialogue de confirmation
-        e.preventDefault();
-        var confirmationMessage = 'Si vous revenez à cette page, vous serez déconnecté. Êtes-vous sûr de vouloir continuer ?';
-        e.returnValue = confirmationMessage; // Gecko, Trident, Chrome 34+
-        return confirmationMessage; // Gecko, WebKit, Chrome <34
-    }
-});
-
-window.addEventListener('unload', function () {
-    // Déconnectez l'utilisateur
-    appState.user = null;
-    localStorage.removeItem('appState');
-}); */

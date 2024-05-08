@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
-from database.models import Users, Games, Tournament
-from database.serializers import UsersSerializer, CreateUserSerializer, UserSerializer, GamesSerializer
+from database.models import Users, Games, Tournament, userProfile
+from database.serializers import UsersSerializer, CreateUserSerializer, UserSerializer, GamesSerializer, UserProfileSerializer, TournamentSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -25,6 +25,14 @@ def get_user_list(request):
 	else:
 		return Response("Unauthorized method", status=status.HTTP_401_UNAUTHORIZED)
 
+@api_view(['GET'])
+def get_user_profile_list(request):
+	if (request.method == 'GET'):
+		profiles = userProfile.objects.all()
+		serializer = UserProfileSerializer(profiles, many=True)
+		return Response(serializer.data)
+	else:
+		return Response("Unauthorized method", status=status.HTTP_401_UNAUTHORIZED)
 
 #Either returns the user with the specified id or update the user specified by id in the database
 @api_view(['GET', 'PUT'])
@@ -116,7 +124,6 @@ def create_game(request):
 		return Response({"message" : "ok", 'id' : newid}, status=status.HTTP_200_OK)
 	else:
 		return Response("Unauthorized method", status=status.HTTP_401_UNAUTHORIZED)
-	
 
 @api_view(['GET'])
 def search_game(request):
@@ -127,7 +134,10 @@ def search_game(request):
 				id = games[0].room_id
 				return Response({"message" : "ok", 'id' : id})
 			except:
-				pass
+				newid = random.randint(1, 9999)
+				while Games.objects.filter(room_id=newid).count() != 0:
+					newid = random.randint(1, 9999)
+				return Response({"message" : "ok", 'id' : newid}, status=status.HTTP_200_OK)
 	else:
 		return Response("Unauthorized method", status=status.HTTP_401_UNAUTHORIZED)
 	
@@ -183,3 +193,12 @@ def create_random_tournament_id(start, end):
 	while Tournament.objects.filter(tournament_id=newid, finished=False).count() != 0:
 		newid = random.randint(start, end)
 	return newid
+
+@api_view(['GET'])
+def get_tournament_list(request):
+	if (request.method == 'GET'):
+		tournaments = Tournament.objects.all()
+		serializer = TournamentSerializer(tournaments, many=True)
+		return Response(serializer.data)
+	else:
+		return Response("Unauthorized method", status=status.HTTP_401_UNAUTHORIZED)

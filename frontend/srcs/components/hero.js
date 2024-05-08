@@ -2,7 +2,7 @@ import { changeView } from './stateManager.js';
 
 export function renderHero() {
     const heroHTML = `
-    <div class="container cont-hero">
+    <div class="cont-hero">
 		<div class="row">
 			<div class="col-hero">
 				<div class="hero col-md-6">

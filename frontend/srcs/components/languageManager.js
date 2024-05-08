@@ -25,8 +25,8 @@ export function LanguageBtn() {
             dropdownButton.innerHTML = event.currentTarget.innerHTML;
             appState.language = lang;
             console.log('Language changed:', lang);
-            localStorage.setItem('language', lang);
-            localStorage.setItem('appState', JSON.stringify(appState));
+            sessionStorage.setItem('language', lang);
+            sessionStorage.setItem('appState', JSON.stringify(appState));
             loadLanguage(lang);
             console.log("dans click:", appState);
             renderApp();

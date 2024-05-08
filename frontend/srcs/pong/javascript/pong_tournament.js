@@ -6,6 +6,7 @@ import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { appState } from '../../components/stateManager.js';
 
 const PaddleRightName = 'RightPaddle';
 const PaddleLeftName = 'LeftPaddle';
@@ -13,7 +14,9 @@ const BallName = 'Ball';
 let finalid = -1;
 let tournament_data;
 let active = false;
+let userid = sessionStorage.getItem('userId');
 let tournament_id = sessionStorage.getItem('tournament_id');
+sessionStorage.setItem("tournament_id", null);
 let gameid;
 let game_data;
 let renderer;
@@ -87,6 +90,11 @@ tournamentSocket = new WebSocket(
 	+ '/'
 );
 
+tournamentSocket.onerror = function(e) {
+	window.location.href = "https://localhost/pong/tournament_menu.html";
+}
+
+
 const KeyState = {
 	KeyW: false,
 	KeyS: false,
@@ -107,9 +115,8 @@ function makeid(length) {
     return result;
 }
 
-if (tournament_id === "null" || tournament_id === undefined) {
-	window.location.href = "https://localhost/";
-}
+const loadingElement = document.getElementById('loading_txt');
+loadingElement.innerHTML = "[WAITING FOR OPPONENT]<br>Tournament ID : " + tournament_id + '<br>' + 'Currently connected : ' + connected + '/4';
 
 //console.log(privategame);
 //console.log(`ID IS ${tournament_id}`);
@@ -432,7 +439,13 @@ function anim() {
 
 function onMessageHandler(e) {	
 	game_data = JSON.parse(e.data);
-	if (game_data.action == "allin") {
+	if (game_data.action == "userid") {
+		gameSocket.send(JSON.stringify({
+			'message' : 'userid',
+			'userid' : appState.userId
+		}));
+	} 
+	else if (game_data.action == "allin") {
 		// loadingElement.innerHTML = "[LOADING GAME ...]";
 		init();
 	}
@@ -520,6 +533,10 @@ function onMessageHandler(e) {
 
 tournamentSocket.onmessage = function(e) {
 	tournament_data = JSON.parse(e.data);
+	if (tournament_data.message == 'tounamentIdNotFound')
+	{
+		window.location.href = "https://localhost/pong/tournament_menu.html";
+	}
 	if (tournament_data.action == 'connect')
 	{
 		console.log(tournament_data.action);

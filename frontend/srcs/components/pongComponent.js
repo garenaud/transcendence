@@ -40,16 +40,16 @@ export function renderPong() {
 							<link rel="stylesheet" type="text/css" href="../pong/css/pong_menu.css">
 								<div class="menugrid">
 									<nav class="nav">
-								  		<a id="localPongBtn" class="nav-link">Local</a>
-								  		<a id="multiPongBtn" class="nav-link">Create Private</a>
+								  		<a id="localPongBtn" class="nav-link"  data-lang-key="localGame">Local</a>
+								  		<a id="multiPongBtn" class="nav-link" data-lang-key="createPriv">Create Private</a>
 										  <div class="nav-link">
-										  <a  id="joinPongBtn">Join Private</a>
+										  <a  id="joinPongBtn"  data-lang-key="joinPriv">Join Private</a>
 										  <input type="text" id="gameCodeInput" class="inputGame" placeholder="Game ID">
 										  </div>
-								  		<a id="searchBtn" class="nav-link">Online Matchmaking</a>
-										<a id="createTournament" class="nav-link">Create Tournament</a>
+								  		<a id="searchBtn" class="nav-link"  data-lang-key="onlineMatchmaking">Online Matchmaking</a>
+										<a id="createTournament" class="nav-link" data-lang-key="createTourn">Create Tournament</a>
 										<div class="nav-link">
-											<a id="joinTournamentBtn">Join Tournament</a>
+											<a id="joinTournamentBtn"  data-lang-key="joinTourn">Join Tournament</a>
 												<input type="text" id="gameCodeInputTournament" class="inputGame" placeholder="Tournament ID">
 											</div>
 								  		<a onclick="window.location.reload();" target="_blank" class="nav-link">Exit</a>
@@ -80,7 +80,7 @@ export function renderPong() {
 							</div>
 								<div class="container2">
 									<div class="load-3">
-										<p id="loading">[WAITING FOR OPPONENT]</p>
+										<p id="loading" data-lang-key="waitOpponent">[WAITING FOR OPPONENT]</p>
 									<div class="line"></div>
 									<div class="line"></div>
 									<div class="line"></div>
@@ -127,15 +127,15 @@ export function renderPong() {
 							</div>
 							<div id="myModal2" class="modal2">
 								<div id="startBtnDiv" class="startBtn">
-									<p>VOUS AVEZ REMPORTEZ LE TOURNOI, FELICITATIONS</p>
+									<p data-lang-key="wonTourn">VOUS AVEZ REMPORTEZ LE TOURNOI, FELICITATIONS</p>
 									<button id="winnerBtn" onclick="window.location.reload();">Revenir au menu</button>
 								</div>
 							</div>
 							<div id="myModal3" class="modal3">
 								<div id="nextBtnDiv" class="nextBtn">
-									<p>VICTOIRE</p>
+									<p  data-lang-key="win">VICTOIRE</p>
 									<p id="score"></p>
-									<button id="nextGameBtn">Prochaine partie</button>
+									<button id="nextGameBtn"  data-lang-key="nextGame">Prochaine partie</button>
 								</div>
 							</div>
 							</div>

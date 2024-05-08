@@ -64,43 +64,43 @@ function getUserFromServer(userId) {
 }
 
 async function loadUserFromServer() {
-    const userId = localStorage.getItem('userId');
+    const userId = sessionStorage.getItem('userId');
     if (userId) {
         const user = await getUserFromServer(userId);
-        localStorage.setItem('user', JSON.stringify(user));
+        sessionStorage.setItem('user', JSON.stringify(user));
     }
 }
 
 export function getCurrentUser() {
-    const storedUser = localStorage.getItem('user');
+    const storedUser = sessionStorage.getItem('user');
     return storedUser ? JSON.parse(storedUser) : null;
 }
 
 // Fonction pour définir l'utilisateur actuellement connecté
 export function setCurrentUser(user) {
-    localStorage.setItem('user', JSON.stringify(user));
+    sessionStorage.setItem('user', JSON.stringify(user));
 }
 
 function setUsername(username) {
     appState.user.username = username;
-    localStorage.setItem('user', JSON.stringify(appState.user));
+    sessionStorage.setItem('user', JSON.stringify(appState.user));
     updateUserOnServer(appState.user);
 }
 
 function setUserPoints(pts){
     appState.user.pts = pts;
-    localStorage.setItem('user', JSON.stringify(appState.user));
+    sessionStorage.setItem('user', JSON.stringify(appState.user));
 }
 
 function setUserProfilePicture(profilePicture){
     console.log('je commence le set picture');
     appState.user.profilePicture = profilePicture;
-    localStorage.setItem('user', JSON.stringify(appState.user));
+    sessionStorage.setItem('user', JSON.stringify(appState.user));
     console.log('appState.user apres setProfilePicture:', appState.user);
 }
 
 function getUser() {
-    const storedUser = localStorage.getItem('user');
+    const storedUser = sessionStorage.getItem('user');
     if (storedUser) {
         appState.user = JSON.parse(storedUser);
     }
@@ -120,9 +120,9 @@ export function loadUser() {
             console.log('Données utilisateur chargées avec succès:', users);
             appState.users = users;
             //console.log('appState.users:', appState.users);
-            let userId = Number(localStorage.getItem('userId'));
-            console.log('userId:', userId);
-            appState.user = users.find(user => user.id === userId);
+            appState.userId = Number(sessionStorage.getItem('userId'));
+            console.log('userId:', appState.userId);
+            appState.user = users.find(user => user.id === appState.userId);
             if (!appState.user.profilePicture) {
                 appState.user.profilePicture = 'Design/User/Max-R_Headshot.jpg';
             }
@@ -130,7 +130,7 @@ export function loadUser() {
                 console.log('ben pas de photo par defaut');
             }
             appState.user.pts = 100;
-            localStorage.setItem('user', JSON.stringify(appState.user));
+            sessionStorage.setItem('user', JSON.stringify(appState.user));
             //console.log('appState.user:', appState.user);
         })
         .catch(error => {
