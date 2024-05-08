@@ -55,9 +55,11 @@ window.addEventListener("hashchange", function() {
 });
 
 // Fonction pour que l'historique du navigateur fonctionne correctement avec les vues de l'application (popstate se declenche lorsque l'on presse sur precedent)
-window.addEventListener("popstate", function() {
+window.addEventListener("popstate", async function() {
     const newView = location.hash.substring(1);
     if (newView === 'login' && appState.urlHistory.length === 2) {
+        //const translations = await fetch('../json/' + appState.language + '.json').then(response => response.json());
+        //const confirmLogout = window.confirm(translations.confirmLogout)
         const confirmLogout = window.confirm('Si vous revenez à cette page, vous serez déconnecté. Êtes-vous sûr de vouloir continuer ?');
         if (confirmLogout) {
             // Déconnectez l'utilisateur et mettez à jour l'état de l'application
