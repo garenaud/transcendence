@@ -61,9 +61,9 @@ window.addEventListener("popstate", function() {
         const confirmLogout = window.confirm('Si vous revenez à cette page, vous serez déconnecté. Êtes-vous sûr de vouloir continuer ?');
         if (confirmLogout) {
             // Déconnectez l'utilisateur et mettez à jour l'état de l'application
-            // appState.user = null;
-            // appState.currentView = newView;
-            // appState.urlHistory.pop();
+            appState.user = null;
+            appState.currentView = newView;
+            appState.urlHistory.pop();
             console.log('bye bye mon ami tu as choisi de nous quitter!!!!');
         } else {
             // Annulez l'action précédente
@@ -141,9 +141,8 @@ export async function renderApp() {
                         const game = await renderPong();
                         const game2 = await renderRun();
                         const gameListHTML = await showGameList();
-                        const gameListElement = document.createElement('div');
-                        gameListElement.innerHTML = gameListHTML;
-                        await renderDiv([game2, game], 'row');
+                        const cardHistory = createListCardComponent('pongPlayed', 'Games', gameListHTML);
+                        await renderDiv([cardHistory, game], 'row');
                         await LanguageBtn();
                         // renderNavbar(appState.user);
                         appState.renderedComponents.game = true;
