@@ -288,21 +288,8 @@ class AsyncTournamentConsumer(AsyncWebsocketConsumer):
         try :
             self.tournoi = await sync_to_async(Tournament.objects.get)(tournament_id=self.tournament_id)
             await self.send(text_data=json.dumps({'message' : self.tournament_id}))
-            if self.tournoi.p1_id == -1:
-                self.playernb = 1
-                self.tournoi.p1_id = 1
-                print('TOURNAMENT P1')
-            elif self.tournoi.p2_id == -1:
-                self.playernb = 2
-                self.tournoi.p2_id = 2
-                print('TOURNAMENT P2')
-            elif self.tournoi.p3_id == -1:
-                self.playernb = 3
-                self.tournoi.p3_id = 3
-                print('TOURNAMENT P3')
-            elif self.tournoi.p4_id == -1:
-                self.playernb = 4  
-                self.tournoi.p4_id = 4
+            if self.tournoi.full == True:
+                self.playernb = 4
                 print('TOURNAMENT P4')
                 await self.channel_layer.group_send(
                 self.room_group_name,
@@ -311,7 +298,6 @@ class AsyncTournamentConsumer(AsyncWebsocketConsumer):
                 "message": {'action' : 'startTournament'}
                 }
                 )
-            await self.send(text_data=json.dumps({'action' : 'playernb','playernb' : self.playernb}))
             await sync_to_async(self.saveGame)(self.tournoi)
             await self.channel_layer.group_send(
             self.room_group_name,
@@ -332,10 +318,11 @@ class AsyncTournamentConsumer(AsyncWebsocketConsumer):
         message = jsondata['message']
         if message == 'getGameId':
             playernb = jsondata['playernb']
-            if playernb == 1 or playernb == 3:
+            if playernb == '1' or playernb == '3':
+                # print(f'playernb is {playernb}')
                 gameid = self.tournoi.game1_id
                 await self.send(text_data=json.dumps({'action' : 'gameid', 'gameid' : gameid}))
-            if playernb == 2 or playernb == 4:
+            elif playernb == '2' or playernb == '4':
                 gameid = self.tournoi.game2_id
                 await self.send(text_data=json.dumps({'action' : 'gameid', 'gameid' : gameid}))
         elif message == 'winner':

@@ -10,8 +10,8 @@ urlpatterns = [
 	path("game/<int:gameid>", views.get_game_by_id),
 	path("game/create/", views.create_game),
 	path("game/search/", views.search_game),
-	path("tournament/create/", views.create_tournament),
-	path("tournament/join/<int:tournamentid>", views.join_tournament),
+	path("tournament/create/<int:userid>", views.create_tournament),
+	path("tournament/join/<int:tournamentid>/<int:userid>", views.join_tournament),
 	path("userprofilelist", views.get_user_profile_list),
 	path("tournamentlist", views.get_tournament_list)
 ]
