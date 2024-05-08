@@ -41,7 +41,7 @@ let ballVelocity;
 let gameSocket;
 let tournamentSocket;
 let currentNum = 7;
-let connected = 1;
+let connected = 0;
 let playernb = sessionStorage.getItem('playernb');
 let playernumber = 0;
 
@@ -186,7 +186,6 @@ function init() {
 	composer = initPostprocessing();
 
 	// Load the GLTF model and handle the PaddleRight
-	// TODO waiting room;
 	LoadGLTFByPath(scene)
 		.then(() => {
 			const div_loading = document.querySelector('.loading');
@@ -533,14 +532,14 @@ function onMessageHandler(e) {
 
 tournamentSocket.onmessage = function(e) {
 	tournament_data = JSON.parse(e.data);
-	if (tournament_data.message == 'tounamentIdNotFound')
+	if (tournament_data.message == 'tournamentIdNotFound')
 	{
-		window.location.href = "https://localhost/pong/tournament_menu.html";
+		window.location.reload(); //= "https://localhost/pong/tournament_menu.html";
 	}
 	if (tournament_data.action == 'connect')
 	{
 		console.log(tournament_data.action);
-		connected = tournament_data['connected'];
+		connected += 1;
 		loadingElement.innerHTML = "[WAITING FOR OPPONENT]<br>Tournament ID : " + tournament_id + '<br>' + 'Currently connected : ' + connected + '/4';
 	}
 	else if (tournament_data.action == 'playernb')
@@ -551,6 +550,8 @@ tournamentSocket.onmessage = function(e) {
 	{
 		console.log('starting tournament');
 		console.log(typeof(playernb));
+		console.log('ici');
+		window.open('../../Design/SUPERBE_BRACKET_FINAL_3.png');
 		tournamentSocket.send(JSON.stringify({
 			'message' : 'getGameId',
 			'playernb' : playernb

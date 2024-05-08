@@ -112,7 +112,7 @@ export function renderPong() {
 							</div>
 							<div class="loading">
 								<div class="load-3">
-									<p id="loading_txt">[C DU CACA]</p>
+									<p id="loading_txt">[TOURNAMENT DOESN'T EXIST]</p>
 									<div class="line"></div>
 									<div class="line"></div>
 									<div class="line"></div>
@@ -211,6 +211,7 @@ function addEventListeners(element) {
 	localPongBtn.addEventListener('click', function() {
 		console.log(localPongBtn);
 		origPong.classList.add('d-none');
+		pongTournament.classList.add('d-none');
 		pongMulti.classList.add('d-none');
 		document.querySelectorAll('.card-game-inside > div').forEach(div => {
 			div.classList.add('d-none');
@@ -229,6 +230,7 @@ function addEventListeners(element) {
 
 				joinGame(gameIdInput);
 				pongLocal.classList.add('d-none');
+				pongTournament.classList.add('d-none');
 				origPong.classList.add('d-none');
 				document.querySelectorAll('.card-game-inside > div').forEach(div => {
 					div.classList.add('d-none');
@@ -247,6 +249,7 @@ function addEventListeners(element) {
 			Multiplayer();
 			pongLocal.classList.add('d-none');
 			origPong.classList.add('d-none');
+			pongTournament.classList.add('d-none');
 			document.querySelectorAll('.card-game-inside > div').forEach(div => {
 				div.classList.add('d-none');
 			});
@@ -261,6 +264,7 @@ function addEventListeners(element) {
 			onlineMatchmaking();
 			pongLocal.classList.add('d-none');
 			origPong.classList.add('d-none');
+			pongTournament.classList.add('d-none');
 			document.querySelectorAll('.card-game-inside > div').forEach(div => {
 				div.classList.add('d-none');
 			});
@@ -278,8 +282,9 @@ function addEventListeners(element) {
 			origPong.classList.remove('d-none');
         });
         pongModal.addEventListener('hidden.bs.modal', function () {
-			scriptStarted = false;
+			console.log('unload script');
 			unloadScript();
+			scriptStarted = false;
 			const pongLocal = element.querySelector('#pongLocal');
 			const pongMulti = element.querySelector('#pongMulti');
 			const pongTournament = element.querySelector('#pongTournament');
@@ -316,7 +321,6 @@ function unloadScript() {
 		script.setAttribute('data-disabled', 'true');
         script.removeAttribute('type');
         script.remove(); // Supprimer le script du DOM
-		console.log(script + 'end');
     });
 }
 
@@ -330,7 +334,7 @@ function loadLocalPong() {
     const scriptLocalPong = document.createElement('script');
     scriptLocalPong.type = 'module';
     scriptLocalPong.src = '../localpong/localpong.js?' + new Date().getTime(); // Ajoute un horodatage à l'URL
-    console.log('loading');
+    console.log('loadingLocal');
     scriptLocalPong.setAttribute('data-pong', 'dynamic');  // Marqueur pour identifier les scripts chargés dynamiquement
     document.body.appendChild(scriptLocalPong);
 }
