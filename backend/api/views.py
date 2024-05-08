@@ -151,27 +151,29 @@ def create_tournament(request):
 		game3id = create_random_game_id(1, 9999)
 		tournoi = Tournament(game1_id=game1id, game2_id=game2id, game3_id=game3id, tournament_id=tournamentid)
 		tournoi.save()
-		return Response({'tournamentid' : tournamentid, 'game1id' : game1id, 'game2id' : game2id, 'game3id' : game3id})
+		return Response({'tournamentid' : tournamentid, 'game1id' : game1id, 'game2id' : game2id, 'game3id' : game3id, 'playernb' : 1})
 	else:
 		return Response("Unauthorized method", status=status.HTTP_401_UNAUTHORIZED)
 	
 @api_view(['POST'])
-def join_tournament(request, tournamentid):
+def join_tournament(request, tournamentid, userid):
 	if request.method == 'POST':
-		data = json.load(request)
-		tournamentid = data['tournamentid']
-		playerid = data['userid']
+		print(request.POST)
+		playerid = userid
 		playernb = 0
 		try:
 			qs = Tournament.objects.filter(tournament_id=tournamentid, full=False, finished=False)
 			tournoi = qs[0]
 			if tournoi.p2_id == -1:
+				tournoi.p2_id = userid
 				playernb = 2
 			elif tournoi.p3_id == -1:
 				playernb = 3
+				tournoi.p3_id = userid
 			else:
 				tournoi.full = True
 				playernb = 4
+				tournoi.p4_id = userid
 			
 			tournoi.save()
 			return Response({'message' : 'ok', 'game1id' : tournoi.game1_id, 'game2id' : tournoi.game2_id, 'game3id' : tournoi.game3_id, 'playernb' : playernb})

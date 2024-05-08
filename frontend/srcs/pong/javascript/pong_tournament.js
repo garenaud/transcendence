@@ -42,7 +42,7 @@ let gameSocket;
 let tournamentSocket;
 let currentNum = 7;
 let connected = 1;
-let playernb = 0;
+let playernb = sessionStorage.getItem('playernb');
 let playernumber = 0;
 
 const startBtn = document.getElementById('startGameBtn');
@@ -541,7 +541,7 @@ tournamentSocket.onmessage = function(e) {
 	{
 		console.log(tournament_data.action);
 		connected = tournament_data['connected'];
-		// loadingElement.innerHTML = "[WAITING FOR OPPONENT]<br>Tournament ID : " + tournament_id + '<br>' + 'Currently connected : ' + connected + '/4';
+		loadingElement.innerHTML = "[WAITING FOR OPPONENT]<br>Tournament ID : " + tournament_id + '<br>' + 'Currently connected : ' + connected + '/4';
 	}
 	else if (tournament_data.action == 'playernb')
 	{
@@ -549,6 +549,8 @@ tournamentSocket.onmessage = function(e) {
 	}
 	else if (tournament_data.action == 'startTournament')
 	{
+		console.log('starting tournament');
+		console.log(typeof(playernb));
 		tournamentSocket.send(JSON.stringify({
 			'message' : 'getGameId',
 			'playernb' : playernb

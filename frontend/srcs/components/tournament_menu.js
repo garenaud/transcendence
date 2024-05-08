@@ -1,4 +1,5 @@
 import { loadTournamentPong } from "./pongComponent.js";
+import { appState } from "./stateManager.js";
 const errorLink = document.getElementById('error');
 
 export function Tournament()
@@ -13,6 +14,7 @@ export function Tournament()
 	.then(data => {
 		console.log('Success:', data);
 		sessionStorage.setItem("tournament_id", data['tournamentid']);
+		sessionStorage.setItem("playernb", data['playernb']);
 		loadTournamentPong();
 	})
 	.catch((error) => {
@@ -21,11 +23,11 @@ export function Tournament()
 }
 
 export function joinTournament(tournamentid) {
-	let userid = 667;
+	let userid = appState.userId;
 	let csrf = getCookie("csrftoken");
 	if (!isNaN(tournamentid) && tournamentid > 0 && tournamentid <= 9999)
 	{
-		fetch(`/api/tournament/join/${tournamentid}`, {
+		fetch(`/api/tournament/join/${tournamentid}/${userid}`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -39,6 +41,7 @@ export function joinTournament(tournamentid) {
 			if(data['message'] == 'ok')
 			{
 				sessionStorage.setItem("tournament_id", tournamentid);
+				sessionStorage.setItem("playernb", data['playernb']);
 				loadTournamentPong();
 			}
 			else
