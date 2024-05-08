@@ -12,6 +12,7 @@ urlpatterns = [
 	path("game/search/", views.search_game),
 	path("tournament/create/", views.create_tournament),
 	path("tournament/join/<int:tournamentid>", views.join_tournament),
-	path("userprofilelist", views.get_user_profile_list)
+	path("userprofilelist", views.get_user_profile_list),
+	path("tournamentlist", views.get_tournament_list)
 ]
 
