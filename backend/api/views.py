@@ -143,13 +143,13 @@ def search_game(request):
 	
 
 @api_view(['GET'])
-def create_tournament(request):
+def create_tournament(request, userid):
 	if request.method == 'GET':
 		tournamentid = create_random_tournament_id(1, 9999)
 		game1id = create_random_game_id(1, 9999)
 		game2id = create_random_game_id(1, 9999)
 		game3id = create_random_game_id(1, 9999)
-		tournoi = Tournament(game1_id=game1id, game2_id=game2id, game3_id=game3id, tournament_id=tournamentid)
+		tournoi = Tournament(p1_id=userid, game1_id=game1id, game2_id=game2id, game3_id=game3id, tournament_id=tournamentid)
 		tournoi.save()
 		return Response({'tournamentid' : tournamentid, 'game1id' : game1id, 'game2id' : game2id, 'game3id' : game3id, 'playernb' : 1})
 	else:

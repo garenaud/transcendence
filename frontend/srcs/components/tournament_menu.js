@@ -5,7 +5,7 @@ const errorLink = document.getElementById('error');
 export function Tournament()
 {
 	console.log(errorLink);
-	let url = '/api/tournament/create/';
+	let url = `/api/tournament/create/${appState.userId}`;
 	fetch(url, {
 		method: 'GET',
 		credentials: 'same-origin'
