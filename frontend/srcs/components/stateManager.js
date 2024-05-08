@@ -82,7 +82,7 @@ export function getCurrentView() {
 
 // Fonction principale pour rendre l'application en fonction de l'état actuel
 export async function renderApp() {
-    if (!location.hash) {
+    if (!location.hash || appState.user == null) {
         location.hash = '#login';
         //appState.urlHistory.push('login');
 /*         await renderApp();
