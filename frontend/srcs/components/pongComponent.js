@@ -44,7 +44,7 @@ export function renderPong() {
 								  		<a id="multiPongBtn" class="nav-link" data-lang-key="createPriv">Create Private</a>
 										  <div class="nav-link">
 										  <a  id="joinPongBtn"  data-lang-key="joinPriv">Join Private</a>
-										  <input type="text" id="gameCodeInput" class="inputGame" placeholder="Game ID">
+										  <input type="text" id="gameCodeInputPrivate" class="inputGame" placeholder="Game ID">
 										  </div>
 								  		<a id="searchBtn" class="nav-link"  data-lang-key="onlineMatchmaking">Online Matchmaking</a>
 										<a id="createTournament" class="nav-link" data-lang-key="createTourn">Create Tournament</a>
@@ -225,7 +225,8 @@ function addEventListeners(element) {
 		// * JoinBtn
 		multiPongBtn.addEventListener('click', toggleVisibility);
 		joinPongBtn.addEventListener('click', function() {
-			const gameIdInput = document.getElementById('#gameCodeInput');
+			const gameIdInput = element.querySelector('#gameCodeInputPrivate').value;
+			console.log(gameIdInput);
 			if (gameIdInput) {
 				joinGame(gameIdInput);
 				pongLocal.classList.add('d-none');
