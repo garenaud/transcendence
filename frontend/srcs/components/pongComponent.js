@@ -313,7 +313,7 @@ function changeDivContent(newContent) {
     div.innerHTML = newContent;
 }
 
-function unloadScript() {
+export function unloadScript() {
     // Désactiver les scripts chargés dynamiquement
     document.querySelectorAll('script[type="module"][data-pong="dynamic"]').forEach(script => {
 		console.log(script);

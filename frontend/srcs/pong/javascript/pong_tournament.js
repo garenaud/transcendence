@@ -7,6 +7,7 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { appState } from '../../components/stateManager.js';
+import { unloadScript } from '../../components/pongComponent.js';
 
 const PaddleRightName = 'RightPaddle';
 const PaddleLeftName = 'LeftPaddle';
@@ -489,13 +490,15 @@ function onMessageHandler(e) {
 	}
 	else if (game_data.action == 'looser')
 	{
-		console.log('jai perdu');
+		// console.log('jai perdu');
+		unloadScript();
 		document.getElementById("myModal").style.display = "block";
 	}
 	else if (game_data.action == "userleave") {
 		const errorElement = document.getElementById('error');
 		errorElement.textContent = "A user left the game";
 		document.getElementById("myModal").style.display = "block";
+		unloadScript();
 	} else if (game_data.action == 'score') {
 		if (game_data.scorep1 != undefined && game_data.scorep2 != undefined) {
 			const scoreL = document.getElementById("scoreHome");
