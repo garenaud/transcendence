@@ -537,7 +537,7 @@ tournamentSocket.onmessage = function(e) {
 	tournament_data = JSON.parse(e.data);
 	if (tournament_data.message == 'tournamentIdNotFound')
 	{
-		window.location.reload(); //= "https://localhost/pong/tournament_menu.html";
+		window.location.reload();
 	}
 	if (tournament_data.action == 'connect')
 	{
@@ -580,7 +580,6 @@ tournamentSocket.onmessage = function(e) {
 	else if (tournament_data.action == 'finalid')
 	{
 		console.log('je suis en finale');
-		//clearThreeJS();
 		gameSocket.close();
 		gameSocket = null;
 		finalid = tournament_data['finalid'];
@@ -590,6 +589,7 @@ tournamentSocket.onmessage = function(e) {
 	{
 		const errorElement = document.getElementById('error');
 		errorElement.textContent = "VOUS AVEZ REMPORTEZ LE TOURNOI, FELICITATIONS";
+		unloadScript();
 		tournamentSocket.close();
 	}
 }
