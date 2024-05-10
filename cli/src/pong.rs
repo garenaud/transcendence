@@ -37,8 +37,12 @@ struct Score {
  * 
  * Args:
  * 		user: User - The user
+ * 
+ * Returns:
+ * 		Option<bool> - The result of the game (true if the user won, false otherwise)
+ * 		None - If an error occured
  */
-pub fn matchmaking(user: User) {
+pub fn matchmaking(user: User) -> Option<bool> {
 	
 	// Ask the server for the waiting room
 	let req = user.get_client().get("https://{server}/api/game/search/".replace("{server}", user.get_server().as_str()));
@@ -53,29 +57,16 @@ pub fn matchmaking(user: User) {
 				room_id.to_string()
 			} else {
 				eprintln!("{}", format!("Error while searching for a game").red().bold());
-				return ;
+				return None;
 			}
 		},
 		Err(err) => {
 			eprintln!("{}", format!("{}", err).red());
-			return ;
+			return None;
 		}
 	};
 
-	// Join the room provide by the server
-	let mut socket = match connect_ws(user.clone(), room_id.to_string()) {
-		Ok(socket) => {
-			socket
-		},
-		Err(err) => {
-			eprintln!("{}", format!("{:#?}", err).red());
-			return ;
-		}
-	};
-
-	_ = socket.send(Message::Text(r#"{"message":"public"}"#.to_string()));
-	println!("Waiting for the game to start...");
-	game(socket);
+	return connect_game(user.clone(), room_id, false);
 }
 
 /**
@@ -83,8 +74,12 @@ pub fn matchmaking(user: User) {
  * 
  * Args:
  * 		user: User - The user
+ * 
+ * Returns:
+ * 		Option<bool> - The result of the game (true if the user won, false otherwise)
+ * 		None - If an error occured
  */
-pub fn create_game(user: User) {
+pub fn create_game(user: User) -> Option<bool> {
 
 	// Ask the server for a room
 	let req = user.get_client().get("https://{server}/api/game/create/".replace("{server}", user.get_server().as_str()));
@@ -99,29 +94,17 @@ pub fn create_game(user: User) {
 				room_id.to_string()
 			} else {
 				eprintln!("{}", format!("Error while creating a game").red().bold());
-				return ;
+				return None;
 			}
 		},
 		Err(err) => {
 			eprintln!("{}", format!("{}", err).red());
-			return ;
+			return None;
 		}
 	};
 	println!("Your room ID is: {}", room_id);
 
-	// Connect to the room
-	let mut socket = match connect_ws(user.clone(), room_id.to_string()) {
-		Ok(socket) => {
-			socket
-		},
-		Err(err) => {
-			eprintln!("{}", format!("{:#?}", err).red());
-			return ;
-		}
-	};
-	_ = socket.send(Message::Text(r#"{"message":"private"}"#.to_string()));
-	println!("Waiting for  the other player...");
-	game(socket);
+	return connect_game(user.clone(), room_id, true);
 }
 
 /**
@@ -129,8 +112,12 @@ pub fn create_game(user: User) {
  * 
  * Args:
  * 		user: User - The user
+ * 
+ * Returns:
+ * 		Option<bool> - The result of the game (true if the user won, false otherwise)
+ * 		None - If an error occured
  */
-pub fn join_game(user: User) {
+pub fn join_game(user: User) -> Option<bool> {
 	
 	// Ask for the room ID
 	let mut room: String = String::new();
@@ -164,24 +151,43 @@ pub fn join_game(user: User) {
 			},
 			Err(err) => {
 				eprintln!("{}", format!("{}", err).red());
-				return ;
+				return None;
 			}
 		}
 		break;
 	}
 
-	// Connect to the room
+	return connect_game(user.clone(), room, true);
+}
+
+/**
+ * Connect to the websocket, wait the other player et then start the game
+ * 
+ * Args:
+ * 		user: User - The user
+ * 		room: String - The room ID
+ * 		private: bool - If the game is private or not
+ * 
+ * Returns:
+ * 		Option<bool> - The result of the game (true if the user won, false otherwise)
+ * 		None - If an error occured
+ */
+pub fn connect_game(user: User, room: String, private: bool) -> Option<bool> {
 	let mut socket = match connect_ws(user.clone(), room) {
 		Ok(socket) => socket,
 		Err(err) => {
 			eprintln!("{}", format!("{:#?}", err).red());
-			return ;
+			return None;
 		}
 	};
 
-	_ = socket.send(Message::Text(r#"{"message":"private"}"#.to_string()));
+	if private {
+		_ = socket.send(Message::Text(r#"{"message":"private"}"#.to_string()));
+	} else {
+		_ = socket.send(Message::Text(r#"{"message":"public"}"#.to_string()));
+	}
 	println!("Waiting for the game to start...");
-	game(socket);
+	return game(socket);
 }
 
 /**
@@ -190,6 +196,10 @@ pub fn join_game(user: User) {
  * Args:
  * 		user: User - The user
  * 		room: String - The room id
+ * 
+ * Returns:
+ * 		Ok(tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<std::net::TcpStream>>) - The websocket connected to the game
+ * 		Err(Box<dyn std::error::Error>) - If an error occured
  */
 fn connect_ws(user: User, room: String) -> Result<tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<std::net::TcpStream>>, Box<dyn std::error::Error>> {
 	
@@ -227,7 +237,15 @@ fn connect_ws(user: User, room: String) -> Result<tungstenite::WebSocket<tungste
  * Wait for the game to start, print the countdown and then called the game function
  * 
  * Args:
- * 		socket: WebSocket - The websocket connected to the game
+ * 		socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<std::net::TcpStream>> - The websocket connected to the game
+ * 		term: &Console - The console struct
+ * 		paddle_l: &Paddle - The left paddle
+ * 		paddle_r: &Paddle - The right paddle
+ * 		score: &Score - The score
+ * 
+ * Returns:
+ * 		Option<String> - The player number (p1 or p2)
+ * 		None - If an error occured
  */
 fn waiting_game(socket: &mut tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<std::net::TcpStream>>, term: &Console, paddle_l: &Paddle, paddle_r: &Paddle, score: &Score) -> Option<String> {
 	_ = socket.send(Message::Text(r#"{"message":"load"}"#.to_string()));
@@ -296,9 +314,13 @@ fn print_counter(term: &Console, i: i32, paddle_l: &Paddle, paddle_r: &Paddle, s
  * Exiting when the game is over
  * 
  * Args:
- * 		socket: WebSocket - The websocket connected to the game
+ * 		socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<std::net::TcpStream>> - The websocket connected to the game
+ * 
+ * Returns:
+ * 		Option<bool> - The result of the game (true if the user won, false otherwise)
+ * 		None - If an error occured
  */
-fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<std::net::TcpStream>>) {
+fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<std::net::TcpStream>>) -> Option<bool> {
 	let mut term: Console;
 
 	if let Some((w, h)) = term_size::dimensions() {
@@ -308,7 +330,7 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
 		};
 	} else {
 		println!("Error\n");
-		return ;
+		return None;
 	}
 
 	let paddle_offset: f64 = term.width / 12.0;
@@ -334,7 +356,7 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
 		Some(player) => player,
 		None => {
 			endwin();
-			return ;
+			return None;
 		}
 	};
 
@@ -383,18 +405,17 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
 							_ = clearscreen::clear();
 							if score.score1 > score.score2 {
 								if player == "p1" {
-									println!("{}", format!("You won!").green());
+									return Some(true);
 								} else {
-									println!("{}", format!("You lost!").red());
+									return Some(false);
 								}
 							} else {
 								if player == "p2" {
-									println!("{}", format!("You won!").green());
+									return Some(true);
 								} else {
-									println!("{}", format!("You lost!").red());
+									return Some(false);
 								}
 							}
-							break ;
 						},
 						"start" => continue,
 						_ => {
@@ -451,6 +472,7 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
 		}
 		sleep(Duration::from_millis(5));
 	}
+	None
 }
 
 /**
