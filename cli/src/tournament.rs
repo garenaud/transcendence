@@ -34,7 +34,7 @@ pub fn create_tournament(user: User) {
 		}
 	};
 
-	println!("{}", format!("Tournament created with ID: {id}", id=tournament_id).green());
+	println!("{}", format!("Tournament created with ID: {}", format!("{}", tournament_id).bold()).green());
 
 	let mut socket = match connect_ws_tournament(user.clone(), tournament_id) {
 		Ok(socket) => socket,
@@ -44,7 +44,7 @@ pub fn create_tournament(user: User) {
 		}
 	};
 
-	println!("{}", format!("Waiting for players to join the tournament").green());
+	println!("{}", format!("Waiting for players to join the tournament"));
 
 	handle_tournament(user.clone(), &mut socket);
 }
@@ -145,9 +145,6 @@ fn connect_ws_tournament(user: User, tournament_id: String) -> Result<tungstenit
 			Ok((ws, _)) => return Ok(ws),
 			Err(err) => {
 				eprintln!("{}", format!("{}", err).red().bold());
-				
-				eprintln!("Error while connecting to the websocket");
-
 				return Err(Box::new(err));
 			}
 	};
@@ -172,53 +169,54 @@ fn handle_tournament(user: User, socket: &mut tungstenite::WebSocket<tungstenite
 						let msg = msg.as_str();
 						let json = json::parse(msg).unwrap();
 
-						println!("{}", format!("{:#?}", json).green());
+						match json["action"].as_str() {
+							Some(action) => match action {
+								"startTournament" => {
+									// Ask for the gameId
+									if player_nb == -1 {
+										eprintln!("{}", format!("Error: player_nb not set").red());
+										return;
+									}
+									_ = socket.send(Message::Text(r#"{"message":"getGameId", "playernb":"{pid}"}"#.to_string()
+										.replace("{pid}", player_nb.to_string().as_str())));
 
-						match json["action"].as_str().unwrap() {
-							"startTournament" => {
-								// Ask for the gameId
-								if player_nb == -1 {
-									eprintln!("{}", format!("Error: player_nb not set").red());
-									return;
-								}
-								_ = socket.send(Message::Text(r#"{"message":"getGameId", "playernb":"{pid}"}"#.to_string()
-									.replace("{pid}", player_nb.to_string().as_str())));
-
-								// Get the gameId and start the game
-								loop {
-									match socket.read() {
-										Ok(msg) => {
-											match msg {
-												Message::Text(msg) => {
-													let msg = msg.as_str();
-													let json = json::parse(msg).unwrap();
-													match json["action"].as_str().unwrap() {
-														"gameid" => {
-															game_id = json["game_id"].as_i32().unwrap();
-															break 'selection;
-														},
-														_ => {}
-													}
-												},
-												_ => {}
+									// Get the gameId and start the game
+									loop {
+										match socket.read() {
+											Ok(msg) => {
+												match msg {
+													Message::Text(msg) => {
+														let msg = msg.as_str();
+														let json = json::parse(msg).unwrap();
+														match json["action"].as_str().unwrap() {
+															"gameid" => {
+																game_id = json["game_id"].as_i32().unwrap();
+																break 'selection;
+															},
+															_ => {}
+														}
+													},
+													_ => {}
+												}
+											},
+											Err(err) => {
+												eprintln!("{}", format!("{:#?}", err).red());
+												return;
 											}
-										},
-										Err(err) => {
-											eprintln!("{}", format!("{:#?}", err).red());
-											return;
 										}
 									}
-								}
+								},
+								"playernb" => {
+									player_nb = json["playernb"].as_i32().unwrap();
+									continue;
+								},
+								"gameid" => {
+									game_id = json["game_id"].as_i32().unwrap();
+									continue;
+								},
+								_ => {}
 							},
-							"playernb" => {
-								player_nb = json["player_nb"].as_i32().unwrap();
-								continue;
-							},
-							"gameid" => {
-								game_id = json["game_id"].as_i32().unwrap();
-								continue;
-							},
-							_ => {}
+							None => {}
 						}
 					},
 					_ => {}
