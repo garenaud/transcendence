@@ -11,7 +11,7 @@ use crate::pong;
 use crate::user::User;
 
 pub fn create_tournament(user: User) {
-	let req = user.get_client().get("https://{server}/api/tournament/create/"
+	let req = user.get_client().get("https://{server}/api/tournament/create/{user_id}".replace("{user_id}", &user.get_id().as_str())
 		.replace("{server}", user.get_server().as_str()));
 	let req = req.build();
 	let res = user.get_client().execute(req.expect("ERROR WHILE BUILDING THE REQUEST"));
@@ -75,9 +75,13 @@ pub fn join_tournament(user: User) {
 			continue;
 		}
 
-		let req = user.get_client().get("https://{server}/api/tournament/join/{id}"
-			.replace("{server}", user.get_server().as_str())
-			.replace("{id}", &tournament_id));
+		let req = user.get_client()
+			.post("https://{server}/api/tournament/join/{tournament_id}/{user_id}".replace("{server}", user.get_server().as_str()).replace("{tournament_id}", &tournament_id).replace("{user_id}", user.get_id().as_str()))
+			.header("User-Agent", "cli_rust")
+			.header("Accept", "application/json")
+			.header("X-CSRFToken", user.get_csrf())
+			// .body((r#"{"tournamentid":"{email}","password":"{password}"}"#).replace("{email}", &login).replace("{password}", &password))
+			.timeout(Duration::from_secs(3));
 		let res = req.build();
 		let res = user.get_client().execute(res.expect("ERROR WHILE BUILDING THE REQUEST"));
 		match res {
