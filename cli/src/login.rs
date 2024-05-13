@@ -96,7 +96,6 @@ fn connection(srv: String, login: String, password: String) -> Option<User> {
 			if !res.status().is_success() {
 				return None;
 			}
-			eprintln!("{}", format!("ERROR REQUEST FOR LOGIN NEAR HERE").green());
 			let res = res.text().ok();
 			let res = match res {
 				Some(res) => res,
