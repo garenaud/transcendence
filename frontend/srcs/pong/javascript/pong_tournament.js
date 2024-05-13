@@ -574,7 +574,6 @@ tournamentSocket.onmessage = function(e) {
 	{
 		console.log('starting tournament');
 		console.log('ici');
-		window.open('../../Design/SUPERBE_BRACKET_FINAL_3.png');
 		tournamentSocket.send(JSON.stringify({
 			'message' : 'getGameId',
 			'playernb' : playernb
