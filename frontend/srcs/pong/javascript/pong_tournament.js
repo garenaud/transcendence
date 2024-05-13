@@ -537,12 +537,18 @@ const userList = document.getElementById('userList');
 
 tournamentSocket.onmessage = function(e) {
 	tournament_data = JSON.parse(e.data);
+	console.log(tournament_data.action);
 	if (tournament_data.message == 'tournamentIdNotFound')
 	{
 		window.location.reload();
 	}
 	// Suppose we have a list element to display the connected users
-
+	if (tournament_data.action == 'namep1')
+	{
+		console.log('********************************************');
+		console.log(tournament_data.namep1);
+	}
+	
 	if (tournament_data.action == 'connect') {
 		console.log(tournament_data.action);
 		connected += 1;
@@ -556,17 +562,17 @@ tournamentSocket.onmessage = function(e) {
 		userList.appendChild(userItem);
 
 		console.log(userItem);
-		console.log(appState.user.first_name);
+		// console.log(appState.user.first_name);
 	}
-	
+
 	else if (tournament_data.action == 'playernb')
 	{
 		playernb = tournament_data['playernb'];
+		console.log(`PLAYENB IS LJSKFDHAJHFKJSHFKHGS ${playernb}`);
 	}
 	else if (tournament_data.action == 'startTournament')
 	{
 		console.log('starting tournament');
-		console.log(typeof(playernb));
 		console.log('ici');
 		window.open('../../Design/SUPERBE_BRACKET_FINAL_3.png');
 		tournamentSocket.send(JSON.stringify({
