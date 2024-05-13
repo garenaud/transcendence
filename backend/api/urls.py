@@ -13,6 +13,7 @@ urlpatterns = [
 	path("tournament/create/<int:userid>", views.create_tournament),
 	path("tournament/join/<int:tournamentid>/<int:userid>", views.join_tournament),
 	path("userprofilelist", views.get_user_profile_list),
-	path("tournamentlist", views.get_tournament_list)
+	path("tournamentlist", views.get_tournament_list),
+	path("history/<int:userid>", views.get_user_history)
 ]
 

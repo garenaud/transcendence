@@ -42,5 +42,7 @@ class gameData:
 		self.ms = 0.3 # move speed
 		self.sif = 0.4 # speed increase factor
 		self.dbgame = None
+		self.profile_p1 = None
+		self.profile_p2 = None
 
 	

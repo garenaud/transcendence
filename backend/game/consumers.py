@@ -5,7 +5,7 @@ import introcs
 import asyncio
 import time
 import threading
-from database.models import Games, Tournament
+from database.models import Games, Tournament, userProfile
 from django.contrib.auth.models import User
 import channels.layers
 from asgiref.sync import async_to_sync, sync_to_async
@@ -207,8 +207,10 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
         if message == 'userid':
             if self.game.p1id == self.channel_name:
                 self.game.dbgame.p1_id = jsondata['userid']
+                self.game.profile_p1 = userProfile.objects.get(user=User.objects.get(id=jsondata['userid']))
             elif self.game.p2id == self.channel_name:
                 self.game.dbgame.p2_id = jsondata['userid']
+                self.game.profile_p2 = userProfile.objects.get(user=User.objects.get(id=jsondata['userid']))
             await sync_to_async(self.saveGame)(self.game.dbgame)
         if message == 'ball_update':
             await self.channel_layer.group_send(
@@ -281,6 +283,36 @@ class AsyncTournamentConsumer(AsyncWebsocketConsumer):
         await self.accept()
         try :
             self.tournoi = await sync_to_async(Tournament.objects.get)(tournament_id=self.tournament_id)
+            if self.tournoi.p2_id == -1:
+                print(self.tournoi.p1_id)
+                user = await sync_to_async(User.objects.get)(id=self.tournoi.p1_id)
+                await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                'type' : 'update',
+                "message": {'action' : 'namep1', 'namep1' : user.username}
+                }
+                )
+            elif self.tournoi.p3_id == -1:
+                print('yes')
+                user = await sync_to_async(User.objects.get)(id=self.tournoi.p2_id)
+                await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                'type' : 'update',
+                "message": {'action' : 'namep2', 'namep2' : user.username}
+                }
+                )
+            elif self.tournoi.p4_id == -1:
+                print('yes')
+                user = await sync_to_async(User.objects.get)(id=self.tournoi.p3_id)
+                await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                'type' : 'update',
+                "message": {'action' : 'namep3', 'namep3' : user.username}
+                }
+                )
             await self.send(text_data=json.dumps({'message' : self.tournament_id}))
             print(self.tournoi.p1_id)
             print(self.tournoi.p2_id)
@@ -313,6 +345,14 @@ class AsyncTournamentConsumer(AsyncWebsocketConsumer):
             if self.tournoi.full == True:
                 self.playernb = 4
                 print('TOURNAMENT P4')
+                user = await sync_to_async(User.objects.get)(id=self.tournoi.p1_id)
+                await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                'type' : 'update',
+                "message": {'action' : 'namep4', 'namep4' : user.username}
+                }
+                )
                 await self.channel_layer.group_send(
                 self.room_group_name,
                 {

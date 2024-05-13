@@ -3,7 +3,6 @@ from database.models import Games, userProfile
 from django.shortcuts import render, redirect
 from rest_framework.response import Response
 from rest_framework import status
-from database.serializers import UsersSerializer
 from django.http import	HttpResponse, JsonResponse
 from django.contrib import messages, auth
 from django.contrib.auth import authenticate, login, logout
@@ -50,11 +49,11 @@ def login(request):
 			userprofile = userProfile.objects.get(user=user)
 			userprofile.online = True
 			userprofile.save()
-			return JsonResponse({"message" : "OK", "id" : user.id, "username" : user.username, "first_name" : user.first_name, "last_name" : user.last_name, "email" : user.email})
+			return JsonResponse({"message" : "OK", "id" : user.id, "username" : user.username, "first_name" : user.first_name, "last_name" : user.last_name, "email" : user.email}, status=200)
 		else:
-			return JsonResponse({"message" : 'KO'})
+			return JsonResponse({"message" : 'KO'}, status=404)
 	else:
-		return JsonResponse({"message" : "KO"})
+		return JsonResponse({"message" : "KO"}, status=405)
 
 def logout(request, id):
 	user = User.objects.get(id=id)

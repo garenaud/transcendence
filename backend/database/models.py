@@ -3,14 +3,6 @@ from django.db import models
 from django.contrib.auth.models import User
 from rest_framework import generics
 # Create your models here.
-
-class Users(models.Model):
-	name = models.CharField(max_length=20)
-	login = models.CharField(max_length=20)
-	password = models.CharField(max_length=100)
-	
-	def __str__(self) -> str:
-		return self.name
 	
 class Games(models.Model):
 	player1 = models.OneToOneField(User, on_delete=models.CASCADE, related_name="player1", null=True)
@@ -29,6 +21,7 @@ class Games(models.Model):
 	room_group_name = models.CharField(max_length=100, default="")
 	room_id = models.IntegerField(default=-1)
 	tournament_id = models.IntegerField(default=-1)
+	date = models.DateField(auto_now_add=True)
 	def __str__(self):
 		return self.code
 
@@ -53,9 +46,11 @@ class userProfile(models.Model):
 	user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='user', null=False)
 	game_won = models.IntegerField(default=0)
 	game_lost = models.IntegerField(default=0)
+	winrate = models.FloatField(default=0.0)
 	tournament_won = models.IntegerField(default=0)
 	tournament_lost = models.IntegerField(default=0)
 	friendlist = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
 	online = models.BooleanField(default=False)
+	in_game = models.BooleanField(default=False)
 	tournament_alias = models.CharField(max_length=100, default='joueur')
-	#profile_picture = models.ImageField(upload_to='./downloads')
+	profile_picture = models.ImageField(upload_to='./downloads')
