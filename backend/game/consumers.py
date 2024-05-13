@@ -193,7 +193,12 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             print('ca arrive hein')
         self.game.finished = True
         self.game.dbgame.finished = True
+        await sync_to_async(self.saveGame)(self.game.profile_p1)
+        self.game.profile_p1.in_game = False
+        self.game.profile_p2.in_game = False
         await sync_to_async(self.saveGame)(self.game.dbgame)
+        await sync_to_async(self.saveGame)(self.game.profile_p1)
+        await sync_to_async(self.saveGame)(self.game.profile_p2)
 
     async def receive(self, text_data):
         jsondata = json.loads(text_data)
@@ -205,12 +210,18 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             if self.game.dbgame.full == True:
                 self.game.started = True 
         if message == 'userid':
+            user = await sync_to_async(User.objects.get)(id=jsondata['userid'])
+            print(user.username)
             if self.game.p1id == self.channel_name:
                 self.game.dbgame.p1_id = jsondata['userid']
-                self.game.profile_p1 = userProfile.objects.get(user=User.objects.get(id=jsondata['userid']))
+                self.game.profile_p1 = await sync_to_async(userProfile.objects.get)(user=user)
+                self.game.profile_p1.in_game = True
+                await sync_to_async(self.saveGame)(self.game.profile_p1)
             elif self.game.p2id == self.channel_name:
                 self.game.dbgame.p2_id = jsondata['userid']
-                self.game.profile_p2 = userProfile.objects.get(user=User.objects.get(id=jsondata['userid']))
+                self.game.profile_p2 = await sync_to_async(userProfile.objects.get)(user=user)
+                self.game.profile_p2.in_game = True
+                await sync_to_async(self.saveGame)(self.game.profile_p2)
             await sync_to_async(self.saveGame)(self.game.dbgame)
         if message == 'ball_update':
             await self.channel_layer.group_send(
@@ -220,10 +231,20 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
         if message == 'getWinner':
             if self.game.scorep1 > self.game.scorep2 and self.channel_name == self.game.p1id:
                 await self.send(text_data=json.dumps({'action' : 'winner'}))
+                self.game.profile_p1.game_won += 1
+                self.game.profile_p2.game_lost += 1
             elif self.game.scorep1 < self.game.scorep2 and self.channel_name == self.game.p2id:
                 await self.send(text_data=json.dumps({'action' : 'winner'}))
+                self.game.profile_p2.game_won += 1
+                self.game.profile_p1.game_lost += 1
             else:
                 await self.send(text_data=json.dumps({'action' : 'looser'}))
+            self.game.profile_p2.winrate = self.game.profile_p1.game_won / self.game.profile_p1.game_lost
+            self.game.profile_p2.winrate = self.game.profile_p2.game_won / self.game.profile_p2.game_lost
+            self.game.profile_p1.in_game = False
+            self.game.profile_p1.in_game = False
+            await sync_to_async(self.saveGame)(self.game.profile_p1)
+            await sync_to_async(self.saveGame)(self.game.profile_p2)
         # if message == "Start" and self.game.started == False:
         #     self.game.started = True
         #     self.task = asyncio.create_task(self.loop())
