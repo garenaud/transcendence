@@ -1,11 +1,12 @@
 use colored::Colorize;
+use json;
 use std::io::Write;
 use tungstenite::Connector::NativeTls;
 use tungstenite::Message;
+use std::time::Duration;
 
 use ncurses::*;
 use std::thread::sleep;
-use std::time::Duration;
 
 use crate::pong;
 use crate::user::User;
@@ -46,7 +47,7 @@ pub fn create_tournament(user: User) {
 
 	println!("{}", format!("Waiting for players to join the tournament"));
 
-	handle_tournament(user.clone(), &mut socket);
+	handle_tournament(user.clone(), &mut socket, String::from("1"));
 }
 
 /**
@@ -60,6 +61,8 @@ pub fn join_tournament(user: User) {
 
 	// Get the tournament ID
 	let mut tournament_id = String::new();
+	let mut player_nb = String::from("default");
+
 	loop {
 		tournament_id.clear();
 		print!("Enter the tournament ID: ");
@@ -75,11 +78,35 @@ pub fn join_tournament(user: User) {
 			continue;
 		}
 
+		let crsf = user.get_client().get("https://{server}/auth/".replace("{server}", &user.get_server()))
+		.header("User-Agent", "cli_rust")
+		.header("Accept", "application/json")
+		.timeout(Duration::from_secs(3));
+		let crsf = crsf.build();
+		let res_csrf = user.get_client().execute(crsf.expect("ERROR WHILE BUILDING THE REQUEST"));
+		let csrf = match res_csrf {
+			Ok(res) => {
+				if res.headers().get("set-cookie").is_none() {
+					eprintln!("{}", format!("No CSRF-Token in the header").red());
+					return ;
+				}
+				let csrf = res.headers().get("set-cookie").unwrap();
+				csrf.to_str().unwrap().to_string()
+			},
+			Err(err) => {
+				eprintln!("{}", format!("Error in respond: {:#?}", err).red());
+				return ;
+			}
+		};
+		let csrf_token = csrf.split(';').nth(0).unwrap().split('=').nth(1).unwrap().to_string();
+		let csrf_token = csrf_token.as_str();
+		// TEST
+
 		let req = user.get_client()
 			.post("https://{server}/api/tournament/join/{tournament_id}/{user_id}".replace("{server}", user.get_server().as_str()).replace("{tournament_id}", &tournament_id).replace("{user_id}", user.get_id().as_str()))
 			.header("User-Agent", "cli_rust")
 			.header("Accept", "application/json")
-			.header("X-CSRFToken", user.get_csrf())
+			.header("X-CSRFToken", csrf_token)
 			// .body((r#"{"tournamentid":"{email}","password":"{password}"}"#).replace("{email}", &login).replace("{password}", &password))
 			.timeout(Duration::from_secs(3));
 		let res = req.build();
@@ -87,9 +114,23 @@ pub fn join_tournament(user: User) {
 		match res {
 			Ok(res) => {
 				if res.status().is_success() {
+					// Retrieve the player nb
+					let body = res.text().expect("ERROR WHILE READING THE RESPONSE");
+					let json = json::parse(body.as_str()).unwrap();
+					match &json["playernb"] {
+						json::JsonValue::Number(playernb) => {
+							player_nb = playernb.to_string();
+						},
+						_ => {
+							eprintln!("{}", format!("Error while joining the tournament").red());
+							continue;
+						}
+					}
 					break;
 				} else if res.status().is_client_error(){
 					eprintln!("{}", format!("Tournament not found or ID invalid").red().bold());
+					eprintln!("{:#?}", res);
+					eprintln!("{}", format!("{:#?}", res.text()).red().bold());
 					continue;
 				}
 			},
@@ -110,7 +151,7 @@ pub fn join_tournament(user: User) {
 		}
 	};
 
-	handle_tournament(user.clone(), &mut socket);
+	handle_tournament(user.clone(), &mut socket, player_nb);
 }
 
 /**
@@ -161,8 +202,7 @@ fn connect_ws_tournament(user: User, tournament_id: String) -> Result<tungstenit
  * 		user: User - The user object
  * 		socket: &mut tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<std::net::TcpStream>> - The websocket connection to the server
  */
-fn handle_tournament(user: User, socket: &mut tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<std::net::TcpStream>>) {
-	let mut player_nb = -1;
+fn handle_tournament(user: User, socket: &mut tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<std::net::TcpStream>>, player_nb: String) {
 	let mut game_id = -1;
 
 	'selection: loop {
@@ -177,12 +217,12 @@ fn handle_tournament(user: User, socket: &mut tungstenite::WebSocket<tungstenite
 							Some(action) => match action {
 								"startTournament" => {
 									// Ask for the gameId
-									if player_nb == -1 {
+									if player_nb == "default" {
 										eprintln!("{}", format!("Error: player_nb not set").red());
 										return;
 									}
 									_ = socket.send(Message::Text(r#"{"message":"getGameId", "playernb":"{pid}"}"#.to_string()
-										.replace("{pid}", player_nb.to_string().as_str())));
+										.replace("{pid}", player_nb.as_str())));
 
 									// Get the gameId and start the game
 									loop {
@@ -192,9 +232,10 @@ fn handle_tournament(user: User, socket: &mut tungstenite::WebSocket<tungstenite
 													Message::Text(msg) => {
 														let msg = msg.as_str();
 														let json = json::parse(msg).unwrap();
+														// eprintln!("{}", format!("{:#?}", json).yellow());
 														match json["action"].as_str().unwrap() {
 															"gameid" => {
-																game_id = json["game_id"].as_i32().unwrap();
+																game_id = json["gameid"].as_i32().unwrap();
 																break 'selection;
 															},
 															_ => {}
@@ -209,10 +250,6 @@ fn handle_tournament(user: User, socket: &mut tungstenite::WebSocket<tungstenite
 											}
 										}
 									}
-								},
-								"playernb" => {
-									player_nb = json["playernb"].as_i32().unwrap();
-									continue;
 								},
 								"gameid" => {
 									game_id = json["game_id"].as_i32().unwrap();
