@@ -8,6 +8,7 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { appState } from '../../components/stateManager.js';
 import { unloadScript } from '../../components/pongComponent.js';
+import { getUser } from '../../components/userManager.js';
 
 const PaddleRightName = 'RightPaddle';
 const PaddleLeftName = 'LeftPaddle';
@@ -544,6 +545,10 @@ tournamentSocket.onmessage = function(e) {
 		console.log(tournament_data.action);
 		connected += 1;
 		loadingElement.innerHTML = "[WAITING FOR OPPONENT]<br>Tournament ID : " + tournament_id + '<br>' + 'Currently connected : ' + connected + '/4';
+		const user1 = document.getElementById('user1');
+		user1.innerHTML = "joueur " + appState.user.first_name;
+		console.log(user1);
+		console.log(appState.user.first_name);
 	}
 	else if (tournament_data.action == 'playernb')
 	{
