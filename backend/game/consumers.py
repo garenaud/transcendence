@@ -5,7 +5,7 @@ import introcs
 import asyncio
 import time
 import threading
-from database.models import Games, Tournament
+from database.models import Games, Tournament, userProfile
 from django.contrib.auth.models import User
 import channels.layers
 from asgiref.sync import async_to_sync, sync_to_async
@@ -144,7 +144,7 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
                 self.game.bpz + self.game.bradius > self.game.prz - paddle_size_z / 2 and
                 self.game.bpz - self.game.bradius < self.game.prz + paddle_size_z / 2
                 and is_colliding == False):
-                self.game.bv.x *= -1;
+                self.game.bv.x *= -1
                 self.game.sif += 0.1
                 is_colliding = True
                 #self.game.sif += 0.1
@@ -207,8 +207,10 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
         if message == 'userid':
             if self.game.p1id == self.channel_name:
                 self.game.dbgame.p1_id = jsondata['userid']
+                self.game.profile_p1 = userProfile.objects.get(user=User.objects.get(id=jsondata['userid']))
             elif self.game.p2id == self.channel_name:
                 self.game.dbgame.p2_id = jsondata['userid']
+                self.game.profile_p2 = userProfile.objects.get(user=User.objects.get(id=jsondata['userid']))
             await sync_to_async(self.saveGame)(self.game.dbgame)
         if message == 'ball_update':
             await self.channel_layer.group_send(
