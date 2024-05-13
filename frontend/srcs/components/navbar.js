@@ -1,6 +1,7 @@
 import { changeView, appState } from './stateManager.js';
 import { getUser, setUserProfilePicture, setUsername } from './userManager.js';
-
+import { createButtonComponent, createPhotoComponent } from './globalComponent.js';
+import { showGameList, showUserList } from './listComponent.js';
 
 function escapeHTML(unsafeText) {
   let div = document.createElement('div');
@@ -36,6 +37,7 @@ function displayUserInfo(user) {
   function renderUserMenu(user) {
     const userMenuHTML = `
         <div id="user-menu" class="user-menu-hidden">
+
             <div class="user-menu-img">
                 <img src="${user.profilePicture}" alt="User Image">
                 <button type="button" class="close close-menu-button" aria-label="Close"> <span aria-hidden="true">&times;</span> </button>
@@ -46,12 +48,12 @@ function displayUserInfo(user) {
                 <h4>${user.pts} pts</h4>
             </div>
             <div class="user-menu-info">
-                <button type="button" class="user-menu-li" aria-label="Edit" data-bs-toggle="modal" data-bs-target="#addFriend"> 
-                    <i class="fas fa-user-plus"></i><h4 data-lang-key='addFriend'>ajouter un ami</h4>
-                </button>
-                <button type="button" class="user-menu-li" aria-label="Edit" data-bs-toggle="modal" data-bs-target="#editPicture">
-                    <i class="fas fa-cog"></i><h4 data-lang-key='setProfile'>Editer le profil</h4>
-                </button>
+            <button type="button" class="user-menu-li" aria-label="Edit" data-bs-toggle="modal" data-bs-target="#addFriend"> 
+                <i class="fas fa-user-plus"></i><h6 data-lang-key='addFriend'>ajouter un ami</h6>
+            </button>
+            <button type="button" class="user-menu-li" aria-label="Edit" data-bs-toggle="modal" data-bs-target="#editPicture">
+                    <i class="fas fa-cog"></i><h6 data-lang-key='setProfile'>Editer le profil</h6>
+            </button>
             </div>
             <div class="user-menu-logout">
               <button id="logoutBtn" class="btn btn-logout btn-outline-light btn-lg px-5" data-lang-key='logout'>Déconnexion</button>
@@ -93,7 +95,7 @@ function displayUserInfo(user) {
         </div>
 
         <!-- Modal add a friend -->
-        <div class="modal fade" id="addFriend" tabindex="-1" role="dialog" aria-labelledby="addFriendLabel" aria-hidden="true">
+        <div class="modal fade modal-dialog modal-lg" id="addFriend" tabindex="-1" role="dialog" aria-labelledby="addFriendLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -126,10 +128,10 @@ function displayUserInfo(user) {
     <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
       <ul class="nav-div-btn navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-glowing-btn">
-          <button id='navChatBtn' class='glowing-btn'><span class='glowing-txt' data-lang-key='ranking'>CLASSEMENT</span></button>
+          <button id='navChatBtn' class='glowing-btn'><span class='glowing-txt' data-lang-key='home'>HOME</span></button>
         </li>
         <li class="nav-glowing-btn">
-          <button id='navGameBtn' class='glowing-btn'><span class='glowing-txt' data-lang-key='home'>HOME</span></button>
+          <button id='navGameBtn' class='glowing-btn'><span class='glowing-txt' data-lang-key='game'>GAME</span></button>
         </li>
       </ul>
     </div>
@@ -172,10 +174,10 @@ function    setupButtonListener() {
   document.getElementById('logoutBtn').addEventListener('click', function() {
     // Supprimez les informations de l'utilisateur de appState
     appState.user = null;
-    // Supprimez les informations de l'utilisateur du localStorage
-    localStorage.removeItem('appState');
+    // Supprimez les informations de l'utilisateur du sessionStorage
+    sessionStorage.removeItem('appState');
     // Effectuez une requête à l'URL de déconnexion
-    fetch('auth/logout/', {
+    fetch('auth/logout/' + appState.userId, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -250,24 +252,20 @@ function    setupButtonListener() {
   });
 }
 
-function  showUserList() {
-  const users = appState.users;
-  const modalBody = document.querySelector('#addFriend .modal-body');
-  const table = document.createElement('table');
-  table.className = 'userlist-table';
-  users.forEach(user => {
-    const row = document.createElement('tr');
-    const nameCell = document.createElement('td');
-    const idCell = document.createElement('td');
-    const emailCell = document.createElement('td');
-    const buttonCell = document.createElement('td');
-    idCell.textContent = user.id;
-    nameCell.textContent = user.username;
-    emailCell.textContent = user.email;
-    row.appendChild(idCell);
-    row.appendChild(nameCell);
-    row.appendChild(emailCell);
-    table.appendChild(row);
+
+
+/* export function createButtonComponent(text, buttonId, dataLangKey, onClickFunction) {
+  const glowingBtnHTML = `
+    <button id='${buttonId}' class='glowing-btn h-100'><span class='glowing-txt' data-lang-key='${dataLangKey}'>${text}</span></button>
+  `;
+  const div = document.createElement('div');
+  div.className = 'd-flex justify-content-center align-items-center';
+  div.innerHTML = glowingBtnHTML;
+  const button = div.querySelector('button');
+  button.addEventListener('click', function(event) {
+    if (onClickFunction) {
+      onClickFunction(event);
+    }
   });
-  modalBody.appendChild(table);
-}
+  return div;
+} */

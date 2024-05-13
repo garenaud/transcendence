@@ -5,7 +5,7 @@ import introcs
 import asyncio
 import time
 import threading
-from database.models import Games
+from database.models import Games, Tournament, userProfile
 from django.contrib.auth.models import User
 import channels.layers
 from asgiref.sync import async_to_sync, sync_to_async
@@ -13,7 +13,9 @@ import random
 from channels.db import database_sync_to_async
 from.game_class import gameData
 
+
 gameTab = [None] * 10000
+tournament_gametab = [None] * 10000
 
 channel_layer = channels.layers.get_channel_layer()
 
@@ -28,26 +30,30 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
         self.task = None
         self.room_id = self.scope["url_route"]["kwargs"]["room_id"]
         self.room_group_name = f"game_{self.room_id}"
+        await self.accept()
         if gameTab[self.room_id] is None:
             gameTab[self.room_id] = gameData(self.room_id)
             self.game = gameTab[self.room_id]
             self.game.p1id = self.channel_name
-            self.game.dbgame = Games(p1_id=1, p2_id=2, room_id=self.room_id, room_group_name=self.room_group_name)
+            self.game.dbgame = Games(p1_id=-1, p2_id=-1, room_id=self.room_id, room_group_name=self.room_group_name)
             await sync_to_async(self.saveGame)(self.game.dbgame)
-            print("p1")
+            await self.send(text_data=json.dumps({'action' : 'playernumber', 'playernumber' : 1}))
+            await self.send(text_data=json.dumps({'action' : 'userid'}))
+            print("GAME P1")
         else:
             self.game = gameTab[self.room_id]
             self.game.p2id = self.channel_name
             self.game.dbgame.full = True
             await sync_to_async(self.saveGame)(self.game.dbgame)
-            print("p2")
+            await self.send(text_data=json.dumps({'action' : 'playernumber', 'playernumber' : 2}))
+            await self.send(text_data=json.dumps({'action' : 'userid'}))
+            print("GAME P2")
         
             
         await self.channel_layer.group_add(
             self.room_group_name,
             self.channel_name
         )
-        await self.accept()
         await self.channel_layer.send(
             self.channel_name,
             {
@@ -111,21 +117,45 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
     async def loop(self):
         await self.send_counter()
         await self.channel_layer.group_send(
-            self.room_group_name,
-            {"type": "update", "message": {'action' : 'start'}}
+        self.room_group_name,
+        {"type": "update", "message": {'action' : 'start'}}
         )
         while self.game.finished == False:
             if self.game.scorep1 == 5 or self.game.scorep2 == 5:
                 self.game.finished = True
                 self.game.dbgame.finished = True
+                self.game.dbgame.p1_score = self.game.scorep1
+                self.game.dbgame.p2_score = self.game.scorep2
                 await sync_to_async(self.saveGame)(self.game.dbgame)
                 await self.stop_game()
-
-            # Check collision with left and right paddles
-            check_collision(self, self.game.plx, self.game.plz)  # Left paddle
-            check_collision(self, self.game.prx, self.game.prz)  # Right paddle
-            print(self.game.bv.z)
-            print(self.game.bv.x)
+            paddle_size_x = 0.20000000298023224
+            paddle_size_z = 3.1
+            #verifier la collision avec le paddle gauche
+            if (self.game.bpx - self.game.bradius < self.game.plx + paddle_size_x / 2 and
+                self.game.bpx + self.game.bradius > self.game.plx - paddle_size_x / 2 and
+                self.game.bpz + self.game.bradius > self.game.plz - paddle_size_z / 2 and
+                self.game.bpz - self.game.bradius < self.game.plz + paddle_size_z / 2
+                and is_colliding == False):
+                # relative_position = (self.game.bpz - self.game.plz) / paddle_size_z
+                # angleadjustment = (relative_position - 0.5) * (max_angle_adjustment - min_angle_adjustment) * 0.6
+                # Ajuster la direction de la balle en fonction de l'angle
+                # angle = math.pi / 4 + angleadjustment
+                self.game.bv.x *= -1
+                self.game.sif += 0.1
+                is_colliding = True
+                # print("collision detectee a gauche")
+            #verifier la collision avec le paddle droit
+            if (self.game.bpx - self.game.bradius < self.game.prx + paddle_size_x / 2 and
+                self.game.bpx + self.game.bradius > self.game.prx - paddle_size_x / 2 and
+                self.game.bpz + self.game.bradius > self.game.prz - paddle_size_z / 2 and
+                self.game.bpz - self.game.bradius < self.game.prz + paddle_size_z / 2
+                and is_colliding == False):
+                self.game.bv.x *= -1
+                self.game.sif += 0.1
+                is_colliding = True
+                #self.game.sif += 0.1
+                # print("collision detectee a droite")
+            is_colliding = False
             balllimit = 8.5
             if self.game.bpz > balllimit or self.game.bpz < -balllimit:
                 self.game.bv.z *= -1
@@ -143,14 +173,17 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
                 )
                 self.game.bpx = 0.0
                 self.game.bpz = 0.0
-                self.game.sif = 0.4
+                self.game.sif = 1.05
+                self.game.bv = introcs.Vector3(math.cos(1) * 0.25, 0, math.sin(1) * 0.25)
+    
             self.game.bvx = self.game.bv.x
             self.game.bvz = self.game.bv.z
-            self.game.bpx += self.game.bvx * self.game.sif
-            self.game.bpz += self.game.bvz * self.game.sif
+            self.game.bpx += self.game.bvx
+            self.game.bpz += self.game.bvz
+            
             await self.ball_update({'bpx' : self.game.bpx, 'bpz' : self.game.bpz})
             await asyncio.sleep(1 / 120)
-            
+
     async def disconnect(self, close_code):
         self.channel_layer.group_discard(
             self.room_group_name, self.channel_name
@@ -177,11 +210,26 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
                 await sync_to_async(self.saveGame)(self.game.dbgame)
             if self.game.dbgame.full == True:
                 self.game.started = True 
+        if message == 'userid':
+            if self.game.p1id == self.channel_name:
+                self.game.dbgame.p1_id = jsondata['userid']
+                self.game.profile_p1 = userProfile.objects.get(user=User.objects.get(id=jsondata['userid']))
+            elif self.game.p2id == self.channel_name:
+                self.game.dbgame.p2_id = jsondata['userid']
+                self.game.profile_p2 = userProfile.objects.get(user=User.objects.get(id=jsondata['userid']))
+            await sync_to_async(self.saveGame)(self.game.dbgame)
         if message == 'ball_update':
             await self.channel_layer.group_send(
             self.room_group_name,
             {"type": "update", "message": {'action' : 'game', 'bx' : self.game.bpx, 'bz' : self.game.bpz, 'plx' : self.game.plx ,'plz' : self.game.plz, 'prx' : self.game.prx ,'prz' : self.game.prz}}
             )
+        if message == 'getWinner':
+            if self.game.scorep1 > self.game.scorep2 and self.channel_name == self.game.p1id:
+                await self.send(text_data=json.dumps({'action' : 'winner'}))
+            elif self.game.scorep1 < self.game.scorep2 and self.channel_name == self.game.p2id:
+                await self.send(text_data=json.dumps({'action' : 'winner'}))
+            else:
+                await self.send(text_data=json.dumps({'action' : 'looser'}))
         # if message == "Start" and self.game.started == False:
         #     self.game.started = True
         #     self.task = asyncio.create_task(self.loop())
@@ -222,6 +270,83 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
     async def update(self, event):
         data = event['message']
         await self.send(text_data=json.dumps(data))
+
+
+class AsyncTournamentConsumer(AsyncWebsocketConsumer):
+    
+    def saveGame(self,game):
+            game.save()
+    
+    async def connect(self):
+        self.tournament_id = self.scope["url_route"]["kwargs"]["room_id"]
+        self.room_group_name = f'tournament_{self.tournament_id}'
+        self.playerid = 0
+        self.playernb = 0
+        await self.channel_layer.group_add(
+            self.room_group_name,
+            self.channel_name
+        )
+        await self.accept()
+        try :
+            self.tournoi = await sync_to_async(Tournament.objects.get)(tournament_id=self.tournament_id)
+            await self.send(text_data=json.dumps({'message' : self.tournament_id}))
+            if self.tournoi.full == True:
+                self.playernb = 4
+                print('TOURNAMENT P4')
+                await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                'type' : 'update',
+                "message": {'action' : 'startTournament'}
+                }
+                )
+            await sync_to_async(self.saveGame)(self.tournoi)
+            await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type' : 'update',
+                "message": {'action' : 'connect', 'connected' : self.playernb}
+            }
+            )
+        except :
+            await self.send(text_data=json.dumps({'message' : 'tounamentIdNotFound'}))
+            await self.close()
+
+    async def disconnect(self, close_code):
+        print(f'player {self.playernb} disconnected from tournament {close_code}')
+
+    async def receive(self, text_data):
+        jsondata = json.loads(text_data)
+        message = jsondata['message']
+        if message == 'getGameId':
+            playernb = jsondata['playernb']
+            if playernb == '1' or playernb == '3':
+                # print(f'playernb is {playernb}')
+                gameid = self.tournoi.game1_id
+                await self.send(text_data=json.dumps({'action' : 'gameid', 'gameid' : gameid}))
+            elif playernb == '2' or playernb == '4':
+                gameid = self.tournoi.game2_id
+                await self.send(text_data=json.dumps({'action' : 'gameid', 'gameid' : gameid}))
+        elif message == 'winner':
+            if jsondata['finalid'] == -1:
+                print(f'{self.playernb} has won and can play the final')
+                await self.send(text_data=json.dumps({'action' : 'finalid', 'finalid' : self.tournoi.game3_id}))
+            else:
+                print(f'tournament is finished, player {self.playernb} has won')
+                await self.send(text_data=json.dumps({'action' : 'wonTournament'}))
+        elif message == 'looser':
+            print(f'{self.playernb} has lost and cannot play the final')
+            await self.disconnect(1)
+
+    async def update(self, event):
+        data = event['message']
+        await self.send(text_data=json.dumps(data))
+    #des la connexion au websocket ouverte, recuperer l'id du joueur afin de set le p2, p3 et p4 id dans l'objet tournoi de la db
+    
+    
+    #quand tout le monde est connecter envoyer un message 
+    #ainsi que l'id de la game a chaque joueur pour quils puissent rejoindre la bonne game et set le tournoi a full=True
+    #recuperer le gagnant de chaquee game afin de savoir quel joueur aura acces a la finale et disconnect les autres joueur du tournoi
 
 class ChatConsumer(WebsocketConsumer):
     lolmessage = "superlol"
@@ -302,6 +427,74 @@ class GameConsumer(WebsocketConsumer):
     #     'room_group_name' : ""
     # }
 
+    ball_velocity = introcs.Vector3(math.cos(0) * 0.25, 0, math.sin(0) * 0.25)
+
+    def handle_wall_collision(self):
+        balllimit = 8.5
+        if self.game.bpz > balllimit or self.game.bpz < -balllimit:
+            self.game.bvz *= -1
+            # print("mur")
+        elif self.game.bpx > 18 or self.game.bpx < -18:
+            if self.game.bpx > 18:
+                self.game.scorep2 += 1
+            elif self.game.bpx < -18:
+                self.game.scorep1 += 1
+            self.game.bpx = 0.0
+            self.game.bpz = 0.0
+            self.game.sif = 1.1
+            ball_velocity = introcs.Vector3(math.cos(0) * 0.25, 0, math.sin(0) * 0.25)
+    
+    def handle_paddle_collision(self):
+        self.game.bradius = self.game_values['self.game.bradius']
+        paddle_size_x = 0.20000000298023224
+        paddle_size_z = 3.1
+        max_angle_adjustment = math.pi / 6
+        min_angle_adjustment = (math.pi * -1) / 6
+        #verifier la collision avec le paddle gauche
+        if (self.game.bpx - self.game.bradius < self.game.plx + paddle_size_x / 2 and
+            self.game.bpx + self.game.bradius > self.game.plx - paddle_size_x / 2 and
+            self.game.bpz + self.game.bradius > self.game.plz - paddle_size_z / 2 and
+            self.game.bpz - self.game.bradius < self.game.plz + paddle_size_z / 2
+            ):
+            relative_position = (self.game.bpz - self.game.plz) / paddle_size_z
+            angleadjustment = (relative_position - 0.5) * (max_angle_adjustment - min_angle_adjustment) * 0.6
+            # Ajuster la direction de la balle en fonction de l'angle
+            angle = math.pi / 4 + angleadjustment
+            self.game.bvx = math.cos(angle) * (0.2 * self.game.sif)
+            self.game.bvz = math.sin(angle) * (0.2 * self.game.sif)
+            self.game.sif += 0.1
+            # print("collision detectee a gauche")
+        #verifier la collision avec le paddle droit
+        if (self.game.bpx - self.game.bradius < self.game.prx + paddle_size_x / 2 and
+            self.game.bpx + self.game.bradius > self.game.prx - paddle_size_x / 2 and
+            self.game.bpz + self.game.bradius > self.game.prz - paddle_size_z / 2 and
+            self.game.bpz - self.game.bradius < self.game.prz + paddle_size_z / 2
+            ):
+            relative_position = (self.game.bpz - self.game.prz) / paddle_size_z
+            angleadjustment = (relative_position - 0.5) * (max_angle_adjustment - min_angle_adjustment) * 0.3
+            # Ajuster la direction de la balle en fonction de l'angle
+            angle = (math.pi * -1) / 4 - angleadjustment
+            self.game.bvx = (math.cos(angle) * -1) * (0.2 * self.game.sif)
+            self.game.bvz = (math.sin(angle) * -1) * (0.2 * self.game.sif)
+            self.game.sif += 0.1
+            # print("collision detectee a droite")
+
+    def update_ball_pos(self):
+        while self.game_values['finished'] == False:
+            time.sleep(0.02)
+            self.handle_paddle_collision()
+            self.handle_wall_collision()
+            self.game.bvx = self.game.bvx
+            self.game.bvz = self.game.bvz
+            self.game.bpx += self.game.bvx
+            self.game.bpz += self.game.bvz
+            # print(self.game.bpx)
+            #self.send(text_data=json.dumps(self.game_values))
+            # async_to_sync(self.channel_layer.group_send)(self.randname, {"type" : "testsend", "game_data" : self.game_values})
+            async_to_sync(channel_layer.group_send)(
+             self.room_group_name, {"type": "chat_message", "message": self.game_values}
+            )
+
     def update_right_paddle_pos(self, message):
         if message == 'Up' and self.game.prz - self.game.ms > -6.5:
             self.game.prz -= self.game.ms
@@ -369,3 +562,18 @@ class GameConsumer(WebsocketConsumer):
     def chat_message(self, event):
         data = event["message"]
         self.send(text_data=json.dumps(data))
+
+        
+    # finished = False
+    # scoreleft = 0
+    # scoreright = 0
+    # ball_position_x = 0.0
+    # ball_position_z = 0.0
+    # ball_velocity_x = 0.0
+    # ball_velocity_z = 0.0
+    # paddleleft_position_x = 0.0
+    # paddleleft_position_z = 0.0
+    # paddleright_position_x = 0.0
+    # paddleright_position_z = 0.0
+    # move_speed = 0.1
+        

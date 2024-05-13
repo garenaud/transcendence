@@ -27,5 +27,18 @@
     "roulette": "Roulette",
     "createRoomPong": "CREATE A ROOM",
     "joinRoomPong": "JOIN A ROOM",
-    "joinRandomRoomPong": "JOIN A RANDOM ROOM"
+    "joinRandomRoomPong": "JOIN A RANDOM ROOM",
+    "game": "GAME",
+    "+": "+",
+    "pongPlayed": "Game History",
+    "waitOpponent": "[WAITING FOR OPPONENT]",
+    "win": "Victory",
+    "nextGame": "next game",
+    "localGame": "Local",
+    "createPriv": "create private party",
+    "joinPriv": "join private party",
+    "onlineMatchmaking": "online matchmaking",
+    "createTourn": "create tournament",
+    "joinTourn": "join tournament",
+    "wonTourn": "YOU HAVE WON THE TOURNAMENT, CONGRATULATIONS"
 }

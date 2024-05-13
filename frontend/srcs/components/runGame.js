@@ -1,3 +1,5 @@
+import { createButtonComponent,  } from "./globalComponent.js";
+
 export function renderRun() {
     const runHTML = `
         <div class="card-game-wrapper glowing">

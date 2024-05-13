@@ -27,5 +27,18 @@
     "roulette": "Roulette",
     "createRoomPong": "EIN SPIEL ERSTELLEN",
     "joinRoomPong": "EINEM SPIEL BEITRETEN",
-    "joinRandomRoomPong": "EINEM ZUFÄLLIGEN SPIEL BEITRETEN"
+    "joinRandomRoomPong": "EINEM ZUFÄLLIGEN SPIEL BEITRETEN",
+    "game": "SPIEL",
+    "+": "+",
+    "pongPlayed": "Spielverlauf",
+    "waitOpponent": "[WARTE AUF GEGNER]",
+    "win": "Sieg",
+    "nextGame": "nächstes Spiel",
+    "localGame": "Lokal",
+    "createPriv": "private Partie erstellen",
+    "joinPriv": "privater Partie beitreten",
+    "onlineMatchmaking": "Online-Matchmaking",
+    "createTourn": "Turnier erstellen",
+    "joinTourn": "an Turnier teilnehmen",
+    "wonTourn": "SIE HABEN DAS TURNIER GEWONNEN, GLÜCKWUNSCH"
 }

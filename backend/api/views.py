@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
-from database.models import Users, Games
-from database.serializers import UsersSerializer, CreateUserSerializer, UserSerializer, GamesSerializer
+from database.models import  Games, Tournament, userProfile
+from database.serializers import UserSerializer, GamesSerializer, UserProfileSerializer, TournamentSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -12,7 +12,7 @@ from django.contrib import messages, auth
 from django.shortcuts import render
 from django.contrib.auth.models import User
 import random
-
+from itertools import chain
 
 
 #Returns all user in the database
@@ -25,23 +25,33 @@ def get_user_list(request):
 	else:
 		return Response("Unauthorized method", status=status.HTTP_401_UNAUTHORIZED)
 
+@api_view(['GET'])
+def get_user_profile_list(request):
+	if (request.method == 'GET'):
+		profiles = userProfile.objects.all()
+		serializer = UserProfileSerializer(profiles, many=True)
+		return Response(serializer.data)
+	else:
+		return Response("Unauthorized method", status=status.HTTP_401_UNAUTHORIZED)
 
 #Either returns the user with the specified id or update the user specified by id in the database
 @api_view(['GET', 'PUT'])
 def user_by_id(request, id):
 	if (request.method == 'GET'):
-		user = Users.objects.get(id=id)
-		serializer = UsersSerializer(user)
+		user = User.objects.get(id=id)
+		serializer = UserSerializer(user)
 		return Response(serializer.data, status=status.HTTP_200_OK)
 	elif (request.method == 'PUT'):
-		queryset = Users.objects.filter(id=id)
-		serializer = UsersSerializer(data=request.data)
+		queryset = User.objects.filter(id=id)
+		serializer = UserSerializer(data=request.data)
 		if serializer.is_valid():
 			user = queryset[0]
-			user.name = serializer.data['name']
-			user.login = serializer.data['login']
+			user.first_name = serializer.data['first_name']
+			user.last_name = serializer.data['last_name']
+			user.username = serializer.data['username']
+			user.email = serializer.data['email']
 			user.password = serializer.data['password']
-			user.save(update_fields=['name', 'login', 'password'])
+			user.save(update_fields=['first_name', 'last_name', 'username', 'email', 'password'])
 			return Response(serializer.data, status=status.HTTP_200_OK)
 	else:
 		return Response("Method not allowed", status=status.HTTP_405_METHOD_NOT_ALLOWED)
@@ -50,11 +60,11 @@ def user_by_id(request, id):
 @api_view(['POST'])
 def create_new_user(request):
 	if request.method == 'POST':
-		serializer = UsersSerializer(data=request.data)
+		serializer = UserSerializer(data=request.data)
 		if serializer.is_valid():
-			user = Users.objects.filter(login=serializer.data['login'])
+			user = User.objects.filter(login=serializer.data['login'])
 			if not user.exists():
-				user = Users(name=serializer.data['name'], login=serializer.data['login'], password=serializer.data['password'])
+				user = User(name=serializer.data['name'], login=serializer.data['login'], password=serializer.data['password'])
 				user.save()
 				return Response("User " + serializer.data['login'] + " has been added to database", status=status.HTTP_201_CREATED)
 			else:
@@ -68,7 +78,7 @@ def create_new_user(request):
 @api_view(['DELETE'])
 def delete_user_by_id(request, id):
 	if request.method == "DELETE":
-		queryset = Users.objects.filter(id=id)
+		queryset = User.objects.filter(id=id)
 		if queryset.exists():
 			user = queryset[0]
 			user.delete()
@@ -91,9 +101,9 @@ def get_game_list(request):
 @api_view(['GET'])
 def get_game_by_id(request, gameid):
 	if (request.method == 'GET'):
-		game = Games.objects.filter(room_id=gameid, private=True).count()
+		game = Games.objects.filter(room_id=gameid).count()
 		if game == 0:
-			return Response({"message" : "Not found"}, status=status.HTTP_404_NOT_FOUND)
+			return Response({"message" : "Not found"})
 		else:
 			try:
 				game = Games.objects.get(room_id=gameid, finished=False)
@@ -114,20 +124,98 @@ def create_game(request):
 		return Response({"message" : "ok", 'id' : newid}, status=status.HTTP_200_OK)
 	else:
 		return Response("Unauthorized method", status=status.HTTP_401_UNAUTHORIZED)
-	
 
 @api_view(['GET'])
 def search_game(request):
 	if request.method == 'GET':
-		try:
-			#ajouter le nombre de user actuellement en recherche de game dans la db
-			games = Games.objects.filter(started=False, finished=False, full=False, private=False)
-			id = games[0].room_id
-			return Response({"message" : "ok", 'id' : id})
-		except:
-			newid = random.randint(1, 9999)
-			while Games.objects.filter(room_id=newid).count() != 0:
+		while True:
+			try:
+				games = Games.objects.filter(started=False, finished=False, full=False)
+				id = games[0].room_id
+				return Response({"message" : "ok", 'id' : id})
+			except:
 				newid = random.randint(1, 9999)
-			return Response({"message" : "ko", 'id' : newid})
+				while Games.objects.filter(room_id=newid).count() != 0:
+					newid = random.randint(1, 9999)
+				return Response({"message" : "ok", 'id' : newid}, status=status.HTTP_200_OK)
+	else:
+		return Response("Unauthorized method", status=status.HTTP_401_UNAUTHORIZED)
+	
+
+@api_view(['GET'])
+def create_tournament(request, userid):
+	if request.method == 'GET':
+		profile = userProfile.objects.get(user=User.objects.get(id=userid))
+		tournamentid = create_random_tournament_id(1, 9999)
+		game1id = create_random_game_id(1, 9999)
+		game2id = create_random_game_id(1, 9999)
+		game3id = create_random_game_id(1, 9999)
+		tournoi = Tournament(p1_id=userid, p1_alias=profile.tournament_alias, game1_id=game1id, game2_id=game2id, game3_id=game3id, tournament_id=tournamentid)
+		tournoi.save()
+		return Response({'tournamentid' : tournamentid, 'game1id' : game1id, 'game2id' : game2id, 'game3id' : game3id, 'playernb' : 1})
+	else:
+		return Response("Unauthorized method", status=status.HTTP_401_UNAUTHORIZED)
+	
+@api_view(['POST'])
+def join_tournament(request, tournamentid, userid):
+	if request.method == 'POST':
+		profile = userProfile.objects.get(user=User.objects.get(id=userid))
+		playernb = 0
+		try:
+			qs = Tournament.objects.filter(tournament_id=tournamentid, full=False, finished=False)
+			tournoi = qs[0]
+			if tournoi.p2_id == -1:
+				tournoi.p2_id = userid
+				tournoi.p2_alias = profile.tournament_alias
+				playernb = 2
+			elif tournoi.p3_id == -1:
+				playernb = 3
+				tournoi.p3_id = userid
+				tournoi.p3_alias = profile.tournament_alias
+			else:
+				tournoi.full = True
+				playernb = 4
+				tournoi.p4_id = userid
+				tournoi.p4_alias = profile.tournament_alias
+			
+			tournoi.save()
+			return Response({'message' : 'ok', 'game1id' : tournoi.game1_id, 'game2id' : tournoi.game2_id, 'game3id' : tournoi.game3_id, 'playernb' : playernb})
+
+		except:
+			return Response({'message' : 'ko'}, status=status.HTTP_404_NOT_FOUND)
+	else:
+		return Response("Unauthorized method", status=status.HTTP_401_UNAUTHORIZED)
+	
+
+def create_random_game_id(start, end):
+	newid = random.randint(start, end)
+	while Games.objects.filter(room_id=newid, finished=False).count() != 0:
+		newid = random.randint(start, end)
+	return newid
+
+def create_random_tournament_id(start, end):
+	newid = random.randint(start, end)
+	while Tournament.objects.filter(tournament_id=newid, finished=False).count() != 0:
+		newid = random.randint(start, end)
+	return newid
+
+@api_view(['GET'])
+def get_tournament_list(request):
+	if (request.method == 'GET'):
+		tournaments = Tournament.objects.all()
+		serializer = TournamentSerializer(tournaments, many=True)
+		return Response(serializer.data)
+	else:
+		return Response("Unauthorized method", status=status.HTTP_401_UNAUTHORIZED)
+	
+
+@api_view(['GET'])
+def get_user_history(request, userid):
+	if (request.method == 'GET'):
+		games1 = Games.objects.filter(p1_id=userid)
+		games2 = Games.objects.filter(p2_id=userid)
+		serializer1 = GamesSerializer(games1, many=True)
+		serializer2 = GamesSerializer(games2, many=True)
+		return Response({'message' : 'OK', 'data' : serializer1.data + serializer2.data}, status=200)
 	else:
 		return Response("Unauthorized method", status=status.HTTP_401_UNAUTHORIZED)

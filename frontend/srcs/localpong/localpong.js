@@ -24,7 +24,7 @@ let countdownValue = 3;
 let speedIncreaseFactor = 0.7; // Facteur d'augmentation de la vitesse
 let displayvictoryElement = document.getElementById('displayvictory');
 let displayScoreElement = document.getElementById('displayscore');
-let countdownElement = document.getElementById('countdown');
+let countdownElement = document.getElementById('countdownPong');
 // const deltaTime = 30;
 let PaddleRight;
 let PaddleLeft;
@@ -49,6 +49,7 @@ function displayvictory() {
 }
 
 function countdown() {
+	countdownElement.style.display = 'block';
 	if (countdownValue > 0) {
 		countdownElement.textContent = countdownValue + '...';
 		countdownValue -= 1;
@@ -73,7 +74,7 @@ function init() {
 	// Renderer
 	resetScore();
 	renderer = new THREE.WebGLRenderer({
-		canvas: document.querySelector('#background'),
+		canvas: document.querySelector('#backgroundLocal'),
 		antialias: true,
 	});
 	renderer.setSize(window.innerWidth, window.innerHeight);
@@ -108,7 +109,6 @@ function init() {
 		scene.receiveShadow = true;
 
 		// Animation loop
-		countdown();
 		animate();
 }
 
@@ -124,12 +124,10 @@ function handleText() {
 function resetScore() {
 	scoreLeft = 0;
 	scoreRight = 0;
-	if (displayScoreElement) {
-        displayScoreElement.textContent = 'Score: ' + scoreLeft + ' - ' + scoreRight;
-    } else {
-        console.error('displayScoreElement is not defined');
-    }
-	displayvictoryElement.textContent = "";
+	if (displayScoreElement)
+		displayScoreElement.textContent = 'Score: ' + scoreLeft + ' - ' + scoreRight;
+	countdownValue = 3;
+	countdown();
 }
 
 function handleBall() {
@@ -237,11 +235,10 @@ function handlePaddleRight() {
 	if (PaddleRight) {
 		PaddleRight.castShadow = true;
 		// PaddleRight.receiveShadow = true;
-		if (KeyState['ArrowUp'] && PaddleRight.position.z - mooveSpeed > -wallLimit) {
+		if (KeyState['ArrowUp'] && PaddleRight.position.z - mooveSpeed > -wallLimit && finished == false) {
 			PaddleRight.position.z -= mooveSpeed;
-			console.log("aled");
 		}
-		if (KeyState['ArrowDown'] && PaddleRight.position.z + mooveSpeed < wallLimit) {
+		if (KeyState['ArrowDown'] && PaddleRight.position.z + mooveSpeed < wallLimit && finished == false) {
 			PaddleRight.position.z += mooveSpeed;
 		}	
 	}
@@ -254,10 +251,10 @@ function handlePaddleLeft() {
 	if (PaddleLeft) {
 		PaddleLeft.castShadow = true;
 		// PaddleLeft.receiveShadow = true;
-		if (KeyState['KeyW'] && PaddleLeft.position.z - mooveSpeed > -wallLimit) {
+		if (KeyState['KeyW'] && PaddleLeft.position.z - mooveSpeed > -wallLimit && finished == false) {
 			PaddleLeft.position.z -= mooveSpeed;
 		}
-		if (KeyState['KeyS'] && PaddleLeft.position.z + mooveSpeed < wallLimit) {
+		if (KeyState['KeyS'] && PaddleLeft.position.z + mooveSpeed < -wallLimit && finished == false) {
 			PaddleLeft.position.z += mooveSpeed;
 		}
 	} 
@@ -298,7 +295,7 @@ function handlePaddleCollision() {
 			isColliding = false;
 	}
 
-const finalScore = 5;
+const finalScore = 1;
 	
 function handleWallColision() {
 		if (ball.position.z > ballLimit || ball.position.z < -ballLimit) {
@@ -373,6 +370,9 @@ function animate() {
 
 function stopAnimation() {
 	cancelAnimationFrame(animationId);
+	displayScoreElement.textContent = "";
+	displayvictoryElement.textContent = "";
+	countdownElement.textContent = "";
 }
 
 document.addEventListener('keydown', handleKeyDown);

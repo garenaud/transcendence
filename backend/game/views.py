@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
-from database.models import Users, Games
-from database.serializers import UsersSerializer, CreateUserSerializer
+from database.models import Games
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status

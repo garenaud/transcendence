@@ -862,6 +862,7 @@ margin-bottom: 15px !important;
 }
 
 .card-game-test {
+  height: 300px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -872,6 +873,25 @@ margin-bottom: 15px !important;
   z-index: 1;
   border-radius: 15px;
   overflow: hidden;
+  background-color: white;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.card-game-list {
+  height: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 30vh;
+  padding: 10px;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  border-radius: 15px;
+  overflow-y: auto;
+  background-color: white;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -1443,7 +1463,7 @@ background-size: 70px 120px;
   position: fixed;
   right: 0;
   top: 0;
-  width: 350px;
+  width: 300px;
   height: 100%;
   background-color: #1A244D;
   color: #F6428E;
@@ -1457,7 +1477,8 @@ background-size: 70px 120px;
 
 .user-menu-img img {
   max-width: 100%;
-  max-height: 100%;
+  max-height: 50%; /* Ajustez cette valeur à votre convenance */
+  object-fit: contain;
   position: relative;
   top: 0;
   right: 0;
@@ -1468,7 +1489,7 @@ background-size: 70px 120px;
   flex-direction: column;
   text-align: center;
   margin-top: 10px;
-  margin-bottom: 40px;
+  margin-bottom: 10px;
 }
 
 .user-menu-logout {
@@ -1488,12 +1509,12 @@ background-size: 70px 120px;
   padding: 10px;
 }
 
-.user-menu-li h4 {
+.user-menu-li h6 {
   margin: 0;
   padding: 10px;
 }
 
-.user-menu-title h2 h3 h4{
+.user-menu-title h2 h3 h4 h6{
   text-transform: uppercase;
 }
 
@@ -1552,20 +1573,56 @@ background-size: 70px 120px;
 .userlist-table {
   width: 100%;
 }
+.userlist-table tr {
+  height: 15px;
+}
 
 .userlist-table td {
   padding: 10px;
   border: 1px solid #ddd;
 }
 
-.userlist-table button {
+.game-list-table{
+  background-color: white;
+  padding: 5px;
+  margin: 2px;
+  height: 200px;
+  overflow-y: scroll;
+}
+
+.game-list-table tr {
+  padding: 5px;
+}
+
+.status-game {
+  display: inline-block;
+  padding: .25em .4em;
+  font-size: 75%;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: .25rem;
+  color: #fff;
+}
+
+.status-game.bg-success {
+  background-color: #198754; /* Green */
+}
+
+.status-game.bg-danger {
+  background-color: #dc3545; /* Red */
+}
+
+/* .userlist-table button {
   background-color: #4CAF50;
   color: white;
   padding: 10px 20px;
   margin: 10px 0;
   border: none;
   cursor: pointer;
-}
+} */
 
 
 /* modale pour changer les informations de l'utilisateur */
@@ -1598,10 +1655,10 @@ background-size: 70px 120px;
   background-clip: text;  
   -webkit-background-clip: text;
   font-weight: 900;
-  font-size: clamp( 1em, 8vw, 5rem);
+  font-size: clamp( 1em, 5vw, 3rem);
   grid-area: overlap;
   letter-spacing: 1px;
-  -webkit-text-stroke: 4px transparent;
+  -webkit-text-stroke: 2px transparent;
 }
 div.bg {
   background-image: repeating-linear-gradient( 105deg, 
@@ -1630,23 +1687,9 @@ div.fg{
     margin-right: 100px;
   }
 }
-
-/*-------------------------------- Pong --------------------------------*/
-/* .canvasPong {
-  margin: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background-color: #000;
-  color: #fff;
-} */
+/* PONG */
 .pong-game {
   position: relative;
-}
-
-#pongLocal {
-	z-index: 1060;
 }
 
 #menu {
@@ -1755,14 +1798,14 @@ animation: loadingC 1s 0.3s linear infinite;
 }
 
 
-#countdown {
+#countdownPong {
 	position: absolute;
 	top: 50%;
 	left: 50%;
 	font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 	transform: translate(-50%, -50%);
 	font-size: 3em;
-	color: blueviolet;
+	color: blue;
 }
 
 #displayscore {
@@ -1783,5 +1826,353 @@ animation: loadingC 1s 0.3s linear infinite;
 	font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 	transform: translate(-50%, -50%);
 	font-size: 3em;
+	animation-name: rainbow;
+	animation-duration: 4s;
+	animation-iteration-count: infinite;
+}
+
+/*-------------------------------- MachineSlot --------------------------------*/
+#slot{
+	border: solid;
+	box-sizing: content-box; 
+}
+
+.blink {
+  animation: blink 0.4s infinite alternate;
+  -webkit-animation: blink 0.4s infinite alternate;
+}
+@keyframes blink {
+  to {
+    background: #c3ad00;
+  }
+}
+@-webkit-keyframes blink {
+  to {
+    background: #c3ad00;
+  }
+}
+
+.gold{
+  color: gold !important;
+}
+.green{
+  color: green;
+}
+
+.v-align{
+  vertical-align: inherit !important;
+}
+
+div.modal-footer, div.modal-body, div.modal-header{
+  background-color: #000000de;
+  color: white;
+}
+
+.preview{
+  position: absolute;
+  left: 0;
+  right: 0;
+  top:0;
+  background: black !important;
+  margin: auto;
+  z-index:999999;
+  width:480px;
+  text-align: center;
+}
+
+.preview img{
+  position: absolute;
+  left: 0;
+  right: 0;
+  top:0;
+  background: black !important;
+  margin: auto;
+  z-index:999999999;
+}
+
+/*-------------------------------- TicTacToe --------------------------------*/
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap');
+/* *{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+} */
+::selection{
+  color: #110606;
+  background:#56baed;
+}
+/* body{
+  background:#56baed;
+} */
+.select-box, .play-board, .result-box{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transition: all 0.3s ease;
+}
+.select-box{
+  background: #b71818;
+  padding: 20px 25px 25px;
+  border-radius: 5px;
+  max-width: 400px;
+  width: 100%;
+}
+.select-box.hide{
+  opacity: 0;
+  pointer-events: none;
+}
+.select-box header{
+  font-size: 30px;
+  font-weight: 600;
+  padding-bottom: 10px;
+  border-bottom: 1px solid lightgrey;
+}
+.select-box .title{
+  font-size: 22px;
+  font-weight: 500;
+  margin: 20px 0;
+}
+.select-box .options{
+  display: flex;
+  width: 100%;
+}
+.options button{
+  width: 100%;
+  font-size: 20px;
+  font-weight: 500;
+  padding: 10px 0;
+  border: none;
+  background: #56baed;
+  border-radius: 5px;
+  color: #1c066b;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.options button:hover,
+.btn button:hover{
+  transform: scale(0.96);
+}
+.options button.playerX{
+  margin-right: 5px;
+}
+.options button.playerO{
+  margin-left: 5px;
+}
+.select-box .credit{
+  text-align: center;
+  margin-top: 20px;
+  font-size: 18px;
+  font-weight: 500;
+}
+.select-box .credit a{
+  color: #56baed;
+  text-decoration: none;
+}
+.select-box .credit a:hover{
+  text-decoration: underline;
+}
+.play-board{
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0.9);
+}
+.play-board.show{
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, -50%) scale(1);
+}
+.play-board .details{
+  padding: 7px;
+  border-radius: 5px;
+  background: #fff;
+}
+.play-board .players{
+  width: 100%;
+  display: flex;
+  position: relative;
+  justify-content: space-between;
+}
+.players span{
+  position: relative;
+  z-index: 2;
+  color: #56baed;
+  font-size: 20px;
+  font-weight: 500;
+  padding: 10px 0;
+  width: 100%;
+  text-align: center;
+  cursor: default;
+  user-select: none;
+  transition: all 0.3 ease;
+}
+.players.active span:first-child{
+  color: #b51313;
+}
+.players.active span:last-child{
+  color: #56baed;
+}
+.players span:first-child{
+  color: #8c1212;
+}
+.players .slider{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  background: #56baed;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+}
+.players.active .slider{
+  left: 50%;
+}
+.players.active span:first-child{
+  color: #56baed;
+}
+.players.active span:nth-child(2){
+  color: #472929;
+}
+.players.active .slider{
+  left: 50%;
+}
+.play-area{
+  margin-top: 20px;
+}
+.play-area section{
+  display: flex;
+  margin-bottom: 1px;
+}
+.play-area section span{
+  display: block;
+  height: 90px;
+  width: 90px;
+  margin: 2px;
+  color: #56baed;
+  font-size: 40px;
+  line-height: 80px;
+  text-align: center;
+  border-radius: 5px;
+  background: #fff;
+}
+.result-box{
+  padding: 25px 20px;
+  border-radius: 5px;
+  max-width: 400px;
+  width: 100%;
+  opacity: 0;
+  text-align: center;
+  background: #fff;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0.9);
+}
+.result-box.show{
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, -50%) scale(1);
+}
+.result-box .won-text{
+  font-size: 30px;
+  font-weight: 500;
+  display: flex;
+  justify-content: center;
+}
+.result-box .won-text p{
+  font-weight: 600;
+  margin: 0 5px;
+}
+.result-box .btn{
+  width: 100%;
+  margin-top: 25px;
+  display: flex;
+  justify-content: center;
+}
+.btn button{
+  font-size: 18px;
+  font-weight: 500;
+  padding: 8px 20px;
+  border: none;
+  background: #56baed;
+  border-radius: 5px;
+  color: #fff;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+/*-------------------------------- Scratch --------------------------------*/
+.container-scratch {
+  border: 3px solid yellow;
+  position: relative;
+  width: 300px;
+  height: 300px;
+  margin: 0 auto;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none; 
+  -o-user-select: none;
+  user-select: none;
+}
+
+.canvas-scratch {
+  position: absolute;
+  top: 0;
+}
+
+.form-scratch {
+  padding: 20px;
 	color: blueviolet;
+}
+
+
+
+
+
+
+/*-------------------------------- Profile picture --------------------------------*/
+.profile-header-container{
+  margin: 0 auto;
+  text-align: center;
+}
+
+/* .profile-header-img{
+  padding: 54px;
+} */
+
+.profile-header-img img {
+  height: 60px;
+  object-fit: cover;
+}
+
+.profile-header-img > img.img-circle {
+  width: 80px;
+  height: 80px;
+  border: 2px solid #F6428E;
+}
+
+.profile-header {
+  margin-top: 43px;
+}
+
+/**
+* Ranking component
+*/
+.rank-label-container {
+  margin-top: -12px;
+  /* z-index: 1000; */
+  text-align: center;
+}
+
+.label.label-default.rank-label {
+  background-color: #F6428E;
+  padding: 2px 5px 2px 5px;
+  border-radius: 27px;
+  font-size: 10px;
+}
+
+.toast {
+  z-index: 9999;
 }

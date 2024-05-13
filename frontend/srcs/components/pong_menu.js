@@ -1,3 +1,5 @@
+import { loadMultiPong } from "./pongComponent.js";
+
 const errorLink = document.getElementById('error');
 let gameid;
 let privategame = false;
@@ -14,9 +16,9 @@ function makeid(length) {
 	return result;
   }
 
-document.getElementById('createBtn').addEventListener('click', function() {
+export function Multiplayer() {
 	let url = '/api/game/create/';
-	console.log(url);
+	// console.log(url);
 	fetch(url, {
 		method: 'GET',
 		credentials: 'same-origin' 
@@ -27,24 +29,22 @@ document.getElementById('createBtn').addEventListener('click', function() {
 		privategame = true;
 		sessionStorage.setItem("privategame", privategame);
 		sessionStorage.setItem("gameid", data['id']);
-		window.location.href = "/pong/pong.html";
+		loadMultiPong();
 	})
 	.catch((error) => {
 		console.error('Error:', error);
 	});
-  });
+  }
 
-document.getElementById('joinBtn').addEventListener('click', function() {
+export function joinGame(gameid) {
 	errorLink.textContent = "";
 	errorLink.style.display = "block";
-	const gameIdInput = document.getElementById('gameCodeInput');
-	gameid = gameIdInput.value.trim();
 	let url = '/api/game/' + gameid;
 	if (!isNaN(gameid) && gameid > 0 && gameid <= 9999) {	
 		console.log(url);
 		fetch(url, {
 			method: 'GET',
-			credentials: 'same-origin' 
+			credentials: 'same-origin'
 		})
 		.then(response => response.json())
 		.then(data => {
@@ -55,7 +55,7 @@ document.getElementById('joinBtn').addEventListener('click', function() {
 				privategame = true;
 				sessionStorage.setItem("privategame", privategame);
 				sessionStorage.setItem("gameid", gameid);
-				window.location.href = "/pong/pong.html";
+				loadMultiPong();
 			}
 		})
 		.catch((error) => {
@@ -67,10 +67,10 @@ document.getElementById('joinBtn').addEventListener('click', function() {
 	setTimeout(function() {
 		errorLink.style.display = "none";
 	}, 4000);
-	});
+}
 
-
-document.getElementById('searchBtn').addEventListener('click', function() {
+export function onlineMatchmaking() {
+// document.getElementById('searchBtn').addEventListener('click', function() {
 	let url = '/api/game/search/';
 	console.log(url);
 	fetch(url, {
@@ -85,22 +85,21 @@ document.getElementById('searchBtn').addEventListener('click', function() {
 			privategame = false;
 			sessionStorage.setItem("privategame", privategame);
 			sessionStorage.setItem("gameid", gameid);
-			window.location.href = "/pong/pong.html";
-		} else if (data['message'] == 'ko'){
+			loadMultiPong();
+		} else if (data['message'] == 'Not Found'){
 			gameid = data['id'];
 			privategame = false;
 			sessionStorage.setItem("privategame", privategame);
 			sessionStorage.setItem("gameid", gameid);
-			window.location.href = "/pong/pong.html";
 			
 			console.log("L'homme methode GET") // IMPORTANT NE PAS ENLEVER!!!
 		}
+		console.log('id search' + gameid);
 	})
 	.catch((error) => {
 		console.error('Error:', error);
 	});
-  });
-
+}
 
 function getCookie(name) {
 	const value = `; ${document.cookie}`;

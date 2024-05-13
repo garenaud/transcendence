@@ -1,10 +1,10 @@
-import { appState } from "./stateManager.js";
+import { appState, renderApp } from "./stateManager.js";
 
 export function LanguageBtn() {
     const languageBtnHTML = `
     <div class="dropdown dropdown-language">
         <button class="btn btn-secondary dropdown-toggle" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="flag-icon flag-icon-fr"></i>
+            <i class="flag-icon flag-icon-${appState.language}"></i>
         </button>
         <ul class="dropdown-menu dropdown-menu-lang" aria-labelledby="languageDropdown">
             <li><a class="dropdown-item" data-lang="fr" href="#"><i class="flag-icon flag-icon-fr"></i></a></li>
@@ -19,11 +19,17 @@ export function LanguageBtn() {
 
     document.querySelectorAll('.dropdown-item').forEach(item => {
         item.addEventListener('click', (event) => {
+            event.preventDefault();
+            console.log('click on language');
             const lang = event.currentTarget.getAttribute('data-lang');
-            loadLanguage(lang);
             dropdownButton.innerHTML = event.currentTarget.innerHTML;
             appState.language = lang;
-            localStorage.setItem('appState', JSON.stringify(appState));
+            console.log('Language changed:', lang);
+            sessionStorage.setItem('language', lang);
+            sessionStorage.setItem('appState', JSON.stringify(appState));
+            loadLanguage(lang);
+            console.log("dans click:", appState);
+            renderApp();
         });
     });
 }
@@ -44,8 +50,8 @@ export function loadLanguage(lang) {
             if (dropdownButton) {
                 const flagIcon = dropdownButton.querySelector('.flag-icon');
                 if (flagIcon) {
-                    flagIcon.className = ''; // supprimer toutes les classes
-                    flagIcon.classList.add('flag-icon', 'flag-icon-' + lang); // ajouter les classes pour le drapeau de la langue
+                    flagIcon.className = '';
+                    flagIcon.classList.add('flag-icon', 'flag-icon-' + lang);
                 }
             }
         });

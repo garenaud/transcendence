@@ -1,27 +1,12 @@
-// import { init } from "../localpong/localpong.js";
+import { onlineMatchmaking } from "./pong_menu.js";
+import { Multiplayer } from "./pong_menu.js";
+import { joinGame } from "./pong_menu.js";
+import { Tournament } from "./tournament_menu.js";
+import { joinTournament } from "./tournament_menu.js";
+// import { makeid } from "../pong/javascript/pong.js" 
 //import * as PongMenu from "./pong_menu.js";
 
-const errorLink = document.getElementById('error');
-let gameid;
-
 export let scriptStarted;
-
-function makeid(length) {
-	let result = '';
-	const characters = '0123456789';
-	const charactersLength = characters.length;
-	let counter = 0;
-	while (counter < length) {
-	  result += characters.charAt(Math.floor(Math.random() * charactersLength));
-	  counter += 1;
-	}
-	return result;
-  }
-  function getCookie(name) {
-      const value = `; ${document.cookie}`;
-      const parts = value.split(`; ${name}=`);
-      if (parts.length === 2) return parts.pop().split(';').shift();
-  }
 
 export function renderPong() {
     const pongHTML = `
@@ -50,139 +35,245 @@ export function renderPong() {
                         <div class="card-game-wrapper glowing inside-card-modal">
 
                         <!-- origPongContent -->
-                        <div id="origPong" class="card-game-inside" style="background-image: url(Design/PongCoverImage.webp);">
+                        <div id="origPong" class="card-game-inside">
                             <div class="d-flex flex-row justify-content-between pong-glowing-btn">
-                                <button id='localPongBtn' class='glowing-btn'><span class='glowing-txt'>L<span class='faulty-letter'>O</span>CAL</span></button>
-                                <button id='multiPongBtn' class='glowing-btn'><span class='glowing-txt'>M<span class='faulty-letter'>U</span>LTIPLAYER</span></button>
-                                <button id='tourPongBtn' class='glowing-btn'><span class='glowing-txt'>T<span class='faulty-letter'>O</span>URNAMENT</span></button>
+							<link rel="stylesheet" type="text/css" href="../pong/css/pong_menu.css">
+								<div class="menugrid">
+									<nav class="nav">
+								  		<a id="localPongBtn" class="nav-link"  data-lang-key="localGame">Local</a>
+								  		<a id="multiPongBtn" class="nav-link" data-lang-key="createPriv">Create Private</a>
+										  <div class="nav-link">
+										  <a  id="joinPongBtn"  data-lang-key="joinPriv">Join Private</a>
+										  <input type="text" id="gameCodeInput" class="inputGame" placeholder="Game ID">
+										  </div>
+								  		<a id="searchBtn" class="nav-link"  data-lang-key="onlineMatchmaking">Online Matchmaking</a>
+										<a id="createTournament" class="nav-link" data-lang-key="createTourn">Create Tournament</a>
+										<div class="nav-link">
+											<a id="joinTournamentBtn"  data-lang-key="joinTourn">Join Tournament</a>
+												<input type="text" id="gameCodeInputTournament" class="inputGame" placeholder="Tournament ID">
+											</div>
+								  		<a onclick="window.location.reload();" target="_blank" class="nav-link">Exit</a>
+									</nav>
+								</div>
                             </div>
-                        </div>
+						</div>
+						
+						<!-- pongLocalContent -->
+						<div id="pongLocal" class="h-100 align-items-center d-none">
+						<canvas id="backgroundLocal" class="h-100 w-100"></canvas>
+							<div id="countdownPong"></div>
+							<div id="displayscore"></div>
+							<div id ="displayvictory"></div>
+						</div>
 
                         <!-- multiplayerModalContent -->
                         <div id="pongMulti" class="h-100 align-items-center d-none">
-                            <button id="createBtn">Create Game</button>
-                            <button id="joinBtn">Join Game</button>
-                            <button id="searchBtn">List Game</button>
-                            <input type="text" id="gameCodeInput" placeholder="Enter Game Code"><br>
-                            <p><a id="error"></a></p>
-                        </div>
-
-                        <!-- pongLocalContent -->
-
-                    	<div id="pongLocal" class="h-100 align-items-center d-none">
 						<canvas id="background" class="h-100 w-100"></canvas>
-						<div id="countdown"></div>
-						<div id="displayscore"></div>
-						<div id ="displayvictory"></div>
+							<div id="countdown"></div>
+							<div class="container3">
+								<div class="row">
+									<div class="col col-display" id="scoreHome">0</div>
+								</div>
+								<div class="row">
+									<div class="col col-display" id="scoreGuest">0</div>
+								</div>
+							</div>
+								<div class="container2">
+									<div class="load-3">
+										<p id="loading" data-lang-key="waitOpponent">[WAITING FOR OPPONENT]</p>
+									<div class="line"></div>
+									<div class="line"></div>
+									<div class="line"></div>
+								</div>
+							</div>
 						</div>
-						
-                        <!-- joinPongContent -->
-						<div id="joinPong" class="h-100 align-items-center d-none">
-                        <input id="chat-message-input" type="text" size="20"><br>
-                        <input id="chat-message-submit" type="button" value="Send">
-						</div>
-						
-						
-                        </div>
-                        <div class="modal-footer">
-						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-						<button type="button" class="btn btn-primary">Save changes</button>
-                        </div>
-						</div>
-						</div>
-						</div>
-						</div>
-						`;
-    const pongElement = document.createElement('div');
-    pongElement.classList.add('col-12', 'col-md-6');
-    pongElement.innerHTML = pongHTML;
+							
+							<!-- joinPongContent -->
+							<div id="joinPong" class="h-100 align-items-center d-none">
+							<input id="chat-message-input" type="text" size="20"><br>
+							<input id="chat-message-submit" type="button" value="Send">
+							</div>
+							
+							<!-- onlineMatchmaking --!>
+							<div id="matchmaking" class="h-100 align-items-center d-none">
+							</div>
 
-    addEventListeners(pongElement);
+							<!-- tournamentModalContent -->
+							<div id="pongTournament" class="h-100 align-items-center d-none">
+							<canvas id="backgroundTournament" class="h-100 w-100"></canvas>
+							<div id="countdown"></div>
+							<div class="scoreboard">
+								<div class="row">
+									<div class="col col-display" id="scoreHome">0</div>
+								</div>
+								<div class="row">
+									<div class="col col-display" id="scoreGuest">0</div>
+								</div>
+							</div>
+							<div class="loading">
+								<div class="load-3">
+									<p id="loading_txt">[TOURNAMENT DOESN'T EXIST]</p>
+									<div class="line"></div>
+									<div class="line"></div>
+									<div class="line"></div>
+								</div>
+							</div>
+							<div id="myModal" class="modal">
+								<div class="modal-content">
+									<p>DEFAITE</p>
+									<p id="error"></p>
+									<button onclick="window.location.reload();">Revenir au menu</button>
+								</div>
+							</div>
+							<div id="myModal2" class="modal2">
+								<div id="startBtnDiv" class="startBtn">
+									<p data-lang-key="wonTourn">VOUS AVEZ REMPORTEZ LE TOURNOI, FELICITATIONS</p>
+									<button id="winnerBtn" onclick="window.location.reload();">Revenir au menu</button>
+								</div>
+							</div>
+							<div id="myModal3" class="modal3">
+								<div id="nextBtnDiv" class="nextBtn">
+									<p  data-lang-key="win">VICTOIRE</p>
+									<p id="score"></p>
+									<button id="nextGameBtn"  data-lang-key="nextGame">Prochaine partie</button>
+								</div>
+							</div>
+							</div>
 
-    function addEventListeners(element) {
+							<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+							<button type="button" class="btn btn-primary">Save changes</button>
+							</div>
+							</div>
+							</div>
+							</div>
+							</div>
+							`;
+							const pongElement = document.createElement('div');
+							pongElement.classList.add('col-12', 'col-md-6');
+							pongElement.innerHTML = pongHTML;
+							
+							addEventListeners(pongElement);
+							
+function addEventListeners(element) {
         const origPong = element.querySelector('#origPong');
         const multiPongBtn = element.querySelector('#multiPongBtn');
+        const joinPongBtn = element.querySelector('#joinPongBtn');
         const pongMulti = element.querySelector('#pongMulti');
-        const joinPong = element.querySelector('#joinPong');
         const pongLocal = element.querySelector('#pongLocal');
         const localPongBtn = element.querySelector('#localPongBtn');
         const previousDiv = origPong ? pongMulti.previousElementSibling : null;
         const pongModal = element.querySelector('#pong');
-    
-        // Add event listener to the button
-        multiPongBtn.addEventListener('click', toggleVisibility);
-        localPongBtn.addEventListener('click', toggleVisibility);
+        const matchmakingBtn = element.querySelector('#searchBtn');
+		const pongTournament = element.querySelector('#pongTournament');
+		const joinTournamentBtn = element.querySelector('#joinTournamentBtn');
+		const createTournament = element.querySelector('#createTournament')
 
-        localPongBtn.addEventListener('click', function() {
-            pongMulti.classList.add('d-none');
-            document.querySelectorAll('.card-game-inside > div').forEach(div => {
-                div.classList.add('d-none');
-            });
+		// * TOURNAMENTPONG
+		createTournament.addEventListener('click', toggleVisibility);
+		createTournament.addEventListener('click', function() {
+			Tournament();
+			pongLocal.classList.add('d-none');
+			origPong.classList.add('d-none');
+			pongMulti.classList.add('d-none');
+			document.querySelectorAll('.card-game-inside > div').forEach(div => {
+				div.classList.add('d-none');
+			});
+			pongTournament.classList.remove('d-none');
+			var data = document.querySelector('#pongTournament').innerHTML;
+			document.querySelector('#pongTournament').innerHTML = data;
+		});
+		
+		//* JOINTOURNAMENT
+		joinTournamentBtn.addEventListener('click', toggleVisibility);
+		joinTournamentBtn.addEventListener('click', function() {
+			const tournamentid = element.querySelector('#gameCodeInputTournament').value;
+			if (tournamentid)
+			{
+				joinTournament(tournamentid);
+				pongLocal.classList.add('d-none');
+				origPong.classList.add('d-none');
+				pongMulti.classList.add('d-none');
+				document.querySelectorAll('.card-game-inside > div').forEach(div => {
+					div.classList.add('d-none');
+				});
+				pongTournament.classList.remove('d-none');
+				var data = document.querySelector('#pongTournament').innerHTML;
+				document.querySelector('#pongTournament').innerHTML = data;
+		}
+		else {
+			console.error('Please insert a ID');
+		}
+		});
 
-            pongLocal.classList.remove('d-none');
-			var data = document.querySelector('#pongLocal').innerHTML;
-			document.querySelector('#pongLocal').innerHTML = data;
-            loadScripts();
-        });
-        pongElement.querySelector('#createBtn').addEventListener('click', function() {
-            pongMulti.classList.add('d-none');
-            gameid = makeid(3);
-            let url = '/api/game/create/' + gameid;
-              console.log(url);
-              fetch(url, {
-                  method: 'GET',
-                  credentials: 'same-origin' 
-              })
-              .then(response => response.json())
-              .then(data => {
-                  console.log('Success:', data);
-                  if (data['message'] == "ko") {
-                gameid = data['id'];
-                sessionStorage.setItem("gameid", gameid);
-                  } else if (data['message'] == 'ok'){
-                      sessionStorage.setItem("gameid", gameid);
-                      document.querySelectorAll('.card-game-inside > div').forEach(div => {
-                        div.classList.add('d-none');
-                      });
-                      pongLocal.classList.remove('d-none');
-                  }
-              })
-              .catch((error) => {
-                  console.error('Error:', error);
-              });
-          });
-        
-        pongElement.querySelector('#joinBtn').addEventListener('click', function() {
-            errorLink.textContent = "";
-            const gameIdInput = document.getElementById('gameCodeInput');
-            gameid = gameIdInput.value.trim();
-            let url = '/api/game/' + gameid;
-              console.log(url);
-              fetch(url, {
-                  method: 'GET',
-                  credentials: 'same-origin' 
-              })
-              .then(response => response.json())
-              .then(data => {
-                  console.log('Success:', data);
-                  if (data['message'] == "Not found") {
-                    errorLink.textContent = `La partie ${gameid} n'existe pas, veuillez reessayer`;
-                  } else{
-                    sessionStorage.setItem("gameid", gameid);
-                    document.querySelectorAll('.card-game-inside > div').forEach(div => {
-                    div.classList.add('d-none');
-                    });
-                    pongLocal.classList.remove('d-none');
-                    }
-              })
-              .catch((error) => {
-                  console.error('Error:', error);
-              });
-          });
-        
-          pongModal.addEventListener('show.bs.modal', function () {
-            console.log('Modal is about to be shown');
-			console.log(scriptStarted);
+	//* LOCALPONG
+	localPongBtn.addEventListener('click', toggleVisibility);
+	localPongBtn.addEventListener('click', function() {
+		console.log(localPongBtn);
+		origPong.classList.add('d-none');
+		pongTournament.classList.add('d-none');
+		pongMulti.classList.add('d-none');
+		document.querySelectorAll('.card-game-inside > div').forEach(div => {
+			div.classList.add('d-none');
+		});
+		pongLocal.classList.remove('d-none');
+		var data = document.querySelector('#pongLocal').innerHTML;
+		document.querySelector('#pongLocal').innerHTML = data;
+		loadLocalPong();
+	});
+
+		// * JoinBtn
+		multiPongBtn.addEventListener('click', toggleVisibility);
+		joinPongBtn.addEventListener('click', function() {
+			const gameIdInput = document.getElementById('#gameCodeInput');
+			if (gameIdInput) {
+				joinGame(gameIdInput);
+				pongLocal.classList.add('d-none');
+				pongTournament.classList.add('d-none');
+				origPong.classList.add('d-none');
+				document.querySelectorAll('.card-game-inside > div').forEach(div => {
+					div.classList.add('d-none');
+				});
+				pongMulti.classList.remove('d-none');
+				var data = document.querySelector('#pongMulti').innerHTML;
+				document.querySelector('#pongMulti').innerHTML = data;
+			} else {
+				console.error('Please insert a ID');
+			}
+		});
+
+		//* MULTIPONG
+		multiPongBtn.addEventListener('click', toggleVisibility);		
+		multiPongBtn.addEventListener('click', function() {
+			Multiplayer();
+			pongLocal.classList.add('d-none');
+			origPong.classList.add('d-none');
+			pongTournament.classList.add('d-none');
+			document.querySelectorAll('.card-game-inside > div').forEach(div => {
+				div.classList.add('d-none');
+			});
+			pongMulti.classList.remove('d-none');
+			var data = document.querySelector('#pongMulti').innerHTML;
+			document.querySelector('#pongMulti').innerHTML = data;
+		});
+
+		//* MATCHMAKING
+		matchmakingBtn.addEventListener('click', toggleVisibility);
+		matchmakingBtn.addEventListener('click', function() {
+			onlineMatchmaking();
+			pongLocal.classList.add('d-none');
+			origPong.classList.add('d-none');
+			pongTournament.classList.add('d-none');
+			document.querySelectorAll('.card-game-inside > div').forEach(div => {
+				div.classList.add('d-none');
+			});
+			pongMulti.classList.remove('d-none');
+			var data = document.querySelector('#pongMulti').innerHTML;
+			document.querySelector('#pongMulti').innerHTML = data;
+		});
+
+		
+        pongModal.addEventListener('show.bs.modal', function () {
 			scriptStarted = true;
 			document.querySelectorAll('.card-game-inside > div').forEach(div => {
 				div.classList.remove('d-none');
@@ -190,52 +281,18 @@ export function renderPong() {
 			origPong.classList.remove('d-none');
         });
         pongModal.addEventListener('hidden.bs.modal', function () {
-			console.log('Modal is hidden or closed');
-			console.log(scriptStarted);
-			scriptStarted = false;
-            document.querySelectorAll('.card-game-inside > div').forEach(div => {
-				console.log(div);
-            });
+			console.log('unload script');
 			unloadScript();
+			scriptStarted = false;
 			const pongLocal = element.querySelector('#pongLocal');
+			const pongMulti = element.querySelector('#pongMulti');
+			const pongTournament = element.querySelector('#pongTournament');
     		pongLocal.classList.add('d-none');
+			pongMulti.classList.add('d-none');
+			pongTournament.classList.add('d-none');
             origPong.classList.remove('d-none');
         });
-
-        pongElement.querySelector('#searchBtn').addEventListener('click', function() {
-            let url = '/api/game/search/';
-            console.log(url);
-            document.getElementsByTagName('body')[0].innerHTML = `
-            <div class="container">
-              <div class="load-3">
-                  <p id="loading">[SEARCHING FOR OPPONENT]</p>
-                  <div class="line"></div>
-                  <div class="line"></div>
-                  <div class="line"></div>
-              </div>
-            </div>
-          `;
-        
-              fetch(url, {
-                  method: 'GET',
-                  credentials: 'same-origin' 
-              })
-              .then(response => response.json())
-              .then(data => {
-                  console.log('Success:', data);
-                  if (data['message'] == "ok") {
-                    gameid = data['id'];
-                    sessionStorage.setItem("gameid", gameid);
-                    window.location.href = "/pong/pong.html";
-                  } else if (data['message'] == 'ko'){
-                    console.log("L'homme methode GET")
-                  }
-              })
-              .catch((error) => {
-                  console.error('Error:', error);
-              });
-          });
-    
+		
         // Define the event handler
         function toggleVisibility() {
             pongMulti.classList.toggle('d-none');
@@ -256,20 +313,18 @@ function changeDivContent(newContent) {
     div.innerHTML = newContent;
 }
 
-// Pour load les scripts lorsque l'on presse le bouton
-
 function unloadScript() {
     // Désactiver les scripts chargés dynamiquement
     document.querySelectorAll('script[type="module"][data-pong="dynamic"]').forEach(script => {
-        script.setAttribute('data-disabled', 'true');
+		console.log(script);
+		script.setAttribute('data-disabled', 'true');
         script.removeAttribute('type');
         script.remove(); // Supprimer le script du DOM
     });
 }
 
 
-function loadScripts() {
-    // Supprime les anciens scripts si nécessaire    
+function loadLocalPong() {
     // Créer et ajouter le script localpong.js
     document.querySelectorAll('script[data-disabled="true"]').forEach(script => {
         script.setAttribute('type', 'module');
@@ -278,14 +333,34 @@ function loadScripts() {
     const scriptLocalPong = document.createElement('script');
     scriptLocalPong.type = 'module';
     scriptLocalPong.src = '../localpong/localpong.js?' + new Date().getTime(); // Ajoute un horodatage à l'URL
-    console.log('loading');
+    console.log('loadingLocal');
     scriptLocalPong.setAttribute('data-pong', 'dynamic');  // Marqueur pour identifier les scripts chargés dynamiquement
     document.body.appendChild(scriptLocalPong);
-    
-    // Créer et ajouter le script ModelHelper.js
-    // const scriptModelHelper = document.createElement('script');
-    // scriptModelHelper.type = 'module';
-    // scriptModelHelper.src = '../localpong/ModelHelper.js?' + new Date().getTime(); // Ajoute un horodatage à l'URL
-    // scriptModelHelper.setAttribute('data-pong', 'dynamic');
-    // document.body.appendChild(scriptModelHelper);
+}
+
+export function loadMultiPong() {
+	document.querySelectorAll('script[data-disabled="true"]').forEach(script => {
+        script.setAttribute('type', 'module');
+        script.removeAttribute('data-disabled');
+    });
+    const scriptMultiPong = document.createElement('script');
+    scriptMultiPong.type = 'module';
+    scriptMultiPong.src = '../pong/javascript/pong.js?' + new Date().getTime(); // Ajoute un horodatage à l'URL
+    console.log('loadingMulti');
+    scriptMultiPong.setAttribute('data-pong', 'dynamic');  // Marqueur pour identifier les scripts chargés dynamiquement
+    document.body.appendChild(scriptMultiPong);
+}
+
+export function loadTournamentPong() {
+	document.querySelectorAll('script[data-disabled="true"]').forEach(script => {
+        script.setAttribute('type', 'module');
+        script.removeAttribute('data-disabled');
+    });
+    const scriptTournament = document.createElement('script');
+    scriptTournament.type = 'module';
+    scriptTournament.src = '../pong/javascript/pong_tournament.js?' + new Date().getTime(); // Ajoute un horodatage à l'URL
+    console.log('loadingTournament');
+    scriptTournament.setAttribute('data-pong', 'dynamic');  // Marqueur pour identifier les scripts chargés dynamiquement
+    document.body.appendChild(scriptTournament);
+	console.log(document.body.appendChild(scriptTournament));
 }
