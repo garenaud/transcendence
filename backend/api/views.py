@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
-from database.models import Users, Games, Tournament, userProfile
-from database.serializers import UsersSerializer, CreateUserSerializer, UserSerializer, GamesSerializer, UserProfileSerializer, TournamentSerializer
+from database.models import  Games, Tournament, userProfile
+from database.serializers import UserSerializer, GamesSerializer, UserProfileSerializer, TournamentSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -12,7 +12,7 @@ from django.contrib import messages, auth
 from django.shortcuts import render
 from django.contrib.auth.models import User
 import random
-
+from itertools import chain
 
 
 #Returns all user in the database
@@ -205,5 +205,17 @@ def get_tournament_list(request):
 		tournaments = Tournament.objects.all()
 		serializer = TournamentSerializer(tournaments, many=True)
 		return Response(serializer.data)
+	else:
+		return Response("Unauthorized method", status=status.HTTP_401_UNAUTHORIZED)
+	
+
+@api_view(['GET'])
+def get_user_history(request, userid):
+	if (request.method == 'GET'):
+		games1 = Games.objects.filter(p1_id=userid)
+		games2 = Games.objects.filter(p2_id=userid)
+		serializer1 = GamesSerializer(games1, many=True)
+		serializer2 = GamesSerializer(games2, many=True)
+		return Response({'message' : 'OK', 'data' : serializer1.data + serializer2.data}, status=200)
 	else:
 		return Response("Unauthorized method", status=status.HTTP_401_UNAUTHORIZED)
