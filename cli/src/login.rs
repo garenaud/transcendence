@@ -79,11 +79,11 @@ fn connection(srv: String, login: String, password: String) -> Option<User> {
 	let csrf_token = csrf_token.as_str();
 
 	let req = client
-		.post(("https://{server}/auth/").replace("{server}", &srv))
+		.post(("https://{server}/auth/login/").replace("{server}", &srv))
 		.header("User-Agent", "cli_rust")
 		.header("Accept", "application/json")
 		.header("X-CSRFToken", csrf_token)
-		.body((r#"{"email":"{email}","password":"{password}"}"#).replace("{email}", &login).replace("{password}", &password))
+		.body((r#"{"username":"{email}","password":"{password}"}"#).replace("{email}", &login).replace("{password}", &password))
 		.timeout(Duration::from_secs(3));
 
 	let req = req.build().expect("ERROR WHILE BUILDING THE REQUEST");
