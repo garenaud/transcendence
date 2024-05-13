@@ -144,7 +144,7 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
                 self.game.bpz + self.game.bradius > self.game.prz - paddle_size_z / 2 and
                 self.game.bpz - self.game.bradius < self.game.prz + paddle_size_z / 2
                 and is_colliding == False):
-                self.game.bv.x *= -1;
+                self.game.bv.x *= -1
                 self.game.sif += 0.1
                 is_colliding = True
                 #self.game.sif += 0.1

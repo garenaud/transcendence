@@ -533,6 +533,7 @@ function onMessageHandler(e) {
 	}
 };
 
+const userList = document.getElementById('userList');
 
 tournamentSocket.onmessage = function(e) {
 	tournament_data = JSON.parse(e.data);
@@ -540,14 +541,21 @@ tournamentSocket.onmessage = function(e) {
 	{
 		window.location.reload();
 	}
-	if (tournament_data.action == 'connect')
-	{
+	// Suppose we have a list element to display the connected users
+
+	if (tournament_data.action == 'connect') {
 		console.log(tournament_data.action);
 		connected += 1;
 		loadingElement.innerHTML = "[WAITING FOR OPPONENT]<br>Tournament ID : " + tournament_id + '<br>' + 'Currently connected : ' + connected + '/4';
-		const user1 = document.getElementById('user1');
-		user1.innerHTML = "joueur " + appState.user.first_name;
-		console.log(user1);
+
+		// Create a new list item for the connected user
+		const userItem = document.createElement('li');
+		userItem.textContent = "joueur " + tournament_data.username;
+
+		// Add the new user to the list of connected users
+		userList.appendChild(userItem);
+
+		console.log(userItem);
 		console.log(appState.user.first_name);
 	}
 	else if (tournament_data.action == 'playernb')

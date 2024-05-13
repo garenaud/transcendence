@@ -116,10 +116,7 @@ export function renderPong() {
 									<div class="line"></div>
 									<div class="line"></div>
 									<div class="line"></div>
-									<div id="user1" rel="stylesheet" type="text/css" href="../pong/css/stylesMulti.css"></div>
-									<div id="user2"></div>
-									<div id="user3"></div>
-									<div id="user4"></div>
+									<ul id="userList"></ul>
 								</div>
 							</div>
 							<div id="myModal" class="modal">
