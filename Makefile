@@ -17,7 +17,7 @@ nginx-ip:
 	@if ! docker ps --format '{{.Names}}' | grep -q "nginx"; then \
 		echo "You must start the project before by using the command 'make'"; \
 	else \
-		docker exec -it nginx ifconfig; \
+		docker exec -it nginx ifconfig | grep "Bcast"; \
 	fi
 
 down: 
