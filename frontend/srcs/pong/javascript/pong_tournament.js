@@ -550,7 +550,7 @@ tournamentSocket.onmessage = function(e) {
 
 		// Create a new list item for the connected user
 		const userItem = document.createElement('li');
-		userItem.textContent = "joueur " + tournament_data.username;
+		userItem.textContent = "joueur " + appState.user.first_name;
 
 		// Add the new user to the list of connected users
 		userList.appendChild(userItem);
@@ -558,6 +558,7 @@ tournamentSocket.onmessage = function(e) {
 		console.log(userItem);
 		console.log(appState.user.first_name);
 	}
+	
 	else if (tournament_data.action == 'playernb')
 	{
 		playernb = tournament_data['playernb'];
