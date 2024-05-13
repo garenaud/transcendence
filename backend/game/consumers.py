@@ -90,13 +90,14 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
         )
 
     async def stop_game(self):
-        await self.channel_layer.group_send(
+            await self.channel_layer.group_send(
             self.room_group_name,
             {
                 'type' : 'update',
                 "message": {'action' : 'Stop', 'scorep1' : self.game.scorep1, 'scorep2' : self.game.scorep2}
             }
-        )
+            )
+
 
     async def send_counter(self):
         await asyncio.sleep(1.5)
@@ -122,6 +123,31 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
                 self.game.dbgame.p2_score = self.game.scorep2
                 await sync_to_async(self.saveGame)(self.game.dbgame)
                 await self.stop_game()
+                user1 = await sync_to_async(User.objects.get)(id=self.game.dbgame.p1_id)
+                user2 = await sync_to_async(User.objects.get)(id=self.game.dbgame.p2_id)
+                print(user1.username)
+                print(user2.username)
+                print("ssafasf")
+                profile_p1 = await sync_to_async(userProfile.objects.get)(user=user1)
+                profile_p2 = await sync_to_async(userProfile.objects.get)(user=user2)
+                print(type(profile_p1))
+                print(type(profile_p2))
+                print(profile_p2.winrate)
+                print(profile_p1.user.username)
+                print(profile_p2.user.username)
+                if self.game.dbgame.scorep1 > self.game.dbgame.scorep2:
+                    profile_p1.game_won += 1
+                    profile_p2.game_lost += 1
+                else:
+                    profile_p2.game_won += 1
+                    profile_p1.game_lost += 1
+                print(profile_p1.game_won)
+                profile_p2.winrate = profile_p1.game_won / profile_p1.game_lost
+                profile_p2.winrate = profile_p2.game_won / profile_p2.game_lost
+                profile_p1.in_game = False
+                profile_p1.in_game = False
+                await sync_to_async(self.saveGame)(profile_p1)
+                await sync_to_async(self.saveGame)(profile_p2)
             paddle_size_x = 0.20000000298023224
             paddle_size_z = 3.1
             #verifier la collision avec le paddle gauche
@@ -179,6 +205,10 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             await asyncio.sleep(1 / 120)
 
     async def disconnect(self, close_code):
+        user1 = await sync_to_async(User.objects.get)(id=self.game.dbgame.p1_id)
+        user2 = await sync_to_async(User.objects.get)(id=self.game.dbgame.p2_id)
+        profile_p1 = await sync_to_async(userProfile.objects.get)(user=user1)
+        profile_p2 = await sync_to_async(userProfile.objects.get)(user=user2)
         self.channel_layer.group_discard(
             self.room_group_name, self.channel_name
         )
@@ -193,12 +223,12 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             print('ca arrive hein')
         self.game.finished = True
         self.game.dbgame.finished = True
-        await sync_to_async(self.saveGame)(self.game.profile_p1)
-        self.game.profile_p1.in_game = False
-        self.game.profile_p2.in_game = False
+        await sync_to_async(self.saveGame)(profile_p1)
+        profile_p1.in_game = False
+        profile_p2.in_game = False
         await sync_to_async(self.saveGame)(self.game.dbgame)
-        await sync_to_async(self.saveGame)(self.game.profile_p1)
-        await sync_to_async(self.saveGame)(self.game.profile_p2)
+        await sync_to_async(self.saveGame)(profile_p1)
+        await sync_to_async(self.saveGame)(profile_p2)
 
     async def receive(self, text_data):
         jsondata = json.loads(text_data)
@@ -214,14 +244,14 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             print(user.username)
             if self.game.p1id == self.channel_name:
                 self.game.dbgame.p1_id = jsondata['userid']
-                self.game.profile_p1 = await sync_to_async(userProfile.objects.get)(user=user)
-                self.game.profile_p1.in_game = True
-                await sync_to_async(self.saveGame)(self.game.profile_p1)
+                profile_p1 = await sync_to_async(userProfile.objects.get)(user=user)
+                profile_p1.in_game = True
+                await sync_to_async(self.saveGame)(profile_p1)
             elif self.game.p2id == self.channel_name:
                 self.game.dbgame.p2_id = jsondata['userid']
-                self.game.profile_p2 = await sync_to_async(userProfile.objects.get)(user=user)
-                self.game.profile_p2.in_game = True
-                await sync_to_async(self.saveGame)(self.game.profile_p2)
+                profile_p2 = await sync_to_async(userProfile.objects.get)(user=user)
+                profile_p2.in_game = True
+                await sync_to_async(self.saveGame)(profile_p2)
             await sync_to_async(self.saveGame)(self.game.dbgame)
         if message == 'ball_update':
             await self.channel_layer.group_send(
@@ -231,20 +261,12 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
         if message == 'getWinner':
             if self.game.scorep1 > self.game.scorep2 and self.channel_name == self.game.p1id:
                 await self.send(text_data=json.dumps({'action' : 'winner'}))
-                self.game.profile_p1.game_won += 1
-                self.game.profile_p2.game_lost += 1
             elif self.game.scorep1 < self.game.scorep2 and self.channel_name == self.game.p2id:
                 await self.send(text_data=json.dumps({'action' : 'winner'}))
-                self.game.profile_p2.game_won += 1
-                self.game.profile_p1.game_lost += 1
             else:
                 await self.send(text_data=json.dumps({'action' : 'looser'}))
-            self.game.profile_p2.winrate = self.game.profile_p1.game_won / self.game.profile_p1.game_lost
-            self.game.profile_p2.winrate = self.game.profile_p2.game_won / self.game.profile_p2.game_lost
-            self.game.profile_p1.in_game = False
-            self.game.profile_p1.in_game = False
-            await sync_to_async(self.saveGame)(self.game.profile_p1)
-            await sync_to_async(self.saveGame)(self.game.profile_p2)
+
+
         # if message == "Start" and self.game.started == False:
         #     self.game.started = True
         #     self.task = asyncio.create_task(self.loop())
