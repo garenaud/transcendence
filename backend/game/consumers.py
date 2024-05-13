@@ -283,10 +283,48 @@ class AsyncTournamentConsumer(AsyncWebsocketConsumer):
         await self.accept()
         try :
             self.tournoi = await sync_to_async(Tournament.objects.get)(tournament_id=self.tournament_id)
+            if self.tournoi.p2_id == -1:
+                print(self.tournoi.p1_id)
+                user = await sync_to_async(User.objects.get)(id=self.tournoi.p1_id)
+                await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                'type' : 'update',
+                "message": {'action' : 'namep1', 'namep1' : user.username}
+                }
+                )
+            elif self.tournoi.p3_id == -1:
+                print('yes')
+                user = await sync_to_async(User.objects.get)(id=self.tournoi.p2_id)
+                await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                'type' : 'update',
+                "message": {'action' : 'namep2', 'namep2' : user.username}
+                }
+                )
+            elif self.tournoi.p4_id == -1:
+                print('yes')
+                user = await sync_to_async(User.objects.get)(id=self.tournoi.p3_id)
+                await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                'type' : 'update',
+                "message": {'action' : 'namep3', 'namep3' : user.username}
+                }
+                )
             await self.send(text_data=json.dumps({'message' : self.tournament_id}))
             if self.tournoi.full == True:
                 self.playernb = 4
                 print('TOURNAMENT P4')
+                user = await sync_to_async(User.objects.get)(id=self.tournoi.p1_id)
+                await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                'type' : 'update',
+                "message": {'action' : 'namep4', 'namep4' : user.username}
+                }
+                )
                 await self.channel_layer.group_send(
                 self.room_group_name,
                 {
