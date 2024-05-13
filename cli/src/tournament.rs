@@ -232,7 +232,6 @@ fn handle_tournament(user: User, socket: &mut tungstenite::WebSocket<tungstenite
 													Message::Text(msg) => {
 														let msg = msg.as_str();
 														let json = json::parse(msg).unwrap();
-														// eprintln!("{}", format!("{:#?}", json).yellow());
 														match json["action"].as_str().unwrap() {
 															"gameid" => {
 																game_id = json["gameid"].as_i32().unwrap();
@@ -252,7 +251,7 @@ fn handle_tournament(user: User, socket: &mut tungstenite::WebSocket<tungstenite
 									}
 								},
 								"gameid" => {
-									game_id = json["game_id"].as_i32().unwrap();
+									game_id = json["gameid"].as_i32().unwrap();
 									continue;
 								},
 								_ => {}

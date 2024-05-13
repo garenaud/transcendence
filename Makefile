@@ -6,8 +6,19 @@ all:
 	docker-compose build
 	docker-compose up -d
 
-cli: ${RUST_SOURCE}
-	cargo build --manifest-path=cli/Cargo.toml
+cli:
+	@if ! docker ps --format '{{.Names}}' | grep -q "cli"; then \
+		echo "You must start the project before by using the command 'make'"; \
+	else \
+		docker exec -it cli /bin/bash; \
+	fi
+
+nginx-ip:
+	@if ! docker ps --format '{{.Names}}' | grep -q "nginx"; then \
+		echo "You must start the project before by using the command 'make'"; \
+	else \
+		docker exec -it nginx ifconfig; \
+	fi
 
 down: 
 	docker-compose down
@@ -25,7 +36,7 @@ look:
 	docker network ls
 
 clean:
-	cargo clean --manifest-path=cli/Cargo.toml
+	# cargo clean --manifest-path=cli/Cargo.toml
 	docker image prune -a
 
 fclean: down clean vol
@@ -37,4 +48,4 @@ vol:
 
 re: fclean all
 	
-.PHONY: all down re clean fclean vol debug look $(RUST_SOURCE)
+.PHONY: all down re clean fclean vol debug look cli nginx-ip $(RUST_SOURCE)
