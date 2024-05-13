@@ -92,7 +92,6 @@ fn connection(srv: String, login: String, password: String) -> Option<User> {
 	let mut user = User::new();
 	match res {
 		Ok(res) => {
-			eprintln!("{}", format!("RESPONSE: {:#?}", res).red());
 			if !res.status().is_success() {
 				return None;
 			}
@@ -104,13 +103,12 @@ fn connection(srv: String, login: String, password: String) -> Option<User> {
 					return None;
 				}
 			};
-			eprintln!("{}", format!("RESPONSE: {:#?}", res).green());
 			match json::parse(&res) {
 				Ok(res) => {
 					if res["message"] == -1 {
 						return None;
 					}
-					user.fill(login, res["session_id"].to_string(), client, srv, csrf_token.to_string());
+					user.fill(res["id"].to_string(), login, res["session_id"].to_string(), client, srv, csrf_token.to_string());
 				},
 				Err(err) => {
 					eprintln!("Error in respond: {:#?}", err);
