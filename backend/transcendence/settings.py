@@ -62,7 +62,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
+REFERRER_POLICY = 'no-referrer'
 CSRF_TRUSTED_ORIGINS = ['https://localhost']
 
 ROOT_URLCONF = 'transcendence.urls'
