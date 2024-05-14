@@ -36,7 +36,7 @@ export function changeView(newView) {
                 delete appState.renderedComponents[component];
             }
         }
-        sessionStorage.setItem('renderedComponents', JSON.stringify(appState.renderedComponents));
+        // sessionStorage.setItem('renderedComponents', JSON.stringify(appState.renderedComponents));
     }
     location.hash = newView;
     appState.currentView = newView;
