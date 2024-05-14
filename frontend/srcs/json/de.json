@@ -40,5 +40,6 @@
     "onlineMatchmaking": "Online-Matchmaking",
     "createTourn": "Turnier erstellen",
     "joinTourn": "an Turnier teilnehmen",
-    "wonTourn": "SIE HABEN DAS TURNIER GEWONNEN, GLÜCKWUNSCH"
+    "wonTourn": "SIE HABEN DAS TURNIER GEWONNEN, GLÜCKWUNSCH",
+    "confirmLogout": "Wenn Sie zu dieser Seite zurückkehren, werden Sie abgemeldet. Sind Sie sicher, dass Sie fortfahren möchten?"
 }

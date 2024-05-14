@@ -55,15 +55,17 @@ window.addEventListener("hashchange", function() {
 });
 
 // Fonction pour que l'historique du navigateur fonctionne correctement avec les vues de l'application (popstate se declenche lorsque l'on presse sur precedent)
-window.addEventListener("popstate", function() {
+window.addEventListener("popstate", async function() {
     const newView = location.hash.substring(1);
     if (newView === 'login' && appState.urlHistory.length === 2) {
+        //const translations = await fetch('../json/' + appState.language + '.json').then(response => response.json());
+        //const confirmLogout = window.confirm(translations.confirmLogout)
         const confirmLogout = window.confirm('Si vous revenez à cette page, vous serez déconnecté. Êtes-vous sûr de vouloir continuer ?');
         if (confirmLogout) {
             // Déconnectez l'utilisateur et mettez à jour l'état de l'application
-            // appState.user = null;
-            // appState.currentView = newView;
-            // appState.urlHistory.pop();
+            appState.user = null;
+            appState.currentView = newView;
+            appState.urlHistory.pop();
             console.log('bye bye mon ami tu as choisi de nous quitter!!!!');
         } else {
             // Annulez l'action précédente
@@ -144,9 +146,8 @@ export async function renderApp() {
                         const game = await renderPong();
                         const game2 = await renderRun();
                         const gameListHTML = await showGameList();
-                        const gameListElement = document.createElement('div');
-                        gameListElement.innerHTML = gameListHTML;
-                        await renderDiv([game2, game], 'row');
+                        const cardHistory = createListCardComponent('pongPlayed', 'Games', gameListHTML);
+                        await renderDiv([cardHistory, game], 'row');
                         await LanguageBtn();
                         // renderNavbar(appState.user);
                         appState.renderedComponents.game = true;

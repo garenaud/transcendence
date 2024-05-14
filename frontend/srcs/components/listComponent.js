@@ -1,6 +1,8 @@
 import { createButtonComponent, createToastComponent, renderDiv, createPhotoComponent } from "./globalComponent.js";
-import { loadGameList } from "./userManager.js";
+import { loadGameList, getUserFromServer } from "./userManager.js";
 import { appState } from "./stateManager.js";
+
+let gameList = [];
 
 export function  showUserList() {
     const users = appState.users;
@@ -33,47 +35,63 @@ export function  showUserList() {
     modalBody.appendChild(table);
   }
 
+  async function updateGameList() {
+    const newGameList = await loadGameList();
+    if (JSON.stringify(newGameList) !== JSON.stringify(gameList)) {
+        gameList = newGameList;
+        // Define and implement showGameList function here
+        showGameList();
+    }
+}
+
   export async function showGameList() {
     const games = await loadGameList();
     const table = document.createElement('table');
     table.className = 'game-list-table';
   
-    games.forEach(game => {
-        const row = document.createElement('tr');
-        const p1Cell = document.createElement('td');
-        const p2Cell = document.createElement('td');
-        const statusCell = document.createElement('td');
+    for (const game of games) {
+        try {
+            const row = document.createElement('tr');
+            const p1Cell = document.createElement('td');
+            const p2Cell = document.createElement('td');
+            const statusCell = document.createElement('td');
   
-        const p1PhotoComponent = createPhotoComponent('./Design/User/Max-R_Headshot.jpg', game.p1_id);
-        const p2PhotoComponent = createPhotoComponent('./Design/User/Max-R_Headshot.jpg', game.p2_id);
+            const p1User = await getUserFromServer(game.p1_id);
+            const p2User = await getUserFromServer(game.p2_id);
   
-        p1Cell.appendChild(p1PhotoComponent);
-        p1Cell.appendChild(document.createTextNode(`Score: ${game.p1_score}`));
-        p2Cell.appendChild(p2PhotoComponent);
-        p2Cell.appendChild(document.createTextNode(`Score: ${game.p2_score}`));
+            const p1PhotoComponent = createPhotoComponent('./Design/User/Max-R_Headshot.jpg', p1User.username);
+            const p2PhotoComponent = createPhotoComponent('./Design/User/Max-R_Headshot.jpg', p2User.username);
   
-        // Create a span for the game status
-        const statusSpan = document.createElement('span');
-        statusSpan.className = `status-game bg-${game.finished ? 'success' : 'danger'}`;
-        statusSpan.textContent = game.finished ? 'Finished' : 'In Progress';
-        statusCell.appendChild(statusSpan);
+            p1Cell.appendChild(p1PhotoComponent);
+            p1Cell.appendChild(document.createTextNode(`Score: ${game.p1_score}`));
+            p2Cell.appendChild(p2PhotoComponent);
+            p2Cell.appendChild(document.createTextNode(`Score: ${game.p2_score}`));
   
-        if (game.p1_score > game.p2_score) {
-            p1Cell.style.backgroundColor = 'green';
-            p2Cell.style.backgroundColor = 'red';
-        } else if (game.p1_score < game.p2_score) {
-            p1Cell.style.backgroundColor = 'red';
-            p2Cell.style.backgroundColor = 'green';
-        } else if (game.p1_score === game.p2_score) {
-            p1Cell.style.backgroundColor = 'yellow';
-            p2Cell.style.backgroundColor = 'yellow';
+            // Create a span for the game status
+            const statusSpan = document.createElement('span');
+            statusSpan.className = `status-game bg-${game.finished ? 'success' : 'danger'}`;
+            statusSpan.textContent = game.finished ? 'Finished' : 'In Progress';
+            statusCell.appendChild(statusSpan);
+  
+            if (game.p1_score > game.p2_score) {
+                p1Cell.style.backgroundColor = 'green';
+                p2Cell.style.backgroundColor = 'red';
+            } else if (game.p1_score < game.p2_score) {
+                p1Cell.style.backgroundColor = 'red';
+                p2Cell.style.backgroundColor = 'green';
+            } else if (game.p1_score === game.p2_score) {
+                p1Cell.style.backgroundColor = 'yellow';
+                p2Cell.style.backgroundColor = 'yellow';
+            }
+  
+            row.appendChild(p1Cell);
+            row.appendChild(statusCell);
+            row.appendChild(p2Cell);
+            table.appendChild(row);
+        } catch (error) {
+            console.error('Error fetching user:', error);
         }
-  
-        row.appendChild(p1Cell);
-        row.appendChild(statusCell);
-        row.appendChild(p2Cell);
-        table.appendChild(row);
-    });
+    }
   
     return table.outerHTML;
-  }
+}
