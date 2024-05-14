@@ -123,31 +123,7 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
                 self.game.dbgame.p2_score = self.game.scorep2
                 await sync_to_async(self.saveGame)(self.game.dbgame)
                 await self.stop_game()
-                user1 = await sync_to_async(User.objects.get)(id=self.game.dbgame.p1_id)
-                user2 = await sync_to_async(User.objects.get)(id=self.game.dbgame.p2_id)
-                print(user1.username)
-                print(user2.username)
-                print("ssafasf")
-                profile_p1 = await sync_to_async(userProfile.objects.get)(user=user1)
-                profile_p2 = await sync_to_async(userProfile.objects.get)(user=user2)
-                print(type(profile_p1))
-                print(type(profile_p2))
-                print(profile_p2.winrate)
-                print(profile_p1.user.username)
-                print(profile_p2.user.username)
-                if self.game.dbgame.scorep1 > self.game.dbgame.scorep2:
-                    profile_p1.game_won += 1
-                    profile_p2.game_lost += 1
-                else:
-                    profile_p2.game_won += 1
-                    profile_p1.game_lost += 1
-                print(profile_p1.game_won)
-                profile_p2.winrate = profile_p1.game_won / profile_p1.game_lost
-                profile_p2.winrate = profile_p2.game_won / profile_p2.game_lost
-                profile_p1.in_game = False
-                profile_p1.in_game = False
-                await sync_to_async(self.saveGame)(profile_p1)
-                await sync_to_async(self.saveGame)(profile_p2)
+            
             paddle_size_x = 0.20000000298023224
             paddle_size_z = 3.1
             #verifier la collision avec le paddle gauche
@@ -265,6 +241,23 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
                 await self.send(text_data=json.dumps({'action' : 'winner'}))
             else:
                 await self.send(text_data=json.dumps({'action' : 'looser'}))
+        if message == 'mdr':
+                user1 = await sync_to_async(User.objects.get)(id=self.game.dbgame.p1_id)
+                user2 = await sync_to_async(User.objects.get)(id=self.game.dbgame.p2_id)
+                profile_p1 = await sync_to_async(userProfile.objects.get)(user=user1)
+                profile_p2 = await sync_to_async(userProfile.objects.get)(user=user2)
+                if self.game.dbgame.p1_score > self.game.dbgame.p2_score:
+                    profile_p1.game_won += 1
+                    profile_p2.game_lost += 1
+                else:
+                    profile_p2.game_won += 1
+                    profile_p1.game_lost += 1
+                profile_p2.winrate = 100 / (profile_p1.game_lost + profile_p1.game_won) * profile_p1.game_won
+                profile_p2.winrate = 100 / (profile_p2.game_lost + profile_p2.game_won) * profile_p2.game_won
+                profile_p1.in_game = False
+                profile_p2.in_game = False
+                await sync_to_async(self.saveGame)(profile_p1)
+                await sync_to_async(self.saveGame)(profile_p2)
 
 
         # if message == "Start" and self.game.started == False:

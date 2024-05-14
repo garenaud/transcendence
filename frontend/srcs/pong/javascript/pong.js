@@ -355,6 +355,9 @@ gameSocket.onmessage = function(e) {
 			}));
 		}
 	} else if (game_data.action == 'Stop') {
+		gameSocket.send(JSON.stringify({
+			'message' : 'mdr'
+			}));
 		const errorElement = document.getElementById('error');
 		errorElement.textContent = "Final score : " + game_data.scorep2 + " - " + game_data.scorep1;
 		document.getElementById("myModal").style.display = "block";
