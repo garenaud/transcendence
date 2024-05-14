@@ -48,8 +48,4 @@ vol:
 
 re: fclean all
 	
-<<<<<<< HEAD
-.PHONY: all down re clean fclean vol debug look
-=======
 .PHONY: all down re clean fclean vol debug look cli nginx-ip $(RUST_SOURCE)
->>>>>>> c544015c2cba622645236e326288062cb0c1467c
