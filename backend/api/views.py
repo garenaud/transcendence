@@ -101,12 +101,12 @@ def get_game_list(request):
 @api_view(['GET'])
 def get_game_by_id(request, gameid):
 	if (request.method == 'GET'):
-		game = Games.objects.filter(room_id=gameid).count()
+		game = Games.objects.filter(room_id=gameid, private=True, finished=False, started=False).count()
 		if game == 0:
 			return Response({"message" : "Not found"})
 		else:
 			try:
-				game = Games.objects.get(room_id=gameid, finished=False)
+				game = Games.objects.get(room_id=gameid, finished=False, private=True)
 				serializer = GamesSerializer(game)
 				return Response({"message" : serializer.data})
 			except:
@@ -130,7 +130,7 @@ def search_game(request):
 	if request.method == 'GET':
 		while True:
 			try:
-				games = Games.objects.filter(started=False, finished=False, full=False)
+				games = Games.objects.filter(started=False, finished=False, full=False, private=False)
 				id = games[0].room_id
 				return Response({"message" : "ok", 'id' : id})
 			except:
