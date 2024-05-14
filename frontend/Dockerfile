@@ -1,7 +1,7 @@
-FROM nginx:1.19.0-alpine-perl
+FROM nginx:1.19.0-alpine
 
 RUN apk add openssl
-
+RUN apk add net-tools
 RUN apk add -u nghttp2
 
 RUN apk add npm
