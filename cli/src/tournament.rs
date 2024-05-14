@@ -263,17 +263,20 @@ fn handle_tournament(user: User, socket: &mut tungstenite::WebSocket<tungstenite
 				}
 			},
 			Err(err) => {
+				eprintln!("CRASHED HERE");
 				eprintln!("{}", format!("{:#?}", err).red());
 				break;
 			}
 		};
 	}
 
+
+
 	match pong::connect_game(user.clone(), game_id.to_string(), true) {
 		Some(res) => {
 			if res {
 				println!("{}", format!("You won the game").green().bold());
-				_ = socket.send(Message::Text(r#"{"message":"winner"}"#.to_string()));
+				_ = socket.send(Message::Text(r#"{"message":"winner", "finalid":-1}"#.to_string()));
 			} else {
 				println!("{}", format!("You lost the game").red().bold());
 				_ = socket.send(Message::Text(r#"{"message":"looser"}"#.to_string()));
@@ -285,38 +288,43 @@ fn handle_tournament(user: User, socket: &mut tungstenite::WebSocket<tungstenite
 			return;
 		}
 	};
-	match socket.read() {
-		Ok(msg) => {
-			match msg {
-				Message::Text(msg) => {
-					let msg = msg.as_str();
-					let json = json::parse(msg).unwrap();
-					match json["action"].as_str().unwrap() {
-						"gameid" => {
-							game_id = json["game_id"].as_i32().unwrap();
-							match pong::connect_game(user.clone(), game_id.to_string(), false) {
-								Some(res) => {
-									if res {
-										println!("{}", format!("You won the tournament").green().bold());
-									} else {
-										println!("{}", format!("You lost the tournament").red().bold());
+	loop {
+		match socket.read() {
+			Ok(msg) => {
+				match msg {
+					Message::Text(msg) => {
+						let msg = msg.as_str();
+						let json = json::parse(msg).unwrap();
+						match json["action"].as_str().unwrap() {
+							"finalid" => {
+								game_id = json["finalid"].as_i32().unwrap();
+								eprintln!("FINAL ID IS {}", game_id);
+								match pong::connect_game(user.clone(), game_id.to_string(), false) {
+									Some(res) => {
+										if res {
+											println!("{}", format!("You won the tournament").green().bold());
+										} else {
+											println!("{}", format!("You lost the tournament").red().bold());
+										}
+									},
+									None => {
+										println!("{}", format!("Error during the game").red());
+										return;
 									}
-								},
-								None => {
-									println!("{}", format!("Error during the game").red());
-									return;
 								}
+							},
+							_ => {
+								eprintln!("{:#?}", json);
 							}
-						},
-						_ => {}
-					};
-				},
-				_ => {}
+						};
+					},
+					_ => {}
+				}
+			},
+			Err(err) => {
+				eprintln!("{}", format!("{:#?}", err).red());
+				return;
 			}
-		},
-		Err(err) => {
-			eprintln!("{}", format!("{:#?}", err).red());
-			return;
 		}
 	}
 }
