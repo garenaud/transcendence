@@ -82,8 +82,9 @@ export function getCurrentView() {
 
 // Fonction principale pour rendre l'application en fonction de l'état actuel
 export async function renderApp() {
-    if (!location.hash || appState.user == null) { //) {
+    if (!location.hash || appState.userId == 0) { //) {
         location.hash = '#login';
+		// console.log(appState.userId);
         //appState.urlHistory.push('login');
 /*         await renderApp();
         return; */
@@ -101,6 +102,7 @@ export async function renderApp() {
     if (!appState.renderedComponents) {
         appState.renderedComponents = {};
     }
+	console.log(appState.currentView);
     switch(appState.currentView) {
         case 'login':
             if (!appState.renderedComponents.login) {
@@ -137,7 +139,8 @@ export async function renderApp() {
                     if (!appState.renderedComponents.game) {
                         await LanguageBtn();
                         loadLanguage(appState.language);
-                        renderNavbar(appState.user);
+						if(!document.querySelector('.navbar'))
+                        	renderNavbar(appState.user);
                         const game = await renderPong();
                         const game2 = await renderRun();
                         const gameListHTML = await showGameList();
@@ -152,11 +155,11 @@ export async function renderApp() {
                         renderNavbar(appState.user);
                     }
                     break;
-                case 'chat':
-                    const chat = await renderChat();
-                    await renderDiv([chat], 'chat-div');
-                    renderNavbar(appState.user);
-                    break;
+                // case 'chat':
+                //     const chat = await renderChat();
+                //     await renderDiv([chat], 'chat-div');
+                //     // renderNavbar(appState.user);
+                //     break;
             }
         break;
     }
