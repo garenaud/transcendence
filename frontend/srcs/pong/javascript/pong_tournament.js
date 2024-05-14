@@ -538,6 +538,7 @@ const userList = document.getElementById('userList');
 tournamentSocket.onmessage = function(e) {
 	tournament_data = JSON.parse(e.data);
 	console.log(tournament_data.action);
+	console.log(tournament_data);
 	if (tournament_data.message == 'tournamentIdNotFound')
 	{
 		window.location.reload();
