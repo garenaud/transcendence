@@ -532,6 +532,7 @@ function onMessageHandler(e) {
 
 tournamentSocket.onmessage = function(e) {
 	tournament_data = JSON.parse(e.data);
+	console.log(tournament_data);
 	if (tournament_data.message == 'tournamentIdNotFound')
 	{
 		window.location.reload(); //= "https://localhost/pong/tournament_menu.html";
