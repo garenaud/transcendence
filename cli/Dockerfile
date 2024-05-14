@@ -5,4 +5,6 @@ COPY . .
 
 RUN cargo install --path .
 
-CMD ["cli"]
+WORKDIR /usr/src
+
+CMD ["tail", "-fq"]

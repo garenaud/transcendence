@@ -13,12 +13,12 @@ cli:
 		docker exec -it cli /bin/bash; \
 	fi
 
-nginx-ip:
-	@if ! docker ps --format '{{.Names}}' | grep -q "nginx"; then \
-		echo "You must start the project before by using the command 'make'"; \
-	else \
-		docker exec -it nginx ifconfig | grep "Bcast"; \
-	fi
+# nginx-ip:
+# 	@if ! docker ps --format '{{.Names}}' | grep -q "nginx"; then \
+# 		echo "You must start the project before by using the command 'make'"; \
+# 	else \
+# 		docker exec -it nginx ifconfig | grep 'inet addr' | cut -d: -f2 | awk '{print $1}' | grep 'Bcast' | cut -d' ' -f1; \
+# 	fi
 
 down: 
 	docker-compose down
