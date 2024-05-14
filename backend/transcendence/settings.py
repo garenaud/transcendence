@@ -25,7 +25,7 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-t9ip_b^g9epp0tadwc1d3#bz_88zutbmxc-3&hr9rl-g3r(q3%'
-
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -63,7 +63,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CSRF_TRUSTED_ORIGINS = ['https://localhost']
+CSRF_TRUSTED_ORIGINS = ['https://*.mydomain.com','https://*.127.0.0.1', 'https://10.12.1.6']
 
 ROOT_URLCONF = 'transcendence.urls'
 
