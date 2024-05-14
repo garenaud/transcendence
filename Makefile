@@ -1,7 +1,24 @@
+RUST_FILES = main.rs menu.rs login.rs pong.rs user.rs
+RUST_SOURCE = $(addprefix cli/src/, $(RUST_FILES))
+
 all:
 	@mkdir -p ~/data/db
 	docker-compose build
 	docker-compose up -d
+
+cli:
+	@if ! docker ps --format '{{.Names}}' | grep -q "cli"; then \
+		echo "You must start the project before by using the command 'make'"; \
+	else \
+		docker exec -it cli /bin/bash; \
+	fi
+
+# nginx-ip:
+# 	@if ! docker ps --format '{{.Names}}' | grep -q "nginx"; then \
+# 		echo "You must start the project before by using the command 'make'"; \
+# 	else \
+# 		docker exec -it nginx ifconfig | grep 'inet addr' | cut -d: -f2 | awk '{print $1}' | grep 'Bcast' | cut -d' ' -f1; \
+# 	fi
 
 down: 
 	docker-compose down
@@ -19,6 +36,7 @@ look:
 	docker network ls
 
 clean:
+	# cargo clean --manifest-path=cli/Cargo.toml
 	docker image prune -a
 
 fclean: down clean vol
@@ -30,4 +48,8 @@ vol:
 
 re: fclean all
 	
+<<<<<<< HEAD
 .PHONY: all down re clean fclean vol debug look
+=======
+.PHONY: all down re clean fclean vol debug look cli nginx-ip $(RUST_SOURCE)
+>>>>>>> c544015c2cba622645236e326288062cb0c1467c

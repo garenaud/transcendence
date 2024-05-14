@@ -7,6 +7,8 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { appState } from '../../components/stateManager.js';
+import { unloadScript } from '../../components/pongComponent.js';
+import { getUser } from '../../components/userManager.js';
 
 const PaddleRightName = 'RightPaddle';
 const PaddleLeftName = 'LeftPaddle';
@@ -489,13 +491,15 @@ function onMessageHandler(e) {
 	}
 	else if (game_data.action == 'looser')
 	{
-		console.log('jai perdu');
+		// console.log('jai perdu');
+		unloadScript();
 		document.getElementById("myModal").style.display = "block";
 	}
 	else if (game_data.action == "userleave") {
 		const errorElement = document.getElementById('error');
 		errorElement.textContent = "A user left the game";
 		document.getElementById("myModal").style.display = "block";
+		unloadScript();
 	} else if (game_data.action == 'score') {
 		if (game_data.scorep1 != undefined && game_data.scorep2 != undefined) {
 			const scoreL = document.getElementById("scoreHome");
@@ -529,29 +533,48 @@ function onMessageHandler(e) {
 	}
 };
 
+const userList = document.getElementById('userList');
 
 tournamentSocket.onmessage = function(e) {
 	tournament_data = JSON.parse(e.data);
+	console.log(tournament_data.action);
+	console.log(tournament_data);
 	if (tournament_data.message == 'tournamentIdNotFound')
 	{
-		window.location.reload(); //= "https://localhost/pong/tournament_menu.html";
+		window.location.reload();
 	}
-	if (tournament_data.action == 'connect')
+	// Suppose we have a list element to display the connected users
+	if (tournament_data.action == 'namep1')
 	{
+		console.log('********************************************');
+		console.log(tournament_data.namep1);
+	}
+	
+	if (tournament_data.action == 'connect') {
 		console.log(tournament_data.action);
 		connected += 1;
 		loadingElement.innerHTML = "[WAITING FOR OPPONENT]<br>Tournament ID : " + tournament_id + '<br>' + 'Currently connected : ' + connected + '/4';
+
+		// Create a new list item for the connected user
+		const userItem = document.createElement('li');
+		userItem.textContent = "joueur " + appState.user.first_name;
+
+		// Add the new user to the list of connected users
+		userList.appendChild(userItem);
+
+		console.log(userItem);
+		// console.log(appState.user.first_name);
 	}
+
 	else if (tournament_data.action == 'playernb')
 	{
 		playernb = tournament_data['playernb'];
+		console.log(`PLAYENB IS LJSKFDHAJHFKJSHFKHGS ${playernb}`);
 	}
 	else if (tournament_data.action == 'startTournament')
 	{
 		console.log('starting tournament');
-		console.log(typeof(playernb));
 		console.log('ici');
-		window.open('../../Design/SUPERBE_BRACKET_FINAL_3.png');
 		tournamentSocket.send(JSON.stringify({
 			'message' : 'getGameId',
 			'playernb' : playernb
@@ -577,7 +600,6 @@ tournamentSocket.onmessage = function(e) {
 	else if (tournament_data.action == 'finalid')
 	{
 		console.log('je suis en finale');
-		//clearThreeJS();
 		gameSocket.close();
 		gameSocket = null;
 		finalid = tournament_data['finalid'];
@@ -587,6 +609,7 @@ tournamentSocket.onmessage = function(e) {
 	{
 		const errorElement = document.getElementById('error');
 		errorElement.textContent = "VOUS AVEZ REMPORTEZ LE TOURNOI, FELICITATIONS";
+		unloadScript();
 		tournamentSocket.close();
 	}
 }

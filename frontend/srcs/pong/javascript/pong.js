@@ -355,6 +355,9 @@ gameSocket.onmessage = function(e) {
 			}));
 		}
 	} else if (game_data.action == 'Stop') {
+		gameSocket.send(JSON.stringify({
+			'message' : 'mdr'
+			}));
 		const errorElement = document.getElementById('error');
 		errorElement.textContent = "Final score : " + game_data.scorep2 + " - " + game_data.scorep1;
 		document.getElementById("myModal").style.display = "block";
@@ -392,9 +395,43 @@ gameSocket.onmessage = function(e) {
 		} else if (game_data.action == 'ball' && ball) {
 			ball.position.x = parseFloat(game_data.bx);
 			ball.position.z = parseFloat(game_data.bz);
-		} 
+		} else if (game_data.action == 'Stop') {
+			sessionStorage.setItem("gameid", null);
+		} else if (game_data.action == 'score') {
+			if (game_data.scorep1 != undefined && game_data.scorep2 != undefined) {
+				const scoreElement = document.getElementById("score");
+				scoreElement.textContent = game_data.scorep2 + " - " + game_data.scorep1;
+			}
+		} else if (game_data.action == 'counter') {
+			if (game_data.num < currentNum) {
+				currentNum = game_data.num;
+				if (currentNum >= 0) {
+					setTimeout(function() {}, 1500);
+					setInterval(function() { anim(); }, 1325);
+				}
+			}
+		}
 	}
 };
+
+
+function update_game_data() {
+	const PaddleRightName = 'RightPaddle';
+	const PaddleLeftName = 'LeftPaddle';
+	ball = scene.getObjectByName('Ball');
+	PaddleRight = scene.getObjectByName(PaddleRightName);
+	PaddleLeft = scene.getObjectByName(PaddleLeftName);
+	// console.log(PaddleRight);
+	// console.log(ball);
+	PaddleRight.position.x = parseFloat(game_data.paddleright_position_x);
+	PaddleRight.position.z = parseFloat(game_data.paddleright_position_z);
+	PaddleLeft.position.x = parseFloat(game_data.paddleleft_position_x);
+	PaddleLeft.position.z = parseFloat(game_data.paddleleft_position_z);
+	//PaddleLeft.position.z = parseFloat(game_data.paddleleft_position_z);
+	ball.position.x = parseFloat(game_data.ball_position_x);
+	ball.position.z = parseFloat(game_data.ball_position_z);
+
+}
 
 function animate() {
 	requestAnimationFrame(animate);

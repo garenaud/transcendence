@@ -1,5 +1,6 @@
 from typing import Any
 from django.db import models
+
 from django.contrib.auth.models import User
 from rest_framework import generics
 # Create your models here.
@@ -9,7 +10,6 @@ class Games(models.Model):
 	player2 = models.OneToOneField(User, on_delete=models.CASCADE, related_name="player2", null=True)
 	p1_id = models.IntegerField(default=-1)
 	p2_id = models.IntegerField(default=-1)
-	#code = models.CharField(max_length=10)
 	finished = models.BooleanField(default=False)
 	started = models.BooleanField(default=False)
 	full = models.BooleanField(default=False)
@@ -41,6 +41,7 @@ class Tournament(models.Model):
 	full = models.BooleanField(default=False)
 	finished = models.BooleanField(default=False)
 	connected = models.IntegerField(default=0)
+	# date = models.DateField(auto_now_add=True)
 
 class userProfile(models.Model):
 	user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='user', null=False)

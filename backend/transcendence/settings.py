@@ -62,7 +62,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
+REFERRER_POLICY = 'no-referrer'
 CSRF_TRUSTED_ORIGINS = ['https://localhost']
 
 ROOT_URLCONF = 'transcendence.urls'
@@ -100,10 +100,6 @@ DATABASES = {
         'PORT': '5432',
     }
 }
-
-# print("USER: ", os.environ["POSTGRES_USER"])
-# print("DB: ", os.environ["POSTGRES_DB"])
-# print("PASSWORD: ", os.environ["POSTGRES_PASSWORD"])
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

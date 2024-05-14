@@ -36,6 +36,10 @@ export function changeView(newView) {
                 delete appState.renderedComponents[component];
             }
         }
+<<<<<<< HEAD
+=======
+        // sessionStorage.setItem('renderedComponents', JSON.stringify(appState.renderedComponents));
+>>>>>>> c544015c2cba622645236e326288062cb0c1467c
     }
     appState.newViewAdded = true;
     location.hash = newView;
@@ -163,6 +167,7 @@ export async function renderApp() {
                         console.log(document.querySelector('.navbar-expand-lg'));
                         console.log("appstate dans game: ", appState);
                         loadLanguage(appState.language);
+<<<<<<< HEAD
                         if (!appState.renderedComponents.game) {
                             await LanguageBtn();
                             loadLanguage(appState.language);
@@ -183,6 +188,28 @@ export async function renderApp() {
                         //     renderNavbar(appState.user);
                         // }
                         break;
+=======
+						if(!document.querySelector('.navbar'))
+                        	renderNavbar(appState.user);
+                        const game = await renderPong();
+                        const game2 = await renderRun();
+                        const gameListHTML = await showGameList();
+                        const cardHistory = createListCardComponent('pongPlayed', 'Games', gameListHTML);
+                        await renderDiv([cardHistory, game], 'row');
+                        await LanguageBtn();
+                        // renderNavbar(appState.user);
+                        appState.renderedComponents.game = true;
+                        appState.renderedComponents.navbar = true;
+                    } else {
+                        renderNavbar(appState.user);
+                    }
+                    break;
+                // case 'chat':
+                //     const chat = await renderChat();
+                //     await renderDiv([chat], 'chat-div');
+                //     // renderNavbar(appState.user);
+                //     break;
+>>>>>>> c544015c2cba622645236e326288062cb0c1467c
             }
         break;
     }

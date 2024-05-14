@@ -44,7 +44,7 @@ export function renderPong() {
 								  		<a id="multiPongBtn" class="nav-link" data-lang-key="createPriv">Create Private</a>
 										  <div class="nav-link">
 										  <a  id="joinPongBtn"  data-lang-key="joinPriv">Join Private</a>
-										  <input type="text" id="gameCodeInput" class="inputGame" placeholder="Game ID">
+										  <input type="text" id="gameCodeInputPrivate" class="inputGame" placeholder="Game ID">
 										  </div>
 								  		<a id="searchBtn" class="nav-link"  data-lang-key="onlineMatchmaking">Online Matchmaking</a>
 										<a id="createTournament" class="nav-link" data-lang-key="createTourn">Create Tournament</a>
@@ -110,12 +110,13 @@ export function renderPong() {
 									<div class="col col-display" id="scoreGuest">0</div>
 								</div>
 							</div>
-							<div class="loading">
+							<div class="loading"  style="background-image: url(Design/SUPERBE_BRACKET_FINAL_3.png); background-size: 900px 1000px;">
 								<div class="load-3">
 									<p id="loading_txt">[TOURNAMENT DOESN'T EXIST]</p>
 									<div class="line"></div>
 									<div class="line"></div>
 									<div class="line"></div>
+									<ul id="userList"></ul>
 								</div>
 							</div>
 							<div id="myModal" class="modal">
@@ -225,7 +226,8 @@ function addEventListeners(element) {
 		// * JoinBtn
 		multiPongBtn.addEventListener('click', toggleVisibility);
 		joinPongBtn.addEventListener('click', function() {
-			const gameIdInput = document.getElementById('#gameCodeInput');
+			const gameIdInput = element.querySelector('#gameCodeInputPrivate').value;
+			console.log(gameIdInput);
 			if (gameIdInput) {
 				joinGame(gameIdInput);
 				pongLocal.classList.add('d-none');
@@ -313,7 +315,7 @@ function changeDivContent(newContent) {
     div.innerHTML = newContent;
 }
 
-function unloadScript() {
+export function unloadScript() {
     // Désactiver les scripts chargés dynamiquement
     document.querySelectorAll('script[type="module"][data-pong="dynamic"]').forEach(script => {
 		console.log(script);
