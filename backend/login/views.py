@@ -13,11 +13,13 @@ from django.http import JsonResponse
 import json
 from database.serializers import UserSerializer
 from django.contrib.auth.hashers import make_password
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 
 def home_page(request):
 	return render(request, "login/home.html")
 
+@ensure_csrf_cookie
 def register(request):
 	if request.method == 'POST':
 		print(request.POST['password1'])
@@ -37,6 +39,7 @@ def register(request):
 	else:
 		return JsonResponse({ "message" : "Method not allowed"}, status=405)
 
+@ensure_csrf_cookie
 def login(request):
 	if request.method == 'POST':
 		data = json.loads(request.body)
@@ -47,9 +50,11 @@ def login(request):
 			auth.login(request, user)
 			user = User.objects.get(username=username)
 			userprofile = userProfile.objects.get(user=user)
+			# if userprofile.online == True:
+			# 	return JsonResponse({"message" : 'KO'}, status=403)	
 			userprofile.online = True
 			userprofile.save()
-			return JsonResponse({"message" : "OK", "id" : user.id, "username" : user.username, "first_name" : user.first_name, "last_name" : user.last_name, "email" : user.email}, status=200)
+			return JsonResponse({"message" : "OK", "id" : user.id, "username" : user.username, "first_name" : user.first_name, "last_name" : user.last_name, "email" : user.email}, status=201)
 		else:
 			return JsonResponse({"message" : 'KO'}, status=404)
 	else:

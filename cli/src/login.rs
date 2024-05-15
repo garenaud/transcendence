@@ -55,7 +55,7 @@ fn connection(srv: String, login: String, password: String) -> Option<User> {
 		}
 	};
 
-	let crsf = client.get("https://{server}/auth/".replace("{server}", &srv))
+	let crsf = client.get("https://{server}/api/gamelist".replace("{server}", &srv))
 		.header("User-Agent", "cli_rust")
 		.header("Accept", "application/json")
 		.timeout(Duration::from_secs(3));
@@ -87,10 +87,12 @@ fn connection(srv: String, login: String, password: String) -> Option<User> {
 		.header("User-Agent", "cli_rust")
 		.header("Accept", "application/json")
 		.header("X-CSRFToken", csrf_token)
+		.header("Referer", "https://{server}/".replace("{server}", &srv))
 		.body((r#"{"username":"{email}","password":"{password}"}"#).replace("{email}", &login).replace("{password}", &password))
 		.timeout(Duration::from_secs(3));
-
-	let req = req.build().expect("ERROR WHILE BUILDING THE REQUEST");
+		
+		let req = req.build().expect("ERROR WHILE BUILDING THE REQUEST");
+		println!("{:#?}", req);
 	let res = client.execute(req);
 
 	let mut user = User::new();
@@ -113,7 +115,7 @@ fn connection(srv: String, login: String, password: String) -> Option<User> {
 					if res["message"] == -1 {
 						return None;
 					}
-					user.fill(res["id"].to_string(), login, res["session_id"].to_string(), client, srv, csrf_token.to_string());
+					user.fill(res["id"].to_string(), login, res["session_id"].to_string(), client, srv);
 				},
 				Err(err) => {
 					eprintln!("Error in respond: {:#?}", err);

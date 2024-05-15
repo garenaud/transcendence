@@ -437,6 +437,8 @@ class AsyncTournamentConsumer(AsyncWebsocketConsumer):
                 gameid = self.tournoi.game2_id
                 await self.send(text_data=json.dumps({'action' : 'gameid', 'gameid' : gameid}))
         elif message == 'winner':
+            print(jsondata['finalid'])
+            print(type(jsondata['finalid']))
             if jsondata['finalid'] == -1:
                 print(f'{self.playernb} has won and can play the final')
                 await self.send(text_data=json.dumps({'action' : 'finalid', 'finalid' : self.tournoi.game3_id}))

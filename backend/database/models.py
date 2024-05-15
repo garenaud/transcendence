@@ -50,8 +50,13 @@ class userProfile(models.Model):
 	winrate = models.FloatField(default=0.0)
 	tournament_won = models.IntegerField(default=0)
 	tournament_lost = models.IntegerField(default=0)
-	friendlist = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
 	online = models.BooleanField(default=False)
 	in_game = models.BooleanField(default=False)
 	tournament_alias = models.CharField(max_length=100, default='joueur')
 	profile_picture = models.ImageField(upload_to='./downloads')
+	friendlist = models.ManyToManyField('User', blank=True)
+
+class FriendRequest(models.Model):
+	from_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='from_user')
+	to_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='to_user')
+

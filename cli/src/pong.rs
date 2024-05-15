@@ -348,6 +348,7 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
 	nodelay(stdscr(), true);
 	curs_set(CURSOR_VISIBILITY::CURSOR_INVISIBLE);
 	
+	_ = clear();
 	mvprintw(0, 0, "Waiting for the game to start...");
 	refresh();
 
