@@ -108,7 +108,7 @@ fn connection(srv: String, login: String, password: String) -> Option<User> {
 					if res["message"] == -1 {
 						return None;
 					}
-					user.fill(res["id"].to_string(), login, res["session_id"].to_string(), client, srv, csrf_token.to_string());
+					user.fill(res["id"].to_string(), login, res["session_id"].to_string(), client, srv);
 				},
 				Err(err) => {
 					eprintln!("Error in respond: {:#?}", err);
