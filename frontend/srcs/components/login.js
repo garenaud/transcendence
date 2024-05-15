@@ -1,6 +1,14 @@
 import { changeView, appState } from './stateManager.js';
 import { loadUser } from './userManager.js';
 
+
+fetch('/api/gamelist', {
+	method: 'GET',
+	credentials: 'same-origin' 
+})
+
+console.log(getCookie('csrftoken'));
+
 export function renderLogin() {
     const loginHTML = `
 	<div class="login-form">
@@ -96,6 +104,7 @@ function    setupButtonListener() {
 		const username = document.getElementById('typeUsername').value;
 		const password = document.getElementById('typePasswordX').value;
 		let csrf = getCookie("csrftoken");
+		console.log(csrf);
 		fetch('/auth/login/', {
 			method: 'POST',
 			headers: {

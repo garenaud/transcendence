@@ -6,7 +6,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 import json
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages, auth
 from django.shortcuts import render
@@ -90,6 +90,7 @@ def delete_user_by_id(request, id):
 
 
 @api_view(['GET'])
+@ensure_csrf_cookie
 def get_game_list(request):
 	if (request.method == 'GET'):
 		games = Games.objects.all()
@@ -101,12 +102,12 @@ def get_game_list(request):
 @api_view(['GET'])
 def get_game_by_id(request, gameid):
 	if (request.method == 'GET'):
-		game = Games.objects.filter(room_id=gameid).count()
+		game = Games.objects.filter(room_id=gameid, private=True, finished=False, started=False).count()
 		if game == 0:
 			return Response({"message" : "Not found"})
 		else:
 			try:
-				game = Games.objects.get(room_id=gameid, finished=False)
+				game = Games.objects.get(room_id=gameid, finished=False, private=True)
 				serializer = GamesSerializer(game)
 				return Response({"message" : serializer.data})
 			except:
@@ -130,7 +131,7 @@ def search_game(request):
 	if request.method == 'GET':
 		while True:
 			try:
-				games = Games.objects.filter(started=False, finished=False, full=False)
+				games = Games.objects.filter(started=False, finished=False, full=False, private=False)
 				id = games[0].room_id
 				return Response({"message" : "ok", 'id' : id})
 			except:
@@ -219,3 +220,45 @@ def get_user_history(request, userid):
 		return Response({'message' : 'OK', 'data' : serializer1.data + serializer2.data}, status=200)
 	else:
 		return Response("Unauthorized method", status=status.HTTP_401_UNAUTHORIZED)
+	
+def update_user_info(request, userid):
+	if request.method == 'POST':
+		error = 0 
+		try:
+			user = User.objects.get(id=userid)
+			profile = userProfile.objects.get(user=user)
+
+			alias = request.POST['alias']
+			username = request.POST['username']
+			email = request.POST['email']
+			first_name = request.POST['first_name']
+			last_name = request.POST['last_name']
+
+			if username != user.username:
+				if User.objects.filter(username=username).count == 0:
+					user.username = username
+				else:
+					error = 1
+			if alias != profile.tournament_alias:
+				if userProfile.objects.filter(tournament_alias=alias).count == 0:
+					profile.tournament_alias = alias
+				else:
+					error = 1
+			if email != user.email:
+				if User.objects.filter(email=email).count == 0:
+					user.email = email
+				else:
+					error = 1
+			user.first_name = first_name
+			user.last_name = last_name
+			
+			user.save()
+			profile.save()
+
+			if error == 0:
+				return Response({'message' : 'OK'}, status=200)
+			else:
+				return Response({'message' : 'KO'}, status=400)
+
+		except:
+			return Response({'message' : 'KO'}, status=400)

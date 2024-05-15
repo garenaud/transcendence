@@ -55,3 +55,4 @@ class userProfile(models.Model):
 	in_game = models.BooleanField(default=False)
 	tournament_alias = models.CharField(max_length=100, default='joueur')
 	profile_picture = models.ImageField(upload_to='./downloads')
+
