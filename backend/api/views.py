@@ -6,7 +6,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 import json
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages, auth
 from django.shortcuts import render
@@ -90,6 +90,7 @@ def delete_user_by_id(request, id):
 
 
 @api_view(['GET'])
+@ensure_csrf_cookie
 def get_game_list(request):
 	if (request.method == 'GET'):
 		games = Games.objects.all()
