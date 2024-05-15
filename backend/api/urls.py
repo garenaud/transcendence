@@ -19,6 +19,7 @@ urlpatterns = [
 	path("√", views.cursed),
 	path("send_friend", views.send_friend_request),
 	path("accept_friend", views.accept_friend_request),
-	path("send_friend", views.deny_friend_request),
+	path("deny_friend", views.deny_friend_request),
+	path("friendlist", views.get_friend_request_list)
 ]
 
