@@ -90,6 +90,8 @@ pub fn join_tournament(user: User) {
 			.header("User-Agent", "cli_rust")
 			.header("Accept", "application/json")
 			.header("X-CSRFToken", csrf_token)
+			.header("Referer", "https://{server}/".replace("{server}", &user.get_server()))
+
 			// .body((r#"{"tournamentid":"{email}","password":"{password}"}"#).replace("{email}", &login).replace("{password}", &password))
 			.timeout(Duration::from_secs(3));
 		let res = req.build();
@@ -133,7 +135,7 @@ pub fn join_tournament(user: User) {
 			return;
 		}
 	};
-
+	println!("{}", format!("Connected to the tournament\tWaiting for more player...").green());
 	handle_tournament(user.clone(), &mut socket, player_nb);
 }
 
