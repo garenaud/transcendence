@@ -1,4 +1,4 @@
-import { getUser, loadUser, getCurrentUser, loadGameList } from './userManager.js';
+import { getUser, loadUser, getCurrentUser, loadGameList, logoutUser } from './userManager.js';
 import { renderNavbar } from './navbar.js'; 
 import { renderHero } from './hero.js';
 import { renderPong } from './pongComponent.js';
@@ -62,11 +62,13 @@ window.addEventListener("hashchange", function() {
         appState.currentView = newView;
     }
     const currentUser = getCurrentUser();
-    console.log("currentUser = ", currentUser);
     if (!currentUser && newView !== 'login') {
         window.location.hash = 'login';
         return;
     }
+    // if (appState.urlHistory[appState.urlHistory.length - 1] !== newView) {
+    //     appState.urlHistory.push(newView);
+    // }
     renderApp();
 });
 
@@ -80,11 +82,10 @@ window.addEventListener("popstate", function() {
         window.location.hash = 'login';
         return;
     }
-
     if (newView === 'login' && appState.urlHistory.length === 2) {
         const confirmLogout = window.confirm('Si vous revenez à cette page, vous serez déconnecté. Êtes-vous sûr de vouloir continuer ?');
         if (confirmLogout) {
-            console.log('bye bye mon ami tu as choisi de nous quitter!!!!');
+            logoutUser();
         } else {
             history.pushState(null, null, '#' + appState.urlHistory[appState.urlHistory.length - 1]);
         }
@@ -105,7 +106,6 @@ window.addEventListener("popstate", function() {
         appState.urlHistory.pop();
         currentIndex--;
     }
-
     console.log("!!!!!!!!!!!!!!!!!!!!! urlHistory = ", appState.urlHistory);
 });
 
@@ -182,9 +182,8 @@ async function renderLoginView() {
 
 async function renderDefaultView() {
     if (!appState.user) {
-        console.log('loading user, appState = ', appState.user);
-        await loadUser();
-        await loadGameList();
+        appState.currentView = 'login';
+        await renderLoginView();
     }
     switch(appState.currentView) {
         case 'hero':

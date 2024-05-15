@@ -1,9 +1,29 @@
 import { renderNavbar } from './navbar.js';
-import { renderApp, appState } from './stateManager.js';
+import { renderApp, appState, changeView, resetAppState } from './stateManager.js';
 
 /* export let appState = {
     user: null
 }; */
+
+export function logoutUser() {
+    fetch('auth/logout/' + appState.userId, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => {
+        if (response.ok) {
+            changeView('login');
+            resetAppState();
+            // appState.urlHistory = ['login'];
+            sessionStorage.clear();
+            window.location.reload();
+        } else {
+            console.error('Logout failed');
+        }
+    });
+}
 
 function updateUserOnServer(user) {
     console.log(user);

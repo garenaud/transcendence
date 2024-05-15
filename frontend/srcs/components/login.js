@@ -126,6 +126,7 @@ function    setupButtonListener() {
 			if (data['message'] == "OK") {
 				let userId = data['id'];
                 sessionStorage.setItem('userId', userId);
+				appState.urlHistory.push('login');
                 loadUser().then(() => {
 					changeView('hero');
 				});
