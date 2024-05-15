@@ -64,8 +64,6 @@ window.addEventListener("popstate", function() {
             history.pushState(null, null, '#' + appState.urlHistory[appState.urlHistory.length - 1]);
         }
     } else if (appState.newViewAdded) {
-        // Une nouvelle vue a été ajoutée à l'historique, donc l'utilisateur n'a pas appuyé sur Précédent
-        console.log("T'AS CLIQUE SUR UN LIEN");
         appState.currentView = newView;
         if (appState.urlHistory[appState.urlHistory.length - 1] !== newView) {
             appState.urlHistory.push(newView);
@@ -73,14 +71,12 @@ window.addEventListener("popstate", function() {
         currentIndex++;
         appState.newViewAdded = false;
     } else if (newIndex < currentIndex) {
-        console.log("T'AS PRESSE SUR SUIVANT");
         appState.currentView = newView;
         if (appState.urlHistory[appState.urlHistory.length - 1] !== newView) {
             appState.urlHistory.push(newView);
         }
         currentIndex++;
     } else {
-        console.log("T'AS PRESSE SUR PRECEDENT");
         appState.urlHistory.pop();
         currentIndex--;
     }
@@ -128,7 +124,8 @@ function initializeAppState() {
 function validateCurrentView() {
     const validViews = ['login', 'game', 'hero'];
     if (!validViews.includes(appState.currentView)) {
-        document.body.innerHTML = '<h1>Erreur 404 : Page non trouvée</h1>';
+        document.body.innerHTML = 
+        '<div class="error-404"><img src="../Design/Mflury404.jpg"><h1 data-lang-key="error-404">Erreur 404 : Page non trouvée</h1><div>';
         throw new Error('Invalid view');
     }
     if (!appState.renderedComponents) {
@@ -188,10 +185,8 @@ async function renderHeroView() {
 async function renderGameView() {
     console.log(document.querySelector('.navbar-expand-lg'));
     console.log("appstate dans game: ", appState);
-    loadLanguage(appState.language);
     if (!appState.renderedComponents.game) {
         await LanguageBtn();
-        loadLanguage(appState.language);
         if(!document.querySelector('.navbar')){
             renderNavbar(appState.user);
         }
@@ -204,6 +199,7 @@ async function renderGameView() {
         appState.renderedComponents.game = true;
         appState.renderedComponents.navbar = true;
     }
+    loadLanguage(appState.language);
 }
 
 renderApp();

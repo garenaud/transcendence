@@ -2176,3 +2176,25 @@ div.modal-footer, div.modal-body, div.modal-header{
 .toast {
   z-index: 9999;
 }
+
+.error-404 {
+  background-color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center !important;
+  justify-content: center;
+  gap: 20px;
+}
+
+.error-404 img {
+  width: 500px;  /*Ajustez la taille de l'image selon vos besoins */
+  height: auto;
+}
+
+.error-404 h1 {
+  margin: 0;
+  width:auto;
+}
+
+.error-404 img, .error-404 h1 {
+  align-self: center;
+}
