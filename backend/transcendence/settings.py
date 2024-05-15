@@ -62,13 +62,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-<<<<<<< HEAD
 REFERRER_POLICY = 'no-referrer'
-CSRF_TRUSTED_ORIGINS = ['https://localhost']
-=======
 
-CSRF_TRUSTED_ORIGINS = ['https://*.mydomain.com','https://*.127.0.0.1', 'https://10.12.1.6']
->>>>>>> 34e06998b3ab48bcf2701cf536fe7ec177ba0efb
+CSRF_TRUSTED_ORIGINS = ['https://localhost','https://*.mydomain.com','https://*.127.0.0.1', 'https://10.12.1.6']
 
 ROOT_URLCONF = 'transcendence.urls'
 

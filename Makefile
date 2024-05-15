@@ -21,7 +21,7 @@ cli:
 # 	fi
 
 down: 
-	docker-compose down
+	docker-compose down --remove-orphans
 
 debug: all
 	docker-compose logs -f
