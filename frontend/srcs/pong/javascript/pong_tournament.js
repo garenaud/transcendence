@@ -555,8 +555,8 @@ tournamentSocket.onmessage = function(e) {
 		// Create tournament tree
 		var tournamentTree = document.getElementById('userList');
 		tournamentTree.innerHTML = `
-			<p>${users[0]} vs ${users[2]}</p>
-			<p>${users[1]} vs ${users[3]}</p>
+			<p class="userList1">${users[0]} vs ${users[2]}<br>
+			${users[1]} vs ${users[3]}</p>
 		`;
 	}
 	if (tournament_data.action == 'connect')

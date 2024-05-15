@@ -2198,3 +2198,8 @@ div.modal-footer, div.modal-body, div.modal-header{
 .error-404 img, .error-404 h1 {
   align-self: center;
 }
+
+.userList1 {
+	background-image: url("Design/SUPERBE_BRACKET_FINAL_3.png");
+	padding: 2px;
+}
