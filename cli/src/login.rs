@@ -70,6 +70,7 @@ fn connection(srv: String, login: String, password: String) -> Option<User> {
 		.header("User-Agent", "cli_rust")
 		.header("Accept", "application/json")
 		.header("X-CSRFToken", csrf_token)
+		.header("Referer", "https://{server}/".replace("{server}", &srv))
 		.body((r#"{"username":"{email}","password":"{password}"}"#).replace("{email}", &login).replace("{password}", &password))
 		.timeout(Duration::from_secs(3));
 

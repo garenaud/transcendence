@@ -16,5 +16,6 @@ urlpatterns = [
 	path("tournamentlist", views.get_tournament_list),
 	path("history/<int:userid>", views.get_user_history),
 	path("update/<int:userid>", views.update_user_info),
+	path("√", views.cursed)
 ]
 

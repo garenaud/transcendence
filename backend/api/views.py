@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
-from database.models import  Games, Tournament, userProfile
+from database.models import  Games, Tournament, userProfile, FriendRequest
 from database.serializers import UserSerializer, GamesSerializer, UserProfileSerializer, TournamentSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -262,3 +262,45 @@ def update_user_info(request, userid):
 
 		except:
 			return Response({'message' : 'KO'}, status=400)
+		
+
+@ensure_csrf_cookie
+def cursed(request):
+	return Response("", status=200)
+
+def send_friend_request(request, fromuserid, touserid):
+	try:
+		from_user = User.objects.get(id=fromuserid)
+		to_user = User.objects.get(id=touserid)
+
+		friend_request, created = FriendRequest.objects.get_or_create(from_user=from_user, to_user=to_user)
+		if created:
+			return Response({'message' : 'OK', 'info' : 'request sent'}, status=201)
+		else:
+			return Response({'message' : 'KO', 'info' : 'request was already sent'}, status=200)
+	except:
+		return Response({'message' : 'KO', 'info' : 'user did not exist'}, status=404)
+	
+def accept_friend_request(request, requestid, userid):
+	try:
+		friend_request = FriendRequest.objects.get(id=requestid)
+		if friend_request.to_user.id == userid:
+			from_user = userProfile.objects.get(user=friend_request.from_user)
+			to_user = userProfile.objects.get(user=friend_request.to_user)
+			from_user.friendlist.add(to_user)
+			to_user.friendlist.add(from_user)
+			friend_request.delete()
+			return Response({'message' : 'OK', 'info' : 'request accepted'}, status=201)
+	except:
+		return Response({'message' : 'KO', 'info' : 'user / request did not exist'}, status=404)
+	
+def deny_friend_request(request, requestid, userid):
+	try:
+		friend_request = FriendRequest.objects.get(id=requestid)
+		if friend_request.to_user.id == userid:
+			from_user = userProfile.objects.get(user=friend_request.from_user)
+			to_user = userProfile.objects.get(user=friend_request.to_user)
+			friend_request.delete()
+			return Response({'message' : 'OK', 'info' : 'request denied'}, status=201)
+	except:
+		return Response({'message' : 'KO', 'info' : 'user / request did not exist'}, status=404)
