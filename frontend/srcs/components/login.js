@@ -105,7 +105,7 @@ function    setupButtonListener() {
 		const password = document.getElementById('typePasswordX').value;
 		let csrf = getCookie("csrftoken");
 		console.log(csrf);
-		fetch('/api/deny_friend', {
+		fetch('/auth/login/', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
