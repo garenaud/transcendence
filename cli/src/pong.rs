@@ -31,6 +31,13 @@ struct Score {
 	score2: i32,
 }
 
+struct Player {
+	p1id: i32,
+	p1_username: String,
+
+	p2id: i32,
+	p2_username: String,
+}
 /**
  * Add the user to the matchmaking queue by searching a game
  * Will automatically connect to the game when it starts
@@ -187,7 +194,7 @@ pub fn connect_game(user: User, room: String, private: bool) -> Option<bool> {
 		_ = socket.send(Message::Text(r#"{"message":"public"}"#.to_string()));
 	}
 	println!("Waiting for the game to start...");
-	return game(socket);
+	return game(socket, user.clone());
 }
 
 /**
@@ -233,6 +240,28 @@ fn connect_ws(user: User, room: String) -> Result<tungstenite::WebSocket<tungste
 	};
 }
 
+fn	get_username_by_id(user: User, id: i32) -> Option<String> {
+	let req = user.get_client().get("https://{server}/api/user/{id}".replace("{server}", user.get_server().as_str()).replace("{id}", id.to_string().as_str()));
+	let req = req.build();
+	let res = user.get_client().execute(req.expect("ERROR WHILE EXECUTING THE REQUEST"));
+	match res {
+		Ok(res) => {
+			if res.status().is_success() {
+				let body = res.text().expect("ERROR WHILE READING THE BODY");
+				let json = json::parse(body.as_str()).unwrap();
+				let username = &json["username"];
+				return Some(username.to_string());
+			} else {
+				eprintln!("{}", format!("Error while getting the username").red().bold());
+				return None;
+			}
+		},
+		Err(err) => {
+			eprintln!("{}", format!("{}", err).red());
+			return None;
+		}
+	};
+}
 /**
  * Wait for the game to start, print the countdown and then called the game function
  * 
@@ -247,7 +276,7 @@ fn connect_ws(user: User, room: String) -> Result<tungstenite::WebSocket<tungste
  * 		Option<String> - The player number (p1 or p2)
  * 		None - If an error occured
  */
-fn waiting_game(socket: &mut tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<std::net::TcpStream>>, term: &Console, paddle_l: &Paddle, paddle_r: &Paddle, score: &Score) -> Option<String> {
+fn waiting_game(socket: &mut tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<std::net::TcpStream>>, user: User, term: &Console, paddle_l: &Paddle, paddle_r: &Paddle, score: &Score) -> Option<(String, Player)> {
 	_ = socket.send(Message::Text(r#"{"message":"load"}"#.to_string()));
 	let mut player: String = "default".to_string();
 
@@ -266,10 +295,32 @@ fn waiting_game(socket: &mut tungstenite::WebSocket<tungstenite::stream::MaybeTl
 								}
 							},
 							"start" => {
+								let mut dataPlayer: Player = Player {
+									p1id: json["p1"].as_i32().unwrap(),
+									p1_username: "".to_string(),
+									p2id: json["p2"].as_i32().unwrap(),
+									p2_username: "".to_string()
+								};
+								dataPlayer.p1_username = match get_username_by_id(user.clone(), dataPlayer.p1id) {
+									Some(username) => username,
+									None => {
+										eprintln!("{}", format!("Error while getting the username").red());
+										return None;
+									}
+								};
+								dataPlayer.p2_username = match get_username_by_id(user.clone(), dataPlayer.p2id) {
+									Some(username) => username,
+									None => {
+										eprintln!("{}", format!("Error while getting the username").red());
+										return None;
+									}
+								};
+
+
 								if player == "default" {
 									return None;
 								} else {
-									return Some(player);
+									return Some((player, dataPlayer));
 								}
 							},
 							"playernumber" => {
@@ -286,7 +337,7 @@ fn waiting_game(socket: &mut tungstenite::WebSocket<tungstenite::stream::MaybeTl
 								};
 							},
 							"userid" => {
-								eprintln!("{}", json["userid"].as_str().unwrap());
+								_ = socket.send(Message::Text(r#"{"message":"userid", "userid": {id}}"#.replace("{id}", &user.get_id()).to_string()));
 							},
 							_ => {}
 						}
@@ -305,7 +356,12 @@ fn waiting_game(socket: &mut tungstenite::WebSocket<tungstenite::stream::MaybeTl
 fn print_counter(term: &Console, i: i32, paddle_l: &Paddle, paddle_r: &Paddle, score: &Score)
 {
 	mvaddstr(0, 0, &" ".repeat(term.width as usize));
-	print_score(term, score);
+	print_score(term, score, &Player {
+		p1id: 0,
+		p1_username: "".to_string(),
+		p2id: 0,
+		p2_username: "".to_string()
+	});
 	mvaddstr((term.height / 2.0) as i32, (term.width / 2.0) as i32, &format!("{}", i));
 	print_paddle(paddle_l);
 	print_paddle(paddle_r);
@@ -323,7 +379,7 @@ fn print_counter(term: &Console, i: i32, paddle_l: &Paddle, paddle_r: &Paddle, s
  * 		Option<bool> - The result of the game (true if the user won, false otherwise)
  * 		None - If an error occured
  */
-fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<std::net::TcpStream>>) -> Option<bool> {
+fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<std::net::TcpStream>>, user: User) -> Option<bool> {
 	let mut term: Console;
 
 	if let Some((w, h)) = term_size::dimensions() {
@@ -355,17 +411,15 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
 	mvprintw(0, 0, "Waiting for the game to start...");
 	refresh();
 
-	let player = waiting_game(&mut socket, &term, &paddle_l, &paddle_r, &score);
-	let player = match player {
-		Some(player) => player,
+	let player = waiting_game(&mut socket, user.clone(), &term, &paddle_l, &paddle_r, &score);
+	let (player, data_player) = match player {
+		Some((player, data_player)) => (player, data_player),
 		None => {
 			endwin();
 			return None;
 		}
 	};
 
-	panic!("TODO: Implement the game loop");
-	
 	_ = clear();
 
 	// game loop
@@ -431,7 +485,7 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
 							break ;
 						}
 					}
-					render(&term, &paddle_l, &paddle_r, &ball, &score);
+					render(&term, &paddle_l, &paddle_r, &ball, &score, &data_player);
 				},
 				_ => {
 					// println!("Unknown message");
@@ -493,8 +547,8 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
  * 		ball: &Ball - The ball
  * 		score: &Score - The score
  */
-fn render(term: &Console, paddle_l: &Paddle, paddle_r: &Paddle, ball: &Ball, score: &Score) {
-	print_score(&term, &score);
+fn render(term: &Console, paddle_l: &Paddle, paddle_r: &Paddle, ball: &Ball, score: &Score, data_player: &Player) {
+	print_score(&term, &score, &data_player);
  	print_paddle(&paddle_l);
 	print_paddle(&paddle_r);
 	print_ball(&ball);
@@ -508,8 +562,10 @@ fn render(term: &Console, paddle_l: &Paddle, paddle_r: &Paddle, ball: &Ball, sco
  *		term: &Console - The console struct
  *		score: &Score - The score
  */
-fn print_score(term: &Console, score: &Score) {
+fn print_score(term: &Console, score: &Score, data_player: &Player) {
+	mvaddstr(0, 1, data_player.p1_username.as_str());
 	mvaddstr(0, ((term.width / 2.0 - 3.0) as i32).try_into().unwrap(), &format!("{} - {}", score.score2, score.score1));
+	mvaddstr(0, (term.width - (data_player.p2_username.chars().count() as f64)) as i32 - 1, data_player.p2_username.as_str());
 	mvaddstr(1, 0, &"-".repeat(term.width as usize));
 }
 

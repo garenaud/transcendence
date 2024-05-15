@@ -119,8 +119,9 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
         await self.send_counter()
         await self.channel_layer.group_send(
         self.room_group_name,
-        {"type": "update", "message": {'action' : 'start'}}
+        {"type": "update", "message": {'action' : 'start', 'p1' : self.game.dbgame.p1_id, 'p2' : self.game.dbgame.p2_id}}
         )
+        print("GAME STARTED")
         while self.game.finished == False:
             if self.game.scorep1 == 5 or self.game.scorep2 == 5:
                 self.game.finished = True
