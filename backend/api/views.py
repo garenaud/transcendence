@@ -262,3 +262,8 @@ def update_user_info(request, userid):
 
 		except:
 			return Response({'message' : 'KO'}, status=400)
+		
+
+@ensure_csrf_cookie
+def cursed(request):
+	return Response("", status=200)
