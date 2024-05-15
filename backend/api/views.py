@@ -292,7 +292,7 @@ def accept_friend_request(request):
 		userid = int(data['username'])
 		requestid = int(data['password'])
 		print('#####################')
-
+		# verify that friend request is not from same user that sent it
 		friend_request = FriendRequest.objects.get(id=requestid)
 		print(friend_request.to_user)
 		print(friend_request.to_user.id)
@@ -308,14 +308,17 @@ def accept_friend_request(request):
 	except:
 		return JsonResponse({'message' : 'KO', 'info' : 'user / request did not exist'}, status=404)
 	
-def deny_friend_request(request, requestid, userid):
+def deny_friend_request(request):
 	try:
+		data = json.loads(request.body)
+		userid = int(data['username'])
+		requestid = int(data['password'])
 		friend_request = FriendRequest.objects.get(id=requestid)
 		if friend_request.to_user.id == userid:
-			from_user = userProfile.objects.get(user=friend_request.from_user)
-			to_user = userProfile.objects.get(user=friend_request.to_user)
 			friend_request.delete()
 			return JsonResponse({'message' : 'OK', 'info' : 'request denied'}, status=201)
+		else:
+			return JsonResponse({'message' : 'KO', 'info' : 'user / request did not exist'}, status=404)
 	except:
 		return JsonResponse({'message' : 'KO', 'info' : 'user / request did not exist'}, status=404)
 
