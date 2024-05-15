@@ -26,6 +26,19 @@ export let appState = {
     newViewAdded: false
 };
 
+export function resetAppState() {
+    appState = {
+        currentView: 'login',
+        user: null,
+        userId: null,
+        users: [],
+        urlHistory: ['login'],
+        renderedComponents: {},
+        language: 'fr',
+        newViewAdded: false
+    };
+}
+
 // Fonction pour changer la vue actuelle de l'application
 export function changeView(newView) {
     if (appState.currentView !== newView) {
@@ -48,6 +61,12 @@ window.addEventListener("hashchange", function() {
     if (appState.currentView !== newView) {
         appState.currentView = newView;
     }
+    const currentUser = getCurrentUser();
+    console.log("currentUser = ", currentUser);
+    if (!currentUser && newView !== 'login') {
+        window.location.hash = 'login';
+        return;
+    }
     renderApp();
 });
 
@@ -55,6 +74,12 @@ window.addEventListener("hashchange", function() {
 window.addEventListener("popstate", function() {
     const newView = location.hash.substring(1);
     const newIndex = appState.urlHistory.lastIndexOf(newView);
+    const currentUser = getCurrentUser();
+    console.log("currentUser popstate = ", currentUser);
+    if (!currentUser && newView !== 'login') {
+        window.location.hash = 'login';
+        return;
+    }
 
     if (newView === 'login' && appState.urlHistory.length === 2) {
         const confirmLogout = window.confirm('Si vous revenez à cette page, vous serez déconnecté. Êtes-vous sûr de vouloir continuer ?');
