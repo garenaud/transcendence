@@ -4,8 +4,6 @@ use std::sync::Arc;
 use reqwest::cookie::Jar;
 use colored::Colorize;
 
-use pwhash::sha256_crypt;
-
 use crate::user::User;
 
 // Ask the user for login and password, and then return the connection status
@@ -29,13 +27,6 @@ pub fn login(srv: String) -> Option<User> {
 		}
 	
 	};
-	// let password = match sha256_crypt::hash(rpassword::read_password().unwrap()) {
-	// 	Ok(str) => String::from(str),
-	// 	Err(_) => {
-	// 		eprintln!("ERREUR LORS DU HASHAGE DU MOT DE PASSE");
-	// 		return None;
-	// 	}
-	// };
 	return connection(srv, login, password);
 }
 
@@ -70,7 +61,7 @@ fn connection(srv: String, login: String, password: String) -> Option<User> {
 		.header("User-Agent", "cli_rust")
 		.header("Accept", "application/json")
 		.header("X-CSRFToken", csrf_token)
-		.header("Referer", "https://{server}/".replace("{server}", &srv))
+		.header("Referer", "https://{server}/".replace("{server}", &user.get_server()))
 		.body((r#"{"username":"{email}","password":"{password}"}"#).replace("{email}", &login).replace("{password}", &password))
 		.timeout(Duration::from_secs(3));
 
