@@ -43,7 +43,6 @@ let ballVelocity;
 let gameSocket;
 let tournamentSocket;
 let currentNum = 7;
-let connected = 0;
 let playernb = sessionStorage.getItem('playernb');
 let playernumber = 0;
 
@@ -545,24 +544,25 @@ let namelist = [];
 tournamentSocket.onmessage = function(e) {
 	tournament_data = JSON.parse(e.data);
 	console.log(tournament_data);
-	const string1 = tournament_data.action;
 	if (tournament_data.message == 'tournamentIdNotFound')
 	{
 		window.location.reload(); //= "https://localhost/pong/tournament_menu.html";
 	}
 	if (tournament_data.action == 'all_users') {
 		console.log('*******************ALL USERS**********************');
-		console.log(tournament_data.users); // This will print the list of users
+		var users = tournament_data.users; // This will get the list of users
 
-		// If you want to add these users to an existing list, you can do something like this:
-		var userList = []; // Assume this is your existing list
-		userList = userList.concat(tournament_data.users); // This will add the new users to the list
+		// Create tournament tree
+		var tournamentTree = document.getElementById('userList');
+		tournamentTree.innerHTML = `
+			<p>${users[0]} vs ${users[2]}</p>
+			<p>${users[1]} vs ${users[3]}</p>
+		`;
 	}
 	if (tournament_data.action == 'connect')
 	{
-		console.log(tournament_data.action);
-		connected += 1;
-		loadingElement.innerHTML = "[WAITING FOR OPPONENT]<br>Tournament ID : " + tournament_id + '<br>' + 'Currently connected : ' + connected + '/4';
+		console.log(tournament_data.connected);
+		loadingElement.innerHTML = "[WAITING FOR OPPONENT]<br><br><br><br><br> " + tournament_id + '<br>' + 'Currently connected : ' + tournament_data.connected + '/4';
 	}
 	else if (tournament_data.action == 'playernb')
 	{

@@ -110,9 +110,8 @@ export function renderPong() {
 									<div class="col col-display" id="scoreGuest">0</div>
 								</div>
 							</div>
-							<div class="loading"  style="background-image: url(Design/SUPERBE_BRACKET_FINAL_3.png); background-size: 900px 1000px;">
-								<div class="load-3">
-									<p id="loading_txt">[TOURNAMENT DOESN'T EXIST]</p>
+							<div class="loading">							<div class="load-3">
+							<p id="loading_txt">[TOURNAMENT DOESN'T EXIST]</p>
 									<div class="line"></div>
 									<div class="line"></div>
 									<div class="line"></div>
