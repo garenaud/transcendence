@@ -285,6 +285,9 @@ fn waiting_game(socket: &mut tungstenite::WebSocket<tungstenite::stream::MaybeTl
 									}
 								};
 							},
+							"userid" => {
+								eprintln!("{}", json["userid"].as_str().unwrap());
+							},
 							_ => {}
 						}
 					},
@@ -361,6 +364,8 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
 		}
 	};
 
+	panic!("TODO: Implement the game loop");
+	
 	_ = clear();
 
 	// game loop
