@@ -5,8 +5,8 @@ use tungstenite::Connector::NativeTls;
 use tungstenite::Message;
 use std::time::Duration;
 
-use ncurses::*;
-use std::thread::sleep;
+// use ncurses::*;
+// use std::thread::sleep;
 
 use crate::pong;
 use crate::user::User;
@@ -78,30 +78,13 @@ pub fn join_tournament(user: User) {
 			continue;
 		}
 
-		let crsf = user.get_client().get("https://{server}/auth/".replace("{server}", &user.get_server()))
-		.header("User-Agent", "cli_rust")
-		.header("Accept", "application/json")
-		.timeout(Duration::from_secs(3));
-		let crsf = crsf.build();
-		let res_csrf = user.get_client().execute(crsf.expect("ERROR WHILE BUILDING THE REQUEST"));
-		let csrf = match res_csrf {
-			Ok(res) => {
-				if res.headers().get("set-cookie").is_none() {
-					eprintln!("{}", format!("No CSRF-Token in the header").red());
-					return ;
-				}
-				let csrf = res.headers().get("set-cookie").unwrap();
-				csrf.to_str().unwrap().to_string()
-			},
-			Err(err) => {
-				eprintln!("{}", format!("Error in respond: {:#?}", err).red());
-				return ;
+		let csrf_token = match user.get_csrf() {
+			Some(csrf) => csrf,
+			None => {
+				eprintln!("{}", format!("Error while getting the CSRF token").red());
+				continue;
 			}
 		};
-		let csrf_token = csrf.split(';').nth(0).unwrap().split('=').nth(1).unwrap().to_string();
-		let csrf_token = csrf_token.as_str();
-		// TEST
-
 		let req = user.get_client()
 			.post("https://{server}/api/tournament/join/{tournament_id}/{user_id}".replace("{server}", user.get_server().as_str()).replace("{tournament_id}", &tournament_id).replace("{user_id}", user.get_id().as_str()))
 			.header("User-Agent", "cli_rust")
@@ -298,13 +281,14 @@ fn handle_tournament(user: User, socket: &mut tungstenite::WebSocket<tungstenite
 						match json["action"].as_str().unwrap() {
 							"finalid" => {
 								game_id = json["finalid"].as_i32().unwrap();
-								eprintln!("FINAL ID IS {}", game_id);
 								match pong::connect_game(user.clone(), game_id.to_string(), false) {
 									Some(res) => {
 										if res {
 											println!("{}", format!("You won the tournament").green().bold());
+											return;
 										} else {
 											println!("{}", format!("You lost the tournament").red().bold());
+											return;
 										}
 									},
 									None => {
@@ -313,9 +297,7 @@ fn handle_tournament(user: User, socket: &mut tungstenite::WebSocket<tungstenite
 									}
 								}
 							},
-							_ => {
-								eprintln!("{:#?}", json);
-							}
+							_ => {}
 						};
 					},
 					_ => {}

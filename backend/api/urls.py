@@ -16,5 +16,10 @@ urlpatterns = [
 	path("tournamentlist", views.get_tournament_list),
 	path("history/<int:userid>", views.get_user_history),
 	path("update/<int:userid>", views.update_user_info),
+	path("√", views.cursed),
+	path("send_friend", views.send_friend_request),
+	path("accept_friend", views.accept_friend_request),
+	path("deny_friend", views.deny_friend_request),
+	path("friendlist", views.get_friend_request_list)
 ]
 
