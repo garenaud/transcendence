@@ -533,21 +533,31 @@ function onMessageHandler(e) {
 	}
 };
 
+function sleep(delay) {
+    var start = new Date().getTime();
+	while (new Date().getTime() < start + delay)
+		console.log('*******************' + 'waiting');
+}
+
 const userList = document.getElementById('userList');
+let namelist = [];
 
 tournamentSocket.onmessage = function(e) {
 	tournament_data = JSON.parse(e.data);
 	console.log(tournament_data);
+	const string1 = tournament_data.action;
 	if (tournament_data.message == 'tournamentIdNotFound')
 	{
-		console.log(tournament_data.message);
 		window.location.reload(); //= "https://localhost/pong/tournament_menu.html";
 	}
-	// if (tournament_data.action == 'namep1')
-	// {
-	// 	console.log('********************************************');
-	// 	console.log(tournament_data.namep1);
-	// }
+	if (tournament_data.action == 'all_users') {
+		console.log('*******************ALL USERS**********************');
+		console.log(tournament_data.users); // This will print the list of users
+
+		// If you want to add these users to an existing list, you can do something like this:
+		var userList = []; // Assume this is your existing list
+		userList = userList.concat(tournament_data.users); // This will add the new users to the list
+	}
 	if (tournament_data.action == 'connect')
 	{
 		console.log(tournament_data.action);
