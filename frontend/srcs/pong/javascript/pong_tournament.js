@@ -43,6 +43,7 @@ let ballVelocity;
 let gameSocket;
 let tournamentSocket;
 let currentNum = 7;
+let connected;
 let playernb = sessionStorage.getItem('playernb');
 let playernumber = 0;
 
@@ -549,7 +550,6 @@ tournamentSocket.onmessage = function(e) {
 		window.location.reload(); //= "https://localhost/pong/tournament_menu.html";
 	}
 	if (tournament_data.action == 'all_users') {
-		console.log('*******************ALL USERS**********************');
 		var users = tournament_data.users; // This will get the list of users
 
 		// Create tournament tree
@@ -562,7 +562,7 @@ tournamentSocket.onmessage = function(e) {
 	if (tournament_data.action == 'connect')
 	{
 		console.log(tournament_data.connected);
-		loadingElement.innerHTML = "[WAITING FOR OPPONENT]<br><br><br><br><br> " + tournament_id + '<br>' + 'Currently connected : ' + tournament_data.connected + '/4';
+		loadingElement.innerHTML = "[WAITING FOR OPPONENT]<br> " + tournament_id + '<br>' + 'Currently connected : ' + tournament_data.connected + '/4';
 	}
 	else if (tournament_data.action == 'playernb')
 	{

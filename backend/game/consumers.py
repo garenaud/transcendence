@@ -321,11 +321,26 @@ class AsyncTournamentConsumer(AsyncWebsocketConsumer):
             self.tournoi = await sync_to_async(Tournament.objects.get)(tournament_id=self.tournament_id)
             if self.tournoi.p2_id == -1:
                 print(self.tournoi.p1_id)
+                self.playernb = 1
                 user = await sync_to_async(User.objects.get)(id=self.tournoi.p1_id)
+                await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                'type' : 'update',
+                "message": {'action' : 'namep', 'namep' : 1}
+                }
+                )
             elif self.tournoi.p3_id == -1:
                 print('yes')
                 self.playernb = 2
                 user = await sync_to_async(User.objects.get)(id=self.tournoi.p2_id)
+                await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                'type' : 'update',
+                "message": {'action' : 'namep', 'namep' : 2}
+                }
+                )
             elif self.tournoi.p4_id == -1:
                 print('yes')
                 self.playernb = 3
@@ -334,7 +349,7 @@ class AsyncTournamentConsumer(AsyncWebsocketConsumer):
                 self.room_group_name,
                 {
                 'type' : 'update',
-                "message": {'action' : 'namep', 'namep' : self.playernb}
+                "message": {'action' : 'namep', 'namep' : 3}
                 }
                 )
             elif self.tournoi.p4_id != -1:
@@ -344,11 +359,25 @@ class AsyncTournamentConsumer(AsyncWebsocketConsumer):
                 for player_id in [self.tournoi.p1_id, self.tournoi.p2_id, self.tournoi.p3_id, self.tournoi.p4_id]:
                     user = await sync_to_async(User.objects.get)(id=player_id)
                     users.append(user.username)
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        'type' : 'update',
+                        "message": {'action' : 'all_users', 'users' : users}
+                    }
+                )
             await self.send(text_data=json.dumps({'message' : self.tournament_id}))
             if self.tournoi.full == True:
                 self.playernb = 4
                 print('TOURNAMENT P4')
                 user = await sync_to_async(User.objects.get)(id=self.tournoi.p1_id)
+                await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                'type' : 'update',
+                "message": {'action' : 'namep', 'namep' : 4}
+                }
+                )
                 await self.channel_layer.group_send(
                 self.room_group_name,
                 {
