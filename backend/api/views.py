@@ -225,22 +225,23 @@ def update_user_info(request, userid):
 	if request.method == 'POST':
 		error = 0 
 		try:
+			data = json.loads(request.body)
 			user = User.objects.get(id=userid)
 			profile = userProfile.objects.get(user=user)
 
-			alias = request.POST['alias']
-			username = request.POST['username']
-			email = request.POST['email']
-			first_name = request.POST['first_name']
-			last_name = request.POST['last_name']
+			alias = data['alias']
+			username = data['username']
+			email = data['email']
+			first_name = data['first_name']
+			last_name = data['last_name']
 
 			if username != user.username:
-				if User.objects.filter(username=username).count == 0:
+				if User.objects.filter(username=username).count == 0 and username != '':
 					user.username = username
 				else:
 					error = 1
 			if alias != profile.tournament_alias:
-				if userProfile.objects.filter(tournament_alias=alias).count == 0:
+				if userProfile.objects.filter(tournament_alias=alias).count == 0 and alias != '':
 					profile.tournament_alias = alias
 				else:
 					error = 1
@@ -249,13 +250,15 @@ def update_user_info(request, userid):
 					user.email = email
 				else:
 					error = 1
-			user.first_name = first_name
-			user.last_name = last_name
-			
-			user.save()
-			profile.save()
+			if last_name != '' and first_name != '':
+				user.first_name = first_name
+				user.last_name = last_name
+			else:
+				error = 1
 
 			if error == 0:
+				user.save()
+				profile.save()
 				return Response({'message' : 'OK'}, status=200)
 			else:
 				return Response({'message' : 'KO'}, status=400)
@@ -330,3 +333,20 @@ def get_friend_request_list(request):
 		return Response(serializer.data)
 	else:
 		return Response("Unauthorized method", status=status.HTTP_401_UNAUTHORIZED)
+	
+
+@api_view(['GET'])
+def get_picture(request, userid):
+	user = User.objects.get(id=userid)
+	profile = userProfile.objects.get(user=user)
+	image = profile.profile_picture
+	print(image)
+	try:
+		with open('../base.jpeg', "rb") as f:
+			return HttpResponse(f.read(), content_type="image/jpeg")
+	except IOError:
+		return Response("ratio", status=234)
+	print(type(image))
+	response = HttpResponse(content_type='image/jpeg')
+	return HttpResponse(content_type='image/jpeg')
+
