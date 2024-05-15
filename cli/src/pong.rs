@@ -279,6 +279,12 @@ fn	get_username_by_id(user: User, id: i32) -> Option<String> {
 fn waiting_game(socket: &mut tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<std::net::TcpStream>>, user: User, term: &Console, paddle_l: &Paddle, paddle_r: &Paddle, score: &Score) -> Option<(String, Player)> {
 	_ = socket.send(Message::Text(r#"{"message":"load"}"#.to_string()));
 	let mut player: String = "default".to_string();
+	let mut data_player: Player = Player {
+		p1id: -1,
+		p1_username: "".to_string(),
+		p2id: -1,
+		p2_username: "".to_string()
+	};
 
 	loop {
 		match socket.read() {
@@ -290,37 +296,15 @@ fn waiting_game(socket: &mut tungstenite::WebSocket<tungstenite::stream::MaybeTl
 						match json["action"].as_str().unwrap() {
 							"counter" => {
 								match json["num"].as_i32() {
-									Some(num) => print_counter(term, num, paddle_l, paddle_r, score),
+									Some(num) => print_counter(term, num, paddle_l, paddle_r, score, &data_player),
 									None => {}
 								}
 							},
 							"start" => {
-								let mut dataPlayer: Player = Player {
-									p1id: json["p1"].as_i32().unwrap(),
-									p1_username: "".to_string(),
-									p2id: json["p2"].as_i32().unwrap(),
-									p2_username: "".to_string()
-								};
-								dataPlayer.p1_username = match get_username_by_id(user.clone(), dataPlayer.p1id) {
-									Some(username) => username,
-									None => {
-										eprintln!("{}", format!("Error while getting the username").red());
-										return None;
-									}
-								};
-								dataPlayer.p2_username = match get_username_by_id(user.clone(), dataPlayer.p2id) {
-									Some(username) => username,
-									None => {
-										eprintln!("{}", format!("Error while getting the username").red());
-										return None;
-									}
-								};
-
-
-								if player == "default" {
+								if player == "default" || data_player.p1id == -1 || data_player.p2id == -1 {
 									return None;
 								} else {
-									return Some((player, dataPlayer));
+									return Some((player, data_player));
 								}
 							},
 							"playernumber" => {
@@ -336,6 +320,28 @@ fn waiting_game(socket: &mut tungstenite::WebSocket<tungstenite::stream::MaybeTl
 									}
 								};
 							},
+							"playerid" => {
+								data_player = Player {
+									p1id: json["p1"].as_i32().unwrap(),
+									p1_username: "".to_string(),
+									p2id: json["p2"].as_i32().unwrap(),
+									p2_username: "".to_string()
+								};
+								data_player.p1_username = match get_username_by_id(user.clone(), data_player.p1id) {
+									Some(username) => username,
+									None => {
+										eprintln!("{}", format!("Error while getting the username").red());
+										return None;
+									}
+								};
+								data_player.p2_username = match get_username_by_id(user.clone(), data_player.p2id) {
+									Some(username) => username,
+									None => {
+										eprintln!("{}", format!("Error while getting the username").red());
+										return None;
+									}
+								};
+							}
 							"userid" => {
 								_ = socket.send(Message::Text(r#"{"message":"userid", "userid": {id}}"#.replace("{id}", &user.get_id()).to_string()));
 							},
@@ -353,15 +359,10 @@ fn waiting_game(socket: &mut tungstenite::WebSocket<tungstenite::stream::MaybeTl
 	}
 }
 
-fn print_counter(term: &Console, i: i32, paddle_l: &Paddle, paddle_r: &Paddle, score: &Score)
+fn print_counter(term: &Console, i: i32, paddle_l: &Paddle, paddle_r: &Paddle, score: &Score, data_player: &Player)
 {
 	mvaddstr(0, 0, &" ".repeat(term.width as usize));
-	print_score(term, score, &Player {
-		p1id: 0,
-		p1_username: "".to_string(),
-		p2id: 0,
-		p2_username: "".to_string()
-	});
+	print_score(term, score, &data_player);
 	mvaddstr((term.height / 2.0) as i32, (term.width / 2.0) as i32, &format!("{}", i));
 	print_paddle(paddle_l);
 	print_paddle(paddle_r);

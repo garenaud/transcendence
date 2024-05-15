@@ -119,7 +119,7 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
         await self.send_counter()
         await self.channel_layer.group_send(
         self.room_group_name,
-        {"type": "update", "message": {'action' : 'start', 'p1' : self.game.dbgame.p1_id, 'p2' : self.game.dbgame.p2_id}}
+        {"type": "update", "message": {'action' : 'start'}}
         )
         print("GAME STARTED")
         while self.game.finished == False:
@@ -235,6 +235,10 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
                 profile_p2 = await sync_to_async(userProfile.objects.get)(user=user)
                 profile_p2.in_game = True
                 await sync_to_async(self.saveGame)(profile_p2)
+                await self.channel_layer.group_send(
+                self.room_group_name,
+                {"type": "update", "message": {'action' : 'playerid', 'p1' : self.game.dbgame.p1_id, 'p2' : self.game.dbgame.p2_id}}
+                )
             await sync_to_async(self.saveGame)(self.game.dbgame)
         if message == 'ball_update':
             await self.channel_layer.group_send(
