@@ -335,18 +335,18 @@ def get_friend_request_list(request):
 		return Response("Unauthorized method", status=status.HTTP_401_UNAUTHORIZED)
 	
 
-@api_view(['GET'])
+@csrf_exempt
 def get_picture(request, userid):
-	user = User.objects.get(id=userid)
-	profile = userProfile.objects.get(user=user)
-	image = profile.profile_picture
-	print(image)
-	try:
-		with open('../base.jpeg', "rb") as f:
-			return HttpResponse(f.read(), content_type="image/jpeg")
-	except IOError:
-		return Response("ratio", status=234)
-	print(type(image))
-	response = HttpResponse(content_type='image/jpeg')
-	return HttpResponse(content_type='image/jpeg')
+	if request.method == 'POST':
+		profile = userProfile.objects.get(id=userid)
+		image = request.FILES.get('filename')
+		if image:
+			profile.profile_picture = image
+			image_url = profile.profile_picture.url
+			profile.save()
+			return JsonResponse({'message': 'Image sauvegardée avec succès', 'image_url': image_url})
+		else:
+			return JsonResponse({'message': 'Aucune image reçue'}, status=400)
+	else:
+		return JsonResponse({'message': 'Méthode non autorisée'}, status=405)
 
