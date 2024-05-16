@@ -111,8 +111,8 @@ export function renderPong() {
 								</div>
 							</div>
 							<div class="load-3">
-							<div class="loading">							
-							<p id="loading_txt">[TOURNAMENT DOESN'T EXIST]</p>
+								<div class="loading">							
+								<p id="loading_txt">[TOURNAMENT DOESN'T EXIST]</p>
 									<ul id="userList"></ul>
 									<div class="line"></div>
 									<div class="line"></div>

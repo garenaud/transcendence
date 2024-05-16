@@ -2200,15 +2200,43 @@ div.modal-footer, div.modal-body, div.modal-header{
 }
 
 .userList1 {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: space-between;
-	background-image: url("Design/SUPERBE_BRACKET_FINAL_3.png");
-	background-size: cover;
-	padding: 200px;
-	text-size-adjust: 100px;
+    position: relative; /* Assurez-vous que le conteneur a une position relative */
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    background-image: url("Design/SUPERBE_BRACKET_FINAL_3.png");
+    background-size: cover;
+    padding: 400px;
 }
 
-.userList1 .user {
-    font-size: 40px; /* Taille de police pour les noms d'utilisateur */
+.userTournament0 {
+    font-size: 40px;
+    color: red;
+    position: absolute;
+    top: 50px; /* Ajustez les valeurs en fonction de votre positionnement souhaité */
+    left: 50px; /* Ajustez les valeurs en fonction de votre positionnement souhaité */
+}
+
+.userTournament1 {
+    font-size: 40px;
+    color: black;
+    position: absolute;
+    top: 50px; /* Ajustez les valeurs en fonction de votre positionnement souhaité */
+    right: 50px; /* Ajustez les valeurs en fonction de votre positionnement souhaité */
+}
+
+.userTournament2 {
+    font-size: 40px;
+    color: green;
+    position: absolute;
+    bottom: 50px; /* Ajustez les valeurs en fonction de votre positionnement souhaité */
+    left: 50px; /* Ajustez les valeurs en fonction de votre positionnement souhaité */
+}
+
+.userTournament3 {
+    font-size: 40px;
+    color: blue;
+    position: absolute;
+    bottom: 50px; /* Ajustez les valeurs en fonction de votre positionnement souhaité */
+    right: 50px; /* Ajustez les valeurs en fonction de votre positionnement souhaité */
 }

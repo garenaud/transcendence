@@ -556,10 +556,10 @@ tournamentSocket.onmessage = function(e) {
 		var tournamentTree = document.getElementById('userList');
 		tournamentTree.innerHTML = `
 			<p class="userList1">
-				<span class="userTournament">${users[0]}</span>
-				<span class="userTournament">${users[2]}</span>
-				<span class="userTournament">${users[1]}</span>
-				<span class="userTournament">${users[3]}</span>
+				<span class="userTournament0">${users[0]}</span>
+				<span class="userTournament1">${users[2]}</span>
+				<span class="userTournament2">${users[1]}</span>
+				<span class="userTournament3">${users[3]}</span>
 			</p>
 		`;
 	}
