@@ -22,11 +22,11 @@ export function renderLogin() {
 		  		<p class="text-white-50 mb-3" data-lang-key='loginTxt'>Please enter your login and password!</p>
 
 		  		<div class="form-outline form-white mb-2">
-		  			<input type="text" id="typeUsername" class="form-control form-control-lg" />
+		  			<input type="text" id="typeUsername" class="form-control form-control-lg" required/>
 		  			<label class="form-label" data-lang-key='username'>Username</label>
 		  		</div>
 		  		<div class="form-outline form-white mb-2">
-		  			<input type="password" id="typePasswordX" class="form-control form-control-lg" />
+		  			<input type="password" id="typePasswordX" class="form-control form-control-lg" required/>
 		  			<label class="form-label" for="typePasswordX"  data-lang-key='password'>Password</label>
 		  		</div>
 				  <div id="error-messageLogin" class="alert alert-danger" role="alert"></div>
@@ -117,7 +117,6 @@ function    setupButtonListener() {
 			return response.json();
 		})
 		.then(data => {
-			console.log('Success:', data);
 			if (data['message'] == "OK") {
 				let userId = data['id'];
                 sessionStorage.setItem('userId', userId);
@@ -129,6 +128,7 @@ function    setupButtonListener() {
 				document.getElementById('error-messageLogin').style.display = 'block';
 				setTimeout(function() {
 					document.getElementById('error-messageLogin').style.display = 'none';
+					document.getElementById('error-messageLogin').textContent = '';
 				}, 4000);
 			}
 		})
@@ -153,7 +153,7 @@ function    setupButtonListener() {
 	});
 
 	document.getElementById('signupBtn').addEventListener('click', function() {
-		const username = document.getElementById('signupUsername').value;
+	const username = document.getElementById('signupUsername').value;
     const firstName = document.getElementById('signupFirstName').value;
     const lastName = document.getElementById('signupLastName').value;
     const email = document.getElementById('signupEmail').value;
@@ -213,13 +213,25 @@ function    setupButtonListener() {
 				return response.json();
 			})
 			.then(data => {
-				console.log('Signup Success:', data);
-				if (data.message === "Error") {
+				console.log(data);
+				const loginElement = document.querySelector('.login-form');
+				const signupElement = document.querySelector('.signup');
+				document.getElementById('success-message').textContent = "Your account has been created successfully";
+				document.getElementById('error-message').style.display = 'none';
+				document.getElementById('success-message').style.display = 'block';
+				setTimeout(function() {
+					loginElement.style.display = 'block';
+					signupElement.style.display = 'none';
+					document.getElementById('success-message').textContent = "";
+					document.getElementById('success-message').style.display = 'none';
+				}, 3000);
+				/*if (data.message === "Error") {
 					console.log('Signup Error:', data.errors);
 					document.getElementById('error-message').textContent = data.errors.join(', ');
 					document.getElementById('error-message').style.display = 'block';
 					setTimeout(function() {
 						document.getElementById('error-message').style.display = 'none';
+						document.getElementById('error-message').textContent = '';
 					}, 4000);
 				} 
 				else if (data.message === "OK") 
@@ -233,8 +245,8 @@ function    setupButtonListener() {
 						const signupElement = document.querySelector('.signup');
 						loginElement.style.display = 'block';
 						signupElement.style.display = 'none';
-					}, 2000);*/
-				}
+					}, 2000);
+				}*/
 			})
 			.catch((error) => {
 				console.log('error dans le catch de signup:', error.status);
@@ -244,6 +256,7 @@ function    setupButtonListener() {
 				document.getElementById('error-message').style.display = 'block';
 				setTimeout(function() {
 					document.getElementById('error-message').style.display = 'none';
+					document.getElementById('error-message').textContent = '';
 				}, 3000);
 			});
 		}
