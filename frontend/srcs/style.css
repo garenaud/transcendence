@@ -2200,6 +2200,15 @@ div.modal-footer, div.modal-body, div.modal-header{
 }
 
 .userList1 {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
 	background-image: url("Design/SUPERBE_BRACKET_FINAL_3.png");
+	background-size: cover;
 	padding: 200px;
+	text-size-adjust: 100px;
+}
+
+.userList1 .user {
+    font-size: 40px; /* Taille de police pour les noms d'utilisateur */
 }

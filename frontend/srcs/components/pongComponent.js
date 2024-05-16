@@ -110,12 +110,13 @@ export function renderPong() {
 									<div class="col col-display" id="scoreGuest">0</div>
 								</div>
 							</div>
-							<div class="loading">							<div class="load-3">
+							<div class="load-3">
+							<div class="loading">							
 							<p id="loading_txt">[TOURNAMENT DOESN'T EXIST]</p>
-									<div class="line"></div>
-									<div class="line"></div>
-									<div class="line"></div>
 									<ul id="userList"></ul>
+									<div class="line"></div>
+									<div class="line"></div>
+									<div class="line"></div>
 								</div>
 							</div>
 							<div id="myModal" class="modal">
@@ -291,6 +292,7 @@ function addEventListeners(element) {
 			pongMulti.classList.add('d-none');
 			pongTournament.classList.add('d-none');
             origPong.classList.remove('d-none');
+			window.location.reload();
         });
 		
         // Define the event handler
