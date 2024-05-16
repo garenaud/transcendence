@@ -241,7 +241,8 @@ fn handle_tournament(user: User, socket: &mut tungstenite::WebSocket<tungstenite
 									continue;
 								},
 								"connect" => {
-									println!("There are actually {} player(s) in the tournament", json["connected"]);
+									print!("\rThere are actually {} player(s) in the tournament", json["connected"]);
+									_ = std::io::stdout().flush();
 								},
 								_ => {}
 							},
