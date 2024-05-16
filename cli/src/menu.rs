@@ -70,7 +70,7 @@ fn print_game() {
 }
 
 /**
- * Display the game menu and handle the user's choice
+ * Display the game menu and handle the user's choice	
  * 
  * Args:
  * 		user: User - The user that is currently logged in
@@ -139,7 +139,9 @@ fn menu_game(user: User) {
 				break ;
 			},
 			_ => {
+				_ = clearscreen::clear();
 				println!("{}", format!("Invalid choice").red());
+				continue;
 			}
 		}
 	}
@@ -163,7 +165,7 @@ fn print_tournament() {
 fn menu_tournament(user: User) {
 	loop {
 		print_tournament();
-
+	
 		let mut choice = String::new();
 		println!("1. Create a tournament");
 		println!("2. Join a tournament");
@@ -187,6 +189,7 @@ fn menu_tournament(user: User) {
 				break ;
 			},
 			_ => {
+				_ = clearscreen::clear();
 				eprintln!("{}", format!("Invalid choice").red());
 			}
 		}

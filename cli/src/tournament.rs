@@ -5,9 +5,6 @@ use tungstenite::Connector::NativeTls;
 use tungstenite::Message;
 use std::time::Duration;
 
-// use ncurses::*;
-// use std::thread::sleep;
-
 use crate::pong;
 use crate::user::User;
 
@@ -76,6 +73,8 @@ pub fn join_tournament(user: User) {
 		if tournament_id.len() <= 0 {
 			eprintln!("{}", format!("Tournament ID can't be empty").red());
 			continue;
+		} else if tournament_id.as_str() == "q" {
+			return;
 		}
 
 		let csrf_token = match user.get_csrf() {
@@ -91,9 +90,8 @@ pub fn join_tournament(user: User) {
 			.header("Accept", "application/json")
 			.header("X-CSRFToken", csrf_token)
 			.header("Referer", "https://{server}/".replace("{server}", &user.get_server()))
-
-			// .body((r#"{"tournamentid":"{email}","password":"{password}"}"#).replace("{email}", &login).replace("{password}", &password))
 			.timeout(Duration::from_secs(3));
+
 		let res = req.build();
 		let res = user.get_client().execute(res.expect("ERROR WHILE BUILDING THE REQUEST"));
 		match res {
@@ -189,7 +187,6 @@ fn connect_ws_tournament(user: User, tournament_id: String) -> Result<tungstenit
  */
 fn handle_tournament(user: User, socket: &mut tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<std::net::TcpStream>>, player_nb: String) {
 	let mut game_id = -1;
-	let mut connect = 0;
 
 	'selection: loop {
 		match socket.read() {
@@ -258,6 +255,7 @@ fn handle_tournament(user: User, socket: &mut tungstenite::WebSocket<tungstenite
 			}
 		};
 	}
+	println!("");
 
 	match pong::connect_game(user.clone(), game_id.to_string(), true) {
 		Some(res) => {
