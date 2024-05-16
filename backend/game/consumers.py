@@ -332,6 +332,7 @@ class AsyncTournamentConsumer(AsyncWebsocketConsumer):
             self.tournoi = await sync_to_async(Tournament.objects.get)(tournament_id=self.tournament_id)
             if self.tournoi.p2_id == -1:
                 print(self.tournoi.p1_id)
+                self.playernb = 1
                 user = await sync_to_async(User.objects.get)(id=self.tournoi.p1_id)
                 await self.channel_layer.group_send(
                 self.room_group_name,
@@ -342,6 +343,7 @@ class AsyncTournamentConsumer(AsyncWebsocketConsumer):
                 )
             elif self.tournoi.p3_id == -1:
                 print('yes')
+                self.playernb = 2
                 user = await sync_to_async(User.objects.get)(id=self.tournoi.p2_id)
                 await self.channel_layer.group_send(
                 self.room_group_name,
@@ -352,6 +354,7 @@ class AsyncTournamentConsumer(AsyncWebsocketConsumer):
                 )
             elif self.tournoi.p4_id == -1:
                 print('yes')
+                self.playernb = 3
                 user = await sync_to_async(User.objects.get)(id=self.tournoi.p3_id)
                 await self.channel_layer.group_send(
                 self.room_group_name,
