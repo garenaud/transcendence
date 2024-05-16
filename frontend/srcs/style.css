@@ -66,6 +66,10 @@ h1 {
   display: none;
 }
 
+#error-messageLogin, #success-messageLogin {
+  display: none;
+}
+
 /*-------------------------------- Modal --------------------------------*/
 .modal-title {
     color: #F6428E;
