@@ -23,7 +23,7 @@ export function renderLogin() {
 
 		  		<div class="form-outline form-white mb-2">
 		  			<input type="text" id="typeUsername" class="form-control form-control-lg" />
-		  			<label class="form-label">Username</label>
+		  			<label class="form-label" data-lang-key='username'>Username</label>
 		  		</div>
 		  		<div class="form-outline form-white mb-2">
 		  			<input type="password" id="typePasswordX" class="form-control form-control-lg" />
@@ -32,14 +32,10 @@ export function renderLogin() {
 				  <div id="error-messageLogin" class="alert alert-danger" role="alert"></div>
 				  <div id="success-messageLogin" class="alert alert-success" role="alert"></div>
 			<button id='loginBtn' class="btn btn-outline-light btn-lg px-5" type="submit" data-lang-key='login'>Login</button>
-
 		  </div>
-
 		  <div>
-		  <p class="mb-0"><span data-lang-key='noAccount'>Don't have an account?</span> <a href="#login" id="signup-btn-form" class="text-white-50 fw-bold">Sign Up</a></p>
-			</p>
+		  	<p class="mb-0"><span data-lang-key='noAccount'>Don't have an account?</span> <a href="#login" id="signup-btn-form" class="text-white-50 fw-bold">Sign Up</a></p>
 		  </div>
-
 		</div>
 	  </div>
 	</div>
@@ -81,10 +77,10 @@ export function renderLogin() {
 				<div id="error-message" class="alert alert-danger" role="alert"></div>
 				<div id="success-message" class="alert alert-success" role="alert"></div>
 			<button id='signupBtn' class="btn btn-outline-light btn-lg px-5" type="submit" data-lang-key='signup'>signup</button>
-			<p class="mb-0"><span data-lang-key='alreadyAccount'>Already have an account ?</span> <a href="#login" id="login-btn-form" class="text-white-50 fw-bold">Login</a></p>
-			</p>
-		  </div>
-
+			</div>
+			<div>
+				<p class="mb-0"><span data-lang-key='alreadyAccount'>Already have an account ?</span> <a href="#login" id="login-btn-form" class="text-white-50 fw-bold">Login</a></p>
+			</div>
 		</div>
 	  </div>
 	</div>
