@@ -11,7 +11,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages, auth
 from django.shortcuts import render
 from django.contrib.auth.models import User
-import random
+from django.conf import settings
+import random, os
 from itertools import chain
 
 
@@ -335,8 +336,20 @@ def get_friend_request_list(request):
 		return Response("Unauthorized method", status=status.HTTP_401_UNAUTHORIZED)
 	
 
-@csrf_exempt
 def get_picture(request, userid):
+	if request.method == 'GET':
+		try:
+			profile = userProfile.objects.get(id=userid)
+			image_path = os.path.join(settings.MEDIA_ROOT, 'media/images', profile.profile_picture.url)
+			with open(f'media/{image_path}', 'rb') as f:
+				return HttpResponse(f.read(), content_type='image/jpeg')  # Assurez-vous d'ajuster le type MIME en fonction du type d'image que vous stockez
+		except IOError:
+			return HttpResponse(status=404)
+	else:
+		return JsonResponse({'message': 'Méthode non autorisée'}, status=405)
+	
+@csrf_exempt
+def post_picture(request, userid):
 	if request.method == 'POST':
 		profile = userProfile.objects.get(id=userid)
 		image = request.FILES.get('filename')
@@ -349,4 +362,5 @@ def get_picture(request, userid):
 			return JsonResponse({'message': 'Aucune image reçue'}, status=400)
 	else:
 		return JsonResponse({'message': 'Méthode non autorisée'}, status=405)
+
 
