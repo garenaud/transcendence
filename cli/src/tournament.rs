@@ -135,7 +135,7 @@ pub fn join_tournament(user: User) {
 			return;
 		}
 	};
-	println!("{}", format!("Connected to the tournament\tWaiting for more player...").green());
+	println!("{}", format!("Connected to the tournament, waiting for more player...").green());
 	handle_tournament(user.clone(), &mut socket, player_nb);
 }
 
@@ -189,6 +189,7 @@ fn connect_ws_tournament(user: User, tournament_id: String) -> Result<tungstenit
  */
 fn handle_tournament(user: User, socket: &mut tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<std::net::TcpStream>>, player_nb: String) {
 	let mut game_id = -1;
+	let mut connect = 0;
 
 	'selection: loop {
 		match socket.read() {
@@ -238,6 +239,9 @@ fn handle_tournament(user: User, socket: &mut tungstenite::WebSocket<tungstenite
 								"gameid" => {
 									game_id = json["gameid"].as_i32().unwrap();
 									continue;
+								},
+								"connect" => {
+									println!("There are actually {} player(s) in the tournament", json["connected"]);
 								},
 								_ => {}
 							},
