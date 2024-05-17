@@ -18,8 +18,10 @@ let currentIndex = -1;
 export let appState = {
     currentView: 'login',
     user: null,
+    userProfile: null,
     userId: null,
     users: [],
+    usersProfile: [],
     urlHistory: ['login'],
     renderedComponents: {},
     language: 'fr',
@@ -71,7 +73,7 @@ window.addEventListener("popstate", function() {
         window.location.hash = 'login';
         return;
     }
-    if (newView === 'login' && appState.urlHistory.length === 2) {
+    if (newView === 'login' && appState.userId !== 0) {
         const confirmLogout = window.confirm('Si vous revenez à cette page, vous serez déconnecté. Êtes-vous sûr de vouloir continuer ?');
         if (confirmLogout) {
             logoutUser();
@@ -168,6 +170,7 @@ async function renderCurrentView() {
     switch(appState.currentView) {
         case 'login':
             console.log("coucou je passe a login");
+            appState.urlHistory = ['login'];
             await renderLoginView();
             break;
         default:
