@@ -357,8 +357,8 @@ class AsyncTournamentConsumer(AsyncWebsocketConsumer):
                 users = []
                 self.playernb = 4
                 for player_id in [self.tournoi.p1_id, self.tournoi.p2_id, self.tournoi.p3_id, self.tournoi.p4_id]:
-                    user = await sync_to_async(User.objects.get)(id=player_id)
-                    users.append(user.username)
+                    user = await sync_to_async(userProfile.objects.get)(id=player_id)
+                    users.append(user.tournament_alias)
                 await self.channel_layer.group_send(
                     self.room_group_name,
                     {
