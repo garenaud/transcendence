@@ -302,9 +302,6 @@ fn handle_tournament(user: User, socket: &mut tungstenite::WebSocket<tungstenite
 									}
 								}
 							},
-							_ => {
-								eprintln!("{:#?}", json);
-							}
 							_ => {}
 						};
 					},
