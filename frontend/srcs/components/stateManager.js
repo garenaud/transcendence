@@ -1,5 +1,5 @@
 import { getUser, loadUser, getCurrentUser, loadGameList } from './userManager.js';
-import { renderNavbar } from './navbar.js'; 
+import { renderNavbar } from './navbar.js';
 import { renderHero } from './hero.js';
 import { renderPong } from './pongComponent.js';
 import { renderChat } from './chat.js';
@@ -56,7 +56,7 @@ export function changeView(newView) {
 }
 
 // Écouteur d'événement pour changer la vue lorsque l'URL change (rajoute le # à l'URL lorsqu'on change de vue)
-window.addEventListener("hashchange", function() {
+window.addEventListener("hashchange", function () {
     const newView = location.hash.substring(1);
     if (appState.currentView !== newView) {
         appState.currentView = newView;
@@ -71,7 +71,7 @@ window.addEventListener("hashchange", function() {
 });
 
 // Fonction pour que l'historique du navigateur fonctionne correctement avec les vues de l'application (popstate se declenche lorsque l'on presse sur precedent)
-window.addEventListener("popstate", function() {
+window.addEventListener("popstate", function () {
     const newView = location.hash.substring(1);
     const newIndex = appState.urlHistory.lastIndexOf(newView);
     const currentUser = getCurrentUser();
@@ -109,7 +109,7 @@ window.addEventListener("popstate", function() {
     console.log("!!!!!!!!!!!!!!!!!!!!! urlHistory = ", appState.urlHistory);
 });
 
-window.addEventListener("pushstate", function() {
+window.addEventListener("pushstate", function () {
     const newView = location.hash.substring(1);
     if (appState.currentView !== newView) {
         appState.currentView = newView;
@@ -149,8 +149,8 @@ function initializeAppState() {
 function validateCurrentView() {
     const validViews = ['login', 'game', 'hero'];
     if (!validViews.includes(appState.currentView)) {
-        document.body.innerHTML = 
-        '<div class="error-404"><img src="../Design/Mflury404.jpg"><h1 data-lang-key="error-404">Erreur 404 : Page non trouvée</h1><div>';
+        document.body.innerHTML =
+            '<div class="error-404"><img src="../Design/Mflury404.jpg"><h1 data-lang-key="error-404">Erreur 404 : Page non trouvée</h1><div>';
         throw new Error('Invalid view');
     }
     if (!appState.renderedComponents) {
@@ -159,7 +159,7 @@ function validateCurrentView() {
 }
 
 async function renderCurrentView() {
-    switch(appState.currentView) {
+    switch (appState.currentView) {
         case 'login':
             await renderLoginView();
             break;
@@ -186,7 +186,7 @@ async function renderDefaultView() {
         await loadUser();
         await loadGameList();
     }
-    switch(appState.currentView) {
+    switch (appState.currentView) {
         case 'hero':
             await renderHeroView();
             break;
@@ -212,7 +212,7 @@ async function renderGameView() {
     console.log("appstate dans game: ", appState);
     if (!appState.renderedComponents.game) {
         await LanguageBtn();
-        if(!document.querySelector('.navbar')){
+        if (!document.querySelector('.navbar')) {
             renderNavbar(appState.user);
         }
         const game = await renderPong();
@@ -226,5 +226,14 @@ async function renderGameView() {
     }
     loadLanguage(appState.language);
 }
+
+window.addEventListener('beforeunload', function (e) {
+    fetch('auth/logout/' + appState.userId, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+});
 
 renderApp();
