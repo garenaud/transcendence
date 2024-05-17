@@ -1,5 +1,5 @@
 import { getUser, loadUser, getCurrentUser, loadGameList } from './userManager.js';
-import { renderNavbar } from './navbar.js'; 
+import { renderNavbar } from './navbar.js';
 import { renderHero } from './hero.js';
 import { renderPong } from './pongComponent.js';
 import { renderChat } from './chat.js';
@@ -12,6 +12,8 @@ import { renderScratchGame } from './scratchGame.js';
 import { createToastComponent, createButtonComponent, createPhotoComponent, createListCardComponent, renderDiv } from './globalComponent.js';
 import { showUserList, showGameList } from './listComponent.js';
 
+let currentIndex = -1;
+
 // Initialisation de l'état de l'application et du current user
 export let appState = {
     currentView: 'login',
@@ -20,16 +22,27 @@ export let appState = {
     users: [],
     urlHistory: ['login'],
     renderedComponents: {},
-    language: 'fr'
+    language: 'fr',
+    newViewAdded: false
 };
+
+export function resetAppState() {
+    appState = {
+        currentView: 'login',
+        user: null,
+        userId: null,
+        users: [],
+        urlHistory: ['login'],
+        renderedComponents: {},
+        language: 'fr',
+        newViewAdded: false
+    };
+}
 
 // Fonction pour changer la vue actuelle de l'application
 export function changeView(newView) {
     if (appState.currentView !== newView) {
         appState.currentView = newView;
-        if (appState.urlHistory[appState.urlHistory.length - 1] !== newView) { // Ajoutez cette condition
-            appState.urlHistory.push(newView);
-        }
         // Supprimez les composants de la vue précédente de appState.renderedComponents
         for (let component in appState.renderedComponents) {
             if (component.startsWith(appState.currentView)) {
@@ -38,41 +51,71 @@ export function changeView(newView) {
         }
         sessionStorage.setItem('renderedComponents', JSON.stringify(appState.renderedComponents));
     }
+    appState.newViewAdded = true;
     location.hash = newView;
-    appState.currentView = newView;
-    if (appState.urlHistory[appState.urlHistory.length - 1] !== newView) { // Ajoutez cette condition
-        appState.urlHistory.push(newView);
-    }
 }
 
 // Écouteur d'événement pour changer la vue lorsque l'URL change (rajoute le # à l'URL lorsqu'on change de vue)
-window.addEventListener("hashchange", function() {
+window.addEventListener("hashchange", function () {
     const newView = location.hash.substring(1);
     if (appState.currentView !== newView) {
         appState.currentView = newView;
+    }
+    const currentUser = getCurrentUser();
+    console.log("currentUser = ", currentUser);
+    if (!currentUser && newView !== 'login') {
+        window.location.hash = 'login';
+        return;
     }
     renderApp();
 });
 
 // Fonction pour que l'historique du navigateur fonctionne correctement avec les vues de l'application (popstate se declenche lorsque l'on presse sur precedent)
-window.addEventListener("popstate", function() {
+window.addEventListener("popstate", function () {
     const newView = location.hash.substring(1);
+    const newIndex = appState.urlHistory.lastIndexOf(newView);
+    const currentUser = getCurrentUser();
+    console.log("currentUser popstate = ", currentUser);
+    if (!currentUser && newView !== 'login') {
+        window.location.hash = 'login';
+        return;
+    }
+
     if (newView === 'login' && appState.urlHistory.length === 2) {
         const confirmLogout = window.confirm('Si vous revenez à cette page, vous serez déconnecté. Êtes-vous sûr de vouloir continuer ?');
         if (confirmLogout) {
-            // Déconnectez l'utilisateur et mettez à jour l'état de l'application
-            // appState.user = null;
-            // appState.currentView = newView;
-            // appState.urlHistory.pop();
             console.log('bye bye mon ami tu as choisi de nous quitter!!!!');
         } else {
-            // Annulez l'action précédente
             history.pushState(null, null, '#' + appState.urlHistory[appState.urlHistory.length - 1]);
         }
-    } else {
+    } else if (appState.newViewAdded) {
         appState.currentView = newView;
+        if (appState.urlHistory[appState.urlHistory.length - 1] !== newView) {
+            appState.urlHistory.push(newView);
+        }
+        currentIndex++;
+        appState.newViewAdded = false;
+    } else if (newIndex < currentIndex) {
+        appState.currentView = newView;
+        if (appState.urlHistory[appState.urlHistory.length - 1] !== newView) {
+            appState.urlHistory.push(newView);
+        }
+        currentIndex++;
+    } else {
         appState.urlHistory.pop();
-        console.log("!!!!!!!!!!!!!!!!!!!!! urlHistory = ", appState.urlHistory);
+        currentIndex--;
+    }
+
+    console.log("!!!!!!!!!!!!!!!!!!!!! urlHistory = ", appState.urlHistory);
+});
+
+window.addEventListener("pushstate", function () {
+    const newView = location.hash.substring(1);
+    if (appState.currentView !== newView) {
+        appState.currentView = newView;
+        if (appState.urlHistory[appState.urlHistory.length - 1] !== newView) {
+            appState.urlHistory.push(newView);
+        }
     }
 });
 
@@ -82,11 +125,14 @@ export function getCurrentView() {
 
 // Fonction principale pour rendre l'application en fonction de l'état actuel
 export async function renderApp() {
-    if (!location.hash) { //) {
+    initializeAppState();
+    validateCurrentView();
+    await renderCurrentView();
+}
+
+function initializeAppState() {
+    if (!location.hash || appState.userId == 0) {
         location.hash = '#login';
-        //appState.urlHistory.push('login');
-/*         await renderApp();
-        return; */
     }
     if (appState) {
         appState.renderedComponents = JSON.parse(sessionStorage.getItem('renderedComponents')) || {};
@@ -98,67 +144,96 @@ export async function renderApp() {
     }
     appState.currentView = location.hash.substring(1) || 'login';
     document.body.innerHTML = '';
+}
+
+function validateCurrentView() {
+    const validViews = ['login', 'game', 'hero'];
+    if (!validViews.includes(appState.currentView)) {
+        document.body.innerHTML =
+            '<div class="error-404"><img src="../Design/Mflury404.jpg"><h1 data-lang-key="error-404">Erreur 404 : Page non trouvée</h1><div>';
+        throw new Error('Invalid view');
+    }
     if (!appState.renderedComponents) {
         appState.renderedComponents = {};
     }
-    switch(appState.currentView) {
+}
+
+async function renderCurrentView() {
+    switch (appState.currentView) {
         case 'login':
-            if (!appState.renderedComponents.login) {
-                await LanguageBtn();
-                renderLogin();
-                appState.renderedComponents.login = true;
-            }
-            else {
-                await LanguageBtn();
-                renderLogin();
-            }
+            await renderLoginView();
             break;
         default:
-            if (!appState.user) {
-                console.log('loading user, appState = ', appState.user);
-                await loadUser();
-                await loadGameList();
-            }
-            switch(appState.currentView) {
-                case 'hero':
-                    if (!document.querySelector('.navbar')) {
-                        console.log('appState = ', appState.user);
-                        await LanguageBtn();
-                        await renderHero();
-                        renderNavbar(appState.user);
-                        appState.renderedComponents.hero = true;
-                        appState.renderedComponents.navbar = true;
-                    }
-                    break;
-                case 'game':
-                    console.log(document.querySelector('.navbar-expand-lg'));
-                    console.log("appstate dans game: ", appState);
-                    loadLanguage(appState.language);
-                    if (!appState.renderedComponents.game) {
-                        await LanguageBtn();
-                        loadLanguage(appState.language);
-                        renderNavbar(appState.user);
-                        const game = await renderPong();
-                        const game2 = await renderRun();
-                        const gameListHTML = await showGameList();
-                        const gameListElement = document.createElement('div');
-                        gameListElement.innerHTML = gameListHTML;
-                        await renderDiv([game2, game], 'row');
-                        await LanguageBtn();
-                        // renderNavbar(appState.user);
-                        appState.renderedComponents.game = true;
-                        appState.renderedComponents.navbar = true;
-                    } else {
-                        renderNavbar(appState.user);
-                    }
-                    break;
-                case 'chat':
-                    const chat = await renderChat();
-                    await renderDiv([chat], 'chat-div');
-                    renderNavbar(appState.user);
-                    break;
-            }
-        break;
+            await renderDefaultView();
+            break;
     }
 }
+
+async function renderLoginView() {
+    if (!appState.renderedComponents.login) {
+        await LanguageBtn();
+        renderLogin();
+        appState.renderedComponents.login = true;
+    } else {
+        await LanguageBtn();
+        renderLogin();
+    }
+}
+
+async function renderDefaultView() {
+    if (!appState.user) {
+        console.log('loading user, appState = ', appState.user);
+        await loadUser();
+        await loadGameList();
+    }
+    switch (appState.currentView) {
+        case 'hero':
+            await renderHeroView();
+            break;
+        case 'game':
+            await renderGameView();
+            break;
+    }
+}
+
+async function renderHeroView() {
+    if (!document.querySelector('.navbar')) {
+        console.log('appState = ', appState.user);
+        await LanguageBtn();
+        await renderHero();
+        renderNavbar(appState.user);
+        appState.renderedComponents.hero = true;
+        appState.renderedComponents.navbar = true;
+    }
+}
+
+async function renderGameView() {
+    console.log(document.querySelector('.navbar-expand-lg'));
+    console.log("appstate dans game: ", appState);
+    if (!appState.renderedComponents.game) {
+        await LanguageBtn();
+        if (!document.querySelector('.navbar')) {
+            renderNavbar(appState.user);
+        }
+        const game = await renderPong();
+        const game2 = await renderRun();
+        const gameListHTML = await showGameList();
+        const cardHistory = createListCardComponent('pongPlayed', 'Games', gameListHTML);
+        await renderDiv([cardHistory, game], 'row');
+        await LanguageBtn();
+        appState.renderedComponents.game = true;
+        appState.renderedComponents.navbar = true;
+    }
+    loadLanguage(appState.language);
+}
+
+window.addEventListener('beforeunload', function (e) {
+    fetch('auth/logout/' + appState.userId, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+});
+
 renderApp();

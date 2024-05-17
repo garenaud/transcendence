@@ -71,6 +71,7 @@ fn connection(srv: String, login: String, password: String) -> Option<User> {
 	match res {
 		Ok(res) => {
 			if !res.status().is_success() {
+				// eprintln!("{:#?}", res);
 				return None;
 			}
 			let res = res.text().ok();

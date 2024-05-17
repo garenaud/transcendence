@@ -11,7 +11,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages, auth
 from django.shortcuts import render
 from django.contrib.auth.models import User
-import random
+from django.conf import settings
+import random, os
 from itertools import chain
 
 
@@ -269,7 +270,7 @@ def update_user_info(request, userid):
 
 @ensure_csrf_cookie
 def cursed(request):
-	return Response("", status=200)
+	return HttpResponse("", status=200)
 
 def send_friend_request(request):
 	try:
@@ -335,18 +336,31 @@ def get_friend_request_list(request):
 		return Response("Unauthorized method", status=status.HTTP_401_UNAUTHORIZED)
 	
 
-@api_view(['GET'])
 def get_picture(request, userid):
-	user = User.objects.get(id=userid)
-	profile = userProfile.objects.get(user=user)
-	image = profile.profile_picture
-	print(image)
-	try:
-		with open('../base.jpeg', "rb") as f:
-			return HttpResponse(f.read(), content_type="image/jpeg")
-	except IOError:
-		return Response("ratio", status=234)
-	print(type(image))
-	response = HttpResponse(content_type='image/jpeg')
-	return HttpResponse(content_type='image/jpeg')
+	if request.method == 'GET':
+		try:
+			profile = userProfile.objects.get(id=userid)
+			image_path = os.path.join(settings.MEDIA_ROOT, 'media/images', profile.profile_picture.url)
+			print(image_path)
+			with open(f'media/{image_path}', 'rb') as f:
+				return HttpResponse(f.read(), content_type='image/jpeg')  # Assurez-vous d'ajuster le type MIME en fonction du type d'image que vous stockez
+		except IOError:
+			return HttpResponse(status=404)
+	else:
+		return JsonResponse({'message': 'Méthode non autorisée'}, status=405)
+	
+def post_picture(request, userid):
+	if request.method == 'POST':
+		profile = userProfile.objects.get(id=userid)
+		image = request.FILES.get('filename')
+		if image:
+			profile.profile_picture = image
+			image_url = profile.profile_picture.url
+			profile.save()
+			return JsonResponse({'message': 'Image sauvegardée avec succès', 'image_url': image_url})
+		else:
+			return JsonResponse({'message': 'Aucune image reçue'}, status=400)
+	else:
+		return JsonResponse({'message': 'Méthode non autorisée'}, status=405)
+
 

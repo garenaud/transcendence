@@ -5,9 +5,18 @@
     "setProfile": "Profil bearbeiten",
     "logout": "Abmelden",
     "login": "Anmelden",
+    "loginError": "Login oder Passwort ist ungültig",
     "signup": "Registrieren",
+    "signupOk": "Ihr Konto wurde erfolgreich erstellt",
+    "usernameError": "Ungültige Benutzernamensyntax",
+    "firstNameError": "Ungültige Vornamensyntax",
+    "lastNameError": "Ungültige Nachnamensyntax",
+    "emailError": "Ungültige E-Mail-Syntax",
+    "passwordMatchError": "Passwörter stimmen nicht überein",
+    "passwordSyntaxError": "Das Passwort muss zwischen 8 - 20 Zeichen lang sein und mindestens 1 Großbuchstaben, Kleinbuchstaben und Ziffer",
+    "usernameExistError": "Ein Benutzer mit demselben Benutzernamen oder E-Mail existiert bereits",
     "password": "Passwort",
-    "loginTxt": "gib deinen Benutzernamen und dein Passwort ein, um dich anzumelden",
+    "loginTxt": "Gib deinen Benutzernamen und dein Passwort ein, um dich anzumelden",
     "forgotPass": "Passwort vergessen?",
     "noAccount": "Kein Konto?",
     "alreadyAccount": "Schon registriert?",
@@ -40,5 +49,6 @@
     "onlineMatchmaking": "Online-Matchmaking",
     "createTourn": "Turnier erstellen",
     "joinTourn": "an Turnier teilnehmen",
-    "wonTourn": "SIE HABEN DAS TURNIER GEWONNEN, GLÜCKWUNSCH"
+    "wonTourn": "SIE HABEN DAS TURNIER GEWONNEN, GLÜCKWUNSCH",
+    "confirmLogout": "Wenn Sie zu dieser Seite zurückkehren, werden Sie abgemeldet. Sind Sie sicher, dass Sie fortfahren möchten?"
 }
