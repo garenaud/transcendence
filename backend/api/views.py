@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 from database.models import  Games, Tournament, userProfile, FriendRequest
-from database.serializers import UserSerializer, GamesSerializer, UserProfileSerializer, TournamentSerializer
+from database.serializers import UserSerializer, GamesSerializer, UserProfileSerializer, TournamentSerializer, FriendSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -11,7 +11,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages, auth
 from django.shortcuts import render
 from django.contrib.auth.models import User
-import random
+from django.conf import settings
+import random, os
 from itertools import chain
 
 
@@ -225,22 +226,23 @@ def update_user_info(request, userid):
 	if request.method == 'POST':
 		error = 0 
 		try:
+			data = json.loads(request.body)
 			user = User.objects.get(id=userid)
 			profile = userProfile.objects.get(user=user)
 
-			alias = request.POST['alias']
-			username = request.POST['username']
-			email = request.POST['email']
-			first_name = request.POST['first_name']
-			last_name = request.POST['last_name']
+			alias = data['alias']
+			username = data['username']
+			email = data['email']
+			first_name = data['first_name']
+			last_name = data['last_name']
 
 			if username != user.username:
-				if User.objects.filter(username=username).count == 0:
+				if User.objects.filter(username=username).count == 0 and username != '':
 					user.username = username
 				else:
 					error = 1
 			if alias != profile.tournament_alias:
-				if userProfile.objects.filter(tournament_alias=alias).count == 0:
+				if userProfile.objects.filter(tournament_alias=alias).count == 0 and alias != '':
 					profile.tournament_alias = alias
 				else:
 					error = 1
@@ -249,13 +251,15 @@ def update_user_info(request, userid):
 					user.email = email
 				else:
 					error = 1
-			user.first_name = first_name
-			user.last_name = last_name
-			
-			user.save()
-			profile.save()
+			if last_name != '' and first_name != '':
+				user.first_name = first_name
+				user.last_name = last_name
+			else:
+				error = 1
 
 			if error == 0:
+				user.save()
+				profile.save()
 				return Response({'message' : 'OK'}, status=200)
 			else:
 				return Response({'message' : 'KO'}, status=400)
@@ -268,39 +272,95 @@ def update_user_info(request, userid):
 def cursed(request):
 	return Response("", status=200)
 
-def send_friend_request(request, fromuserid, touserid):
+def send_friend_request(request):
 	try:
-		from_user = User.objects.get(id=fromuserid)
-		to_user = User.objects.get(id=touserid)
+		data = json.loads(request.body)
+		from_id = data['username']
+		to_username = data['password']
+		print(from_id)
+		print(to_username)
+		from_user = User.objects.get(id=from_id)
+		to_user = User.objects.get(username=to_username)
 
 		friend_request, created = FriendRequest.objects.get_or_create(from_user=from_user, to_user=to_user)
 		if created:
-			return Response({'message' : 'OK', 'info' : 'request sent'}, status=201)
+			return JsonResponse({'message' : 'OK', 'info' : 'request sent'}, status=201)
 		else:
-			return Response({'message' : 'KO', 'info' : 'request was already sent'}, status=200)
+			return JsonResponse({'message' : 'KO', 'info' : 'request was already sent'}, status=200)
 	except:
-		return Response({'message' : 'KO', 'info' : 'user did not exist'}, status=404)
+		return JsonResponse({'message' : 'KO', 'info' : 'user did not exist'}, status=404)
 	
-def accept_friend_request(request, requestid, userid):
+def accept_friend_request(request):
 	try:
+		data = json.loads(request.body)
+		userid = int(data['username'])
+		requestid = int(data['password'])
+		print('#####################')
+		# verify that friend request is not from same user that sent it
 		friend_request = FriendRequest.objects.get(id=requestid)
+		print(friend_request.to_user)
+		print(friend_request.to_user.id)
 		if friend_request.to_user.id == userid:
 			from_user = userProfile.objects.get(user=friend_request.from_user)
 			to_user = userProfile.objects.get(user=friend_request.to_user)
-			from_user.friendlist.add(to_user)
-			to_user.friendlist.add(from_user)
+			from_user.friendlist.add(to_user.user)
+			to_user.friendlist.add(from_user.user)
 			friend_request.delete()
-			return Response({'message' : 'OK', 'info' : 'request accepted'}, status=201)
+			return JsonResponse({'message' : 'OK', 'info' : 'request accepted'}, status=201)
+		else:
+			return JsonResponse({'message' : 'KO', 'info' : 'user / request did not exist'}, status=404)	
 	except:
-		return Response({'message' : 'KO', 'info' : 'user / request did not exist'}, status=404)
+		return JsonResponse({'message' : 'KO', 'info' : 'user / request did not exist'}, status=404)
 	
-def deny_friend_request(request, requestid, userid):
+def deny_friend_request(request):
 	try:
+		data = json.loads(request.body)
+		userid = int(data['username'])
+		requestid = int(data['password'])
 		friend_request = FriendRequest.objects.get(id=requestid)
 		if friend_request.to_user.id == userid:
-			from_user = userProfile.objects.get(user=friend_request.from_user)
-			to_user = userProfile.objects.get(user=friend_request.to_user)
 			friend_request.delete()
-			return Response({'message' : 'OK', 'info' : 'request denied'}, status=201)
+			return JsonResponse({'message' : 'OK', 'info' : 'request denied'}, status=201)
+		else:
+			return JsonResponse({'message' : 'KO', 'info' : 'user / request did not exist'}, status=404)
 	except:
-		return Response({'message' : 'KO', 'info' : 'user / request did not exist'}, status=404)
+		return JsonResponse({'message' : 'KO', 'info' : 'user / request did not exist'}, status=404)
+
+@api_view(['GET'])
+def get_friend_request_list(request):
+	if (request.method == 'GET'):
+		users = FriendRequest.objects.all()
+		serializer = FriendSerializer(users, many=True)
+		return Response(serializer.data)
+	else:
+		return Response("Unauthorized method", status=status.HTTP_401_UNAUTHORIZED)
+	
+
+def get_picture(request, userid):
+	if request.method == 'GET':
+		try:
+			profile = userProfile.objects.get(id=userid)
+			image_path = os.path.join(settings.MEDIA_ROOT, 'media/images', profile.profile_picture.url)
+			with open(f'media/{image_path}', 'rb') as f:
+				return HttpResponse(f.read(), content_type='image/jpeg')  # Assurez-vous d'ajuster le type MIME en fonction du type d'image que vous stockez
+		except IOError:
+			return HttpResponse(status=404)
+	else:
+		return JsonResponse({'message': 'Méthode non autorisée'}, status=405)
+	
+@csrf_exempt
+def post_picture(request, userid):
+	if request.method == 'POST':
+		profile = userProfile.objects.get(id=userid)
+		image = request.FILES.get('filename')
+		if image:
+			profile.profile_picture = image
+			image_url = profile.profile_picture.url
+			profile.save()
+			return JsonResponse({'message': 'Image sauvegardée avec succès', 'image_url': image_url})
+		else:
+			return JsonResponse({'message': 'Aucune image reçue'}, status=400)
+	else:
+		return JsonResponse({'message': 'Méthode non autorisée'}, status=405)
+
+

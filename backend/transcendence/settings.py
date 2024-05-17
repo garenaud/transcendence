@@ -64,7 +64,8 @@ MIDDLEWARE = [
 ]
 REFERRER_POLICY = 'no-referrer'
 
-CSRF_TRUSTED_ORIGINS = ['https://localhost','https://*.mydomain.com','https://*.127.0.0.1', 'https://10.12.1.6']
+host_ip = os.getenv('IP_HOST_DOCKER') 
+CSRF_TRUSTED_ORIGINS = ['https://localhost','https://*.mydomain.com','https://*.127.0.0.1', f'https://{host_ip}']
 
 ROOT_URLCONF = 'transcendence.urls'
 
@@ -137,7 +138,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
-MEDIA_URL = 'images/'
+# MEDIA_URL = 'media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'), )
 
 # Default primary key field type

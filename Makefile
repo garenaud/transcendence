@@ -3,6 +3,7 @@ RUST_SOURCE = $(addprefix cli/src/, $(RUST_FILES))
 
 all:
 	@mkdir -p ~/data/db
+	@bash req/ip.sh
 	docker-compose build
 	docker-compose up -d
 

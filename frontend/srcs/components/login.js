@@ -22,23 +22,20 @@ export function renderLogin() {
 		  		<p class="text-white-50 mb-3" data-lang-key='loginTxt'>Please enter your login and password!</p>
 
 		  		<div class="form-outline form-white mb-2">
-		  			<input type="text" id="typeUsername" class="form-control form-control-lg" />
-		  			<label class="form-label">Username</label>
+		  			<input type="text" id="typeUsername" class="form-control form-control-lg" required/>
+		  			<label class="form-label" data-lang-key='username'>Username</label>
 		  		</div>
 		  		<div class="form-outline form-white mb-2">
-		  			<input type="password" id="typePasswordX" class="form-control form-control-lg" />
+		  			<input type="password" id="typePasswordX" class="form-control form-control-lg" required/>
 		  			<label class="form-label" for="typePasswordX"  data-lang-key='password'>Password</label>
 		  		</div>
-
+				  <div id="error-messageLogin" class="alert alert-danger" role="alert"></div>
+				  <div id="success-messageLogin" class="alert alert-success" role="alert"></div>
 			<button id='loginBtn' class="btn btn-outline-light btn-lg px-5" type="submit" data-lang-key='login'>Login</button>
-
 		  </div>
-
 		  <div>
-		  <p class="mb-0"><span data-lang-key='noAccount'>Don't have an account?</span> <a href="#login" id="signup-btn-form" class="text-white-50 fw-bold">Sign Up</a></p>
-			</p>
+		  	<p class="mb-0"><span data-lang-key='noAccount'>Don't have an account?</span> <a href="#login" id="signup-btn-form" class="text-white-50 fw-bold">Sign Up</a></p>
 		  </div>
-
 		</div>
 	  </div>
 	</div>
@@ -53,39 +50,37 @@ export function renderLogin() {
 		<div class="card-body-login p-5 text-center">
 		  <div class="mb-md-3 mt-md-2 pb-3">
 		  		<h2 class="fw-bold mb-2 text-uppercase">Signup</h2>
-				  <p class="mb-0" data-lang-key='alreadyAccount'>Already have an account? <a href="#!" id="login-btn-form" class="text-white-50 fw-bold">Log in</a>
-
-
 		  		<div class="form-outline form-white mb-2">
-		  			<input type="username" id="signupUsername" class="form-control form-control-lg" />
+		  			<input type="username" id="signupUsername" class="form-control form-control-lg" required/>
 		  			<label class="form-label" for="signupUsername" data-lang-key='username'>Username</label>
 		  		</div>
 		  		<div class="form-outline form-white mb-2">
-		  			<input type="username" id="signupFirstName" class="form-control form-control-lg" />
+		  			<input type="username" id="signupFirstName" class="form-control form-control-lg" required/>
 		  			<label class="form-label" for="signupFirstName" data-lang-key='firstName'>First name</label>
 		  		</div>
 		  		<div class="form-outline form-white mb-2">
-		  			<input type="username" id="signupLastName" class="form-control form-control-lg" />
+		  			<input type="username" id="signupLastName" class="form-control form-control-lg" required/>
 		  			<label class="form-label" for="signupLastName" data-lang-key='lastName'>Last name</label>
 		  		</div>
 		  		<div class="form-outline form-white mb-2">
-		  			<input type="email" id="signupEmail" class="form-control form-control-lg" />
+		  			<input type="email" id="signupEmail" class="form-control form-control-lg" required/>
 		  			<label class="form-label" for="signupEmail">Email</label>
 		  		</div>
 		  		<div class="form-outline form-white mb-2">
-		  			<input type="password" id="signupPassword1" class="form-control form-control-lg" />
+		  			<input type="password" id="signupPassword1" class="form-control form-control-lg" required/>
 		  			<label class="form-label" for="signupPassword1" data-lang-key='password'>Password</label>
 		  		</div>
 		  		<div class="form-outline form-white mb-2">
-		  			<input type="password" id="signupPassword2" class="form-control form-control-lg" />
+		  			<input type="password" id="signupPassword2" class="form-control form-control-lg" required/>
 		  			<label class="form-label" for="signupPassword2" data-lang-key='passConfirm'>Password confirmation</label>
 		  		</div>
 				<div id="error-message" class="alert alert-danger" role="alert"></div>
 				<div id="success-message" class="alert alert-success" role="alert"></div>
 			<button id='signupBtn' class="btn btn-outline-light btn-lg px-5" type="submit" data-lang-key='signup'>signup</button>
-
-		  </div>
-
+			</div>
+			<div>
+				<p class="mb-0"><span data-lang-key='alreadyAccount'>Already have an account ?</span> <a href="#login" id="login-btn-form" class="text-white-50 fw-bold">Login</a></p>
+			</div>
 		</div>
 	  </div>
 	</div>
@@ -116,13 +111,12 @@ function    setupButtonListener() {
 		})
 		.then(response => {
 			console.log('response:', response);
-			if (!response.ok) {
-				throw new Error(`HTTP error! status: ${response.status}`);
-			}
+			/*if (!response.ok) {
+				throw new Error(response.status);
+			}*/
 			return response.json();
 		})
 		.then(data => {
-			console.log('Success:', data);
 			if (data['message'] == "OK") {
 				let userId = data['id'];
                 sessionStorage.setItem('userId', userId);
@@ -133,11 +127,16 @@ function    setupButtonListener() {
                 //changeView('hero');
 			} else if (data['message'] == "KO"){
 				console.log('bad credentials');
+				document.getElementById('error-messageLogin').textContent = 'Login or password is invalid';
+				document.getElementById('error-messageLogin').style.display = 'block';
+				setTimeout(function() {
+					document.getElementById('error-messageLogin').style.display = 'none';
+					document.getElementById('error-messageLogin').textContent = '';
+				}, 4000);
 			}
 		})
 		.catch((error) => {
-			console.log('error dans le catch:', error);
-			console.error('Error:', error);
+			console.log(error);
 		});
 	});
 
@@ -157,88 +156,113 @@ function    setupButtonListener() {
 	});
 
 	document.getElementById('signupBtn').addEventListener('click', function() {
-		const username = document.getElementById('signupUsername').value;
+	const username = document.getElementById('signupUsername').value;
     const firstName = document.getElementById('signupFirstName').value;
     const lastName = document.getElementById('signupLastName').value;
     const email = document.getElementById('signupEmail').value;
     const password1 = document.getElementById('signupPassword1').value;
     const password2 = document.getElementById('signupPassword2').value;
-
-    let formData = new FormData();
-    formData.append('username', username);
-    formData.append('first_name', firstName);
-    formData.append('last_name', lastName);
-    formData.append('email', email);
-    formData.append('password1', password1);
-    formData.append('password2', password2);
-    formData.append('csrfmiddlewaretoken', getCookie("csrftoken"));
-	console.log('csrf signup:', getCookie("csrftoken"));
-    fetch('auth/register/', {
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': getCookie("csrftoken"),
-        },
-        body: formData,
-        credentials: 'same-origin' 
-    })
-		.then(response => {
-			const contentType = response.headers.get("content-type");
-			if (!response.ok) {
-			return response.json().then(data => {
-				console.log('Error data:', data);
-				let errorMessages = [];
-				if (data.errors) {
-					for (let key in data.errors) {
-						console.log(`Erreur dans ${key}: ${data.errors[key]}`);
-						let errortmp = `${data.errors[key]}`
-						errorMessages.push(errortmp);
-					}
-				}
-/* 				for (let key in data) {
-					if (data.hasOwnProperty(key)) {
-						console.log(`Erreur avec dans la boucle ${key}: ${data[key]}`);
-						let errortmp = `${data.errors[key]}`
-						errorMessages.push(errortmp);  // Ajoutez chaque message d'erreur au tableau
-					}
-				} */
-				let errorMessage = errorMessages.join(', ');
-				console.log("errormessage = ", errorMessage);  // Créez une seule chaîne à partir du tableau
-				throw new Error(`${errorMessage}`);
-			});
-			}
-			else if (!contentType || !contentType.includes('application/json')) {
-				throw new TypeError("Oops, we haven't got JSON!");
-			}
-			return response.json();
+	if (username && firstName && email && password1 && password2)
+	{
+		let formData = new FormData();
+		formData.append('username', username);
+		formData.append('first_name', firstName);
+		formData.append('last_name', lastName);
+		formData.append('email', email);
+		formData.append('password1', password1);
+		formData.append('password2', password2);
+		formData.append('csrfmiddlewaretoken', getCookie("csrftoken"));
+		console.log('csrf signup:', getCookie("csrftoken"));
+		fetch('auth/register/', {
+			method: 'POST',
+			headers: {
+				'X-CSRFToken': getCookie("csrftoken"),
+			},
+			body: formData,
+			credentials: 'same-origin' 
 		})
-		.then(data => {
-			//console.log('Signup Success:', data);
-			if (data.message === "Error") {
-				console.log('Signup Error:', data.errors);
-				document.getElementById('error-message').textContent = data.errors.join(', ');
-				document.getElementById('error-message').style.display = 'block';
-			} 
-			else if (data.message === "OK") 
-			{
-				console.log('Signup Success:', data);
+			.then(response => {
+				const contentType = response.headers.get("content-type");
+				if (!response.ok) {
+					return response.json().then(data => {
+						console.log('Error data:', data);
+						let errorMessages = [];
+						if (data.message)
+						{
+							errorMessages.push(data.message);
+						}
+						/*if (data.errors) {
+							for (let key in data.errors) {
+								console.log(`Erreur dans ${key}: ${data.errors[key]}`);
+								let errortmp = `${data.errors[key]}`
+								errorMessages.push(errortmp);
+							}
+						}*/
+		/* 				for (let key in data) {
+							if (data.hasOwnProperty(key)) {
+								console.log(`Erreur avec dans la boucle ${key}: ${data[key]}`);
+								let errortmp = `${data.errors[key]}`
+								errorMessages.push(errortmp);  // Ajoutez chaque message d'erreur au tableau
+							}
+						} */
+						let errorMessage = errorMessages.join(', ');
+						console.log("errormessage = ", errorMessage);  // Créez une seule chaîne à partir du tableau
+						throw new Error(`${errorMessage}`);
+					});
+				}
+				else if (!contentType || !contentType.includes('application/json')) {
+					throw new TypeError("Oops, we haven't got JSON!");
+				}
+				return response.json();
+			})
+			.then(data => {
+				console.log(data);
+				const loginElement = document.querySelector('.login-form');
+				const signupElement = document.querySelector('.signup');
 				document.getElementById('success-message').textContent = "Your account has been created successfully";
 				document.getElementById('error-message').style.display = 'none';
 				document.getElementById('success-message').style.display = 'block';
 				setTimeout(function() {
-					const loginElement = document.querySelector('.login-form');
-					const signupElement = document.querySelector('.signup');
 					loginElement.style.display = 'block';
 					signupElement.style.display = 'none';
-				}, 2000);
-			}
-		})
-		.catch((error) => {
-			console.log('error dans le catch de signup:', error);
-			console.log('error message:', error.message);
-			console.error('Error:', error);
-			document.getElementById('error-message').textContent = error.message;
-			document.getElementById('error-message').style.display = 'block';
-		});
+					document.getElementById('success-message').textContent = "";
+					document.getElementById('success-message').style.display = 'none';
+				}, 3000);
+				/*if (data.message === "Error") {
+					console.log('Signup Error:', data.errors);
+					document.getElementById('error-message').textContent = data.errors.join(', ');
+					document.getElementById('error-message').style.display = 'block';
+					setTimeout(function() {
+						document.getElementById('error-message').style.display = 'none';
+						document.getElementById('error-message').textContent = '';
+					}, 4000);
+				} 
+				else if (data.message === "OK") 
+				{
+					console.log('Signup Success:', data);
+					document.getElementById('success-message').textContent = "Your account has been created successfully";
+					document.getElementById('error-message').style.display = 'none';
+					document.getElementById('success-message').style.display = 'block';
+					/*setTimeout(function() {
+						const loginElement = document.querySelector('.login-form');
+						const signupElement = document.querySelector('.signup');
+						loginElement.style.display = 'block';
+						signupElement.style.display = 'none';
+					}, 2000);
+				}*/
+			})
+			.catch((error) => {
+				console.log('error dans le catch de signup:', error.status);
+				console.log('error message:', error.message);
+				console.error('Error:', error);
+				document.getElementById('error-message').textContent = error.message;
+				document.getElementById('error-message').style.display = 'block';
+				setTimeout(function() {
+					document.getElementById('error-message').style.display = 'none';
+					document.getElementById('error-message').textContent = '';
+				}, 3000);
+			});
+		}
 	});
 }
 

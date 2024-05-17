@@ -53,7 +53,7 @@ class userProfile(models.Model):
 	online = models.BooleanField(default=False)
 	in_game = models.BooleanField(default=False)
 	tournament_alias = models.CharField(max_length=100, default='joueur')
-	profile_picture = models.ImageField(upload_to='./downloads')
+	profile_picture = models.ImageField(upload_to='images/')
 	friendlist = models.ManyToManyField(User, blank=True)
 
 class FriendRequest(models.Model):

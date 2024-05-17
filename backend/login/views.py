@@ -14,28 +14,53 @@ import json
 from database.serializers import UserSerializer
 from django.contrib.auth.hashers import make_password
 from django.views.decorators.csrf import ensure_csrf_cookie
+import re
 
 
 def home_page(request):
 	return render(request, "login/home.html")
 
+def parse_and_validate(data):
+	data = data.strip()
+	if not data:
+		return False
+	return re.sub(r'\s+', ' ', data)
+
 @ensure_csrf_cookie
 def register(request):
 	if request.method == 'POST':
-		print(request.POST['password1'])
-		print(request.POST['password2'])
+		#Check + parse data
+		username = parse_and_validate(request.POST['username'])
+		if username == False:
+			return JsonResponse({ "message" : "Invalid username syntax"}, status=422)
+		first_name = parse_and_validate(request.POST['first_name'])
+		if first_name == False:
+			return JsonResponse({ "message" : "Invalid first name syntax"}, status=422)
+		last_name = parse_and_validate(request.POST['last_name'])
+		if last_name == False:
+			return JsonResponse({ "message" : "Invalid last name syntax"}, status=422)
+		email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+		email = request.POST['email'].strip()
+		if not re.match(email_regex, email):
+			return JsonResponse({ "message" : "Invalid email syntax"}, status=422)
 		if request.POST['password1'] != request.POST['password2']:
-			return JsonResponse({ 'message' : 'Passwords did not match'}, status=403)
-		password = make_password(request.POST['password1'])
-		user = User.objects.filter(username=request.POST['username'])
-		if User.objects.filter(username=request.POST['username']).exists() or User.objects.filter(email=request.POST['email']).exists():
-			return JsonResponse({ "message" : "User with same username / email already exists in the database"}, status=409)
+			return JsonResponse({ 'message' : 'Passwords do not match'}, status=422)
+		if User.objects.filter(username=username).exists() or User.objects.filter(email=email).exists():
+			return JsonResponse({ "message" : "User with the same username or email already exists"}, status=409)
 		else:
-			user = User(username=request.POST['username'], first_name=request.POST['first_name'],  last_name=request.POST['last_name'], email=request.POST['email'], password=password)
+			#Tout est ok save le nouveau user
+			print(username)
+			print(first_name)
+			print(last_name)
+			print(email)
+			print(request.POST['password1'])
+			user = User.objects.filter(username=username)
+			password = make_password(request.POST['password1'])
+			user = User(username=username, first_name=first_name,  last_name=last_name, email=email, password=password)
 			user.save()
 			userprofile = userProfile(user=user)
 			userprofile.save()
-			return JsonResponse({ "message" : "User " + request.POST['username'] + " has been added to database"}, status=201)
+			return JsonResponse({ "message" : "User " + username + " has been added to database"}, status=201)
 	else:
 		return JsonResponse({ "message" : "Method not allowed"}, status=405)
 
