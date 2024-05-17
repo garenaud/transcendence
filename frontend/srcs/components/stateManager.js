@@ -26,19 +26,6 @@ export let appState = {
     newViewAdded: false
 };
 
-export function resetAppState() {
-    appState = {
-        currentView: 'login',
-        user: null,
-        userId: null,
-        users: [],
-        urlHistory: ['login'],
-        renderedComponents: {},
-        language: 'fr',
-        newViewAdded: false
-    };
-}
-
 // Fonction pour changer la vue actuelle de l'application
 export function changeView(newView) {
     if (appState.currentView !== newView) {
@@ -53,6 +40,8 @@ export function changeView(newView) {
     }
     appState.newViewAdded = true;
     location.hash = newView;
+    sessionStorage.setItem('appState', JSON.stringify(appState));
+    console.log("------------------------------------------------> appState = ", appState);
 }
 
 // Écouteur d'événement pour changer la vue lorsque l'URL change (rajoute le # à l'URL lorsqu'on change de vue)
@@ -119,6 +108,10 @@ window.addEventListener("pushstate", function() {
     }
 });
 
+window.addEventListener('beforeunload', () => {
+    sessionStorage.setItem('appState', JSON.stringify(appState));
+});
+
 export function getCurrentView() {
     return appState.currentView;
 }
@@ -131,19 +124,31 @@ export async function renderApp() {
 }
 
 function initializeAppState() {
+    // Try to retrieve the appState from sessionStorage
+    const storedAppState = sessionStorage.getItem('appState');
+    if (storedAppState) {
+        appState = JSON.parse(storedAppState);
+    }
+
+    console.log("appState userid before initialize = ", appState.userId);
     if (!location.hash || appState.userId == 0) {
         location.hash = '#login';
     }
-    if (appState) {
-        appState.renderedComponents = JSON.parse(sessionStorage.getItem('renderedComponents')) || {};
-        loadLanguage(appState.language);
-    } else {
-        const view = window.location.pathname.substring(1);
-        appState.currentView = ['login', 'hero', 'game', 'chat'].includes(view) ? view : 'login';
-        appState.language = 'fr';
-    }
+
+    appState.renderedComponents = JSON.parse(sessionStorage.getItem('renderedComponents')) || {};
+    loadLanguage(appState.language);
+
+    const view = window.location.pathname.substring(1);
+    console.log("view = ", view);
+    appState.currentView = ['login', 'hero', 'game', 'chat'].includes(view) ? view : 'login';
+
+    console.log("At the end of initialize and my substring = ", location.hash.substring(1));
     appState.currentView = location.hash.substring(1) || 'login';
+    console.log("appState at the end of initialize = ", appState);
     document.body.innerHTML = '';
+
+    // Store the appState in sessionStorage
+    sessionStorage.setItem('appState', JSON.stringify(appState));
 }
 
 function validateCurrentView() {
@@ -159,8 +164,10 @@ function validateCurrentView() {
 }
 
 async function renderCurrentView() {
+    console.log("j'arrive a renderCurrentView et ma appState = ", appState);
     switch(appState.currentView) {
         case 'login':
+            console.log("coucou je passe a login");
             await renderLoginView();
             break;
         default:
@@ -181,6 +188,7 @@ async function renderLoginView() {
 }
 
 async function renderDefaultView() {
+    console.log("je suis dans renderDefaultView et voici appState = ", appState);
     if (!appState.user) {
         appState.currentView = 'login';
         await renderLoginView();

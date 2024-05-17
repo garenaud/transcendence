@@ -1,4 +1,4 @@
-import { changeView, appState, resetAppState } from './stateManager.js';
+import { changeView, appState} from './stateManager.js';
 import { getUser, setUserProfilePicture, setUsername, logoutUser } from './userManager.js';
 import { createButtonComponent, createPhotoComponent } from './globalComponent.js';
 import { showGameList, showUserList } from './listComponent.js';

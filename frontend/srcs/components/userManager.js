@@ -1,5 +1,5 @@
 import { renderNavbar } from './navbar.js';
-import { renderApp, appState, changeView, resetAppState } from './stateManager.js';
+import { renderApp, appState, changeView} from './stateManager.js';
 
 /* export let appState = {
     user: null
@@ -15,7 +15,6 @@ export function logoutUser() {
     .then(response => {
         if (response.ok) {
             changeView('login');
-            resetAppState();
             // appState.urlHistory = ['login'];
             sessionStorage.clear();
             window.location.reload();
@@ -74,6 +73,7 @@ export async function getUserFromServer(userId) {
     }
     const user = await response.json();
     console.log('User fetched:', user);
+    console.log('appState.user:', appState.userId);
     return user;
 }
 

@@ -226,7 +226,7 @@ function addEventListeners(element) {
 		// * JoinBtn
 		multiPongBtn.addEventListener('click', toggleVisibility);
 		joinPongBtn.addEventListener('click', function() {
-			const gameIdInput = document.getElementById('gameCodeInput').value;
+			const gameIdInput = document.getElementById('gameCodeInputPrivate').value;
 			if (gameIdInput) {
 				joinGame(gameIdInput);
 				pongLocal.classList.add('d-none');
