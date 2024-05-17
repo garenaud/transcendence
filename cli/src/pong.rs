@@ -341,9 +341,7 @@ fn waiting_game(socket: &mut tungstenite::WebSocket<tungstenite::stream::MaybeTl
 									}
 								};
 							}
-							"userid" => {
-								_ = socket.send(Message::Text(r#"{"message":"userid", "userid": {id}}"#.replace("{id}", &user.get_id()).to_string()));
-							},
+							"userid" => _ = socket.send(Message::Text(r#"{"message":"userid", "userid": {id}}"#.replace("{id}", &user.get_id()).to_string())),
 							_ => {}
 						}
 					},
@@ -480,13 +478,13 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
 						"start" => continue,
 						"userleave" => {
 							endwin();
-							_ = clear();
+							_ = clearscreen::clear();
 							println!("{}", format!("The other player left the game").red().bold());
 							break ;
 						},
 						_ => {
-							_ = clear();
 							endwin();
+							_ = clearscreen::clear();
 							println!("Unknown action: {}", json["action"]);
 							break ;
 						}
@@ -521,7 +519,7 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
 		match getch() {
 			27 => {
 				endwin();
-				let _ = clear();
+				let _ = clearscreen::clear();
 				break;
 			},
 			ch => {
