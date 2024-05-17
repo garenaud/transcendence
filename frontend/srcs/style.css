@@ -2202,3 +2202,46 @@ div.modal-footer, div.modal-body, div.modal-header{
 .error-404 img, .error-404 h1 {
   align-self: center;
 }
+
+.userList1 {
+    position: relative; /* Assurez-vous que le conteneur a une position relative */
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    background-image: url("Design/SUPERBE_BRACKET_FINAL_3.png");
+    background-size: contain;
+	background-repeat: no-repeat;
+    padding: 400px;
+}
+
+.userTournament0 {
+    font-size: 40px;
+    color: red;
+    position: absolute;
+    top: 100px; /* Ajustez les valeurs en fonction de votre positionnement souhaité */
+    left: 160px; /* Ajustez les valeurs en fonction de votre positionnement souhaité */
+}
+
+.userTournament1 {
+    font-size: 40px;
+    color: black;
+    position: absolute;
+	bottom: 400px; /* Ajustez les valeurs en fonction de votre positionnement souhaité */
+	left: 160px; /* Ajustez les valeurs en fonction de votre positionnement souhaité */
+}
+
+.userTournament2 {
+	font-size: 40px;
+    color: green;
+    position: absolute;
+	top: 100px; /* Ajustez les valeurs en fonction de votre positionnement souhaité */
+	right: 160px; /* Ajustez les valeurs en fonction de votre positionnement souhaité */
+}
+
+.userTournament3 {
+    font-size: 40px;
+    color: blue;
+    position: absolute;
+    bottom: 400px; /* Ajustez les valeurs en fonction de votre positionnement souhaité */
+    right: 160px; /* Ajustez les valeurs en fonction de votre positionnement souhaité */
+}

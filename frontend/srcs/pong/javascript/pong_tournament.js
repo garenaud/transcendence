@@ -43,7 +43,7 @@ let ballVelocity;
 let gameSocket;
 let tournamentSocket;
 let currentNum = 7;
-let connected = 0;
+let connected;
 let playernb = sessionStorage.getItem('playernb');
 let playernumber = 0;
 
@@ -533,47 +533,49 @@ function onMessageHandler(e) {
 	}
 };
 
+function sleep(delay) {
+    var start = new Date().getTime();
+	while (new Date().getTime() < start + delay)
+		console.log('*******************' + 'waiting');
+}
+
 const userList = document.getElementById('userList');
+let namelist = [];
 
 tournamentSocket.onmessage = function(e) {
 	tournament_data = JSON.parse(e.data);
-	console.log(tournament_data.action);
 	console.log(tournament_data);
 	if (tournament_data.message == 'tournamentIdNotFound')
 	{
-		window.location.reload();
+		window.location.reload(); //= "https://localhost/pong/tournament_menu.html";
 	}
-	// Suppose we have a list element to display the connected users
-	if (tournament_data.action == 'namep1')
+	if (tournament_data.action == 'all_users') {
+		var users = tournament_data.users; // This will get the list of users
+
+		// Create tournament tree
+		var tournamentTree = document.getElementById('userList');
+		tournamentTree.innerHTML = `
+			<p class="userList1">
+				<span class="userTournament0">${users[0]}</span>
+				<span class="userTournament1">${users[2]}</span>
+				<span class="userTournament2">${users[1]}</span>
+				<span class="userTournament3">${users[3]}</span>
+			</p>
+		`;
+	}
+	if (tournament_data.action == 'connect')
 	{
-		console.log('********************************************');
-		console.log(tournament_data.namep1);
+		console.log(tournament_data.connected);
+		loadingElement.innerHTML = "[WAITING FOR OPPONENT]<br> " + tournament_id + '<br>' + 'Currently connected : ' + tournament_data.connected + '/4';
 	}
-	
-	if (tournament_data.action == 'connect') {
-		console.log(tournament_data.action);
-		connected += 1;
-		loadingElement.innerHTML = "[WAITING FOR OPPONENT]<br>Tournament ID : " + tournament_id + '<br>' + 'Currently connected : ' + connected + '/4';
-
-		// Create a new list item for the connected user
-		const userItem = document.createElement('li');
-		userItem.textContent = "joueur " + appState.user.first_name;
-
-		// Add the new user to the list of connected users
-		userList.appendChild(userItem);
-
-		console.log(userItem);
-		// console.log(appState.user.first_name);
-	}
-
 	else if (tournament_data.action == 'playernb')
 	{
 		playernb = tournament_data['playernb'];
-		console.log(`PLAYENB IS LJSKFDHAJHFKJSHFKHGS ${playernb}`);
 	}
 	else if (tournament_data.action == 'startTournament')
 	{
 		console.log('starting tournament');
+		console.log(typeof(playernb));
 		console.log('ici');
 		tournamentSocket.send(JSON.stringify({
 			'message' : 'getGameId',
@@ -600,6 +602,7 @@ tournamentSocket.onmessage = function(e) {
 	else if (tournament_data.action == 'finalid')
 	{
 		console.log('je suis en finale');
+		//clearThreeJS();
 		gameSocket.close();
 		gameSocket = null;
 		finalid = tournament_data['finalid'];
@@ -609,7 +612,6 @@ tournamentSocket.onmessage = function(e) {
 	{
 		const errorElement = document.getElementById('error');
 		errorElement.textContent = "VOUS AVEZ REMPORTEZ LE TOURNOI, FELICITATIONS";
-		unloadScript();
 		tournamentSocket.close();
 	}
 }

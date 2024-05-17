@@ -341,6 +341,7 @@ def get_picture(request, userid):
 		try:
 			profile = userProfile.objects.get(id=userid)
 			image_path = os.path.join(settings.MEDIA_ROOT, 'media/images', profile.profile_picture.url)
+			print(image_path)
 			with open(f'media/{image_path}', 'rb') as f:
 				return HttpResponse(f.read(), content_type='image/jpeg')  # Assurez-vous d'ajuster le type MIME en fonction du type d'image que vous stockez
 		except IOError:

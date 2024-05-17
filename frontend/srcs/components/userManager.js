@@ -228,7 +228,7 @@ export function loadGameList() {
         .then(games => {
             console.log('Données de jeu chargées avec succès:', games);
             appState.games = games;
-            return games;
+            return "";
             //console.log('appState.games:', appState.games);
         })
         .catch(error => {

@@ -149,6 +149,7 @@ function    setupButtonListener() {
 		const loginElement = document.querySelector('.login-form');
 		const signupElement = document.querySelector('.signup');
 		
+		clearInputSignup();
 		loginElement.style.display = 'block';
 		signupElement.style.display = 'none';
 	});
@@ -221,10 +222,12 @@ function    setupButtonListener() {
 					const signupElement = document.querySelector('.signup');
 					successMessage.style.display = 'block';
 					document.getElementById('error-message').style.display = 'none';
+					document.getElementById('error-message').style.display = 'none';
 					setTimeout(function() {
 						loginElement.style.display = 'block';
 						signupElement.style.display = 'none';
 						successMessage.style.display = 'none';
+						clearInputSignup();
 					}, 3000);
 				}
 				else if (data['message'] == "KO") 
@@ -235,15 +238,19 @@ function    setupButtonListener() {
 					errorMessage.textContent = data.info;
 					errorMessage.style.display = 'block';
 					document.getElementById('success-message').style.display = 'none';
-					setTimeout(function() {
-						document.getElementById('error-message').style.display = 'none';
-					}, 3000);
 				}
 			})
 			.catch((error) => {
 				console.log('error dans le catch de signup:', error.info);
 			});
 		}
+	});
+}
+
+function clearInputSignup() {
+	const inputs = document.querySelectorAll('.form-outline input');
+	inputs.forEach(input => {
+		input.value = '';
 	});
 }
 

@@ -281,23 +281,17 @@ fn handle_tournament(user: User, socket: &mut tungstenite::WebSocket<tungstenite
 						match json["action"].as_str().unwrap() {
 							"finalid" => {
 								game_id = json["finalid"].as_i32().unwrap();
-<<<<<<< HEAD
 								eprintln!("FINAL ID IS {}", game_id);
-=======
->>>>>>> 34e06998b3ab48bcf2701cf536fe7ec177ba0efb
 								match pong::connect_game(user.clone(), game_id.to_string(), false) {
 									Some(res) => {
 										if res {
 											println!("{}", format!("You won the tournament").green().bold());
-<<<<<<< HEAD
 										} else {
 											println!("{}", format!("You lost the tournament").red().bold());
-=======
 											return;
 										} else {
 											println!("{}", format!("You lost the tournament").red().bold());
 											return;
->>>>>>> 34e06998b3ab48bcf2701cf536fe7ec177ba0efb
 										}
 									},
 									None => {
@@ -306,13 +300,10 @@ fn handle_tournament(user: User, socket: &mut tungstenite::WebSocket<tungstenite
 									}
 								}
 							},
-<<<<<<< HEAD
 							_ => {
 								eprintln!("{:#?}", json);
 							}
-=======
 							_ => {}
->>>>>>> 34e06998b3ab48bcf2701cf536fe7ec177ba0efb
 						};
 					},
 					_ => {}
