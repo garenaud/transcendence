@@ -1,4 +1,4 @@
-import { getUser, loadUser, getCurrentUser, loadGameList } from './userManager.js';
+import { getUser, loadUser, getCurrentUser, loadGameList, logoutUser } from './userManager.js';
 import { renderNavbar } from './navbar.js';
 import { renderHero } from './hero.js';
 import { renderPong } from './pongComponent.js';
@@ -73,7 +73,7 @@ window.addEventListener("popstate", function () {
         window.location.hash = 'login';
         return;
     }
-    if (newView === 'login' && appState.userId !== 0) {
+    if (newView === 'login' && appState.userId !== null) {
         const confirmLogout = window.confirm('Si vous revenez à cette page, vous serez déconnecté. Êtes-vous sûr de vouloir continuer ?');
         if (confirmLogout) {
             logoutUser();

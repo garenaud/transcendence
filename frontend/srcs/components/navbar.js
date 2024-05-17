@@ -75,9 +75,6 @@ function displayUserInfo(user) {
                       <label for="newProfilePicture"  class="text-white" data-lang-key='newPicture'>Nouvelle image</label>
                         <div class="input-group">
                           <input class="form-control" type="file" id="newProfilePicture">
-                          <div class="input-group-append">
-                            <button class="btn btn-success" type="button" data-lang-key='previewPicture'>preview</button>
-                          </div>
                           <img id="preview" style="display: none;" />
                         </div>
                           <div class="form-group">
