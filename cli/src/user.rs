@@ -54,10 +54,6 @@ impl User {
 		self.id.clone()
 	}
 
-	pub fn get_username(&self) -> String {
-		self.username.clone()
-	}
-
 	pub fn get_csrf(&self) -> Option<String> {
 		let crsf = self.client.get("https://{server}/api/gamelist".replace("{server}", self.server.as_str()))
 			.header("User-Agent", "cli_rust")

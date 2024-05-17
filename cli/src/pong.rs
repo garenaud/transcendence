@@ -3,8 +3,6 @@ use colored::Colorize;
 use tungstenite::Message;
 use tungstenite::Connector::NativeTls;
 use std::io::Write;
-use std::thread::sleep;
-use std::time::Duration;
 use crate::user::User;
 
 struct Console {
@@ -12,7 +10,7 @@ struct Console {
 	height: f64
 }
 
-const PADDLE_HEIGHT: f64 = 6.5;
+const PADDLE_HEIGHT: f64 = 3.1;
 struct Paddle {
 	x: f64,
 	y: f64,
@@ -302,6 +300,7 @@ fn waiting_game(socket: &mut tungstenite::WebSocket<tungstenite::stream::MaybeTl
 							},
 							"start" => {
 								if player == "default" || data_player.p1id == -1 || data_player.p2id == -1 {
+									eprintln!("{}", format!("Error while getting the player number").red());
 									return None;
 								} else {
 									return Some((player, data_player));
@@ -361,11 +360,11 @@ fn waiting_game(socket: &mut tungstenite::WebSocket<tungstenite::stream::MaybeTl
 
 fn print_counter(term: &Console, i: i32, paddle_l: &Paddle, paddle_r: &Paddle, score: &Score, data_player: &Player)
 {
+	print_paddle(paddle_l, &term);
+	print_paddle(paddle_r, &term);
 	mvaddstr(0, 0, &" ".repeat(term.width as usize));
 	print_score(term, score, &data_player);
-	mvaddstr((term.height / 2.0) as i32, (term.width / 2.0) as i32, &format!("{}", i));
-	print_paddle(paddle_l);
-	print_paddle(paddle_r);
+	mvaddstr((term.height / 2.0) as i32 + 1, (term.width / 2.0) as i32, &format!("{}", i));
 	refresh();
 }
 
@@ -386,7 +385,7 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
 	if let Some((w, h)) = term_size::dimensions() {
 		term = Console {
 			width: w as f64,
-			height: h as f64
+		height: h as f64
 		};
 	} else {
 		println!("Error\n");
@@ -395,8 +394,8 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
 
 	let paddle_offset: f64 = term.width / 12.0;
 
-	let mut paddle_l = Paddle { x: paddle_offset, y: (term.height / 2.0 - 2.0), old_y: 0.0 };
-	let mut paddle_r = Paddle { x: (term.width - paddle_offset), y: (term.height / 2.0 - 2.0), old_y: 0.0 };
+	let mut paddle_l = Paddle { x: paddle_offset, y: (term.height / 2.0 - 1.0), old_y: 0.0 };
+	let mut paddle_r = Paddle { x: (term.width - paddle_offset), y: (term.height / 2.0 - 1.0), old_y: 0.0 };
 	let mut ball = Ball { x: 0.0, y: 0.0, old_x: 0.0, old_y: 0.0 };
 	let mut score = Score { score1: 0, score2: 0 };
 
@@ -436,25 +435,25 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
 							ball.old_x = ball.x;
 							ball.old_y = ball.y;
 							ball.x = (json["bx"].as_f64().unwrap() + 18.0) / 36.0 * term.width;
-							ball.y = (json["bz"].as_f64().unwrap() + 9.5) / 19.0 * term.height;
+							ball.y = (json["bz"].as_f64().unwrap() + 9.5) / 19.0 * (term.height - (0 as f64));
 							paddle_l.old_y = paddle_l.y;
 							paddle_r.old_y = paddle_r.y;
 							paddle_l.y = (json["plz"].as_f64().unwrap() + 9.5) / 19.0 * term.height - (PADDLE_HEIGHT / 2.0);
-							paddle_r.y = (json["prz"].as_f64().unwrap() + 9.5) / 19.0 * term.height - (PADDLE_HEIGHT / 2.0);
+							paddle_r.y = (json["prz"].as_f64().unwrap() + 9.5) / 19.0 * (term.height - (0 as f64)) - (PADDLE_HEIGHT / 2.0);
 						},
 						"ball" => {
 							ball.old_x = ball.x;
 							ball.old_y = ball.y;
 							ball.x = (json["bx"].as_f64().unwrap() + 18.0) / 36.0 * term.width;
-							ball.y = (json["bz"].as_f64().unwrap() + 9.5) / 19.0 * term.height;
+							ball.y = (json["bz"].as_f64().unwrap() + 9.5) / 19.0 * (term.height - (0 as f64));
 						},
 						"paddle1" => { // RIGHT ONE
 							paddle_r.old_y = paddle_r.y;
-							paddle_r.y = (json["prz"].as_f64().unwrap() + 9.5) / 19.0 * term.height - (PADDLE_HEIGHT / 2.0);
+							paddle_r.y = (json["prz"].as_f64().unwrap() + 9.5) / 19.0 * (term.height - (0 as f64)) - (PADDLE_HEIGHT / 2.0);
 						},
 						"paddle2" => { // LEFT ONE
 							paddle_l.old_y = paddle_l.y;
-							paddle_l.y = (json["plz"].as_f64().unwrap() + 9.5) / 19.0 * term.height - (PADDLE_HEIGHT / 2.0);
+							paddle_l.y = (json["plz"].as_f64().unwrap() + 9.5) / 19.0 * (term.height - (0 as f64)) - (PADDLE_HEIGHT / 2.0);
 						},
 						"score" => {
 							score.score1 = json["scorep1"].as_i32().unwrap();
@@ -479,6 +478,12 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
 							}
 						},
 						"start" => continue,
+						"userleave" => {
+							endwin();
+							_ = clear();
+							println!("{}", format!("The other player left the game").red().bold());
+							break ;
+						},
 						_ => {
 							_ = clear();
 							endwin();
@@ -531,7 +536,6 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
 				}
 			}
 		}
-		sleep(Duration::from_millis(5));
 	}
 	None
 }
@@ -550,8 +554,8 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
  */
 fn render(term: &Console, paddle_l: &Paddle, paddle_r: &Paddle, ball: &Ball, score: &Score, data_player: &Player) {
 	print_score(&term, &score, &data_player);
- 	print_paddle(&paddle_l);
-	print_paddle(&paddle_r);
+ 	print_paddle(&paddle_l, &term);
+	print_paddle(&paddle_r, &term);
 	print_ball(&ball);
 	refresh();
 }
@@ -564,9 +568,9 @@ fn render(term: &Console, paddle_l: &Paddle, paddle_r: &Paddle, ball: &Ball, sco
  *		score: &Score - The score
  */
 fn print_score(term: &Console, score: &Score, data_player: &Player) {
-	mvaddstr(0, 1, data_player.p1_username.as_str());
+	mvaddstr(0, 1, data_player.p2_username.as_str());
 	mvaddstr(0, ((term.width / 2.0 - 3.0) as i32).try_into().unwrap(), &format!("{} - {}", score.score2, score.score1));
-	mvaddstr(0, (term.width - (data_player.p2_username.chars().count() as f64)) as i32 - 1, data_player.p2_username.as_str());
+	mvaddstr(0, (term.width - (data_player.p1_username.chars().count() as f64)) as i32 - 1, data_player.p1_username.as_str());
 	mvaddstr(1, 0, &"-".repeat(term.width as usize));
 }
 
@@ -576,12 +580,13 @@ fn print_score(term: &Console, score: &Score, data_player: &Player) {
  * Args:
  * 		paddle: &Paddle - Ref to paddle struct to print
  */
-fn print_paddle(paddle: &Paddle) {
-	for i in 0..PADDLE_HEIGHT as i32 {
-		mvaddch((paddle.old_y + i as f64) as i32, paddle.x as i32, ' ' as u32);
+fn print_paddle(paddle: &Paddle, term: &Console) {
+	let paddle_height = PADDLE_HEIGHT / 19.0 * (term.height - (0 as f64));
+	for i in 0..paddle_height as i32 {
+		mvaddch((paddle.old_y + i as f64) as i32 + 1, paddle.x as i32, ' ' as u32);
 	}
-	for i in 0..PADDLE_HEIGHT as i32 {
-		mvaddch((paddle.y + i as f64) as i32, paddle.x as i32, '|' as u32);
+	for i in 0..paddle_height as i32 {
+		mvaddch((paddle.y + i as f64) as i32 + 1, paddle.x as i32, '|' as u32);
 	}
 }
 
@@ -592,6 +597,6 @@ fn print_paddle(paddle: &Paddle) {
  * 		ball: &Ball - Ref to ball struct to print
  */
 fn print_ball(ball: &Ball) {
-	mvaddch(ball.old_y as i32, ball.old_x as i32, ' ' as u32);
-	mvaddch(ball.y as i32, ball.x as i32, 'o' as u32);
+	mvaddch(ball.old_y as i32 + 1, ball.old_x as i32, ' ' as u32);
+	mvaddch(ball.y as i32 + 1, ball.x as i32, 'o' as u32);
 }
