@@ -3,7 +3,7 @@ import { loadUser } from './userManager.js';
 import { loadLanguage } from './languageManager.js';
 
 
-fetch('/api/gamelist', {
+fetch('/api/√', {
 	method: 'GET',
 	credentials: 'same-origin' 
 })
