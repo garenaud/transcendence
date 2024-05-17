@@ -7,6 +7,7 @@
     "login": "Connexion",
     "loginError": "Nom d'utilisateur ou mot de passe incorrect",
     "signup": "Inscription",
+    "signupOk": "Votre compte a été créé avec succès",
     "usernameError": "Syntaxe du nom d'utilisateur invalide",
     "firstNameError": "Syntaxe du prénom invalide",
     "lastNameError": "Syntaxe du nom de famille invalide",

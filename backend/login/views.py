@@ -60,7 +60,7 @@ def register(request):
 			user.save()
 			userprofile = userProfile(user=user)
 			userprofile.save()
-			return JsonResponse({ "message" : "OK", "info" : "User " + username + " has been added to database"}, status=201)
+			return JsonResponse({ "message" : "OK", "info" : "signupOk"}, status=201)
 	else:
 		return JsonResponse({ "message" : "Method not allowed"}, status=405)
 

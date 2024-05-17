@@ -1,5 +1,6 @@
 import { changeView, appState } from './stateManager.js';
 import { loadUser } from './userManager.js';
+import { loadLanguage } from './languageManager.js';
 
 
 fetch('/api/gamelist', {
@@ -74,8 +75,8 @@ export function renderLogin() {
 		  			<input type="password" id="signupPassword2" class="form-control form-control-lg" required/>
 		  			<label class="form-label" for="signupPassword2" data-lang-key='passConfirm'>Password confirmation</label>
 		  		</div>
-				<div id="error-message" class="alert alert-danger" role="alert"></div>
-				<div id="success-message" class="alert alert-success" role="alert"></div>
+				<div id="error-message" class="alert alert-danger" role="alert" data-lang-key="usernameError">Test message</div>
+				<div id="success-message" class="alert alert-success" role="alert" data-lang-key="signupOk">Message</div>
 			<button id='signupBtn' class="btn btn-outline-light btn-lg px-5" type="submit" data-lang-key='signup'>signup</button>
 			</div>
 			<div>
@@ -212,23 +213,24 @@ function    setupButtonListener() {
 			.then(data => {
 				if (data['message'] == "OK")
 				{
-					console.log(data);
+					const successMessage = document.getElementById('success-message');
 					const loginElement = document.querySelector('.login-form');
 					const signupElement = document.querySelector('.signup');
-					document.getElementById('success-message').textContent = "Your account has been created successfully";
+					successMessage.style.display = 'block';
 					document.getElementById('error-message').style.display = 'none';
-					document.getElementById('success-message').style.display = 'block';
 					setTimeout(function() {
 						loginElement.style.display = 'block';
 						signupElement.style.display = 'none';
-						document.getElementById('success-message').textContent = "";
-						document.getElementById('success-message').style.display = 'none';
+						successMessage.style.display = 'none';
 					}, 3000);
 				}
 				else if (data['message'] == "KO") 
 				{
-					document.getElementById('error-message').textContent = data.info;
-					document.getElementById('error-message').style.display = 'block';
+					loadLanguage(appState.language);
+					const errorMessage = document.getElementById('error-message');
+					errorMessage.setAttribute('data-lang-key', data.info);
+					errorMessage.textContent = data.info;
+					errorMessage.style.display = 'block';
 					document.getElementById('success-message').style.display = 'none';
 					setTimeout(function() {
 						document.getElementById('error-message').style.display = 'none';

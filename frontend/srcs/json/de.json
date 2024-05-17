@@ -7,6 +7,7 @@
     "login": "Anmelden",
     "loginError": "Login oder Passwort ist ungültig",
     "signup": "Registrieren",
+    "signupOk": "Ihr Konto wurde erfolgreich erstellt",
     "usernameError": "Ungültige Benutzernamensyntax",
     "firstNameError": "Ungültige Vornamensyntax",
     "lastNameError": "Ungültige Nachnamensyntax",

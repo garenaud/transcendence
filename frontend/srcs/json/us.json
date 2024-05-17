@@ -7,6 +7,7 @@
     "login": "Login",
     "loginError": "Login or password is invalid",
     "signup": "Sign Up",
+    "signupOk": "Your account has been created successfully",
     "usernameError": "Invalid username syntax",
     "firstNameError": "Invalid first name syntax",
     "lastNameError": "Invalid last name syntax",
