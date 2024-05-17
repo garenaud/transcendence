@@ -1,5 +1,6 @@
 import { changeView, appState } from './stateManager.js';
 import { loadUser } from './userManager.js';
+import { loadLanguage } from './languageManager.js';
 
 
 fetch('/api/gamelist', {
@@ -29,7 +30,7 @@ export function renderLogin() {
 		  			<input type="password" id="typePasswordX" class="form-control form-control-lg" required/>
 		  			<label class="form-label" for="typePasswordX"  data-lang-key='password'>Password</label>
 		  		</div>
-				  <div id="error-messageLogin" class="alert alert-danger" role="alert"></div>
+				  <div id="error-messageLogin" class="alert alert-danger" role="alert" data-lang-key='loginError'>Login or password is invalid</div>
 				  <div id="success-messageLogin" class="alert alert-success" role="alert"></div>
 			<button id='loginBtn' class="btn btn-outline-light btn-lg px-5" type="submit" data-lang-key='login'>Login</button>
 		  </div>
@@ -74,8 +75,8 @@ export function renderLogin() {
 		  			<input type="password" id="signupPassword2" class="form-control form-control-lg" required/>
 		  			<label class="form-label" for="signupPassword2" data-lang-key='passConfirm'>Password confirmation</label>
 		  		</div>
-				<div id="error-message" class="alert alert-danger" role="alert"></div>
-				<div id="success-message" class="alert alert-success" role="alert"></div>
+				<div id="error-message" class="alert alert-danger" role="alert" data-lang-key="usernameError">Test message</div>
+				<div id="success-message" class="alert alert-success" role="alert" data-lang-key="signupOk">Message</div>
 			<button id='signupBtn' class="btn btn-outline-light btn-lg px-5" type="submit" data-lang-key='signup'>signup</button>
 			</div>
 			<div>
@@ -110,7 +111,7 @@ function    setupButtonListener() {
 			credentials: 'same-origin' 
 		})
 		.then(response => {
-			console.log('response:', response);
+			//console.log('response:', response);
 			/*if (!response.ok) {
 				throw new Error(response.status);
 			}*/
@@ -126,12 +127,9 @@ function    setupButtonListener() {
 				});
                 //changeView('hero');
 			} else if (data['message'] == "KO"){
-				console.log('bad credentials');
-				document.getElementById('error-messageLogin').textContent = 'Login or password is invalid';
 				document.getElementById('error-messageLogin').style.display = 'block';
 				setTimeout(function() {
 					document.getElementById('error-messageLogin').style.display = 'none';
-					document.getElementById('error-messageLogin').textContent = '';
 				}, 4000);
 			}
 		})
@@ -156,41 +154,41 @@ function    setupButtonListener() {
 	});
 
 	document.getElementById('signupBtn').addEventListener('click', function() {
-	const username = document.getElementById('signupUsername').value;
-    const firstName = document.getElementById('signupFirstName').value;
-    const lastName = document.getElementById('signupLastName').value;
-    const email = document.getElementById('signupEmail').value;
-    const password1 = document.getElementById('signupPassword1').value;
-    const password2 = document.getElementById('signupPassword2').value;
-	if (username && firstName && email && password1 && password2)
-	{
-		let formData = new FormData();
-		formData.append('username', username);
-		formData.append('first_name', firstName);
-		formData.append('last_name', lastName);
-		formData.append('email', email);
-		formData.append('password1', password1);
-		formData.append('password2', password2);
-		formData.append('csrfmiddlewaretoken', getCookie("csrftoken"));
-		console.log('csrf signup:', getCookie("csrftoken"));
-		fetch('auth/register/', {
-			method: 'POST',
-			headers: {
-				'X-CSRFToken': getCookie("csrftoken"),
-			},
-			body: formData,
-			credentials: 'same-origin' 
-		})
+		const username = document.getElementById('signupUsername').value;
+		const firstName = document.getElementById('signupFirstName').value;
+		const lastName = document.getElementById('signupLastName').value;
+		const email = document.getElementById('signupEmail').value;
+		const password1 = document.getElementById('signupPassword1').value;
+		const password2 = document.getElementById('signupPassword2').value;
+		if (username && firstName && email && password1 && password2)
+		{
+			let formData = new FormData();
+			formData.append('username', username);
+			formData.append('first_name', firstName);
+			formData.append('last_name', lastName);
+			formData.append('email', email);
+			formData.append('password1', password1);
+			formData.append('password2', password2);
+			formData.append('csrfmiddlewaretoken', getCookie("csrftoken"));
+			console.log('csrf signup:', getCookie("csrftoken"));
+			fetch('auth/register/', {
+				method: 'POST',
+				headers: {
+					'X-CSRFToken': getCookie("csrftoken"),
+				},
+				body: formData,
+				credentials: 'same-origin' 
+			})
 			.then(response => {
-				const contentType = response.headers.get("content-type");
-				if (!response.ok) {
-					return response.json().then(data => {
-						console.log('Error data:', data);
-						let errorMessages = [];
-						if (data.message)
-						{
-							errorMessages.push(data.message);
-						}
+				//const contentType = response.headers.get("content-type");
+				//if (!response.ok) {
+				//	return response.json().then(data => {
+				//		console.log('Error data:', data);
+				//		let errorMessages = [];
+				//		if (data.message)
+				//		{
+				//			errorMessages.push(data.message);
+				//		}
 						/*if (data.errors) {
 							for (let key in data.errors) {
 								console.log(`Erreur dans ${key}: ${data.errors[key]}`);
@@ -205,62 +203,45 @@ function    setupButtonListener() {
 								errorMessages.push(errortmp);  // Ajoutez chaque message d'erreur au tableau
 							}
 						} */
-						let errorMessage = errorMessages.join(', ');
-						console.log("errormessage = ", errorMessage);  // Créez une seule chaîne à partir du tableau
-						throw new Error(`${errorMessage}`);
-					});
-				}
-				else if (!contentType || !contentType.includes('application/json')) {
-					throw new TypeError("Oops, we haven't got JSON!");
-				}
+				//		let errorMessage = errorMessages.join(', ');
+				//		console.log("errormessage = ", errorMessage);  // Créez une seule chaîne à partir du tableau
+				//		throw new Error(`${errorMessage}`);
+				//	});
+				//}
+				//else if (!contentType || !contentType.includes('application/json')) {
+			//		throw new TypeError("Oops, we haven't got JSON!");
+			//	}
 				return response.json();
 			})
 			.then(data => {
-				console.log(data);
-				const loginElement = document.querySelector('.login-form');
-				const signupElement = document.querySelector('.signup');
-				document.getElementById('success-message').textContent = "Your account has been created successfully";
-				document.getElementById('error-message').style.display = 'none';
-				document.getElementById('success-message').style.display = 'block';
-				setTimeout(function() {
-					loginElement.style.display = 'block';
-					signupElement.style.display = 'none';
-					document.getElementById('success-message').textContent = "";
-					document.getElementById('success-message').style.display = 'none';
-				}, 3000);
-				/*if (data.message === "Error") {
-					console.log('Signup Error:', data.errors);
-					document.getElementById('error-message').textContent = data.errors.join(', ');
-					document.getElementById('error-message').style.display = 'block';
-					setTimeout(function() {
-						document.getElementById('error-message').style.display = 'none';
-						document.getElementById('error-message').textContent = '';
-					}, 4000);
-				} 
-				else if (data.message === "OK") 
+				if (data['message'] == "OK")
 				{
-					console.log('Signup Success:', data);
-					document.getElementById('success-message').textContent = "Your account has been created successfully";
+					const successMessage = document.getElementById('success-message');
+					const loginElement = document.querySelector('.login-form');
+					const signupElement = document.querySelector('.signup');
+					successMessage.style.display = 'block';
 					document.getElementById('error-message').style.display = 'none';
-					document.getElementById('success-message').style.display = 'block';
-					/*setTimeout(function() {
-						const loginElement = document.querySelector('.login-form');
-						const signupElement = document.querySelector('.signup');
+					setTimeout(function() {
 						loginElement.style.display = 'block';
 						signupElement.style.display = 'none';
-					}, 2000);
-				}*/
+						successMessage.style.display = 'none';
+					}, 3000);
+				}
+				else if (data['message'] == "KO") 
+				{
+					loadLanguage(appState.language);
+					const errorMessage = document.getElementById('error-message');
+					errorMessage.setAttribute('data-lang-key', data.info);
+					errorMessage.textContent = data.info;
+					errorMessage.style.display = 'block';
+					document.getElementById('success-message').style.display = 'none';
+					setTimeout(function() {
+						document.getElementById('error-message').style.display = 'none';
+					}, 3000);
+				}
 			})
 			.catch((error) => {
-				console.log('error dans le catch de signup:', error.status);
-				console.log('error message:', error.message);
-				console.error('Error:', error);
-				document.getElementById('error-message').textContent = error.message;
-				document.getElementById('error-message').style.display = 'block';
-				setTimeout(function() {
-					document.getElementById('error-message').style.display = 'none';
-					document.getElementById('error-message').textContent = '';
-				}, 3000);
+				console.log('error dans le catch de signup:', error.info);
 			});
 		}
 	});

@@ -32,21 +32,21 @@ def register(request):
 		#Check + parse data
 		username = parse_and_validate(request.POST['username'])
 		if username == False:
-			return JsonResponse({ "message" : "Invalid username syntax"}, status=422)
+			return JsonResponse({ "message" : "KO", "info" : "usernameError"}, status=422)
 		first_name = parse_and_validate(request.POST['first_name'])
 		if first_name == False:
-			return JsonResponse({ "message" : "Invalid first name syntax"}, status=422)
+			return JsonResponse({ "message" : "KO", "info" : "firstNameError"}, status=422)
 		last_name = parse_and_validate(request.POST['last_name'])
 		if last_name == False:
-			return JsonResponse({ "message" : "Invalid last name syntax"}, status=422)
+			return JsonResponse({ "message" : "KO", "info" : "lastNameError"}, status=422)
 		email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
 		email = request.POST['email'].strip()
 		if not re.match(email_regex, email):
-			return JsonResponse({ "message" : "Invalid email syntax"}, status=422)
+			return JsonResponse({ "message" : "KO", "info" : "emailError"}, status=422)
 		if request.POST['password1'] != request.POST['password2']:
-			return JsonResponse({ 'message' : 'Passwords do not match'}, status=422)
+			return JsonResponse({ 'message' : 'passwordMatchError'}, status=422)
 		if User.objects.filter(username=username).exists() or User.objects.filter(email=email).exists():
-			return JsonResponse({ "message" : "User with the same username or email already exists"}, status=409)
+			return JsonResponse({ "message" : "KO", "info" : "usernameExistError"}, status=409)
 		else:
 			#Tout est ok save le nouveau user
 			print(username)
@@ -60,7 +60,7 @@ def register(request):
 			user.save()
 			userprofile = userProfile(user=user)
 			userprofile.save()
-			return JsonResponse({ "message" : "User " + username + " has been added to database"}, status=201)
+			return JsonResponse({ "message" : "OK", "info" : "signupOk"}, status=201)
 	else:
 		return JsonResponse({ "message" : "Method not allowed"}, status=405)
 
