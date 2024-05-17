@@ -146,6 +146,7 @@ function    setupButtonListener() {
 		const loginElement = document.querySelector('.login-form');
 		const signupElement = document.querySelector('.signup');
 		
+		clearInputSignup();
 		loginElement.style.display = 'block';
 		signupElement.style.display = 'none';
 	});
@@ -223,6 +224,7 @@ function    setupButtonListener() {
 						loginElement.style.display = 'block';
 						signupElement.style.display = 'none';
 						successMessage.style.display = 'none';
+						clearInputSignup();
 					}, 3000);
 				}
 				else if (data['message'] == "KO") 
@@ -239,6 +241,13 @@ function    setupButtonListener() {
 				console.log('error dans le catch de signup:', error.info);
 			});
 		}
+	});
+}
+
+function clearInputSignup() {
+	const inputs = document.querySelectorAll('.form-outline input');
+	inputs.forEach(input => {
+		input.value = '';
 	});
 }
 
