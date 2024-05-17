@@ -1,4 +1,5 @@
 import { showGameList } from "./listComponent.js";
+import { getUserFromServer } from "./userManager.js";
 
 export async function createListCardComponent(dataLangKey, titre, listHTML) {
   const listCardHTML = `
@@ -76,15 +77,25 @@ export async function renderDiv(components, className) {
   if (existingDiv) {
       // Si le div existe déjà, mettez simplement à jour ses enfants
       existingDiv.innerHTML = '';
-      for (let component of components) {
-          existingDiv.appendChild(component);
+      for (let componentPromise of components) {
+          const component = await componentPromise;
+          if (component instanceof Node) {
+              existingDiv.appendChild(component);
+          } else {
+              console.error('Invalid component:', component);
+          }
       }
   } else {
       // Sinon, créez un nouveau div et ajoutez les composants
       const div = document.createElement('div');
       div.className = className;
-      for (let component of components) {
-          div.appendChild(component);
+      for (let componentPromise of components) {
+          const component = await componentPromise;
+          if (component instanceof Node) {
+              div.appendChild(component);
+          } else {
+              console.error('Invalid component:', component);
+          }
       }
       document.body.appendChild(div);
   }
@@ -106,7 +117,7 @@ export function createPhotoComponent(imageSrc, points) {
   const profileHeader = document.createElement('div');
   profileHeader.innerHTML = profileHeaderHTML;
   profileHeader.querySelector('.profile-header-img img').src = imageSrc;
-  profileHeader.querySelector('.rank-label-container .rank-label').textContent = points + ' pts';
+  profileHeader.querySelector('.rank-label-container .rank-label').textContent = points;
   photoContainer.appendChild(profileHeader);
   return photoContainer;
 }

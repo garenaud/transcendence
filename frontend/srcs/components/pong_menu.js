@@ -70,7 +70,6 @@ export function joinGame(gameid) {
 }
 
 export function onlineMatchmaking() {
-// document.getElementById('searchBtn').addEventListener('click', function() {
 	let url = '/api/game/search/';
 	console.log(url);
 	fetch(url, {

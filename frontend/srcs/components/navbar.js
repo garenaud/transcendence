@@ -1,4 +1,4 @@
-import { changeView, appState } from './stateManager.js';
+import { changeView, appState, resetAppState } from './stateManager.js';
 import { getUser, setUserProfilePicture, setUsername } from './userManager.js';
 import { createButtonComponent, createPhotoComponent } from './globalComponent.js';
 import { showGameList, showUserList } from './listComponent.js';
@@ -172,11 +172,6 @@ function    setupButtonListener() {
   });
 
   document.getElementById('logoutBtn').addEventListener('click', function() {
-    // Supprimez les informations de l'utilisateur de appState
-    appState.user = null;
-    // Supprimez les informations de l'utilisateur du sessionStorage
-    sessionStorage.removeItem('appState');
-    // Effectuez une requête à l'URL de déconnexion
     fetch('auth/logout/' + appState.userId, {
         method: 'GET',
         headers: {
@@ -186,6 +181,11 @@ function    setupButtonListener() {
     .then(response => {
         if (response.ok) {
             changeView('login');
+            // Supprimez les informations de l'utilisateur de appState
+            resetAppState();
+            // Supprimez les informations de l'utilisateur du sessionStorage
+            sessionStorage.clear();
+            window.location.reload();
         } else {
             console.error('Logout failed');
         }

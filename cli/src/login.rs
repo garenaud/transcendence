@@ -63,6 +63,10 @@ fn connection(srv: String, login: String, password: String) -> Option<User> {
 	let res_csrf = client.execute(crsf.expect("ERROR WHILE BUILDING THE REQUEST"));
 	let csrf = match res_csrf {
 		Ok(res) => {
+
+			// eprintln!("{:#?}", res);
+			// eprintln!("{}", res.text().unwrap());
+
 			if res.headers().get("set-cookie").is_none() {
 				eprintln!("{}", format!("No CSRF-Token in the header").red());
 				return None;
@@ -95,6 +99,7 @@ fn connection(srv: String, login: String, password: String) -> Option<User> {
 	match res {
 		Ok(res) => {
 			if !res.status().is_success() {
+				// eprintln!("{:#?}", res);
 				return None;
 			}
 			let res = res.text().ok();

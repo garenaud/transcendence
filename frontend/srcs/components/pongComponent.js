@@ -23,7 +23,7 @@ export function renderPong() {
 
             <!-- Modal -->
         <div class="modal" id="pong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+            <div class="modal-dialog modal-fullscreen" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="exampleModalLabel">Pong</h5>
@@ -44,7 +44,7 @@ export function renderPong() {
 								  		<a id="multiPongBtn" class="nav-link" data-lang-key="createPriv">Create Private</a>
 										  <div class="nav-link">
 										  <a  id="joinPongBtn"  data-lang-key="joinPriv">Join Private</a>
-										  <input type="text" id="gameCodeInput" class="inputGame" placeholder="Game ID">
+										  <input type="text" id="gameCodeInputPrivate" class="inputGame" placeholder="Game ID">
 										  </div>
 								  		<a id="searchBtn" class="nav-link"  data-lang-key="onlineMatchmaking">Online Matchmaking</a>
 										<a id="createTournament" class="nav-link" data-lang-key="createTourn">Create Tournament</a>
@@ -110,9 +110,10 @@ export function renderPong() {
 									<div class="col col-display" id="scoreGuest">0</div>
 								</div>
 							</div>
-							<div class="loading">
-								<div class="load-3">
-									<p id="loading_txt">[TOURNAMENT DOESN'T EXIST]</p>
+							<div class="load-3">
+								<div class="loading">							
+								<p id="loading_txt">[TOURNAMENT DOESN'T EXIST]</p>
+									<ul id="userList"></ul>
 									<div class="line"></div>
 									<div class="line"></div>
 									<div class="line"></div>
@@ -291,6 +292,7 @@ function addEventListeners(element) {
 			pongMulti.classList.add('d-none');
 			pongTournament.classList.add('d-none');
             origPong.classList.remove('d-none');
+			window.location.reload();
         });
 		
         // Define the event handler
@@ -313,7 +315,7 @@ function changeDivContent(newContent) {
     div.innerHTML = newContent;
 }
 
-function unloadScript() {
+export function unloadScript() {
     // Désactiver les scripts chargés dynamiquement
     document.querySelectorAll('script[type="module"][data-pong="dynamic"]').forEach(script => {
 		console.log(script);

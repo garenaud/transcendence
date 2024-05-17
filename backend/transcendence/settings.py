@@ -65,6 +65,7 @@ MIDDLEWARE = [
 
 host_ip = os.getenv('IP_HOST_DOCKER') 
 CSRF_TRUSTED_ORIGINS = ['https://*.mydomain.com','https://*.127.0.0.1', f'https://{host_ip}']
+REFERRER_POLICY = 'no-referrer'
 
 ROOT_URLCONF = 'transcendence.urls'
 
