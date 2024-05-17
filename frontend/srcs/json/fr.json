@@ -13,6 +13,7 @@
     "lastNameError": "Syntaxe du nom de famille invalide",
     "emailError": "Syntaxe de l'email invalide",
     "passwordMatchError": "Les mots de passe ne correspondent pas",
+    "passwordSyntaxError" : "Le mot de passe doit contenir entre 8 - 20 caractères et au minimum 1 majuscule, minuscule et chiffre",
     "usernameExistError": "Un utilisateur avec le même nom d'utilisateur ou email existe déjà",
     "password": "Mot de passe",
     "loginTxt": "Indique ton nom d'utilisateur et ton mot de passe pour te connecter",

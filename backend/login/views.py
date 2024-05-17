@@ -45,15 +45,13 @@ def register(request):
 			return JsonResponse({ "message" : "KO", "info" : "emailError"}, status=422)
 		if request.POST['password1'] != request.POST['password2']:
 			return JsonResponse({ 'message' : 'passwordMatchError'}, status=422)
+		else:
+			password_regex = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d\W_]{8,20}$'
+			if not re.match(password_regex, request.POST['password1']):
+				return JsonResponse({ "message" : "KO", "info" : "passwordSyntaxError"}, status=422)
 		if User.objects.filter(username=username).exists() or User.objects.filter(email=email).exists():
 			return JsonResponse({ "message" : "KO", "info" : "usernameExistError"}, status=409)
 		else:
-			#Tout est ok save le nouveau user
-			print(username)
-			print(first_name)
-			print(last_name)
-			print(email)
-			print(request.POST['password1'])
 			user = User.objects.filter(username=username)
 			password = make_password(request.POST['password1'])
 			user = User(username=username, first_name=first_name,  last_name=last_name, email=email, password=password)

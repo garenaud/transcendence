@@ -13,6 +13,7 @@
     "lastNameError": "Ungültige Nachnamensyntax",
     "emailError": "Ungültige E-Mail-Syntax",
     "passwordMatchError": "Passwörter stimmen nicht überein",
+    "passwordSyntaxError": "Das Passwort muss zwischen 8 - 20 Zeichen lang sein und mindestens 1 Großbuchstaben, Kleinbuchstaben und Ziffer",
     "usernameExistError": "Ein Benutzer mit demselben Benutzernamen oder E-Mail existiert bereits",
     "password": "Passwort",
     "loginTxt": "Gib deinen Benutzernamen und dein Passwort ein, um dich anzumelden",
