@@ -25,7 +25,8 @@ export let appState = {
     urlHistory: ['login'],
     renderedComponents: {},
     language: 'fr',
-    newViewAdded: false
+    newViewAdded: false,
+    isLogged: false
 };
 
 // Fonction pour changer la vue actuelle de l'application
@@ -73,7 +74,7 @@ window.addEventListener("popstate", function () {
         window.location.hash = 'login';
         return;
     }
-    if (newView === 'login' && appState.userId !== null) {
+    if (newView === 'login' && appState.isLogged === true) {
         const confirmLogout = window.confirm('Si vous revenez à cette page, vous serez déconnecté. Êtes-vous sûr de vouloir continuer ?');
         if (confirmLogout) {
             logoutUser();

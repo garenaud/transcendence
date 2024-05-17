@@ -16,7 +16,7 @@ export function logoutUser() {
         console.log('Server response:', response);
         if (response.ok) {
             sessionStorage.clear();
-            appState.userId = 0;
+            appState.isLogged = false;
             changeView('login');
             window.location.reload();
         } else {
@@ -181,6 +181,7 @@ export function loadUser() {
             appState.users = users;
             appState.userId = Number(sessionStorage.getItem('userId'));
             console.log('userId:', appState.userId);
+            appState.isLogged = true;
             appState.user = users.find(user => user.id === appState.userId);
             appState.userProfile = appState.usersProfile.find(userProfile => appState.userId === appState.userId);
             console.log('appState.userProfile = ', appState.userProfile);
