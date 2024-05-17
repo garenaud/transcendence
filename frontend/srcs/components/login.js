@@ -176,7 +176,6 @@ function    setupButtonListener() {
 				credentials: 'same-origin' 
 			})
 			.then(response => {
-				console.log(response.json());
 				//const contentType = response.headers.get("content-type");
 				//if (!response.ok) {
 				//	return response.json().then(data => {
