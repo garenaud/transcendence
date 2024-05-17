@@ -46,21 +46,15 @@ function getCookie(name) {
 	if (parts.length === 2) return parts.pop().split(';').shift();
 }
 
-function getUserFromServer(userId) {
+export async function getUserFromServer(userId) {
     console.log('Fetching user with id:', userId);
-    fetch('/api/user/' + userId)
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-    })
-    .then(user => {
-        console.log('User fetched:', user);
-    })
-    .catch((error) => {
-        console.error('Error:', error);
-    });
+    const response = await fetch('/api/user/' + userId);
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const user = await response.json();
+    console.log('User fetched:', user);
+    return user;
 }
 
 async function loadUserFromServer() {
@@ -150,7 +144,7 @@ export function loadGameList() {
         .then(games => {
             console.log('Données de jeu chargées avec succès:', games);
             appState.games = games;
-            return games;
+            return "";
             //console.log('appState.games:', appState.games);
         })
         .catch(error => {

@@ -121,8 +121,10 @@ function    setupButtonListener() {
 			if (data['message'] == "OK") {
 				let userId = data['id'];
                 sessionStorage.setItem('userId', userId);
-                loadUser();
-                changeView('hero');
+                loadUser().then(() => {
+					changeView('hero');
+				});
+                //changeView('hero');
 			} else if (data['message'] == "KO"){
 				document.getElementById('error-messageLogin').style.display = 'block';
 				setTimeout(function() {

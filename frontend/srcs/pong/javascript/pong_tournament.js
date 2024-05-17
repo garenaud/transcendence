@@ -7,6 +7,8 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { appState } from '../../components/stateManager.js';
+import { unloadScript } from '../../components/pongComponent.js';
+import { getUser } from '../../components/userManager.js';
 
 const PaddleRightName = 'RightPaddle';
 const PaddleLeftName = 'LeftPaddle';
@@ -41,7 +43,7 @@ let ballVelocity;
 let gameSocket;
 let tournamentSocket;
 let currentNum = 7;
-let connected = 0;
+let connected;
 let playernb = sessionStorage.getItem('playernb');
 let playernumber = 0;
 
@@ -489,13 +491,15 @@ function onMessageHandler(e) {
 	}
 	else if (game_data.action == 'looser')
 	{
-		console.log('jai perdu');
+		// console.log('jai perdu');
+		unloadScript();
 		document.getElementById("myModal").style.display = "block";
 	}
 	else if (game_data.action == "userleave") {
 		const errorElement = document.getElementById('error');
 		errorElement.textContent = "A user left the game";
 		document.getElementById("myModal").style.display = "block";
+		unloadScript();
 	} else if (game_data.action == 'score') {
 		if (game_data.scorep1 != undefined && game_data.scorep2 != undefined) {
 			const scoreL = document.getElementById("scoreHome");
@@ -529,6 +533,14 @@ function onMessageHandler(e) {
 	}
 };
 
+function sleep(delay) {
+    var start = new Date().getTime();
+	while (new Date().getTime() < start + delay)
+		console.log('*******************' + 'waiting');
+}
+
+const userList = document.getElementById('userList');
+let namelist = [];
 
 tournamentSocket.onmessage = function(e) {
 	tournament_data = JSON.parse(e.data);
@@ -537,11 +549,24 @@ tournamentSocket.onmessage = function(e) {
 	{
 		window.location.reload(); //= "https://localhost/pong/tournament_menu.html";
 	}
+	if (tournament_data.action == 'all_users') {
+		var users = tournament_data.users; // This will get the list of users
+
+		// Create tournament tree
+		var tournamentTree = document.getElementById('userList');
+		tournamentTree.innerHTML = `
+			<p class="userList1">
+				<span class="userTournament0">${users[0]}</span>
+				<span class="userTournament1">${users[2]}</span>
+				<span class="userTournament2">${users[1]}</span>
+				<span class="userTournament3">${users[3]}</span>
+			</p>
+		`;
+	}
 	if (tournament_data.action == 'connect')
 	{
-		console.log(tournament_data.action);
-		connected += 1;
-		loadingElement.innerHTML = "[WAITING FOR OPPONENT]<br>Tournament ID : " + tournament_id + '<br>' + 'Currently connected : ' + connected + '/4';
+		console.log(tournament_data.connected);
+		loadingElement.innerHTML = "[WAITING FOR OPPONENT]<br> " + tournament_id + '<br>' + 'Currently connected : ' + tournament_data.connected + '/4';
 	}
 	else if (tournament_data.action == 'playernb')
 	{
@@ -552,7 +577,6 @@ tournamentSocket.onmessage = function(e) {
 		console.log('starting tournament');
 		console.log(typeof(playernb));
 		console.log('ici');
-		window.open('../../Design/SUPERBE_BRACKET_FINAL_3.png');
 		tournamentSocket.send(JSON.stringify({
 			'message' : 'getGameId',
 			'playernb' : playernb
