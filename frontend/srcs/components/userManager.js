@@ -1,9 +1,29 @@
 import { renderNavbar } from './navbar.js';
-import { renderApp, appState } from './stateManager.js';
+import { renderApp, appState, changeView} from './stateManager.js';
 
 /* export let appState = {
     user: null
 }; */
+
+export function logoutUser() {
+    fetch('auth/logout/' + appState.userId, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => {
+        console.log('Server response:', response);
+        if (response.ok) {
+            sessionStorage.clear();
+            appState.isLogged = false;
+            changeView('login');
+            window.location.reload();
+        } else {
+            console.error('Logout failed');
+        }
+    });
+}
 
 function updateUserOnServer(user) {
     console.log(user);
@@ -46,6 +66,50 @@ function getCookie(name) {
 	if (parts.length === 2) return parts.pop().split(';').shift();
 }
 
+export function getProfilePicture(userId) {
+    fetch(`/api/get_picture/${appState.userId}`)
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.blob();
+    })
+    .then(imageBlob => {
+        let objectURL = URL.createObjectURL(imageBlob);
+        appState.user.profilePicture = objectURL;
+    })
+    .catch(error => {
+        console.error('Erreur lors du chargement de l\'image de l\'utilisateur:', error);
+    });
+}
+
+export function setProfilePicture(file) {
+        let formData = new FormData();
+    formData.append('filename', file);
+
+    fetch(`/api/post_picture/${appState.userId}`, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        console.log('+++++++++++++++++++++++++Server response:', response)
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(json => {
+        console.log(json.message);
+        if (json.image_url) {
+            appState.user.profilePicture = json.image_url;
+            sessionStorage.setItem('user', JSON.stringify(appState.user));
+        }
+    })
+    .catch(error => {
+        console.error('Erreur lors de la sauvegarde de l\'image de l\'utilisateur:', error);
+    });
+}
+
 export async function getUserFromServer(userId) {
     console.log('Fetching user with id:', userId);
     const response = await fetch('/api/user/' + userId);
@@ -54,6 +118,7 @@ export async function getUserFromServer(userId) {
     }
     const user = await response.json();
     console.log('User fetched:', user);
+    console.log('appState.user:', appState.Id);
     return user;
 }
 
@@ -112,25 +177,45 @@ export function loadUser() {
         })
         .then(users => {
             console.log('Données utilisateur chargées avec succès:', users);
+            loadUserProfile();
             appState.users = users;
-            //console.log('appState.users:', appState.users);
             appState.userId = Number(sessionStorage.getItem('userId'));
             console.log('userId:', appState.userId);
+            appState.isLogged = true;
             appState.user = users.find(user => user.id === appState.userId);
-            if (!appState.user.profilePicture) {
+            appState.userProfile = appState.usersProfile.find(userProfile => appState.userId === appState.userId);
+            console.log('appState.userProfile = ', appState.userProfile);
+            console.log('???????????????????????????????????????????????????????????appState.userProfile.profilePicture = ', appState.userProfile.profilePicture);
+            if (!appState.userProfile.profilePicture) {
                 appState.user.profilePicture = 'Design/User/Max-R_Headshot.jpg';
             }
             else {
-                console.log('ben pas de photo par defaut');
+                getProfilePicture(appState.userId);
             }
             appState.user.pts = 100;
+            console.log('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%appState = ', appState);
             sessionStorage.setItem('user', JSON.stringify(appState.user));
-            //console.log('appState.user:', appState.user);
         })
         .catch(error => {
             console.error('Erreur lors du chargement des données utilisateur:', error);
-            //console.log('Données utilisateur:', getUser());
         });
+}
+
+export function loadUserProfile() {
+    return fetch('/api/userprofilelist')
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(usersProfile => {
+        appState.usersProfile = usersProfile;
+        console.log('Userprofile chargées avec succès:', usersProfile);
+    })
+    .catch(error => {
+        console.error('Erreur lors du chargement des données utilisateur:', error);
+    });
 }
 
 export function loadGameList() {

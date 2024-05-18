@@ -1,5 +1,5 @@
-import { changeView, appState, resetAppState } from './stateManager.js';
-import { getUser, setUserProfilePicture, setUsername } from './userManager.js';
+import { changeView, appState} from './stateManager.js';
+import { getUser, setUserProfilePicture, setUsername, logoutUser } from './userManager.js';
 import { createButtonComponent, createPhotoComponent } from './globalComponent.js';
 import { showGameList, showUserList } from './listComponent.js';
 
@@ -74,10 +74,7 @@ function displayUserInfo(user) {
                       <form>
                       <label for="newProfilePicture"  class="text-white" data-lang-key='newPicture'>Nouvelle image</label>
                         <div class="input-group">
-                          <input type="text" class="form-control" placeholder="URL of your new image" id="newProfilePicture" aria-describedby="basic-addon1">
-                          <div class="input-group-append">
-                            <button class="btn btn-success" type="button" data-lang-key='previewPicture'>preview</button>
-                          </div>
+                          <input class="form-control" type="file" id="newProfilePicture">
                           <img id="preview" style="display: none;" />
                         </div>
                           <div class="form-group">
@@ -171,37 +168,47 @@ function    setupButtonListener() {
     }
   });
 
-  document.getElementById('logoutBtn').addEventListener('click', function() {
-    fetch('auth/logout/' + appState.userId, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    })
-    .then(response => {
-        if (response.ok) {
-            changeView('login');
-            // Supprimez les informations de l'utilisateur de appState
-            resetAppState();
-            // Supprimez les informations de l'utilisateur du sessionStorage
-            sessionStorage.clear();
-            window.location.reload();
-        } else {
-            console.error('Logout failed');
-        }
-    });
-});
+  document.getElementById('logoutBtn').addEventListener('click', logoutUser);
+
+
+//   document.getElementById('logoutBtn').addEventListener('click', function() {
+//     fetch('auth/logout/' + appState.userId, {
+//         method: 'GET',
+//         headers: {
+//             'Content-Type': 'application/json',
+//         },
+//     })
+//     .then(response => {
+//         if (response.ok) {
+//             changeView('login');
+//             // Supprimez les informations de l'utilisateur de appState
+//             resetAppState();
+//             // Supprimez les informations de l'utilisateur du sessionStorage
+//             sessionStorage.clear();
+//             window.location.reload();
+//         } else {
+//             console.error('Logout failed');
+//         }
+//     });
+// });
 
   document.querySelector('.close-menu-button').addEventListener('click', function() {
     document.getElementById('user-menu').style.display = 'none';
   });
 
-  document.querySelector('#newProfilePicture').addEventListener('input', function() {
-    var url = document.querySelector('#newProfilePicture').value;
-    var preview = document.querySelector('#preview');
-    preview.src = url;
-    preview.style.display = 'block';
-  });
+  document.querySelector('#newProfilePicture').addEventListener('change', function() {
+    var file = this.files[0];
+    if (file) {
+        setProfilePicture(file);
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            var preview = document.querySelector('#preview');
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    }
+});
 
   function updateUserInfoInNavbar(user) {
     const userInfoDiv = document.getElementById('nav-user');

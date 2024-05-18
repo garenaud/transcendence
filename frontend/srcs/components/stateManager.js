@@ -1,4 +1,4 @@
-import { getUser, loadUser, getCurrentUser, loadGameList } from './userManager.js';
+import { getUser, loadUser, getCurrentUser, loadGameList, logoutUser } from './userManager.js';
 import { renderNavbar } from './navbar.js';
 import { renderHero } from './hero.js';
 import { renderPong } from './pongComponent.js';
@@ -18,26 +18,16 @@ let currentIndex = -1;
 export let appState = {
     currentView: 'login',
     user: null,
+    userProfile: null,
     userId: null,
     users: [],
+    usersProfile: [],
     urlHistory: ['login'],
     renderedComponents: {},
     language: 'fr',
-    newViewAdded: false
+    newViewAdded: false,
+    isLogged: false
 };
-
-export function resetAppState() {
-    appState = {
-        currentView: 'login',
-        user: null,
-        userId: null,
-        users: [],
-        urlHistory: ['login'],
-        renderedComponents: {},
-        language: 'fr',
-        newViewAdded: false
-    };
-}
 
 // Fonction pour changer la vue actuelle de l'application
 export function changeView(newView) {
@@ -53,6 +43,8 @@ export function changeView(newView) {
     }
     appState.newViewAdded = true;
     location.hash = newView;
+    sessionStorage.setItem('appState', JSON.stringify(appState));
+    console.log("------------------------------------------------> appState = ", appState);
 }
 
 // Écouteur d'événement pour changer la vue lorsque l'URL change (rajoute le # à l'URL lorsqu'on change de vue)
@@ -62,11 +54,13 @@ window.addEventListener("hashchange", function () {
         appState.currentView = newView;
     }
     const currentUser = getCurrentUser();
-    console.log("currentUser = ", currentUser);
     if (!currentUser && newView !== 'login') {
         window.location.hash = 'login';
         return;
     }
+    // if (appState.urlHistory[appState.urlHistory.length - 1] !== newView) {
+    //     appState.urlHistory.push(newView);
+    // }
     renderApp();
 });
 
@@ -80,11 +74,10 @@ window.addEventListener("popstate", function () {
         window.location.hash = 'login';
         return;
     }
-
-    if (newView === 'login' && appState.urlHistory.length === 2) {
+    if (newView === 'login' && appState.isLogged === true) {
         const confirmLogout = window.confirm('Si vous revenez à cette page, vous serez déconnecté. Êtes-vous sûr de vouloir continuer ?');
         if (confirmLogout) {
-            console.log('bye bye mon ami tu as choisi de nous quitter!!!!');
+            logoutUser();
         } else {
             history.pushState(null, null, '#' + appState.urlHistory[appState.urlHistory.length - 1]);
         }
@@ -105,7 +98,6 @@ window.addEventListener("popstate", function () {
         appState.urlHistory.pop();
         currentIndex--;
     }
-
     console.log("!!!!!!!!!!!!!!!!!!!!! urlHistory = ", appState.urlHistory);
 });
 
@@ -117,6 +109,10 @@ window.addEventListener("pushstate", function () {
             appState.urlHistory.push(newView);
         }
     }
+});
+
+window.addEventListener('beforeunload', () => {
+    sessionStorage.setItem('appState', JSON.stringify(appState));
 });
 
 export function getCurrentView() {
@@ -131,19 +127,31 @@ export async function renderApp() {
 }
 
 function initializeAppState() {
+    // Try to retrieve the appState from sessionStorage
+    const storedAppState = sessionStorage.getItem('appState');
+    if (storedAppState) {
+        appState = JSON.parse(storedAppState);
+    }
+
+    console.log("appState userid before initialize = ", appState.userId);
     if (!location.hash || appState.userId == 0) {
         location.hash = '#login';
     }
-    if (appState) {
-        appState.renderedComponents = JSON.parse(sessionStorage.getItem('renderedComponents')) || {};
-        loadLanguage(appState.language);
-    } else {
-        const view = window.location.pathname.substring(1);
-        appState.currentView = ['login', 'hero', 'game', 'chat'].includes(view) ? view : 'login';
-        appState.language = 'fr';
-    }
+
+    appState.renderedComponents = JSON.parse(sessionStorage.getItem('renderedComponents')) || {};
+    loadLanguage(appState.language);
+
+    const view = window.location.pathname.substring(1);
+    console.log("view = ", view);
+    appState.currentView = ['login', 'hero', 'game', 'chat'].includes(view) ? view : 'login';
+
+    console.log("At the end of initialize and my substring = ", location.hash.substring(1));
     appState.currentView = location.hash.substring(1) || 'login';
+    console.log("appState at the end of initialize = ", appState);
     document.body.innerHTML = '';
+
+    // Store the appState in sessionStorage
+    sessionStorage.setItem('appState', JSON.stringify(appState));
 }
 
 function validateCurrentView() {
@@ -161,6 +169,7 @@ function validateCurrentView() {
 async function renderCurrentView() {
     switch (appState.currentView) {
         case 'login':
+            appState.urlHistory = ['login'];
             await renderLoginView();
             break;
         default:
@@ -181,10 +190,10 @@ async function renderLoginView() {
 }
 
 async function renderDefaultView() {
+    console.log("je suis dans renderDefaultView et voici appState = ", appState);
     if (!appState.user) {
-        console.log('loading user, appState = ', appState.user);
-        await loadUser();
-        await loadGameList();
+        appState.currentView = 'login';
+        await renderLoginView();
     }
     switch (appState.currentView) {
         case 'hero':
