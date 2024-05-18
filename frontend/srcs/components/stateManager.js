@@ -64,8 +64,6 @@ window.addEventListener("hashchange", function () {
 window.addEventListener("popstate", function () {
     const newView = location.hash.substring(1);
     const newIndex = appState.urlHistory.lastIndexOf(newView);
-    const currentUser = getCurrentUser();
-    console.log("currentUser popstate = ", currentUser);
     if (!appState.user && newView !== 'login') {
         window.location.hash = 'login';
         return;
