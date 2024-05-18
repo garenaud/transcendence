@@ -38,25 +38,16 @@ pub fn menu(user: User) {
 			.expect("Error while reading user input");
 		choice = (*choice.trim()).to_string();
 		
+		_ = clearscreen::clear();
 		match choice.as_str() {
-			"1" => {
-				_ = clearscreen::clear();
-				menu_game(user.clone());
-			},
-			"2" => {
-				_ = clearscreen::clear();
-				menu_tournament(user.clone());
-			}
-			"q" => {
-				break ;
-			},
+			"1" =>  menu_game(user.clone()),
+			"2" => menu_tournament(user.clone()),
+			"q" => break,
 			_ => {
-				_ = clearscreen::clear();
 				println!("{}", format!("Invalid choice").red());
 				continue;
 			}
 		}
-		let _ = clearscreen::clear();
 	}
 }
 
@@ -70,7 +61,7 @@ fn print_game() {
 }
 
 /**
- * Display the game menu and handle the user's choice
+ * Display the game menu and handle the user's choice	
  * 
  * Args:
  * 		user: User - The user that is currently logged in
@@ -92,6 +83,7 @@ fn menu_game(user: User) {
 			.expect("Error while reading user input");
 		choice = (*choice.trim()).to_string();
 		
+		_ = clearscreen::clear();
 		match choice.as_str() {
 			"1" => {
 				match pong::matchmaking(user.clone()) {
@@ -135,11 +127,10 @@ fn menu_game(user: User) {
 					}
 				}
 			},
-			"4" | "q" => {
-				break ;
-			},
+			"4" | "q" => break,
 			_ => {
 				println!("{}", format!("Invalid choice").red());
+				continue;
 			}
 		}
 	}
@@ -163,7 +154,7 @@ fn print_tournament() {
 fn menu_tournament(user: User) {
 	loop {
 		print_tournament();
-
+	
 		let mut choice = String::new();
 		println!("1. Create a tournament");
 		println!("2. Join a tournament");
@@ -176,19 +167,12 @@ fn menu_tournament(user: User) {
 			.expect("Error while reading user input");
 		choice = (*choice.trim()).to_string();
 
+		_ = clearscreen::clear();
 		match choice.as_str() {
-			"1" => {
-				let _ = tournament::create_tournament(user.clone());
-			},
-			"2" => {
-				let _ = tournament::join_tournament(user.clone());
-			},
-			"q" => {
-				break ;
-			},
-			_ => {
-				eprintln!("{}", format!("Invalid choice").red());
-			}
+			"1" => tournament::create_tournament(user.clone()),
+			"2" => tournament::join_tournament(user.clone()),
+			"q" => break,
+			_ => eprintln!("{}", format!("Invalid choice").red())
 		}
 	}
 }

@@ -7,7 +7,6 @@ edition = "2021"
 
 [dependencies]
 ncurses = "5.101.0"
-pwhash="1.0.0"
 rpassword = "7.3.1"
 term_size="0.3.2"
 reqwest = { version = "0.12", features = ["json", "blocking", "native-tls", "cookies"] }
