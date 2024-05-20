@@ -138,7 +138,7 @@ export function sendFriendRequest(fromId, toUsername) {
 export function updateFriendRequestsNotification() {
     getFriendRequestList().then(requests => {
         const pendingRequests = requests.filter(request => request.to_user === appState.userId);
-        const notificationBubble = document.querySelector('#friendList .notification-bubble');
+        const notificationBubble = document.querySelector('.notification-bubble');
         if (pendingRequests.length > 0) {
             notificationBubble.textContent = pendingRequests.length;
             notificationBubble.style.display = 'block';

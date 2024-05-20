@@ -212,6 +212,8 @@ function    setupButtonListener() {
   });
 
   document.getElementById('user-menu-button').addEventListener('click', function() {
+    console.log('7777//////666666%%%%%%%% -> ', document.querySelector('.notification-bubble'));
+    updateFriendRequestsNotification();
     const userMenu = document.getElementById('user-menu');
     if (userMenu.style.display === 'block') {
       userMenu.style.display = 'none';
