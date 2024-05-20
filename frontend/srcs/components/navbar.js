@@ -2,7 +2,7 @@ import { changeView, appState} from './stateManager.js';
 import { getUser, setProfilePicture, setUsername, logoutUser, getProfilePicture } from './userManager.js';
 import { createButtonComponent, createPhotoComponent } from './globalComponent.js';
 import { showGameList, showUserList } from './listComponent.js';
-import { showFriendsList } from './friendsList.js';
+import { showFriendsList, updateFriendRequestsNotification } from './friendsList.js';
 
 function escapeHTML(unsafeText) {
   let div = document.createElement('div');
@@ -73,8 +73,10 @@ function displayUserInfo(user) {
             <button type="button" class="user-menu-li" aria-label="Edit" data-bs-toggle="modal" data-bs-target="#addFriend"> 
                 <i class="fas fa-user-plus"></i><h6 data-lang-key='addFriend'>ajouter un ami</h6>
             </button>
-            <button type="button" class="user-menu-li" aria-label="Edit" data-bs-toggle="modal" data-bs-target="#friendList"> 
-                <i class="fas fa-user-plus"></i><h6 data-lang-key='FriendList'>Liste d'ami</h6>
+            <button type="button" class="user-menu-li" aria-label="Edit" data-bs-toggle="modal" data-bs-target="#friendList">
+              <i class="fas fa-user-plus"></i>
+              <h6 data-lang-key='FriendList'>Liste d'ami</h6>
+              <div class="notification-bubble" style="display: none;"></div>
             </button>
             <button type="button" class="user-menu-li" aria-label="Edit" data-bs-toggle="modal" data-bs-target="#editPicture">
                     <i class="fas fa-cog"></i><h6 data-lang-key='setProfile'>Editer le profil</h6>
@@ -217,28 +219,6 @@ function    setupButtonListener() {
 
   document.getElementById('logoutBtn').addEventListener('click', logoutUser);
 
-
-//   document.getElementById('logoutBtn').addEventListener('click', function() {
-//     fetch('auth/logout/' + appState.userId, {
-//         method: 'GET',
-//         headers: {
-//             'Content-Type': 'application/json',
-//         },
-//     })
-//     .then(response => {
-//         if (response.ok) {
-//             changeView('login');
-//             // Supprimez les informations de l'utilisateur de appState
-//             resetAppState();
-//             // Supprimez les informations de l'utilisateur du sessionStorage
-//             sessionStorage.clear();
-//             window.location.reload();
-//         } else {
-//             console.error('Logout failed');
-//         }
-//     });
-// });
-
   document.querySelector('.close-menu-button').addEventListener('click', function() {
     document.getElementById('user-menu').style.display = 'none';
   });
@@ -313,20 +293,6 @@ function    setupButtonListener() {
   });
 }
 
-
-
-/* export function createButtonComponent(text, buttonId, dataLangKey, onClickFunction) {
-  const glowingBtnHTML = `
-    <button id='${buttonId}' class='glowing-btn h-100'><span class='glowing-txt' data-lang-key='${dataLangKey}'>${text}</span></button>
-  `;
-  const div = document.createElement('div');
-  div.className = 'd-flex justify-content-center align-items-center';
-  div.innerHTML = glowingBtnHTML;
-  const button = div.querySelector('button');
-  button.addEventListener('click', function(event) {
-    if (onClickFunction) {
-      onClickFunction(event);
-    }
-  });
-  return div;
-} */
+window.onload = function() {
+  updateFriendRequestsNotification();
+};

@@ -2245,3 +2245,15 @@ div.modal-footer, div.modal-body, div.modal-header{
     bottom: 400px; /* Ajustez les valeurs en fonction de votre positionnement souhaité */
     right: 160px; /* Ajustez les valeurs en fonction de votre positionnement souhaité */
 }
+
+.notification-bubble {
+  position: relative;
+  top: 0;
+  right: 0;
+  background-color: red;
+  color: white;
+  border-radius: 50%; /* Pour rendre la bulle parfaitement ronde */
+  padding: 8px 8px; /* Ajustez selon vos besoins */
+  text-align: center; /* Pour centrer le texte */
+  font-size: 14px; /* Ajustez selon vos besoins */
+}

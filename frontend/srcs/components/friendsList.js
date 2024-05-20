@@ -133,3 +133,16 @@ export function sendFriendRequest(fromId, toUsername) {
       console.error('Error:', error);
     });
 }
+
+export function updateFriendRequestsNotification() {
+    getFriendRequestList().then(requests => {
+        const pendingRequests = requests.filter(request => request.to_user === appState.userId);
+        const notificationBubble = document.querySelector('#friendList .notification-bubble');
+        if (pendingRequests.length > 0) {
+            notificationBubble.textContent = pendingRequests.length;
+            notificationBubble.style.display = 'block';
+        } else {
+            notificationBubble.style.display = 'none';
+        }
+    });
+}
