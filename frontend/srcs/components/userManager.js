@@ -75,8 +75,11 @@ export function getProfilePicture(userId) {
         return response.blob();
     })
     .then(imageBlob => {
-        let objectURL = URL.createObjectURL(imageBlob);
-        appState.user.profilePicture = objectURL;
+        let reader = new FileReader();
+        reader.onload = function() {
+            appState.user.profilePicture = reader.result;
+        }
+        reader.readAsDataURL(imageBlob);
     })
     .catch(error => {
         console.error('Erreur lors du chargement de l\'image de l\'utilisateur:', error);
@@ -84,11 +87,15 @@ export function getProfilePicture(userId) {
 }
 
 export function setProfilePicture(file) {
-        let formData = new FormData();
+    let formData = new FormData();
     formData.append('filename', file);
+    let csrfToken = getCookie('csrftoken');
 
     fetch(`/api/post_image/${appState.userId}`, {
         method: 'POST',
+        headers: {
+            'X-CSRFToken': csrfToken,
+        },
         body: formData
     })
     .then(response => {
@@ -228,7 +235,7 @@ export function loadGameList() {
         })
         .then(games => {
             console.log('Données de jeu chargées avec succès:', games);
-            appState.games = games;
+            appState.games = Array.isArray(games) ? games : [];
             return "";
             //console.log('appState.games:', appState.games);
         })

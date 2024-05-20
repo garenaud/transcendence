@@ -48,7 +48,10 @@ export function  showUserList() {
 }
 
   export async function showGameList() {
-    const games = appState.games;
+    let games = appState.games;
+    if (!Array.isArray(games)) {
+        games = [];
+    }
     const table = document.createElement('table');
     table.className = 'game-list-table';
   

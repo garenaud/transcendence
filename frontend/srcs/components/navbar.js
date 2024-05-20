@@ -1,5 +1,5 @@
 import { changeView, appState} from './stateManager.js';
-import { getUser, setUserProfilePicture, setUsername, logoutUser } from './userManager.js';
+import { getUser, setProfilePicture, setUsername, logoutUser, getProfilePicture } from './userManager.js';
 import { createButtonComponent, createPhotoComponent } from './globalComponent.js';
 import { showGameList, showUserList } from './listComponent.js';
 import { showFriendsList } from './friendsList.js';
@@ -8,6 +8,24 @@ function escapeHTML(unsafeText) {
   let div = document.createElement('div');
   div.textContent = unsafeText;
   return div.innerHTML;
+}
+
+
+function encodeImage(file) {
+  return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = function(event) {
+          resolve(event.target.result);
+      };
+      reader.onerror = reject;
+
+      // Si le fichier n'est pas un Blob, le convertir en Blob
+      if (!(file instanceof Blob)) {
+          file = new Blob([file]);
+      }
+
+      reader.readAsDataURL(file);
+  });
 }
 
 export function renderNavbar(user){
@@ -20,11 +38,12 @@ export function renderNavbar(user){
 function displayUserInfo(user) {
       //let currentUser = user[0];
       const userInfoDiv = document.getElementById('nav-user');
+      console.log('(((((((((((((((((((((dans displayUserInfo user:', user)
       if (userInfoDiv) {
           userInfoDiv.innerHTML = `
           <div class="nav-user-info d-md-block">
           <h4>${user.username}</h4>
-          <h6>${user.pts} pts</h6>
+          <h6>${user.id}</h6>
           </div>
           <div id="user-menu-button" class="nav-user-img d-md-block">
                   <div id="user-menu-button" class="img_cont_nav">
@@ -222,6 +241,13 @@ function    setupButtonListener() {
     document.getElementById('user-menu').style.display = 'none';
   });
 
+  document.querySelector('input[type=file]').addEventListener('change', function(event) {
+    const file = event.target.files[0];
+    encodeImage(file).then(function(dataUrl) {
+        document.querySelector('img').src = dataUrl;
+    });
+  });
+
   document.querySelector('#newProfilePicture').addEventListener('change', function() {
     var file = this.files[0];
     if (file) {
@@ -269,7 +295,7 @@ function    setupButtonListener() {
     const newUsername = document.querySelector('#newUsername').value;
     console.log('newProfilePicture:', newProfilePicture);
     if (newProfilePicture) {
-      setUserProfilePicture(newProfilePicture);
+      setProfilePicture(newProfilePicture);
       const displayedProfilePicture = document.querySelector('.user-menu-img img');
       displayedProfilePicture.src = newProfilePicture;
       //const navbarProfilePicture = document.querySelector('navbar-selector img'); 
