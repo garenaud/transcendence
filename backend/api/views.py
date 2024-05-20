@@ -270,7 +270,7 @@ def update_user_info(request, userid):
 
 @ensure_csrf_cookie
 def cursed(request):
-	return Response("", status=200)
+	return HttpResponse("", status=200)
 
 def send_friend_request(request):
 	try:
@@ -349,7 +349,6 @@ def get_picture(request, userid):
 	else:
 		return JsonResponse({'message': 'Méthode non autorisée'}, status=405)
 	
-@csrf_exempt
 def post_picture(request, userid):
 	if request.method == 'POST':
 		profile = userProfile.objects.get(id=userid)

@@ -3,7 +3,7 @@ import { loadUser } from './userManager.js';
 import { loadLanguage } from './languageManager.js';
 
 
-fetch('/api/gamelist', {
+fetch('/api/√', {
 	method: 'GET',
 	credentials: 'same-origin' 
 })
@@ -13,82 +13,81 @@ console.log(getCookie('csrftoken'));
 export function renderLogin() {
     const loginHTML = `
 	<div class="login-form">
-	<form>
-	<div class="login-form centered-content row d-flex justify-content-center align-items-center div-login">
-	<div class="col-12 col-md-6 col-lg-6 col-xl-3 col-login">
-	  <div class="login text-white" style="border-radius: 1rem;">
-		<div class="card-body-login p-5 text-center">
-		  <div class="mb-md-3 mt-md-2 pb-3">
-		  		<h2 class="fw-bold mb-2 text-uppercase" data-lang-key='login'>Login</h2>
-		  		<p class="text-white-50 mb-3" data-lang-key='loginTxt'>Please enter your login and password!</p>
+		<form>
+			<div class="login-form centered-content row d-flex justify-content-center align-items-center div-login">
+				<div class="col-12 col-md-6 col-lg-6 col-xl-3 col-login">
+					<div class="login text-white" style="border-radius: 1rem;">
+						<div class="card-body-login p-5 text-center">
+							<div class="mb-md-3 mt-md-2 pb-3">
+								<h2 class="fw-bold mb-2 text-uppercase" data-lang-key="login">Login</h2>
+								<p class="text-white-50 mb-3" data-lang-key="loginTxt">Please enter your login and password!</p>
 
-		  		<div class="form-outline form-white mb-2">
-		  			<input type="text" id="typeUsername" class="form-control form-control-lg" required/>
-		  			<label class="form-label" data-lang-key='username'>Username</label>
-		  		</div>
-		  		<div class="form-outline form-white mb-2">
-		  			<input type="password" id="typePasswordX" class="form-control form-control-lg" required/>
-		  			<label class="form-label" for="typePasswordX"  data-lang-key='password'>Password</label>
-		  		</div>
-				  <div id="error-messageLogin" class="alert alert-danger" role="alert" data-lang-key='loginError'>Login or password is invalid</div>
-				  <div id="success-messageLogin" class="alert alert-success" role="alert"></div>
-			<button id='loginBtn' class="btn btn-outline-light btn-lg px-5" type="submit" data-lang-key='login'>Login</button>
-		  </div>
-		  <div>
-		  	<p class="mb-0"><span data-lang-key='noAccount'>Don't have an account?</span> <a href="#login" id="signup-btn-form" class="text-white-50 fw-bold">Sign Up</a></p>
-		  </div>
-		</div>
-	  </div>
-	</div>
-  </div>
-  </form>
-  </div>
-  <div class="signup">
-  <form>
-	<div class="signup centered-content row d-flex justify-content-center align-items-center div-login">
-	<div class="col-12 col-md-6 col-lg-6 col-xl-3 col-login">
-	  <div class="login text-white" style="border-radius: 1rem;">
-		<div class="card-body-login p-5 text-center">
-		  <div class="mb-md-3 mt-md-2 pb-3">
-		  		<h2 class="fw-bold mb-2 text-uppercase">Signup</h2>
-		  		<div class="form-outline form-white mb-2">
-		  			<input type="username" id="signupUsername" class="form-control form-control-lg" required/>
-		  			<label class="form-label" for="signupUsername" data-lang-key='username'>Username</label>
-		  		</div>
-		  		<div class="form-outline form-white mb-2">
-		  			<input type="username" id="signupFirstName" class="form-control form-control-lg" required/>
-		  			<label class="form-label" for="signupFirstName" data-lang-key='firstName'>First name</label>
-		  		</div>
-		  		<div class="form-outline form-white mb-2">
-		  			<input type="username" id="signupLastName" class="form-control form-control-lg" required/>
-		  			<label class="form-label" for="signupLastName" data-lang-key='lastName'>Last name</label>
-		  		</div>
-		  		<div class="form-outline form-white mb-2">
-		  			<input type="email" id="signupEmail" class="form-control form-control-lg" required/>
-		  			<label class="form-label" for="signupEmail">Email</label>
-		  		</div>
-		  		<div class="form-outline form-white mb-2">
-		  			<input type="password" id="signupPassword1" class="form-control form-control-lg" required/>
-		  			<label class="form-label" for="signupPassword1" data-lang-key='password'>Password</label>
-		  		</div>
-		  		<div class="form-outline form-white mb-2">
-		  			<input type="password" id="signupPassword2" class="form-control form-control-lg" required/>
-		  			<label class="form-label" for="signupPassword2" data-lang-key='passConfirm'>Password confirmation</label>
-		  		</div>
-				<div id="error-message" class="alert alert-danger" role="alert" data-lang-key="usernameError">Test message</div>
-				<div id="success-message" class="alert alert-success" role="alert" data-lang-key="signupOk">Message</div>
-			<button id='signupBtn' class="btn btn-outline-light btn-lg px-5" type="submit" data-lang-key='signup'>signup</button>
+								<div class="form-outline form-white mb-2">
+									<input type="text" id="typeUsername" class="form-control form-control-lg" required />
+									<label class="form-label" data-lang-key="username">Username</label>
+								</div>
+								<div class="form-outline form-white mb-2">
+									<input type="password" id="typePasswordX" class="form-control form-control-lg" required />
+									<label class="form-label" for="typePasswordX" data-lang-key="password">Password</label>
+								</div>
+								<div id="error-messageLogin" class="alert alert-danger" role="alert" data-lang-key="loginError">Login or password is invalid</div>
+								<div id="success-messageLogin" class="alert alert-success" role="alert"></div>
+								<button id="loginBtn" class="btn btn-outline-light btn-lg px-5" type="submit" data-lang-key="login">Login</button>
+							</div>
+							<div>
+								<p class="mb-0"><span data-lang-key="noAccount">Don't have an account?</span> <a href="#login" id="signup-btn-form" class="text-white-50 fw-bold">Sign Up</a></p>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
-			<div>
-				<p class="mb-0"><span data-lang-key='alreadyAccount'>Already have an account ?</span> <a href="#login" id="login-btn-form" class="text-white-50 fw-bold">Login</a></p>
-			</div>
-		</div>
-	  </div>
+		</form>
 	</div>
-  </div>
-  </form>
-  </div>
-    `;
+	<div class="signup">
+		<form>
+			<div class="signup centered-content row d-flex justify-content-center align-items-center div-login">
+				<div class="col-12 col-md-6 col-lg-6 col-xl-3 col-login">
+					<div class="login text-white" style="border-radius: 1rem;">
+						<div class="card-body-login p-5 text-center">
+							<div class="mb-md-3 mt-md-2 pb-3">
+								<h2 class="fw-bold mb-2 text-uppercase">Signup</h2>
+								<div class="form-outline form-white mb-2">
+									<input type="username" id="signupUsername" class="form-control form-control-lg" required />
+									<label class="form-label" for="signupUsername" data-lang-key="username">Username</label>
+								</div>
+								<div class="form-outline form-white mb-2">
+									<input type="username" id="signupFirstName" class="form-control form-control-lg" required />
+									<label class="form-label" for="signupFirstName" data-lang-key="firstName">First name</label>
+								</div>
+								<div class="form-outline form-white mb-2">
+									<input type="username" id="signupLastName" class="form-control form-control-lg" required />
+									<label class="form-label" for="signupLastName" data-lang-key="lastName">Last name</label>
+								</div>
+								<div class="form-outline form-white mb-2">
+									<input type="email" id="signupEmail" class="form-control form-control-lg" required />
+									<label class="form-label" for="signupEmail">Email</label>
+								</div>
+								<div class="form-outline form-white mb-2">
+									<input type="password" id="signupPassword1" class="form-control form-control-lg" required />
+									<label class="form-label" for="signupPassword1" data-lang-key="password">Password</label>
+								</div>
+								<div class="form-outline form-white mb-2">
+									<input type="password" id="signupPassword2" class="form-control form-control-lg" required />
+									<label class="form-label" for="signupPassword2" data-lang-key="passConfirm">Password confirmation</label>
+								</div>
+								<div id="error-message" class="alert alert-danger" role="alert" data-lang-key="usernameError">Test message</div>
+								<div id="success-message" class="alert alert-success" role="alert" data-lang-key="signupOk">Message</div>
+								<button id="signupBtn" class="btn btn-outline-light btn-lg px-5" type="submit" data-lang-key="signup">signup</button>
+							</div>
+							<div>
+								<p class="mb-0"><span data-lang-key="alreadyAccount">Already have an account ?</span> <a href="#login" id="login-btn-form" class="text-white-50 fw-bold">Login</a></p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>`;
 
     document.body.insertAdjacentHTML('afterbegin', loginHTML);
     setupButtonListener();
@@ -111,10 +110,6 @@ function    setupButtonListener() {
 			credentials: 'same-origin' 
 		})
 		.then(response => {
-			//console.log('response:', response);
-			/*if (!response.ok) {
-				throw new Error(response.status);
-			}*/
 			return response.json();
 		})
 		.then(data => {
@@ -125,7 +120,6 @@ function    setupButtonListener() {
                 loadUser().then(() => {
 					changeView('hero');
 				});
-                //changeView('hero');
 			} else if (data['message'] == "KO"){
 				document.getElementById('error-messageLogin').style.display = 'block';
 				setTimeout(function() {
@@ -181,37 +175,6 @@ function    setupButtonListener() {
 				credentials: 'same-origin' 
 			})
 			.then(response => {
-				//const contentType = response.headers.get("content-type");
-				//if (!response.ok) {
-				//	return response.json().then(data => {
-				//		console.log('Error data:', data);
-				//		let errorMessages = [];
-				//		if (data.message)
-				//		{
-				//			errorMessages.push(data.message);
-				//		}
-						/*if (data.errors) {
-							for (let key in data.errors) {
-								console.log(`Erreur dans ${key}: ${data.errors[key]}`);
-								let errortmp = `${data.errors[key]}`
-								errorMessages.push(errortmp);
-							}
-						}*/
-		/* 				for (let key in data) {
-							if (data.hasOwnProperty(key)) {
-								console.log(`Erreur avec dans la boucle ${key}: ${data[key]}`);
-								let errortmp = `${data.errors[key]}`
-								errorMessages.push(errortmp);  // Ajoutez chaque message d'erreur au tableau
-							}
-						} */
-				//		let errorMessage = errorMessages.join(', ');
-				//		console.log("errormessage = ", errorMessage);  // Créez une seule chaîne à partir du tableau
-				//		throw new Error(`${errorMessage}`);
-				//	});
-				//}
-				//else if (!contentType || !contentType.includes('application/json')) {
-			//		throw new TypeError("Oops, we haven't got JSON!");
-			//	}
 				return response.json();
 			})
 			.then(data => {
@@ -249,6 +212,8 @@ function    setupButtonListener() {
 
 function clearInputSignup() {
 	const inputs = document.querySelectorAll('.form-outline input');
+	document.getElementById('success-message').style.display = 'none';
+	document.getElementById('error-message').style.display = 'none';
 	inputs.forEach(input => {
 		input.value = '';
 	});
