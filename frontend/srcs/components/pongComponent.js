@@ -68,14 +68,14 @@ export function renderPong() {
 
 						<!-- multiplayerModalContent -->
 						<div id="pongMulti" class="h-100 align-items-center d-none" style="position: relative;">
-							<div class="container2" style="position: absolute; top: 0;">
+							<div class="container2" style="position: absolute; top: 5; right: 5">
 								<div class="load-3">
-									<p id="loading" data-lang-key="waitOpponent">[WAITING FOR OPPONENT]</p>
+									<!-- <p id="loading" data-lang-key="waitOpponent">[WAITING FOR OPPONENT]</p> -->
 								</div>
 							</div>
-							<div id="loading_txt" style="position: absolute; top: 0;"></div>
+							<div id="loading_txt" style="position: absolute; top: 15px; left: 15px;"></div>
 							<div id="countdown" style="position: absolute; top: 0;"></div>
-							<div class="container3" style="position: absolute; top: 0;">
+							<div class="container3" style="position: absolute; top: 0; right: 0;">
 								<div class="row">
 									<div class="col col-display" id="scoreHome">0</div>
 								</div>
