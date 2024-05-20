@@ -11,9 +11,7 @@ export function  showUserList() {
     const table = document.createElement('table');
     table.className = 'userlist-table';
     users.forEach(user => {
-        console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<appState.usersProfile:', appState.usersProfile, ' user id:', user.id);
         const userProfile = appState.usersProfile.find(profile => profile.user === user.id);
-        console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^userProfile:', userProfile);
         const row = document.createElement('tr');
         const nameCell = document.createElement('td');
         const idCell = document.createElement('td');
@@ -48,6 +46,7 @@ export function  showUserList() {
 }
 
   export async function showGameList() {
+    loadGameList();
     let games = appState.games;
     if (!Array.isArray(games)) {
         games = [];
@@ -73,7 +72,6 @@ export function  showUserList() {
             p2Cell.appendChild(p2PhotoComponent);
             p2Cell.appendChild(document.createTextNode(`Score: ${game.p2_score}`));
   
-            // Create a span for the game status
             const statusSpan = document.createElement('span');
             statusSpan.className = `status-game bg-${game.finished ? 'success' : 'danger'}`;
             statusSpan.textContent = game.finished ? 'Finished' : 'In Progress';

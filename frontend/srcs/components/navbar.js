@@ -38,6 +38,8 @@ export function renderNavbar(user){
 function displayUserInfo(user) {
       //let currentUser = user[0];
       const userInfoDiv = document.getElementById('nav-user');
+      user.profilePicture = getProfilePicture(user.id);
+      console.log('(((((((((((((((((((((dans displayUserInfo user.profilePicture:', user.profilePicture);
       console.log('(((((((((((((((((((((dans displayUserInfo user:', user)
       if (userInfoDiv) {
           userInfoDiv.innerHTML = `
@@ -85,7 +87,7 @@ function displayUserInfo(user) {
 
         <!-- Modal set user -->
         <div class="modal fade" id="editPicture" tabindex="-1" role="dialog" aria-labelledby="editPictureLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
+            <div class="modal-dialog modal-fullscreen" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="editPictureLabel" data-lang-key='editPicture'>changer l'image de profil</h5>
@@ -115,8 +117,8 @@ function displayUserInfo(user) {
         </div>
 
         <!-- Modal add a friend -->
-        <div class="modal fade modal-dialog modal-lg" id="addFriend" tabindex="-1" role="dialog" aria-labelledby="addFriendLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
+        <div class="modal fade modal-fullscreen modal-dialog modal-lg" id="addFriend" tabindex="-1" role="dialog" aria-labelledby="addFriendLabel" aria-hidden="true">
+            <div class="modal-dialog modal-fullscreen" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="editPictureLabel" data-lang-key='addFriend'>Add a friend</h5>
@@ -136,8 +138,8 @@ function displayUserInfo(user) {
         </div>
         
         <!-- Modal show friendlist -->
-        <div class="modal fade modal-dialog modal-lg" id="friendList" tabindex="-1" role="dialog" aria-labelledby="friendListLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
+        <div class="modal modal-fullscreen fade modal-dialog modal-lg" id="friendList" tabindex="-1" role="dialog" aria-labelledby="friendListLabel" aria-hidden="true">
+            <div class="modal-dialog modal-fullscreen" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="editPictureLabel" data-lang-key='FriendList'>FriendList</h5>

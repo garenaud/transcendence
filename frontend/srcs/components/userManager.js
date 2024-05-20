@@ -236,6 +236,7 @@ export function loadGameList() {
         .then(games => {
             console.log('Données de jeu chargées avec succès:', games);
             appState.games = Array.isArray(games) ? games : [];
+            console.log('appState.games:', appState.games);
             return "";
             //console.log('appState.games:', appState.games);
         })
