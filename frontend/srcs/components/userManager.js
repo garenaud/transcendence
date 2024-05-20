@@ -26,7 +26,7 @@ export function logoutUser() {
 }
 
 function updateUserOnServer(user) {
-    console.log(user);
+    console.log('%&%&%&%&%&%&%&% user =', user);
     let csrfToken = getCookie('csrftoken');
     let userForBackend = {
         first_name: user.first_name,
@@ -189,18 +189,14 @@ export function loadUser() {
             console.log('userId:', appState.userId);
             appState.isLogged = true;
             appState.user = users.find(user => user.id === appState.userId);
-            console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^appState.usersProfile = ', appState.usersProfile);
             appState.userProfile = appState.usersProfile.find(usersProfile => appState.userId === appState.userId);
-            console.log('appState.userProfile = ', appState.userProfile);
-            console.log('???????????????????????????????????????????????????????????appState.userProfile.profilePicture = ', appState.userProfile.profile_picture);
-            if (!appState.userProfile.profilePicture) {
+            if (!appState.userProfile.profile_picture) {
                 appState.user.profilePicture = 'Design/User/Max-R_Headshot.jpg';
             }
             else {
                 getProfilePicture(appState.userId);
             }
             appState.user.pts = 100;
-            console.log('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%appState = ', appState);
             sessionStorage.setItem('user', JSON.stringify(appState.user));
         })
         .catch(error => {
@@ -244,3 +240,8 @@ export function loadGameList() {
             console.error('Erreur lors du chargement des données de jeu:', error);
         });
 }
+
+window.onload = function() {
+    console.log('window.onload');
+    loadUser();
+};

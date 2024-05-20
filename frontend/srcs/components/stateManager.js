@@ -47,6 +47,7 @@ export function changeView(newView) {
     appState.newViewAdded = true;
     location.hash = newView;
     sessionStorage.setItem('appState', JSON.stringify(appState));
+    loadUser();
     console.log("------------------------------------------------> appState = ", appState);
 }
 
