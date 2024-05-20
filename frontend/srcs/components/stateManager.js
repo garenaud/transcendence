@@ -18,10 +18,13 @@ let currentIndex = -1;
 export let appState = {
     currentView: 'login',
     user: null,
-    userProfile: null,
     userId: null,
+    //liste des users (username, nom, email, etc.)
     users: [],
+    //liste userProfile (avec stats, photo de profil, etc.) de tous les users
     usersProfile: [],
+    //userProfile (avec stats, photo de profil, etc.) du user
+    userProfile: null,
     urlHistory: ['login'],
     renderedComponents: {},
     language: 'fr',
@@ -121,30 +124,19 @@ export async function renderApp() {
 }
 
 function initializeAppState() {
-    // Try to retrieve the appState from sessionStorage
     const storedAppState = sessionStorage.getItem('appState');
     if (storedAppState) {
         appState = JSON.parse(storedAppState);
     }
-
-    console.log("appState userid before initialize = ", appState.userId);
     if (!location.hash || appState.userId == 0) {
         location.hash = '#login';
     }
-
     appState.renderedComponents = JSON.parse(sessionStorage.getItem('renderedComponents')) || {};
     loadLanguage(appState.language);
-
     const view = window.location.pathname.substring(1);
-    console.log("view = ", view);
     appState.currentView = ['login', 'hero', 'game', 'chat'].includes(view) ? view : 'login';
-
-    console.log("At the end of initialize and my substring = ", location.hash.substring(1));
     appState.currentView = location.hash.substring(1) || 'login';
-    console.log("appState at the end of initialize = ", appState);
     document.body.innerHTML = '';
-
-    // Store the appState in sessionStorage
     sessionStorage.setItem('appState', JSON.stringify(appState));
 }
 
@@ -210,8 +202,6 @@ async function renderHeroView() {
 }
 
 async function renderGameView() {
-    console.log(document.querySelector('.navbar-expand-lg'));
-    console.log("appstate dans game: ", appState);
     if (!appState.renderedComponents.game) {
         await LanguageBtn();
         if (!document.querySelector('.navbar')) {

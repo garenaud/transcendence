@@ -60,14 +60,14 @@ function updateUserOnServer(user) {
     });
 }
 
-function getCookie(name) {
+export function getCookie(name) {
 	const value = `; ${document.cookie}`;
 	const parts = value.split(`; ${name}=`);
 	if (parts.length === 2) return parts.pop().split(';').shift();
 }
 
 export function getProfilePicture(userId) {
-    fetch(`/api/get_picture/${appState.userId}`)
+    fetch(`/api/get_image/${appState.userId}`)
     .then(response => {
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
@@ -87,7 +87,7 @@ export function setProfilePicture(file) {
         let formData = new FormData();
     formData.append('filename', file);
 
-    fetch(`/api/post_picture/${appState.userId}`, {
+    fetch(`/api/post_image/${appState.userId}`, {
         method: 'POST',
         body: formData
     })
@@ -176,16 +176,16 @@ export function loadUser() {
             return response.json();
         })
         .then(users => {
-            console.log('Données utilisateur chargées avec succès:', users);
             loadUserProfile();
             appState.users = users;
             appState.userId = Number(sessionStorage.getItem('userId'));
             console.log('userId:', appState.userId);
             appState.isLogged = true;
             appState.user = users.find(user => user.id === appState.userId);
-            appState.userProfile = appState.usersProfile.find(userProfile => appState.userId === appState.userId);
+            console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^appState.usersProfile = ', appState.usersProfile);
+            appState.userProfile = appState.usersProfile.find(usersProfile => appState.userId === appState.userId);
             console.log('appState.userProfile = ', appState.userProfile);
-            console.log('???????????????????????????????????????????????????????????appState.userProfile.profilePicture = ', appState.userProfile.profilePicture);
+            console.log('???????????????????????????????????????????????????????????appState.userProfile.profilePicture = ', appState.userProfile.profile_picture);
             if (!appState.userProfile.profilePicture) {
                 appState.user.profilePicture = 'Design/User/Max-R_Headshot.jpg';
             }

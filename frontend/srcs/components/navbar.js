@@ -2,6 +2,7 @@ import { changeView, appState} from './stateManager.js';
 import { getUser, setUserProfilePicture, setUsername, logoutUser } from './userManager.js';
 import { createButtonComponent, createPhotoComponent } from './globalComponent.js';
 import { showGameList, showUserList } from './listComponent.js';
+import { showFriendsList } from './friendsList.js';
 
 function escapeHTML(unsafeText) {
   let div = document.createElement('div');
@@ -50,6 +51,9 @@ function displayUserInfo(user) {
             <div class="user-menu-info">
             <button type="button" class="user-menu-li" aria-label="Edit" data-bs-toggle="modal" data-bs-target="#addFriend"> 
                 <i class="fas fa-user-plus"></i><h6 data-lang-key='addFriend'>ajouter un ami</h6>
+            </button>
+            <button type="button" class="user-menu-li" aria-label="Edit" data-bs-toggle="modal" data-bs-target="#friendList"> 
+                <i class="fas fa-user-plus"></i><h6 data-lang-key='FriendList'>Liste d'ami</h6>
             </button>
             <button type="button" class="user-menu-li" aria-label="Edit" data-bs-toggle="modal" data-bs-target="#editPicture">
                     <i class="fas fa-cog"></i><h6 data-lang-key='setProfile'>Editer le profil</h6>
@@ -111,6 +115,27 @@ function displayUserInfo(user) {
                 </div>
             </div>
         </div>
+        
+        <!-- Modal show friendlist -->
+        <div class="modal fade modal-dialog modal-lg" id="friendList" tabindex="-1" role="dialog" aria-labelledby="friendListLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editPictureLabel" data-lang-key='FriendList'>FriendList</h5>
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body text-white">
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-lang-key='close'>Close</button>
+                        <button id="userSaveChange" type="button" class="btn btn-primary"  data-bs-dismiss="modal" data-lang-key='saveChanges'>Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     `;      
     document.body.insertAdjacentHTML('beforeend', userMenuHTML);
 }  
@@ -148,6 +173,7 @@ function displayUserInfo(user) {
   renderUserMenu(user);
   setupButtonListener();
   showUserList();
+  showFriendsList();
 }
 
 function    setupButtonListener() {
