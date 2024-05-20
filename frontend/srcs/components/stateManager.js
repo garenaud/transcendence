@@ -51,16 +51,12 @@ export function changeView(newView) {
 window.addEventListener("hashchange", function () {
     const newView = location.hash.substring(1);
     if (appState.currentView !== newView) {
-        appState.currentView = newView;
+		appState.currentView = newView;
     }
-    const currentUser = getCurrentUser();
-    if (!currentUser && newView !== 'login') {
+    if (!appState.user && newView !== 'login') {
         window.location.hash = 'login';
         return;
     }
-    // if (appState.urlHistory[appState.urlHistory.length - 1] !== newView) {
-    //     appState.urlHistory.push(newView);
-    // }
     renderApp();
 });
 
@@ -68,9 +64,7 @@ window.addEventListener("hashchange", function () {
 window.addEventListener("popstate", function () {
     const newView = location.hash.substring(1);
     const newIndex = appState.urlHistory.lastIndexOf(newView);
-    const currentUser = getCurrentUser();
-    console.log("currentUser popstate = ", currentUser);
-    if (!currentUser && newView !== 'login') {
+    if (!appState.user && newView !== 'login') {
         window.location.hash = 'login';
         return;
     }

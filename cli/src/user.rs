@@ -8,7 +8,6 @@ pub struct User {
 	id: String,
 	username: String,
 	logged_in: bool,
-	session_id: String,
 	client: Client,
 	server: String,
 }
@@ -19,7 +18,6 @@ impl User {
 			id: String::new(),
 			username: String::new(),
 			logged_in: false,
-			session_id: String::new(),
 			client: Client::new(),
 			server: String::new(),
 		}
@@ -36,11 +34,10 @@ impl User {
 	// 	}
 	// }
 
-	pub fn fill(&mut self, id: String, username: String, session_id: String, client: Client, server: String) {
+	pub fn fill(&mut self, id: String, username: String, client: Client, server: String) {
 		self.id = id;
 		self.username = username;
 		self.logged_in = true;
-		self.session_id = session_id;
 		self.client = client;
 		self.server = server;
 	}
@@ -57,16 +54,8 @@ impl User {
 		self.id.clone()
 	}
 
-	pub fn get_username(&self) -> String {
-		self.username.clone()
-	}
-
-	// pub fn get_session_id(&self) -> String {
-	// 	self.session_id.clone()
-	// }
-
 	pub fn get_csrf(&self) -> Option<String> {
-		let crsf = self.client.get("https://{server}/api/gamelist".replace("{server}", self.server.as_str()))
+		let crsf = self.client.get("https://{server}/api/√".replace("{server}", self.server.as_str()))
 			.header("User-Agent", "cli_rust")
 			.header("Accept", "application/json")
 			.timeout(Duration::from_secs(3));
@@ -91,19 +80,11 @@ impl User {
 		return Some(csrf_token);
 	}
 
-	// pub fn is_logged(&self) -> bool {
-	// 	self.logged_in
-	// }
+	pub fn set_id(&mut self, id: String) {
+		self.id = id;
+	}
+
+	pub fn set_username(&mut self, username: String) {
+		self.username = username;
+	}
 }
-
-
-
-/*
-"{	\"message\": \"OK\",
-	\"id\": 1,
-	\"username\": \"we\",
-	\"first_name\": \"we\",
-	\"last_name\": \"we\",
-	\"email\": \"we@we.com\"
-}"
-*/

@@ -4,8 +4,6 @@ use std::sync::Arc;
 use reqwest::cookie::Jar;
 use colored::Colorize;
 
-use pwhash::sha256_crypt;
-
 use crate::user::User;
 
 // Ask the user for login and password, and then return the connection status
@@ -29,13 +27,6 @@ pub fn login(srv: String) -> Option<User> {
 		}
 	
 	};
-	// let password = match sha256_crypt::hash(rpassword::read_password().unwrap()) {
-	// 	Ok(str) => String::from(str),
-	// 	Err(_) => {
-	// 		eprintln!("ERREUR LORS DU HASHAGE DU MOT DE PASSE");
-	// 		return None;
-	// 	}
-	// };
 	return connection(srv, login, password);
 }
 
@@ -54,48 +45,29 @@ fn connection(srv: String, login: String, password: String) -> Option<User> {
 			return None;
 		}
 	};
+	
+	let mut user = User::new();
+	user.fill(String::from(""), String::from(""), client, srv);
 
-	let crsf = client.get("https://{server}/api/gamelist".replace("{server}", &srv))
-		.header("User-Agent", "cli_rust")
-		.header("Accept", "application/json")
-		.timeout(Duration::from_secs(3));
-	let crsf = crsf.build();
-	let res_csrf = client.execute(crsf.expect("ERROR WHILE BUILDING THE REQUEST"));
-	let csrf = match res_csrf {
-		Ok(res) => {
-
-			// eprintln!("{:#?}", res);
-			// eprintln!("{}", res.text().unwrap());
-
-			if res.headers().get("set-cookie").is_none() {
-				eprintln!("{}", format!("No CSRF-Token in the header").red());
-				return None;
-			}
-			let csrf = res.headers().get("set-cookie").unwrap();
-			csrf.to_str().unwrap().to_string()
-		},
-		Err(err) => {
-			eprintln!("{}", format!("Error in respond: {:#?}", err).red());
+	let csrf_token = match user.get_csrf() {
+		Some(csrf) => csrf,
+		None => {
+			eprintln!("{}", format!("Error while getting the CSRF token").red());
 			return None;
 		}
 	};
-	let csrf_token = csrf.split(';').nth(0).unwrap().split('=').nth(1).unwrap().to_string();
-	let csrf_token = csrf_token.as_str();
-
-	let req = client
-		.post(("https://{server}/auth/login/").replace("{server}", &srv))
+	let req = user.get_client()
+		.post(("https://{server}/auth/login/").replace("{server}", &user.get_server()))
 		.header("User-Agent", "cli_rust")
 		.header("Accept", "application/json")
 		.header("X-CSRFToken", csrf_token)
-		.header("Referer", "https://{server}/".replace("{server}", &srv))
+		.header("Referer", "https://{server}/".replace("{server}", &user.get_server()))
 		.body((r#"{"username":"{email}","password":"{password}"}"#).replace("{email}", &login).replace("{password}", &password))
 		.timeout(Duration::from_secs(3));
-		
-		let req = req.build().expect("ERROR WHILE BUILDING THE REQUEST");
-		println!("{:#?}", req);
-	let res = client.execute(req);
 
-	let mut user = User::new();
+	let req = req.build().expect("ERROR WHILE BUILDING THE REQUEST");
+	let res = user.get_client().execute(req);
+
 	match res {
 		Ok(res) => {
 			if !res.status().is_success() {
@@ -115,7 +87,8 @@ fn connection(srv: String, login: String, password: String) -> Option<User> {
 					if res["message"] == -1 {
 						return None;
 					}
-					user.fill(res["id"].to_string(), login, res["session_id"].to_string(), client, srv);
+					user.set_id(res["id"].to_string());
+					user.set_username(login);
 				},
 				Err(err) => {
 					eprintln!("Error in respond: {:#?}", err);
