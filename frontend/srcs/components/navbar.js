@@ -105,7 +105,7 @@ function displayUserInfo(user) {
                       <label for="newProfilePicture"  class="text-white" data-lang-key='newPicture'>Nouvelle image</label>
                         <div class="input-group">
                           <input class="form-control" type="file" id="newProfilePicture">
-                          <img id="preview" style="display: none;" />
+                          <img id="preview" style="display: block;" />
                         </div>
                           <div class="form-group">
                           <label for="formGroupExampleInput"  class="text-white" data-lang-key='newUsername'>Nouveau username</label>

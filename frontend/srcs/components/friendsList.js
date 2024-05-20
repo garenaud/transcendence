@@ -1,6 +1,6 @@
 import { getCookie, getProfilePicture } from "./userManager.js";
 import { appState } from "./stateManager.js";
-import { createPhotoComponent, createButtonComponent } from "./globalComponent.js";
+import { createPhotoComponent, createButtonComponent, createToastComponent } from "./globalComponent.js";
 
 export function showFriendsList() {
     const users = appState.users;
@@ -82,6 +82,7 @@ export function sendFriendRequest(fromId, toUsername) {
     })
     .then(response => response.json())
     .then(data => console.log(data))
+    .then(createToastComponent('toast', 'FriendList', data))
     .catch((error) => {
       console.error('Error:', error);
     });
