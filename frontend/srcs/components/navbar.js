@@ -44,12 +44,12 @@ function displayUserInfo(user) {
       if (userInfoDiv) {
           userInfoDiv.innerHTML = `
           <div class="nav-user-info d-md-block">
-          <h4>${user.username}</h4>
-          <h6>${user.id}</h6>
+          <h4>${user.user.username}</h4>
+          <h6>${user.user.id}</h6>
           </div>
           <div id="user-menu-button" class="nav-user-img d-md-block">
                   <div id="user-menu-button" class="img_cont_nav">
-                  <img src="${user.profilePicture}" alt="User Image">
+                  <img src="${user.userProfile.profile_picture}" alt="User Image">
                   </div>
           </div>
           `;
@@ -57,6 +57,7 @@ function displayUserInfo(user) {
   }
   
   function renderUserMenu(user) {
+    console.log('??????????????????User dans rendrUserMenu:', user);
     const userMenuHTML = `
         <div id="user-menu" class="user-menu-hidden">
 
@@ -66,8 +67,10 @@ function displayUserInfo(user) {
                 <button type="button" class="edit edit-menu-button btn btn-primary" aria-label="Edit" data-bs-toggle="modal" data-bs-target="#editPicture"> <span aria-hidden="true">&#9998;</span> </button>
             </div>
             <div class="user-menu-title">
-                <h3>${user.username}</h3>
-                <h4>${user.pts} pts</h4>
+                <h3>${user.user.username}</h3>
+                <h4>${user.userProfile.game_won} matchs gagnés</h4>
+                <h4>${user.userProfile.game_lost} matchs perdus</h4>
+                <h4>${user.userProfile.winrate} %</h4>
             </div>
             <div class="user-menu-info">
             <button type="button" class="user-menu-li" aria-label="Edit" data-bs-toggle="modal" data-bs-target="#addFriend"> 

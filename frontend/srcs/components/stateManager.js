@@ -195,7 +195,7 @@ async function renderHeroView() {
         console.log('appState = ', appState.user);
         await LanguageBtn();
         await renderHero();
-        renderNavbar(appState.user);
+        renderNavbar(appState);
         appState.renderedComponents.hero = true;
         appState.renderedComponents.navbar = true;
     }
@@ -205,7 +205,7 @@ async function renderGameView() {
     if (!appState.renderedComponents.game) {
         await LanguageBtn();
         if (!document.querySelector('.navbar')) {
-            renderNavbar(appState.user);
+            renderNavbar(appState);
         }
         const game = await renderPong();
         const game2 = await renderRun();
