@@ -45,7 +45,7 @@ export function  showUserList() {
 }
 
   export async function showGameList() {
-    const games = await loadGameList();
+    const games = appState.games;
     const table = document.createElement('table');
     table.className = 'game-list-table';
   

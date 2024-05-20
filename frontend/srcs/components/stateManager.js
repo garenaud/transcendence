@@ -190,7 +190,6 @@ async function renderLoginView() {
 }
 
 async function renderDefaultView() {
-    console.log("je suis dans renderDefaultView et voici appState = ", appState);
     if (!appState.user) {
         appState.currentView = 'login';
         await renderLoginView();
