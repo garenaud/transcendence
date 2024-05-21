@@ -29,14 +29,14 @@ function updateUserOnServer(user) {
     console.log('%&%&%&%&%&%&%&% user =', user);
     let csrfToken = getCookie('csrftoken');
     let userForBackend = {
-        first_name: user.first_name,
-        last_name: user.last_name,
-        username: user.username,  // Assumant que 'username' est le nom d'utilisateur
-        email: user.email,  // Assumant que 'email' est le login
-        password: user.password  // Vous devez vous assurer que le mot de passe est correctement géré
+        first_name: user.user.first_name,
+        last_name: user.user.last_name,
+        username: user.user.username,  // Assumant que 'username' est le nom d'utilisateur
+        email: user.user.email,  // Assumant que 'email' est le login
+        password: user.user.password  // Vous devez vous assurer que le mot de passe est correctement géré
     };
     console.log('Updating user:', userForBackend);
-    fetch('https://localhost/api/user/' + user.id, {
+    fetch('https://localhost/api/user/' + user.user.id, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -53,7 +53,7 @@ function updateUserOnServer(user) {
     })
     .then(data => {
         console.log('User updated:', data);
-        getUserFromServer(user.id);
+        getUserFromServer(user.user.id);
     })
     .catch((error) => {
         console.error('Error:', error);
@@ -165,8 +165,9 @@ export function setCurrentUser(user) {
 
 function setUsername(username) {
     appState.user.username = username;
+    console.log('######%%%%%%%%%######username = ', username);
     sessionStorage.setItem('user', JSON.stringify(appState.user));
-    updateUserOnServer(appState.user);
+    updateUserOnServer(appState);
 }
 
 function setUserPoints(pts){
