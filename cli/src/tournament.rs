@@ -293,8 +293,8 @@ fn handle_tournament(user: User, socket: &mut tungstenite::WebSocket<tungstenite
 											println!("{}", format!("You won the tournament").green().bold());
 										} else {
 											println!("{}", format!("You lost the tournament").red().bold());
-											return;
 										}
+										return;
 									},
 									None => {
 										println!("{}", format!("Error during the game").red());
@@ -310,7 +310,7 @@ fn handle_tournament(user: User, socket: &mut tungstenite::WebSocket<tungstenite
 			},
 			Err(err) => {
 				eprintln!("{}", format!("{:#?}", err).red());
-				return;	
+				return;
 			}
 		}
 	}
