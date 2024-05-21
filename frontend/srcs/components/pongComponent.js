@@ -110,7 +110,7 @@ export function renderPong() {
 							</div>
 							<div class="load-3">
 								<div class="loading">							
-								<p id="loading_txt">[TOURNAMENT DOESN'T EXIST]</p>
+								<p id="loading_txttournament"></p>
 									<ul id="userList"></ul>
 									<div class="line"></div>
 									<div class="line"></div>
@@ -315,9 +315,18 @@ function changeDivContent(newContent) {
 export function unloadScript() {
 	// Désactiver les scripts chargés dynamiquement
 	document.querySelectorAll('script[type="module"][data-pong="dynamic"]').forEach(script => {
+		// gameSocket.close();
 		console.log(script);
 		script.setAttribute('data-disabled', 'true');
 		script.removeAttribute('type');
+		if (window.gameSocket) {
+			console.log('JE CLOSE ' + window.gameSocket);
+			window.gameSocket.close();
+		}
+		// if (window.tournamentSocket) {
+		// 	console.log('JE CLOSE TOURNAMENT');
+		// 	window.tournamentSocket.close();
+		// }
 		script.remove(); // Supprimer le script du DOM
 	});
 }
@@ -360,5 +369,4 @@ export function loadTournamentPong() {
 	console.log('loadingTournament');
 	scriptTournament.setAttribute('data-pong', 'dynamic');  // Marqueur pour identifier les scripts chargés dynamiquement
 	document.body.appendChild(scriptTournament);
-	console.log(document.body.appendChild(scriptTournament));
 }
