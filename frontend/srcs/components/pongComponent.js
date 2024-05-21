@@ -269,6 +269,7 @@ function addEventListeners(element) {
 			pongMulti.classList.remove('d-none');
 			var data = document.querySelector('#pongMulti').innerHTML;
 			document.querySelector('#pongMulti').innerHTML = data;
+			unloadScript();
 		});
 
 		
@@ -280,7 +281,6 @@ function addEventListeners(element) {
 			origPong.classList.remove('d-none');
 		});
 		pongModal.addEventListener('hidden.bs.modal', function () {
-			console.log('unload script');
 			unloadScript();
 			scriptStarted = false;
 			const pongLocal = element.querySelector('#pongLocal');
@@ -290,7 +290,6 @@ function addEventListeners(element) {
 			pongMulti.classList.add('d-none');
 			pongTournament.classList.add('d-none');
 			origPong.classList.remove('d-none');
-			window.location.reload();
 		});
 		
 		// Define the event handler
@@ -346,7 +345,6 @@ export function loadMultiPong() {
 	const scriptMultiPong = document.createElement('script');
 	scriptMultiPong.type = 'module';
 	scriptMultiPong.src = '../pong/javascript/pong.js?' + new Date().getTime(); // Ajoute un horodatage à l'URL
-	console.log('loadingMulti');
 	scriptMultiPong.setAttribute('data-pong', 'dynamic');  // Marqueur pour identifier les scripts chargés dynamiquement
 	document.body.appendChild(scriptMultiPong);
 }

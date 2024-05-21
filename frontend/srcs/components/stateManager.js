@@ -72,7 +72,7 @@ window.addEventListener("popstate", function () {
         window.location.hash = 'login';
         return;
     }
-    if (newView === 'login' && appState.isLogged === true) {
+    if (newView === 'login' && appState.user) {
         const confirmLogout = window.confirm('Si vous revenez à cette page, vous serez déconnecté. Êtes-vous sûr de vouloir continuer ?');
         if (confirmLogout) {
             logoutUser();
