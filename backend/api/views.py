@@ -19,6 +19,8 @@ from itertools import chain
 #Returns all user in the database
 @api_view(['GET'])
 def get_user_list(request):
+	print('##########')
+	print(request.user)
 	if (request.method == 'GET'):
 		users = User.objects.all()
 		serializer = UserSerializer(users, many=True)
