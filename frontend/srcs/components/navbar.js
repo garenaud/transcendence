@@ -212,7 +212,6 @@ function    setupButtonListener() {
   });
 
   document.getElementById('user-menu-button').addEventListener('click', function() {
-    console.log('7777//////666666%%%%%%%% -> ', document.querySelector('.notification-bubble'));
     updateFriendRequestsNotification();
     const userMenu = document.getElementById('user-menu');
     if (userMenu.style.display === 'block') {
@@ -253,14 +252,15 @@ function    setupButtonListener() {
     const userInfoDiv = document.getElementById('nav-user');
     if (userInfoDiv) {
         let escapedUsername = escapeHTML(user.username);
+        console.log('***********************Image profile =', user.userProfile.profile_picture)
         userInfoDiv.innerHTML = `
         <div class="nav-user-info">
-        <h4>${user.username}</h4>
-        <h6>${user.pts} pts</h6>
+        <h4>${user.user.username}</h4>
+        <h6>${user.user.pts} pts</h6>
         </div>
         <div id="user-menu-button" class="nav-user-img">
                 <div id="user-menu-button-inner" class="img_cont_nav">
-                <img src="${user.profilePicture}" alt="User Image">
+                <img src="${user.userProfile.profile_picture}" alt="User Image">
                 </div>
         </div>
         `;
@@ -276,26 +276,24 @@ function    setupButtonListener() {
     }
 }
 
-  document.querySelector('#userSaveChange').addEventListener('click', function() {
-    console.log('Click on save changes')
-    const newProfilePicture = document.querySelector('#newProfilePicture').value;
-    const newUsername = document.querySelector('#newUsername').value;
-    console.log('newProfilePicture:', newProfilePicture);
-    if (newProfilePicture) {
-      setProfilePicture(newProfilePicture);
-      const displayedProfilePicture = document.querySelector('.user-menu-img img');
-      displayedProfilePicture.src = newProfilePicture;
-      //const navbarProfilePicture = document.querySelector('navbar-selector img'); 
-      updateUserInfoInNavbar(appState.user);
-    }
-    if (newUsername) {
-      let escapedUsername = escapeHTML(newUsername);
-      setUsername(escapedUsername);
-      const displayedUsername = document.querySelector('.user-menu-title');
-      displayedUsername.textContent = escapedUsername;
-      updateUserInfoInNavbar(appState.user);
-    }
-  });
+document.querySelector('#userSaveChange').addEventListener('click', function() {
+  console.log('Click on save changes')
+  const newProfilePictureFile = document.querySelector('#newProfilePicture').files[0];
+  const newUsername = document.querySelector('#newUsername').value;
+  if (newProfilePictureFile) {
+    setProfilePicture(newProfilePictureFile);
+    const displayedProfilePicture = document.querySelector('.user-menu-img img');
+    displayedProfilePicture.src = URL.createObjectURL(newProfilePictureFile);
+    updateUserInfoInNavbar(appState);
+  }
+  if (newUsername) {
+    let escapedUsername = escapeHTML(newUsername);
+    setUsername(escapedUsername);
+    const displayedUsername = document.querySelector('.user-menu-title');
+    displayedUsername.textContent = escapedUsername;
+    updateUserInfoInNavbar(appState);
+  }
+});
 }
 
 window.onload = function() {

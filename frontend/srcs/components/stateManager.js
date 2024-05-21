@@ -36,14 +36,14 @@ export let appState = {
 export function changeView(newView) {
     if (appState.currentView !== newView) {
         appState.currentView = newView;
-        // Supprimez les composants de la vue précédente de appState.renderedComponents
+        /* // Supprimez les composants de la vue précédente de appState.renderedComponents
         for (let component in appState.renderedComponents) {
             if (component.startsWith(appState.currentView)) {
                 delete appState.renderedComponents[component];
             }
         }
-        sessionStorage.setItem('renderedComponents', JSON.stringify(appState.renderedComponents));
-    }
+        sessionStorage.setItem('renderedComponents', JSON.stringify(appState.renderedComponents));*/
+        }
     appState.newViewAdded = true;
     location.hash = newView;
     sessionStorage.setItem('appState', JSON.stringify(appState));

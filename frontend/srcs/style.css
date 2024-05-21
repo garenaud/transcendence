@@ -2252,8 +2252,10 @@ div.modal-footer, div.modal-body, div.modal-header{
   right: 0;
   background-color: red;
   color: white;
-  border-radius: 100%; /* Pour rendre la bulle parfaitement ronde */
-  padding: 2px 8px; /* Ajustez selon vos besoins */
-  text-align: center; /* Pour centrer le texte */
-  font-size: 0.65em; /* Ajustez selon vos besoins */
+  border-radius: 100%; 
+  padding: 2px 8px; 
+  text-align: center; 
+  font-size: 0.65em;
+  border: 1px solid #f5f6fa;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
 }

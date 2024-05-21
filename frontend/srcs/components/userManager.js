@@ -75,6 +75,22 @@ export function getProfilePicture(userId) {
         return response.blob();
     })
     .then(imageBlob => {
+        appState.user.profilePicture = URL.createObjectURL(imageBlob);
+    })
+    .catch(error => {
+        console.error('Erreur lors du chargement de l\'image de l\'utilisateur:', error);
+    });
+}
+
+/* export function getProfilePicture(userId) {
+    fetch(`/api/get_image/${appState.userId}`)
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.blob();
+    })
+    .then(imageBlob => {
         let reader = new FileReader();
         reader.onload = function() {
             appState.user.profilePicture = reader.result;
@@ -84,7 +100,7 @@ export function getProfilePicture(userId) {
     .catch(error => {
         console.error('Erreur lors du chargement de l\'image de l\'utilisateur:', error);
     });
-}
+} */
 
 export function setProfilePicture(file) {
     let formData = new FormData();
