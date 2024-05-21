@@ -10,7 +10,7 @@ import { renderUserMenu } from './userMenu.js';
 import { LanguageBtn, loadLanguage } from './languageManager.js';
 import { renderScratchGame } from './scratchGame.js';
 import { createToastComponent, createButtonComponent, createPhotoComponent, createListCardComponent, renderDiv } from './globalComponent.js';
-import { showUserList, showGameList } from './listComponent.js';
+import { showUserList, showGameList, showRanking } from './listComponent.js';
 
 let currentIndex = -1;
 
@@ -210,7 +210,7 @@ async function renderGameView() {
         }
         const game = await renderPong();
         const game2 = await renderRun();
-        const gameListHTML = await showGameList();
+        const gameListHTML = await showRanking();
         const cardHistory = createListCardComponent('pongPlayed', 'Games', gameListHTML);
         await renderDiv([cardHistory, game], 'row');
         await LanguageBtn();
