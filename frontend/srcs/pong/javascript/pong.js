@@ -15,6 +15,8 @@ let active = false;
 let gameid = sessionStorage.getItem('gameid');
 let userid = sessionStorage.getItem('userId');
 let privategame = sessionStorage.getItem('privategame');
+const scoreR = document.getElementById("scoreGuest");
+const scoreL = document.getElementById("scoreHome");
 let game_data;
 let renderer;
 let scene;
@@ -126,6 +128,8 @@ function init() {
 	// Postprocessing
 	composer = initPostprocessing();
 
+	scoreL.textContent = 0;
+	scoreR.textContent = 0;
 	// Load the GLTF model and handle the PaddleRight
 	LoadGLTFByPath(scene)
 		.then(() => {
@@ -329,7 +333,7 @@ function anim() {
 gameSocket.onmessage = function(e) {
 	
 	game_data = JSON.parse(e.data);
-
+	
 	if (game_data.action == "userid") {
 		gameSocket.send(JSON.stringify({
 			'message' : 'userid',
@@ -368,9 +372,9 @@ gameSocket.onmessage = function(e) {
 		document.getElementById("myModal").style.display = "block";
 	} else if (game_data.action == 'score') {
 		if (game_data.scorep1 != undefined && game_data.scorep2 != undefined) {
-			const scoreL = document.getElementById("scoreHome");
+			// const scoreL = document.getElementById("scoreHome");
 			scoreL.textContent = game_data.scorep2;
-			const scoreR = document.getElementById("scoreGuest");
+			// const scoreR = document.getElementById("scoreGuest");
 			scoreR.textContent = game_data.scorep1;
 		}
 	} else if (game_data.action == 'counter') {
