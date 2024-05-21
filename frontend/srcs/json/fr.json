@@ -51,5 +51,6 @@
     "joinTourn": "rejoindre un tournoi",
     "wonTourn": "VOUS AVEZ GAGNÉ LE TOURNOI, FÉLICITATIONS",
     "confirmLogout": "Si vous revenez à cette page, vous serez déconnecté. Êtes-vous sûr de vouloir continuer ?",
-    "error-404": "404 - Seite nicht gefunden"
+    "error-404": "404 - Page non-trouvée, arrête de faire pleurer Mike",
+    "waitConfirmFriend": "en attente de la confirmation"
 }

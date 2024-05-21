@@ -31,7 +31,10 @@ export function showUserList() {
             const pendingRequest = requests.find(request => request.from_user === appState.userId && request.to_user === user.id);
             let buttonComponent;
             if (pendingRequest) {
-                buttonComponent = createButtonComponent('En attente', 'pendingFriendRequest', 'En attente');
+                const pElement = document.createElement('p');
+                pElement.textContent = 'En attente de la confirmation';
+                pElement.setAttribute('data-lang-key', 'waitConfirmFriend');
+                buttonComponent = pElement;
             } else {
                 buttonComponent = createButtonComponent('+', 'addFriendButton', '+', (event) => {
                     sendFriendRequest(appState.userId, user.username);
@@ -113,6 +116,42 @@ export function showUserList() {
             table.appendChild(row);
         } catch (error) {
             console.error('Error fetching user:', error);
+        }
+    }
+  
+    return table.outerHTML;
+}
+
+export async function showRanking() {
+    loadRanking();
+    let players = appState.players;
+    if (!Array.isArray(players)) {
+        players = [];
+    }
+    players.sort((a, b) => b.userProfile.winrate - a.userProfile.winrate)
+    const table = document.createElement('table');
+    table.className = 'ranking-table';
+  
+    for (const player of players) {
+        try {
+            const row = document.createElement('tr');
+            const nameCell = document.createElement('td');
+            const scoreCell = document.createElement('td');
+  
+            const user = await getUserFromServer(player.id);
+  
+            const photoComponent = createPhotoComponent('./Design/User/Max-R_Headshot.jpg', user.username);
+  
+            nameCell.appendChild(photoComponent);
+            nameCell.appendChild(document.createTextNode(user.username));
+            scoreCell.appendChild(document.createTextNode(`Score: ${player.score}`));
+  
+            row.appendChild(nameCell);
+            row.appendChild(scoreCell);
+  
+            table.appendChild(row);
+        } catch (error) {
+            console.error('Failed to create row for player', player, error);
         }
     }
   
