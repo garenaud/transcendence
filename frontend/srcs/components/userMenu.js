@@ -1,8 +1,9 @@
 export function renderUserMenu(user) {
+	get
     const userMenuHTML = `
         <div id="user-menu" class="user-menu-hidden">
             <div class="user-menu-img">
-                <img src="${user.profilePicture}" alt="User Image">
+                <img id="profile-picture" alt="User Image">
             </div>
             <div class="user-menu-info">
                 <li class="active">

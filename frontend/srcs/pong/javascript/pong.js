@@ -30,7 +30,6 @@ const speed = 0.25;
 let scoreLeft;
 let scoreRight;
 let ballVelocity;
-let gameSocket;
 let currentNum = 7;
 
 const KeyState = {
@@ -41,10 +40,10 @@ const KeyState = {
 };
 
 if (gameid === "null" || gameid === undefined) {
-	window.location.href = "https://localhost/";
+	window.location.reload();
 }
 
-gameSocket = new WebSocket(
+window.gameSocket = new WebSocket(
 	'wss://'
 	+ window.location.host
 	+ '/ws/'
@@ -56,7 +55,7 @@ gameSocket = new WebSocket(
 
 gameSocket.onerror = function(e) {
 	console.log("salut");
-	window.location.href = "https://localhost/pong/pong_menu.html";
+	window.location.reload();
 }
 
 const loadingElement = document.getElementById('loading_txt');
@@ -370,6 +369,7 @@ gameSocket.onmessage = function(e) {
 		const errorElement = document.getElementById('error');
 		errorElement.textContent = "A user left the game";
 		document.getElementById("myModal").style.display = "block";
+		gameSocket.close();
 	} else if (game_data.action == 'score') {
 		if (game_data.scorep1 != undefined && game_data.scorep2 != undefined) {
 			// const scoreL = document.getElementById("scoreHome");

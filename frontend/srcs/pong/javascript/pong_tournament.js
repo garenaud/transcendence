@@ -117,7 +117,7 @@ function makeid(length) {
     return result;
 }
 
-const loadingElement = document.getElementById('loading_txt');
+const loadingElement = document.getElementById('loading_txttournament');
 loadingElement.innerHTML = "[WAITING FOR OPPONENT]<br>Tournament ID : " + tournament_id + '<br>' + 'Currently connected : ' + connected + '/4';
 
 //console.log(privategame);
