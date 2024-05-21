@@ -5,36 +5,55 @@ import { sendFriendRequest, acceptFriendRequest, denyFriendRequest, getFriendReq
 
 let gameList = [];
 
-export function  showUserList() {
+export function showUserList() {
     const users = appState.users;
     const modalBody = document.querySelector('#addFriend .modal-body');
     const table = document.createElement('table');
     table.className = 'userlist-table';
-    users.forEach(user => {
-        const userProfile = appState.usersProfile.find(profile => profile.user === user.id);
-        const row = document.createElement('tr');
-        const nameCell = document.createElement('td');
-        const idCell = document.createElement('td');
-        const emailCell = document.createElement('td');
-        const buttonCell = document.createElement('td');
-        const photoCell = document.createElement('td');
-        const photoComponent = createPhotoComponent(getProfilePicture(user.id) ? userProfile.profile_picture : './Design/User/Max-R_Headshot.jpg', 100);
-        const buttonComponent = createButtonComponent('+', 'addFriendButton', '+', (event) => {
-        sendFriendRequest(appState.userId, user.username);});
-        idCell.textContent = user.id;
-        nameCell.textContent = user.username;
-        emailCell.textContent = user.email;
-        photoCell.appendChild(photoComponent);
-        buttonCell.appendChild(buttonComponent);
-        row.appendChild(photoCell);
-        row.appendChild(idCell);
-        row.appendChild(nameCell);
-        row.appendChild(emailCell);
-        row.appendChild(buttonCell);
-        table.appendChild(row);
+
+    getFriendRequestList().then(requests => {
+        users.forEach(user => {
+            // Ne pas afficher l'utilisateur courant
+            if (user.id === appState.userId) {
+                return;
+            }
+
+            const userProfile = appState.usersProfile.find(profile => profile.user === user.id);
+            const row = document.createElement('tr');
+            const nameCell = document.createElement('td');
+            const idCell = document.createElement('td');
+            const emailCell = document.createElement('td');
+            const buttonCell = document.createElement('td');
+            const photoCell = document.createElement('td');
+            const photoComponent = createPhotoComponent(getProfilePicture(user.id) ? userProfile.profile_picture : './Design/User/Max-R_Headshot.jpg', 100);
+
+            // Vérifier si une demande d'ami est en attente
+            const pendingRequest = requests.find(request => request.from_user === appState.userId && request.to_user === user.id);
+            let buttonComponent;
+            if (pendingRequest) {
+                buttonComponent = createButtonComponent('En attente', 'pendingFriendRequest', 'En attente');
+            } else {
+                buttonComponent = createButtonComponent('+', 'addFriendButton', '+', (event) => {
+                    sendFriendRequest(appState.userId, user.username);
+                });
+            }
+
+            idCell.textContent = user.id;
+            nameCell.textContent = user.username;
+            emailCell.textContent = user.email;
+            photoCell.appendChild(photoComponent);
+            buttonCell.appendChild(buttonComponent);
+            row.appendChild(photoCell);
+            row.appendChild(idCell);
+            row.appendChild(nameCell);
+            row.appendChild(emailCell);
+            row.appendChild(buttonCell);
+            table.appendChild(row);
+        });
+
+        modalBody.appendChild(table);
     });
-    modalBody.appendChild(table);
-  }
+}
 
   async function updateGameList() {
     const newGameList = await loadGameList();
