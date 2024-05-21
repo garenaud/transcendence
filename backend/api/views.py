@@ -20,7 +20,9 @@ from itertools import chain
 @api_view(['GET'])
 def get_user_list(request):
 	print('##########')
-	print(request.user)
+	# A RAJOUTER AU MOMENT DU RENDU
+	# if request.user.is_anonymous == True:
+	# 	return HttpResponse('Forbidden', status=403)
 	if (request.method == 'GET'):
 		users = User.objects.all()
 		serializer = UserSerializer(users, many=True)
