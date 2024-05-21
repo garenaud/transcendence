@@ -1,12 +1,31 @@
-import { changeView, appState, resetAppState } from './stateManager.js';
-import { getUser, setUserProfilePicture, setUsername } from './userManager.js';
+import { changeView, appState} from './stateManager.js';
+import { getUser, setProfilePicture, setUsername, logoutUser, getProfilePicture } from './userManager.js';
 import { createButtonComponent, createPhotoComponent } from './globalComponent.js';
 import { showGameList, showUserList } from './listComponent.js';
+import { showFriendsList, updateFriendRequestsNotification } from './friendsList.js';
 
 function escapeHTML(unsafeText) {
   let div = document.createElement('div');
   div.textContent = unsafeText;
   return div.innerHTML;
+}
+
+
+function encodeImage(file) {
+  return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = function(event) {
+          resolve(event.target.result);
+      };
+      reader.onerror = reject;
+
+      // Si le fichier n'est pas un Blob, le convertir en Blob
+      if (!(file instanceof Blob)) {
+          file = new Blob([file]);
+      }
+
+      reader.readAsDataURL(file);
+  });
 }
 
 export function renderNavbar(user){
@@ -19,15 +38,18 @@ export function renderNavbar(user){
 function displayUserInfo(user) {
       //let currentUser = user[0];
       const userInfoDiv = document.getElementById('nav-user');
+      user.profilePicture = getProfilePicture(user.id);
+      console.log('(((((((((((((((((((((dans displayUserInfo user.profilePicture:', user.profilePicture);
+      console.log('(((((((((((((((((((((dans displayUserInfo user:', user)
       if (userInfoDiv) {
           userInfoDiv.innerHTML = `
           <div class="nav-user-info d-md-block">
-          <h4>${user.username}</h4>
-          <h6>${user.pts} pts</h6>
+          <h4>${user.user.username}</h4>
+          <h6>${user.user.id}</h6>
           </div>
           <div id="user-menu-button" class="nav-user-img d-md-block">
                   <div id="user-menu-button" class="img_cont_nav">
-                  <img src="${user.profilePicture}" alt="User Image">
+                  <img src="${user.userProfile.profile_picture}" alt="User Image">
                   </div>
           </div>
           `;
@@ -35,6 +57,7 @@ function displayUserInfo(user) {
   }
   
   function renderUserMenu(user) {
+    console.log('??????????????????User dans rendrUserMenu:', user);
     const userMenuHTML = `
         <div id="user-menu" class="user-menu-hidden">
 
@@ -44,12 +67,19 @@ function displayUserInfo(user) {
                 <button type="button" class="edit edit-menu-button btn btn-primary" aria-label="Edit" data-bs-toggle="modal" data-bs-target="#editPicture"> <span aria-hidden="true">&#9998;</span> </button>
             </div>
             <div class="user-menu-title">
-                <h3>${user.username}</h3>
-                <h4>${user.pts} pts</h4>
+                <h3>${user.user.username}</h3>
+                <h4>${user.userProfile.game_won} matchs gagnés</h4>
+                <h4>${user.userProfile.game_lost} matchs perdus</h4>
+                <h4>${user.userProfile.winrate} %</h4>
             </div>
             <div class="user-menu-info">
             <button type="button" class="user-menu-li" aria-label="Edit" data-bs-toggle="modal" data-bs-target="#addFriend"> 
                 <i class="fas fa-user-plus"></i><h6 data-lang-key='addFriend'>ajouter un ami</h6>
+            </button>
+            <button type="button" class="user-menu-li" aria-label="Edit" data-bs-toggle="modal" data-bs-target="#friendList">
+              <i class="fas fa-user-plus"></i>
+              <h6 data-lang-key='FriendList'>Liste d'ami</h6>
+              <div class="notification-bubble" style="display: none;"></div>
             </button>
             <button type="button" class="user-menu-li" aria-label="Edit" data-bs-toggle="modal" data-bs-target="#editPicture">
                     <i class="fas fa-cog"></i><h6 data-lang-key='setProfile'>Editer le profil</h6>
@@ -62,7 +92,7 @@ function displayUserInfo(user) {
 
         <!-- Modal set user -->
         <div class="modal fade" id="editPicture" tabindex="-1" role="dialog" aria-labelledby="editPictureLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
+            <div class="modal-dialog modal-fullscreen" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="editPictureLabel" data-lang-key='editPicture'>changer l'image de profil</h5>
@@ -74,11 +104,8 @@ function displayUserInfo(user) {
                       <form>
                       <label for="newProfilePicture"  class="text-white" data-lang-key='newPicture'>Nouvelle image</label>
                         <div class="input-group">
-                          <input type="text" class="form-control" placeholder="URL of your new image" id="newProfilePicture" aria-describedby="basic-addon1">
-                          <div class="input-group-append">
-                            <button class="btn btn-success" type="button" data-lang-key='previewPicture'>preview</button>
-                          </div>
-                          <img id="preview" style="display: none;" />
+                          <input class="form-control" type="file" id="newProfilePicture">
+                          <img id="preview" style="display: block;" />
                         </div>
                           <div class="form-group">
                           <label for="formGroupExampleInput"  class="text-white" data-lang-key='newUsername'>Nouveau username</label>
@@ -95,11 +122,32 @@ function displayUserInfo(user) {
         </div>
 
         <!-- Modal add a friend -->
-        <div class="modal fade modal-dialog modal-lg" id="addFriend" tabindex="-1" role="dialog" aria-labelledby="addFriendLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
+        <div class="modal fade modal-fullscreen modal-dialog modal-lg" id="addFriend" tabindex="-1" role="dialog" aria-labelledby="addFriendLabel" aria-hidden="true">
+            <div class="modal-dialog modal-fullscreen" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="editPictureLabel" data-lang-key='addFriend'>Add a friend</h5>
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body text-white">
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-lang-key='close'>Close</button>
+                        <button id="userSaveChange" type="button" class="btn btn-primary"  data-bs-dismiss="modal" data-lang-key='saveChanges'>Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Modal show friendlist -->
+        <div class="modal modal-fullscreen fade modal-dialog modal-lg" id="friendList" tabindex="-1" role="dialog" aria-labelledby="friendListLabel" aria-hidden="true">
+            <div class="modal-dialog modal-fullscreen" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editPictureLabel" data-lang-key='FriendList'>FriendList</h5>
                         <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -151,6 +199,7 @@ function displayUserInfo(user) {
   renderUserMenu(user);
   setupButtonListener();
   showUserList();
+  showFriendsList();
 }
 
 function    setupButtonListener() {
@@ -163,6 +212,7 @@ function    setupButtonListener() {
   });
 
   document.getElementById('user-menu-button').addEventListener('click', function() {
+    updateFriendRequestsNotification();
     const userMenu = document.getElementById('user-menu');
     if (userMenu.style.display === 'block') {
       userMenu.style.display = 'none';
@@ -171,50 +221,46 @@ function    setupButtonListener() {
     }
   });
 
-  document.getElementById('logoutBtn').addEventListener('click', function() {
-    fetch('auth/logout/' + appState.userId, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    })
-    .then(response => {
-        if (response.ok) {
-            changeView('login');
-            // Supprimez les informations de l'utilisateur de appState
-            resetAppState();
-            // Supprimez les informations de l'utilisateur du sessionStorage
-            sessionStorage.clear();
-            window.location.reload();
-        } else {
-            console.error('Logout failed');
-        }
-    });
-});
+  document.getElementById('logoutBtn').addEventListener('click', logoutUser);
 
   document.querySelector('.close-menu-button').addEventListener('click', function() {
     document.getElementById('user-menu').style.display = 'none';
   });
 
-  document.querySelector('#newProfilePicture').addEventListener('input', function() {
-    var url = document.querySelector('#newProfilePicture').value;
-    var preview = document.querySelector('#preview');
-    preview.src = url;
-    preview.style.display = 'block';
+  document.querySelector('input[type=file]').addEventListener('change', function(event) {
+    const file = event.target.files[0];
+    encodeImage(file).then(function(dataUrl) {
+        document.querySelector('img').src = dataUrl;
+    });
   });
+
+  document.querySelector('#newProfilePicture').addEventListener('change', function() {
+    var file = this.files[0];
+    if (file) {
+        setProfilePicture(file);
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            var preview = document.querySelector('#preview');
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    }
+});
 
   function updateUserInfoInNavbar(user) {
     const userInfoDiv = document.getElementById('nav-user');
     if (userInfoDiv) {
         let escapedUsername = escapeHTML(user.username);
+        console.log('***********************Image profile =', user.userProfile.profile_picture)
         userInfoDiv.innerHTML = `
         <div class="nav-user-info">
-        <h4>${user.username}</h4>
-        <h6>${user.pts} pts</h6>
+        <h4>${user.user.username}</h4>
+        <h6>${user.user.pts} pts</h6>
         </div>
         <div id="user-menu-button" class="nav-user-img">
                 <div id="user-menu-button-inner" class="img_cont_nav">
-                <img src="${user.profilePicture}" alt="User Image">
+                <img src="${user.userProfile.profile_picture}" alt="User Image">
                 </div>
         </div>
         `;
@@ -230,42 +276,26 @@ function    setupButtonListener() {
     }
 }
 
-  document.querySelector('#userSaveChange').addEventListener('click', function() {
-    console.log('Click on save changes')
-    const newProfilePicture = document.querySelector('#newProfilePicture').value;
-    const newUsername = document.querySelector('#newUsername').value;
-    console.log('newProfilePicture:', newProfilePicture);
-    if (newProfilePicture) {
-      setUserProfilePicture(newProfilePicture);
-      const displayedProfilePicture = document.querySelector('.user-menu-img img');
-      displayedProfilePicture.src = newProfilePicture;
-      //const navbarProfilePicture = document.querySelector('navbar-selector img'); 
-      updateUserInfoInNavbar(appState.user);
-    }
-    if (newUsername) {
-      let escapedUsername = escapeHTML(newUsername);
-      setUsername(escapedUsername);
-      const displayedUsername = document.querySelector('.user-menu-title');
-      displayedUsername.textContent = escapedUsername;
-      updateUserInfoInNavbar(appState.user);
-    }
-  });
+document.querySelector('#userSaveChange').addEventListener('click', function() {
+  console.log('Click on save changes')
+  const newProfilePictureFile = document.querySelector('#newProfilePicture').files[0];
+  const newUsername = document.querySelector('#newUsername').value;
+  if (newProfilePictureFile) {
+    setProfilePicture(newProfilePictureFile);
+    const displayedProfilePicture = document.querySelector('.user-menu-img img');
+    displayedProfilePicture.src = URL.createObjectURL(newProfilePictureFile);
+    updateUserInfoInNavbar(appState);
+  }
+  if (newUsername) {
+    let escapedUsername = escapeHTML(newUsername);
+    setUsername(escapedUsername);
+    const displayedUsername = document.querySelector('.user-menu-title');
+    displayedUsername.textContent = escapedUsername;
+    updateUserInfoInNavbar(appState);
+  }
+});
 }
 
-
-
-/* export function createButtonComponent(text, buttonId, dataLangKey, onClickFunction) {
-  const glowingBtnHTML = `
-    <button id='${buttonId}' class='glowing-btn h-100'><span class='glowing-txt' data-lang-key='${dataLangKey}'>${text}</span></button>
-  `;
-  const div = document.createElement('div');
-  div.className = 'd-flex justify-content-center align-items-center';
-  div.innerHTML = glowingBtnHTML;
-  const button = div.querySelector('button');
-  button.addEventListener('click', function(event) {
-    if (onClickFunction) {
-      onClickFunction(event);
-    }
-  });
-  return div;
-} */
+window.onload = function() {
+  updateFriendRequestsNotification();
+};

@@ -50,5 +50,7 @@
     "createTourn": "Turnier erstellen",
     "joinTourn": "an Turnier teilnehmen",
     "wonTourn": "SIE HABEN DAS TURNIER GEWONNEN, GLÜCKWUNSCH",
-    "confirmLogout": "Wenn Sie zu dieser Seite zurückkehren, werden Sie abgemeldet. Sind Sie sicher, dass Sie fortfahren möchten?"
+    "confirmLogout": "Wenn Sie zu dieser Seite zurückkehren, werden Sie abgemeldet. Sind Sie sicher, dass Sie fortfahren möchten?",
+    "error-404": "404 - Seite nicht gefunden",
+    "waitConfirmFriend": "en attente de la confirmation - in deutsch"
 }

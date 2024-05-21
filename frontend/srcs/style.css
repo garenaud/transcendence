@@ -2245,3 +2245,17 @@ div.modal-footer, div.modal-body, div.modal-header{
     bottom: 400px; /* Ajustez les valeurs en fonction de votre positionnement souhaité */
     right: 160px; /* Ajustez les valeurs en fonction de votre positionnement souhaité */
 }
+
+.notification-bubble {
+  position: relative;
+  top: 0;
+  right: 0;
+  background-color: red;
+  color: white;
+  border-radius: 100%; 
+  padding: 2px 8px; 
+  text-align: center; 
+  font-size: 0.65em;
+  border: 1px solid #f5f6fa;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}

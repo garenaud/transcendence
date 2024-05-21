@@ -1,39 +1,62 @@
 import { createButtonComponent, createToastComponent, renderDiv, createPhotoComponent } from "./globalComponent.js";
-import { loadGameList, getUserFromServer } from "./userManager.js";
+import { loadGameList, getUserFromServer, getProfilePicture } from "./userManager.js";
 import { appState } from "./stateManager.js";
+import { sendFriendRequest, acceptFriendRequest, denyFriendRequest, getFriendRequestList } from "./friendsList.js";
 
 let gameList = [];
 
-export function  showUserList() {
+export function showUserList() {
     const users = appState.users;
     const modalBody = document.querySelector('#addFriend .modal-body');
     const table = document.createElement('table');
     table.className = 'userlist-table';
-    users.forEach(user => {
-      const row = document.createElement('tr');
-      const nameCell = document.createElement('td');
-      const idCell = document.createElement('td');
-      const emailCell = document.createElement('td');
-      const buttonCell = document.createElement('td');
-      const photoCell = document.createElement('td');
-      const photoComponent = createPhotoComponent('./Design/User/Max-R_Headshot.jpg', 100);
-      const buttonComponent = createButtonComponent('+', 'addFriendButton', '+', (event) => {
-        console.log(`Button clicked for user ${user.id}`);});
-      idCell.textContent = user.id;
-      nameCell.textContent = user.username;
-      emailCell.textContent = user.email;
-      photoCell.appendChild(photoComponent);
-      buttonCell.appendChild(buttonComponent);
-      row.appendChild(photoCell);
-      row.appendChild(idCell);
-      row.appendChild(nameCell);
-      row.appendChild(emailCell);
-      row.appendChild(buttonCell);
-      table.appendChild(row);
-  
+
+    getFriendRequestList().then(requests => {
+        users.forEach(user => {
+            // Ne pas afficher l'utilisateur courant
+            if (user.id === appState.userId) {
+                return;
+            }
+
+            const userProfile = appState.usersProfile.find(profile => profile.user === user.id);
+            const row = document.createElement('tr');
+            const nameCell = document.createElement('td');
+            const idCell = document.createElement('td');
+            const emailCell = document.createElement('td');
+            const buttonCell = document.createElement('td');
+            const photoCell = document.createElement('td');
+            const photoComponent = createPhotoComponent(getProfilePicture(user.id) ? userProfile.profile_picture : './Design/User/Max-R_Headshot.jpg', 100);
+
+            // Vérifier si une demande d'ami est en attente
+            const pendingRequest = requests.find(request => request.from_user === appState.userId && request.to_user === user.id);
+            let buttonComponent;
+            if (pendingRequest) {
+                const pElement = document.createElement('p');
+                pElement.textContent = 'En attente de la confirmation';
+                pElement.setAttribute('data-lang-key', 'waitConfirmFriend');
+                buttonComponent = pElement;
+            } else {
+                buttonComponent = createButtonComponent('+', 'addFriendButton', '+', (event) => {
+                    sendFriendRequest(appState.userId, user.username);
+                });
+            }
+
+            idCell.textContent = user.id;
+            nameCell.textContent = user.username;
+            emailCell.textContent = user.email;
+            photoCell.appendChild(photoComponent);
+            buttonCell.appendChild(buttonComponent);
+            row.appendChild(photoCell);
+            row.appendChild(idCell);
+            row.appendChild(nameCell);
+            row.appendChild(emailCell);
+            row.appendChild(buttonCell);
+            table.appendChild(row);
+        });
+
+        modalBody.appendChild(table);
     });
-    modalBody.appendChild(table);
-  }
+}
 
   async function updateGameList() {
     const newGameList = await loadGameList();
@@ -45,7 +68,11 @@ export function  showUserList() {
 }
 
   export async function showGameList() {
-    const games = await loadGameList();
+    loadGameList();
+    let games = appState.games;
+    if (!Array.isArray(games)) {
+        games = [];
+    }
     const table = document.createElement('table');
     table.className = 'game-list-table';
   
@@ -67,7 +94,6 @@ export function  showUserList() {
             p2Cell.appendChild(p2PhotoComponent);
             p2Cell.appendChild(document.createTextNode(`Score: ${game.p2_score}`));
   
-            // Create a span for the game status
             const statusSpan = document.createElement('span');
             statusSpan.className = `status-game bg-${game.finished ? 'success' : 'danger'}`;
             statusSpan.textContent = game.finished ? 'Finished' : 'In Progress';
@@ -90,6 +116,42 @@ export function  showUserList() {
             table.appendChild(row);
         } catch (error) {
             console.error('Error fetching user:', error);
+        }
+    }
+  
+    return table.outerHTML;
+}
+
+export async function showRanking() {
+    loadRanking();
+    let players = appState.players;
+    if (!Array.isArray(players)) {
+        players = [];
+    }
+    players.sort((a, b) => b.userProfile.winrate - a.userProfile.winrate)
+    const table = document.createElement('table');
+    table.className = 'ranking-table';
+  
+    for (const player of players) {
+        try {
+            const row = document.createElement('tr');
+            const nameCell = document.createElement('td');
+            const scoreCell = document.createElement('td');
+  
+            const user = await getUserFromServer(player.id);
+  
+            const photoComponent = createPhotoComponent('./Design/User/Max-R_Headshot.jpg', user.username);
+  
+            nameCell.appendChild(photoComponent);
+            nameCell.appendChild(document.createTextNode(user.username));
+            scoreCell.appendChild(document.createTextNode(`Score: ${player.score}`));
+  
+            row.appendChild(nameCell);
+            row.appendChild(scoreCell);
+  
+            table.appendChild(row);
+        } catch (error) {
+            console.error('Failed to create row for player', player, error);
         }
     }
   

@@ -5,9 +5,6 @@ use tungstenite::Connector::NativeTls;
 use tungstenite::Message;
 use std::time::Duration;
 
-// use ncurses::*;
-// use std::thread::sleep;
-
 use crate::pong;
 use crate::user::User;
 
@@ -76,6 +73,8 @@ pub fn join_tournament(user: User) {
 		if tournament_id.len() <= 0 {
 			eprintln!("{}", format!("Tournament ID can't be empty").red());
 			continue;
+		} else if tournament_id.as_str() == "q" {
+			return;
 		}
 
 		let csrf_token = match user.get_csrf() {
@@ -90,8 +89,9 @@ pub fn join_tournament(user: User) {
 			.header("User-Agent", "cli_rust")
 			.header("Accept", "application/json")
 			.header("X-CSRFToken", csrf_token)
-			// .body((r#"{"tournamentid":"{email}","password":"{password}"}"#).replace("{email}", &login).replace("{password}", &password))
+			.header("Referer", "https://{server}/".replace("{server}", &user.get_server()))
 			.timeout(Duration::from_secs(3));
+
 		let res = req.build();
 		let res = user.get_client().execute(res.expect("ERROR WHILE BUILDING THE REQUEST"));
 		match res {
@@ -133,7 +133,7 @@ pub fn join_tournament(user: User) {
 			return;
 		}
 	};
-
+	println!("{}", format!("Connected to the tournament, waiting for more player...").green());
 	handle_tournament(user.clone(), &mut socket, player_nb);
 }
 
@@ -237,6 +237,10 @@ fn handle_tournament(user: User, socket: &mut tungstenite::WebSocket<tungstenite
 									game_id = json["gameid"].as_i32().unwrap();
 									continue;
 								},
+								"connect" => {
+									print!("\rThere are actually {} player(s) in the tournament", json["connected"]);
+									_ = std::io::stdout().flush();
+								},
 								_ => {}
 							},
 							None => {}
@@ -252,6 +256,7 @@ fn handle_tournament(user: User, socket: &mut tungstenite::WebSocket<tungstenite
 			}
 		};
 	}
+	println!("");
 
 
 
@@ -297,9 +302,6 @@ fn handle_tournament(user: User, socket: &mut tungstenite::WebSocket<tungstenite
 									}
 								}
 							},
-							_ => {
-								eprintln!("{:#?}", json);
-							}
 							_ => {}
 						};
 					},
@@ -308,7 +310,7 @@ fn handle_tournament(user: User, socket: &mut tungstenite::WebSocket<tungstenite
 			},
 			Err(err) => {
 				eprintln!("{}", format!("{:#?}", err).red());
-				return;
+				return;	
 			}
 		}
 	}

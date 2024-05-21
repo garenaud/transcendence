@@ -1,4 +1,4 @@
-import { getUser, loadUser, getCurrentUser, loadGameList } from './userManager.js';
+import { getUser, loadUser, getCurrentUser, loadGameList, logoutUser } from './userManager.js';
 import { renderNavbar } from './navbar.js';
 import { renderHero } from './hero.js';
 import { renderPong } from './pongComponent.js';
@@ -19,51 +19,45 @@ export let appState = {
     currentView: 'login',
     user: null,
     userId: null,
+    //liste des users (username, nom, email, etc.)
     users: [],
+    //liste userProfile (avec stats, photo de profil, etc.) de tous les users
+    usersProfile: [],
+    //userProfile (avec stats, photo de profil, etc.) du user
+    userProfile: null,
     urlHistory: ['login'],
     renderedComponents: {},
     language: 'fr',
-    newViewAdded: false
+    newViewAdded: false,
+    isLogged: false
 };
-
-export function resetAppState() {
-    appState = {
-        currentView: 'login',
-        user: null,
-        userId: null,
-        users: [],
-        urlHistory: ['login'],
-        renderedComponents: {},
-        language: 'fr',
-        newViewAdded: false
-    };
-}
 
 // Fonction pour changer la vue actuelle de l'application
 export function changeView(newView) {
     if (appState.currentView !== newView) {
         appState.currentView = newView;
-        // Supprimez les composants de la vue précédente de appState.renderedComponents
+        /* // Supprimez les composants de la vue précédente de appState.renderedComponents
         for (let component in appState.renderedComponents) {
             if (component.startsWith(appState.currentView)) {
                 delete appState.renderedComponents[component];
             }
         }
-        sessionStorage.setItem('renderedComponents', JSON.stringify(appState.renderedComponents));
-    }
+        sessionStorage.setItem('renderedComponents', JSON.stringify(appState.renderedComponents));*/
+        }
     appState.newViewAdded = true;
     location.hash = newView;
+    sessionStorage.setItem('appState', JSON.stringify(appState));
+    loadUser();
+    console.log("------------------------------------------------> appState = ", appState);
 }
 
 // Écouteur d'événement pour changer la vue lorsque l'URL change (rajoute le # à l'URL lorsqu'on change de vue)
 window.addEventListener("hashchange", function () {
     const newView = location.hash.substring(1);
     if (appState.currentView !== newView) {
-        appState.currentView = newView;
+		appState.currentView = newView;
     }
-    const currentUser = getCurrentUser();
-    console.log("currentUser = ", currentUser);
-    if (!currentUser && newView !== 'login') {
+    if (!appState.user && newView !== 'login') {
         window.location.hash = 'login';
         return;
     }
@@ -74,17 +68,14 @@ window.addEventListener("hashchange", function () {
 window.addEventListener("popstate", function () {
     const newView = location.hash.substring(1);
     const newIndex = appState.urlHistory.lastIndexOf(newView);
-    const currentUser = getCurrentUser();
-    console.log("currentUser popstate = ", currentUser);
-    if (!currentUser && newView !== 'login') {
+    if (!appState.user && newView !== 'login') {
         window.location.hash = 'login';
         return;
     }
-
-    if (newView === 'login' && appState.urlHistory.length === 2) {
+    if (newView === 'login' && appState.isLogged === true) {
         const confirmLogout = window.confirm('Si vous revenez à cette page, vous serez déconnecté. Êtes-vous sûr de vouloir continuer ?');
         if (confirmLogout) {
-            console.log('bye bye mon ami tu as choisi de nous quitter!!!!');
+            logoutUser();
         } else {
             history.pushState(null, null, '#' + appState.urlHistory[appState.urlHistory.length - 1]);
         }
@@ -105,7 +96,6 @@ window.addEventListener("popstate", function () {
         appState.urlHistory.pop();
         currentIndex--;
     }
-
     console.log("!!!!!!!!!!!!!!!!!!!!! urlHistory = ", appState.urlHistory);
 });
 
@@ -117,6 +107,10 @@ window.addEventListener("pushstate", function () {
             appState.urlHistory.push(newView);
         }
     }
+});
+
+window.addEventListener('beforeunload', () => {
+    sessionStorage.setItem('appState', JSON.stringify(appState));
 });
 
 export function getCurrentView() {
@@ -131,19 +125,20 @@ export async function renderApp() {
 }
 
 function initializeAppState() {
+    const storedAppState = sessionStorage.getItem('appState');
+    if (storedAppState) {
+        appState = JSON.parse(storedAppState);
+    }
     if (!location.hash || appState.userId == 0) {
         location.hash = '#login';
     }
-    if (appState) {
-        appState.renderedComponents = JSON.parse(sessionStorage.getItem('renderedComponents')) || {};
-        loadLanguage(appState.language);
-    } else {
-        const view = window.location.pathname.substring(1);
-        appState.currentView = ['login', 'hero', 'game', 'chat'].includes(view) ? view : 'login';
-        appState.language = 'fr';
-    }
+    appState.renderedComponents = JSON.parse(sessionStorage.getItem('renderedComponents')) || {};
+    loadLanguage(appState.language);
+    const view = window.location.pathname.substring(1);
+    appState.currentView = ['login', 'hero', 'game', 'chat'].includes(view) ? view : 'login';
     appState.currentView = location.hash.substring(1) || 'login';
     document.body.innerHTML = '';
+    sessionStorage.setItem('appState', JSON.stringify(appState));
 }
 
 function validateCurrentView() {
@@ -161,6 +156,7 @@ function validateCurrentView() {
 async function renderCurrentView() {
     switch (appState.currentView) {
         case 'login':
+            appState.urlHistory = ['login'];
             await renderLoginView();
             break;
         default:
@@ -182,9 +178,8 @@ async function renderLoginView() {
 
 async function renderDefaultView() {
     if (!appState.user) {
-        console.log('loading user, appState = ', appState.user);
-        await loadUser();
-        await loadGameList();
+        appState.currentView = 'login';
+        await renderLoginView();
     }
     switch (appState.currentView) {
         case 'hero':
@@ -201,19 +196,17 @@ async function renderHeroView() {
         console.log('appState = ', appState.user);
         await LanguageBtn();
         await renderHero();
-        renderNavbar(appState.user);
+        renderNavbar(appState);
         appState.renderedComponents.hero = true;
         appState.renderedComponents.navbar = true;
     }
 }
 
 async function renderGameView() {
-    console.log(document.querySelector('.navbar-expand-lg'));
-    console.log("appstate dans game: ", appState);
     if (!appState.renderedComponents.game) {
         await LanguageBtn();
         if (!document.querySelector('.navbar')) {
-            renderNavbar(appState.user);
+            renderNavbar(appState);
         }
         const game = await renderPong();
         const game2 = await renderRun();
