@@ -252,7 +252,7 @@ fn handle_tournament(user: User, socket: &mut tungstenite::WebSocket<tungstenite
 			Err(err) => {
 				eprintln!("CRASHED HERE");
 				eprintln!("{}", format!("{:#?}", err).red());
-				break;
+				return;
 			}
 		};
 	}

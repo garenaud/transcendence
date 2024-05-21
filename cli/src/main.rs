@@ -14,7 +14,7 @@ use colored::*;
  */
 fn main() {
 
-	println!("{}", format!("Welcome to T_BOOL TRANSCENDENCE !").blue());
+	println!("{}", format!("Welcome to T3_BOOL TRANSCENDENCE !").blue());
 	
 	let mut max_try = 3;
 	// Ask for the server and try to ping it
