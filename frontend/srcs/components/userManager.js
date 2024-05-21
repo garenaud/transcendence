@@ -191,34 +191,33 @@ function getUser() {
 
 export { getUser, setUsername, setUserPoints, setUserProfilePicture };
 
-export function loadUser() {
-    return fetch('/api/userlist')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(users => {
-            loadUserProfile();
-            appState.users = users;
-            appState.userId = Number(sessionStorage.getItem('userId'));
-            console.log('userId:', appState.userId);
-            appState.isLogged = true;
-            appState.user = users.find(user => user.id === appState.userId);
-            appState.userProfile = appState.usersProfile.find(usersProfile => appState.userId === appState.userId);
-            if (!appState.userProfile.profile_picture) {
-                appState.user.profilePicture = 'Design/User/Max-R_Headshot.jpg';
-            }
-            else {
-                getProfilePicture(appState.userId);
-            }
-            appState.user.pts = 100;
-            sessionStorage.setItem('user', JSON.stringify(appState.user));
-        })
-        .catch(error => {
-            console.error('Erreur lors du chargement des données utilisateur:', error);
-        });
+export async function loadUser() {
+    try {
+        const response = await fetch('/api/userlist');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const users = await response.json();
+        await loadUserProfile();
+        appState.users = users;
+        appState.userId = Number(sessionStorage.getItem('userId'));
+        console.log('userId:', appState.userId);
+        appState.isLogged = true;
+        appState.user = users.find(user => user.id === appState.userId);
+        console.log('appState usersProfile', appState.usersProfile);
+        appState.userProfile = appState.usersProfile.find(usersProfile => usersProfile.user === appState.userId);
+        console.log('***********^^^^^^^^^^^^^^$$$$ userprofile =', appState.userProfile, ' user id', appState.userId);
+/*         if (!appState.userProfile.profile_picture) {
+            appState.user.profilePicture = 'Design/User/Max-R_Headshot.jpg';
+        }
+        else {
+            getProfilePicture(appState.userId);
+        } */
+        appState.user.pts = 100;
+        sessionStorage.setItem('user', JSON.stringify(appState.user));
+    } catch (error) {
+        console.error('Erreur lors du chargement des données utilisateur:', error);
+    }
 }
 
 export function loadUserProfile() {
