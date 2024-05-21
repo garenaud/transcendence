@@ -182,10 +182,6 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             await asyncio.sleep(1 / 120)
 
     async def disconnect(self, close_code):
-        user1 = await sync_to_async(User.objects.get)(id=self.game.dbgame.p1_id)
-        user2 = await sync_to_async(User.objects.get)(id=self.game.dbgame.p2_id)
-        profile_p1 = await sync_to_async(userProfile.objects.get)(user=user1)
-        profile_p2 = await sync_to_async(userProfile.objects.get)(user=user2)
         self.channel_layer.group_discard(
             self.room_group_name, self.channel_name
         )
@@ -198,14 +194,22 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             self.task.cancel()
         except:
             print('ca arrive hein')
-        self.game.finished = True
-        self.game.dbgame.finished = True
-        await sync_to_async(self.saveGame)(profile_p1)
-        profile_p1.in_game = False
-        profile_p2.in_game = False
-        await sync_to_async(self.saveGame)(self.game.dbgame)
-        await sync_to_async(self.saveGame)(profile_p1)
-        await sync_to_async(self.saveGame)(profile_p2)
+        try:
+            user1 = await sync_to_async(User.objects.get)(id=self.game.dbgame.p1_id)
+            user2 = await sync_to_async(User.objects.get)(id=self.game.dbgame.p2_id)
+            profile_p1 = await sync_to_async(userProfile.objects.get)(user=user1)
+            profile_p2 = await sync_to_async(userProfile.objects.get)(user=user2)
+            self.game.finished = True
+            self.game.dbgame.finished = True
+            await sync_to_async(self.saveGame)(profile_p1)
+            profile_p1.in_game = False
+            profile_p2.in_game = False
+            await sync_to_async(self.saveGame)(self.game.dbgame)
+            await sync_to_async(self.saveGame)(profile_p1)
+            await sync_to_async(self.saveGame)(profile_p2)
+        except:
+            await sync_to_async(self.game.dbgame.delete)()
+            profile_p1.in_game = False
 
     async def receive(self, text_data):
         jsondata = json.loads(text_data)
