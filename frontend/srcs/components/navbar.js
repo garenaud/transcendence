@@ -49,7 +49,7 @@ function displayUserInfo(user) {
           </div>
           <div id="user-menu-button" class="nav-user-img d-md-block">
                   <div id="user-menu-button" class="img_cont_nav">
-                  <img src="${user.userProfile.profile_picture}" alt="User Image">
+                  <img id="profile-picture" alt="User Image">
                   </div>
           </div>
           `;

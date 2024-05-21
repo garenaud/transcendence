@@ -348,7 +348,8 @@ def get_picture(request, userid):
 			return HttpResponse(status=404)
 	else:
 		return JsonResponse({'message': 'Méthode non autorisée'}, status=405)
-	
+
+@csrf_exempt
 def post_picture(request, userid):
 	if request.method == 'POST':
 		profile = userProfile.objects.get(id=userid)
