@@ -103,3 +103,15 @@ fn connection(srv: String, login: String, password: String) -> Option<User> {
 	}
 	return Some(user);
 }
+
+pub fn logout(user: User) {
+	let req = user.get_client().get("https://{server}/auth/logout/{id}".replace("{server}", user.get_server().as_str()).replace("{id}", user.get_id().as_str()));
+	let req = req.build().expect("ERROR WHILE BUILDING THE REQUEST");
+	let res = user.get_client().execute(req);
+	match res {
+		Ok(_) => {},
+		Err(err) => {
+			eprintln!("{}", format!("{}", err).red());
+		}
+	}
+}

@@ -7,14 +7,15 @@ mod tournament;
 use std::io::Write;
 use std::error::Error;
 use colored::*;
+use signal_hook::{consts::{SIGHUP, SIGINT, SIGQUIT, SIGTERM}, iterator::Signals};
+
 
 /**
  * Ask for the server, ping it to ensure it's up, then login the user and display the menu
  * 
  */
 fn main() {
-
-	println!("{}", format!("Welcome to T3_BOOL TRANSCENDENCE !").blue());
+	title();
 	
 	let mut max_try = 3;
 	// Ask for the server and try to ping it
@@ -83,6 +84,9 @@ fn main() {
 		match login::login(srv.clone()) {
 			Some(user_logged) => {
 				user = user_logged;
+				
+				sig_handler(user.clone());
+
 				let _ = clearscreen::clear();
 				println!("{}", format!("Login successful !").green().bold());
 				break;
@@ -98,5 +102,32 @@ fn main() {
 			}
 		};
 	}
-	menu::menu(user);
+	menu::menu(user.clone());
+
+	login::logout(user);
+	std::process::exit(0);
+}
+
+fn sig_handler(user: user::User) {
+	let mut signals = Signals::new(&[SIGINT, SIGTERM, SIGQUIT, SIGHUP]).unwrap();
+	std::thread::spawn(move || {
+		for _ in signals.forever() {
+			eprintln!("{}", format!("Exiting...").red().bold());
+			
+			ncurses::endwin();
+			login::logout(user);
+
+			std::process::exit(1);
+		}
+	});
+}
+
+fn title() {
+	println!("{}", format!(r#"__        __   _                             _         _____ _____    ____   ___   ___  _     
+\ \      / /__| | ___ ___  _ __ ___   ___   | |_ ___  |_   _|___ /   | __ ) / _ \ / _ \| |    
+ \ \ /\ / / _ \ |/ __/ _ \| '_ ` _ \ / _ \  | __/ _ \   | |   |_ \   |  _ \| | | | | | | |    
+  \ V  V /  __/ | (_| (_) | | | | | |  __/  | || (_) |  | |  ___) |  | |_) | |_| | |_| | |___ 
+   \_/\_/ \___|_|\___\___/|_| |_| |_|\___|   \__\___/   |_| |____/___|____/ \___/ \___/|_____|
+                                                               |_____|
+"#).blue().bold());
 }
