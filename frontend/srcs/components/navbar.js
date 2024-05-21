@@ -38,7 +38,7 @@ export function renderNavbar(user){
 function displayUserInfo(user) {
       //let currentUser = user[0];
       const userInfoDiv = document.getElementById('nav-user');
-      user.profilePicture = getProfilePicture(user.id);
+    //   user.profilePicture = getProfilePicture(user.id);
       console.log('(((((((((((((((((((((dans displayUserInfo user.profilePicture:', user.profilePicture);
       console.log('(((((((((((((((((((((dans displayUserInfo user:', user)
       if (userInfoDiv) {
@@ -49,7 +49,7 @@ function displayUserInfo(user) {
           </div>
           <div id="user-menu-button" class="nav-user-img d-md-block">
                   <div id="user-menu-button" class="img_cont_nav">
-                  <img id="profile-picture" alt="User Image">
+                  <img id="profile-picture" alt="User Image1">
                   </div>
           </div>
           `;
@@ -62,7 +62,7 @@ function displayUserInfo(user) {
         <div id="user-menu" class="user-menu-hidden">
 
             <div class="user-menu-img">
-                <img src="${user.profilePicture}" alt="User Image">
+                <img id="profile-picture" alt="User Image2">
                 <button type="button" class="close close-menu-button" aria-label="Close"> <span aria-hidden="true">&times;</span> </button>
                 <button type="button" class="edit edit-menu-button btn btn-primary" aria-label="Edit" data-bs-toggle="modal" data-bs-target="#editPicture"> <span aria-hidden="true">&#9998;</span> </button>
             </div>
@@ -260,7 +260,7 @@ function    setupButtonListener() {
         </div>
         <div id="user-menu-button" class="nav-user-img">
                 <div id="user-menu-button-inner" class="img_cont_nav">
-                <img src="${user.userProfile.profile_picture}" alt="User Image">
+                <img id="profile-picture" alt="User Image">
                 </div>
         </div>
         `;
