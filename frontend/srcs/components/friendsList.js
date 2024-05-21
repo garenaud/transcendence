@@ -49,7 +49,7 @@ function addRow(user, userProfile, table, buttonText1, buttonText2, requestId) {
         }
     });
     const buttonComponent2 = buttonText2 ? createButtonComponent(buttonText2, 'denyFriendButton', buttonText2, (event) => {
-        denyFriendRequest(appState.userId, user.id);
+        denyFriendRequest(appState.userId, requestId);
     }) : null;
 
     nameCell.textContent = user.username;
@@ -110,11 +110,12 @@ export function sendFriendRequest(fromId, toUsername) {
 
   export function denyFriendRequest(userId, requestId) {
     const data = { username: userId, password: requestId };
-  
+    const csrfToken = getCookie('csrftoken');
     fetch('/api/deny_friend', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'X-CSRFToken': csrfToken,
       },
       body: JSON.stringify(data),
     })

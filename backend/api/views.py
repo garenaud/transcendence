@@ -295,14 +295,17 @@ def send_friend_request(request):
 def accept_friend_request(request):
 	try:
 		data = json.loads(request.body)
+		print(data)
 		userid = int(data['username'])
 		requestid = int(data['password'])
 		print('#####################')
+		print(userid)
+		print(requestid)
 		# verify that friend request is not from same user that sent it
 		friend_request = FriendRequest.objects.get(id=requestid)
 		print(friend_request.to_user)
 		print(friend_request.to_user.id)
-		if friend_request.to_user.id == userid:
+		if friend_request.from_user.id == userid:
 			from_user = userProfile.objects.get(user=friend_request.from_user)
 			to_user = userProfile.objects.get(user=friend_request.to_user)
 			from_user.friendlist.add(to_user.user)
@@ -319,6 +322,8 @@ def deny_friend_request(request):
 		data = json.loads(request.body)
 		userid = int(data['username'])
 		requestid = int(data['password'])
+		print(requestid)
+		print(userid)
 		friend_request = FriendRequest.objects.get(id=requestid)
 		if friend_request.to_user.id == userid:
 			friend_request.delete()
