@@ -29,9 +29,39 @@ export function showFriendsList() {
         const profileEmail = document.createElement('td');
         profileEmail.textContent = friend.email;
         profileRow.appendChild(profileEmail);
+        getFriendHistory(friend.id).then(data => {
+          console.log("getFriendHistory du id ", friend.id, " data = ", data); // Affiche l'historique des matchs de l'ami
+          console.log(data.message.game_1);
+          // Si game_1, game_2, ou game_3 ne sont pas null, créer une nouvelle ligne pour chaque jeu
+          ['game_1', 'game_2', 'game_3'].forEach(gameKey => {
+            const game = data.message[gameKey];
+            if (game !== "NULL") {
+              const gameRow = document.createElement('tr');
+              gameRow.style.display = 'none';
+        
+              const gameId = document.createElement('td');
+              gameId.textContent = game.id;
+              gameRow.appendChild(gameId);
+        
+              const gameDate = document.createElement('td');
+              gameDate.textContent = game.date;
+              gameRow.appendChild(gameDate);
+        
+              const gameScore = document.createElement('td');
+              gameScore.textContent = `Score: ${game.p1_score} - ${game.p2_score}`;
+              gameRow.appendChild(gameScore);
+        
+              // Ajouter la ligne de jeu à profileRow
+              profileRow.appendChild(gameRow);
+            }
+          });
+        
+          addRow(friend, friendProfile, table, 'Voir le profil', null, null, profileRow);
+          table.appendChild(profileRow); // Déplacer cette ligne ici
+        });
 
-        addRow(friend, friendProfile, table, 'Voir le profil', null, null, profileRow);
-        table.appendChild(profileRow); // Déplacer cette ligne ici
+/*         addRow(friend, friendProfile, table, 'Voir le profil', null, null, profileRow);
+        table.appendChild(profileRow); // Déplacer cette ligne ici */
     }
   });
 
@@ -101,6 +131,12 @@ function addRow(user, userProfile, table, buttonText1, buttonText2, requestId, p
       } else if (buttonText1 === 'Voir le profil') {
         // Afficher le profil si le texte du bouton est "Voir le profil"
         profileRow.style.display = '';
+        // Afficher les lignes de jeu
+        Array.from(profileRow.children).forEach(child => {
+          if (child.tagName === 'TR') {
+            child.style.display = '';
+          }
+        });
       } else {
         // Toggle l'affichage du profil
         profileRow.style.display = profileRow.style.display === 'none' ? '' : 'none';
@@ -195,6 +231,18 @@ export function sendFriendRequest(fromId, toUsername) {
     .then(response => response.json())
     .catch((error) => {
       console.error('Error:', error);
+    });
+}
+
+export function getFriendHistory(friendId){
+  return fetch(`api/get_friend/${friendId}`)
+    .then(response => response.json())
+    .then(data => {
+      console.log()
+      return data;
+    })
+    .catch(error => {
+      console.error('Erreur:', error);
     });
 }
 
