@@ -75,11 +75,8 @@ export function getProfilePicture(userId) {
 		return response.blob();
 	})
 	.then(imageBlob => {
-        console.log(imageBlob);
         const imageUrl = URL.createObjectURL(imageBlob);
         appState.user.profilePicture = imageUrl;
-
-        console.log('PROFILE PIC--------- ' + appState.user.profilePicture);
 
         // Mettre à jour l'attribut src de l'image
         document.getElementById('profile-picture').src = imageUrl;
@@ -208,12 +205,9 @@ export async function loadUser() {
         await loadUserProfile();
         appState.users = users;
         appState.userId = Number(sessionStorage.getItem('userId'));
-        console.log('userId:', appState.userId);
         appState.isLogged = true;
         appState.user = users.find(user => user.id === appState.userId);
-        console.log('appState usersProfile', appState.usersProfile);
         appState.userProfile = appState.usersProfile.find(usersProfile => usersProfile.user === appState.userId);
-        console.log('***********^^^^^^^^^^^^^^$$$$ userprofile =', appState.userProfile, ' user id', appState.userId);
 /*         if (!appState.userProfile.profile_picture) {
             appState.user.profilePicture = 'Design/User/Max-R_Headshot.jpg';
         }
@@ -237,7 +231,6 @@ export function loadUserProfile() {
     })
     .then(usersProfile => {
         appState.usersProfile = usersProfile;
-        console.log('Userprofile chargées avec succès:', usersProfile);
     })
     .catch(error => {
         console.error('Erreur lors du chargement des données utilisateur:', error);
@@ -265,6 +258,5 @@ export function loadGameList() {
 }
 
 window.onload = function() {
-    console.log('window.onload');
     loadUser();
 };

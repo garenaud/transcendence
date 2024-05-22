@@ -8,8 +8,6 @@ fetch('/api/√', {
 	credentials: 'same-origin' 
 })
 
-console.log(getCookie('csrftoken'));
-
 export function renderLogin() {
     const loginHTML = `
 	<div class="login-form">

@@ -47,8 +47,7 @@ export function changeView(newView) {
     appState.newViewAdded = true;
     location.hash = newView;
     sessionStorage.setItem('appState', JSON.stringify(appState));
-    loadUser();
-    console.log("------------------------------------------------> appState = ", appState);
+loadUser();
 }
 
 // Écouteur d'événement pour changer la vue lorsque l'URL change (rajoute le # à l'URL lorsqu'on change de vue)
@@ -96,7 +95,6 @@ window.addEventListener("popstate", function () {
         appState.urlHistory.pop();
         currentIndex--;
     }
-    console.log("!!!!!!!!!!!!!!!!!!!!! urlHistory = ", appState.urlHistory);
 });
 
 window.addEventListener("pushstate", function () {
@@ -193,7 +191,6 @@ async function renderDefaultView() {
 
 async function renderHeroView() {
     if (!document.querySelector('.navbar')) {
-        console.log('appState = ', appState.user);
         await LanguageBtn();
         await renderHero();
         renderNavbar(appState);

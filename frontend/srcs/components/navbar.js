@@ -39,8 +39,6 @@ function displayUserInfo(user) {
       //let currentUser = user[0];
       const userInfoDiv = document.getElementById('nav-user');
     //   user.profilePicture = getProfilePicture(user.id);
-      console.log('(((((((((((((((((((((dans displayUserInfo user.profilePicture:', user.profilePicture);
-      console.log('(((((((((((((((((((((dans displayUserInfo user:', user)
       if (userInfoDiv) {
           userInfoDiv.innerHTML = `
           <div class="nav-user-info d-md-block">
@@ -57,7 +55,6 @@ function displayUserInfo(user) {
   }
   
   function renderUserMenu(user) {
-    console.log('??????????????????User dans rendrUserMenu:', user);
     const userMenuHTML = `
         <div id="user-menu" class="user-menu-hidden">
 
@@ -193,7 +190,6 @@ function displayUserInfo(user) {
     document.body.insertAdjacentHTML('afterbegin', navbarHTML);
   }
   insertNavbarHTML();
-  console.log('users navbar:', appState.users);
   displayUserInfo(user);
   renderUserMenu(user);
   setupButtonListener();
@@ -251,7 +247,6 @@ function    setupButtonListener() {
     const userInfoDiv = document.getElementById('nav-user');
     if (userInfoDiv) {
         let escapedUsername = escapeHTML(user.username);
-        console.log('***********************Image profile =', user.userProfile.profile_picture)
         userInfoDiv.innerHTML = `
         <div class="nav-user-info">
         <h4>${user.user.username}</h4>
