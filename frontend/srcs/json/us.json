@@ -52,5 +52,6 @@
     "wonTourn": "YOU HAVE WON THE TOURNAMENT, CONGRATULATIONS",
     "confirmLogout": "If you return to this page, you will be logged out. Are you sure you want to continue?",
     "error-404": "404 - Page not found",
-    "waitConfirmFriend": "Waiting on the confirmation"
+    "waitConfirmFriend": "Waiting on the confirmation",
+    "alreadyFriend": "User already in your friends list."
 }

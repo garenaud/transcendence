@@ -206,7 +206,6 @@ function addEventListeners(element) {
 	//* LOCALPONG
 	localPongBtn.addEventListener('click', toggleVisibility);
 	localPongBtn.addEventListener('click', function() {
-		console.log(localPongBtn);
 		origPong.classList.add('d-none');
 		pongTournament.classList.add('d-none');
 		pongMulti.classList.add('d-none');
@@ -313,9 +312,15 @@ function changeDivContent(newContent) {
 export function unloadScript() {
 	// Désactiver les scripts chargés dynamiquement
 	document.querySelectorAll('script[type="module"][data-pong="dynamic"]').forEach(script => {
-		console.log(script);
 		script.setAttribute('data-disabled', 'true');
 		script.removeAttribute('type');
+		if (window.gameSocket) {
+			window.gameSocket.close();
+		}
+		// if (window.tournamentSocket) {
+		// 	console.log('JE CLOSE TOURNAMENT');
+		// 	window.tournamentSocket.close();
+		// }
 		script.remove(); // Supprimer le script du DOM
 	});
 }
@@ -330,7 +335,6 @@ function loadLocalPong() {
 	const scriptLocalPong = document.createElement('script');
 	scriptLocalPong.type = 'module';
 	scriptLocalPong.src = '../localpong/localpong.js?' + new Date().getTime(); // Ajoute un horodatage à l'URL
-	console.log('loadingLocal');
 	scriptLocalPong.setAttribute('data-pong', 'dynamic');  // Marqueur pour identifier les scripts chargés dynamiquement
 	document.body.appendChild(scriptLocalPong);
 }
@@ -355,8 +359,6 @@ export function loadTournamentPong() {
 	const scriptTournament = document.createElement('script');
 	scriptTournament.type = 'module';
 	scriptTournament.src = '../pong/javascript/pong_tournament.js?' + new Date().getTime(); // Ajoute un horodatage à l'URL
-	console.log('loadingTournament');
 	scriptTournament.setAttribute('data-pong', 'dynamic');  // Marqueur pour identifier les scripts chargés dynamiquement
 	document.body.appendChild(scriptTournament);
-	console.log(document.body.appendChild(scriptTournament));
 }
