@@ -1,6 +1,6 @@
 import { loadMultiPong } from "./pongComponent.js";
 
-const errorLink = document.getElementById('errorGameID');
+const errorLink = document.getElementById('errorGameInputPrivate');
 let gameid;
 let privategame = false;
 
