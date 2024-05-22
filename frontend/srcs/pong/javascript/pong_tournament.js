@@ -51,7 +51,8 @@ const startBtn = document.getElementById('startGameBtn');
 const nextBtn = document.getElementById('nextGameBtn');
 const myModal2 = document.getElementById('myModal2');
 const myModal3 = document.getElementById('myModal3');
-
+const scoreL = document.getElementById("scoreHomeTour");
+const scoreR = document.getElementById("scoreGuestTour");
 
 // rajouter condition pour faire apparaitre le bon bouton, 
 // si on a gagner le match, le bouton pour acceder a la finale apparait
@@ -70,9 +71,7 @@ function nextBtnFunction(){
 		onMessageHandler(event);
 	};
 	myModal3.style.display = 'none';
-	const scoreL = document.getElementById("scoreHome");
 	scoreL.textContent = 0;
-	const scoreR = document.getElementById("scoreGuest");
 	scoreR.textContent = 0;
 }
 
@@ -117,7 +116,7 @@ function makeid(length) {
     return result;
 }
 
-const loadingElement = document.getElementById('loading_txt');
+const loadingElement = document.getElementById('loading_txt_tournament');
 loadingElement.innerHTML = "[WAITING FOR OPPONENT]<br>Tournament ID : " + tournament_id + '<br>' + 'Currently connected : ' + connected + '/4';
 
 //console.log(privategame);
@@ -308,12 +307,14 @@ function handleKeyDown(event) {
 	if (currentNum < 0) {
 		if (event.code == 'ArrowUp')
 		{
+			event.preventDefault();
 			gameSocket.send(JSON.stringify({
 			'message' : 'Up'
 			}));
 		}
 		else if (event.code == 'ArrowDown')
 		{
+			event.preventDefault();
 			gameSocket.send(JSON.stringify({
 			'message' : 'Down'
 			}));
@@ -502,9 +503,7 @@ function onMessageHandler(e) {
 		unloadScript();
 	} else if (game_data.action == 'score') {
 		if (game_data.scorep1 != undefined && game_data.scorep2 != undefined) {
-			const scoreL = document.getElementById("scoreHome");
 			scoreL.textContent = game_data.scorep2;
-			const scoreR = document.getElementById("scoreGuest");
 			scoreR.textContent = game_data.scorep1;
 		}
 	} else if (game_data.action == 'counter') {

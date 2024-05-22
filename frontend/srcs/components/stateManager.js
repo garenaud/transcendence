@@ -10,7 +10,7 @@ import { renderUserMenu } from './userMenu.js';
 import { LanguageBtn, loadLanguage } from './languageManager.js';
 import { renderScratchGame } from './scratchGame.js';
 import { createToastComponent, createButtonComponent, createPhotoComponent, createListCardComponent, renderDiv } from './globalComponent.js';
-import { showUserList, showGameList } from './listComponent.js';
+import { showUserList, showGameList, showRanking } from './listComponent.js';
 
 let currentIndex = -1;
 
@@ -47,8 +47,7 @@ export function changeView(newView) {
     appState.newViewAdded = true;
     location.hash = newView;
     sessionStorage.setItem('appState', JSON.stringify(appState));
-    loadUser();
-    console.log("------------------------------------------------> appState = ", appState);
+loadUser();
 }
 
 // Écouteur d'événement pour changer la vue lorsque l'URL change (rajoute le # à l'URL lorsqu'on change de vue)
@@ -96,7 +95,6 @@ window.addEventListener("popstate", function () {
         appState.urlHistory.pop();
         currentIndex--;
     }
-    console.log("!!!!!!!!!!!!!!!!!!!!! urlHistory = ", appState.urlHistory);
 });
 
 window.addEventListener("pushstate", function () {
@@ -193,7 +191,6 @@ async function renderDefaultView() {
 
 async function renderHeroView() {
     if (!document.querySelector('.navbar')) {
-        console.log('appState = ', appState.user);
         await LanguageBtn();
         await renderHero();
         renderNavbar(appState);
@@ -210,7 +207,7 @@ async function renderGameView() {
         }
         const game = await renderPong();
         const game2 = await renderRun();
-        const gameListHTML = await showGameList();
+        const gameListHTML = await showRanking();
         const cardHistory = createListCardComponent('pongPlayed', 'Games', gameListHTML);
         await renderDiv([cardHistory, game], 'row');
         await LanguageBtn();

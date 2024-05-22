@@ -46,6 +46,7 @@ export function renderPong() {
 										  <a  id="joinPongBtn"  data-lang-key="joinPriv">Join Private</a>
 										  <input type="text" id="gameCodeInputPrivate" class="inputGame" placeholder="Game ID">
 										  </div>
+										  <a id="errorGameInputPrivate"></a>
 								  		<a id="searchBtn" class="nav-link"  data-lang-key="onlineMatchmaking">Online Matchmaking</a>
 										<a id="createTournament" class="nav-link" data-lang-key="createTourn">Create Tournament</a>
 										<div class="nav-link">
@@ -102,15 +103,13 @@ export function renderPong() {
 							<div id="countdown"></div>
 							<div class="scoreboard">
 								<div class="row">
-									<div class="col col-display" id="scoreHome">0</div>
-								</div>
-								<div class="row">
-									<div class="col col-display" id="scoreGuest">0</div>
+									<div class="col col-display" id="scoreHomeTour">0</div>
+									<div class="col col-display" id="scoreGuestTour">0</div>
 								</div>
 							</div>
 							<div class="load-3">
 								<div class="loading">							
-								<p id="loading_txt">[TOURNAMENT DOESN'T EXIST]</p>
+								<p id="loading_txt_tournament">[TOURNAMENT DOESN'T EXIST]</p>
 									<ul id="userList"></ul>
 									<div class="line"></div>
 									<div class="line"></div>
@@ -208,7 +207,6 @@ function addEventListeners(element) {
 	//* LOCALPONG
 	localPongBtn.addEventListener('click', toggleVisibility);
 	localPongBtn.addEventListener('click', function() {
-		console.log(localPongBtn);
 		origPong.classList.add('d-none');
 		pongTournament.classList.add('d-none');
 		pongMulti.classList.add('d-none');
@@ -224,22 +222,38 @@ function addEventListeners(element) {
 		// * JoinBtn
 		multiPongBtn.addEventListener('click', toggleVisibility);
 		joinPongBtn.addEventListener('click', function() {
-			const gameIdInput = document.getElementById('gameCodeInputPrivate').value;
-			if (gameIdInput) {
-				joinGame(gameIdInput);
-				pongLocal.classList.add('d-none');
-				pongTournament.classList.add('d-none');
-				origPong.classList.add('d-none');
-				document.querySelectorAll('.card-game-inside > div').forEach(div => {
-					div.classList.add('d-none');
+		const gameIdInput = document.getElementById('gameCodeInputPrivate').value;
+		const errorLink = document.getElementById('errorGameInputPrivate');
+		if (!isNaN(gameIdInput) && gameIdInput > 0 && gameIdInput <= 9999) {	
+			joinGame(gameIdInput)
+				.then(success => {
+					if (success) {
+						pongLocal.classList.add('d-none');
+						pongTournament.classList.add('d-none');
+						origPong.classList.add('d-none');
+						document.querySelectorAll('.card-game-inside > div').forEach(div => {
+							div.classList.add('d-none');
+						});
+						pongMulti.classList.remove('d-none');
+						var data = document.querySelector('#pongMulti').innerHTML;
+						document.querySelector('#pongMulti').innerHTML = data;
+					}
+				})
+				.catch(error => {
+					errorLink.textContent = `La partie ${gameIdInput} n'existe pas, veuillez reessayer`;
+					errorLink.style.display = "block";
+					setTimeout(function() {
+						errorLink.style.display = "none";
+					}, 4000);
 				});
-				pongMulti.classList.remove('d-none');
-				var data = document.querySelector('#pongMulti').innerHTML;
-				document.querySelector('#pongMulti').innerHTML = data;
-			} else {
-				console.error('Please insert a ID');
-			}
-		});
+		} else {
+			errorLink.textContent = `La partie ${gameIdInput} n'existe pas, veuillez reessayer`;
+			errorLink.style.display = "block";
+			setTimeout(function() {
+				errorLink.style.display = "none";
+			}, 4000);
+		}
+});
 
 		//* MULTIPONG
 		multiPongBtn.addEventListener('click', toggleVisibility);		
@@ -315,9 +329,15 @@ function changeDivContent(newContent) {
 export function unloadScript() {
 	// Désactiver les scripts chargés dynamiquement
 	document.querySelectorAll('script[type="module"][data-pong="dynamic"]').forEach(script => {
-		console.log(script);
 		script.setAttribute('data-disabled', 'true');
 		script.removeAttribute('type');
+		if (window.gameSocket) {
+			window.gameSocket.close();
+		}
+		// if (window.tournamentSocket) {
+		// 	console.log('JE CLOSE TOURNAMENT');
+		// 	window.tournamentSocket.close();
+		// }
 		script.remove(); // Supprimer le script du DOM
 	});
 }
@@ -332,7 +352,6 @@ function loadLocalPong() {
 	const scriptLocalPong = document.createElement('script');
 	scriptLocalPong.type = 'module';
 	scriptLocalPong.src = '../localpong/localpong.js?' + new Date().getTime(); // Ajoute un horodatage à l'URL
-	console.log('loadingLocal');
 	scriptLocalPong.setAttribute('data-pong', 'dynamic');  // Marqueur pour identifier les scripts chargés dynamiquement
 	document.body.appendChild(scriptLocalPong);
 }
@@ -357,8 +376,6 @@ export function loadTournamentPong() {
 	const scriptTournament = document.createElement('script');
 	scriptTournament.type = 'module';
 	scriptTournament.src = '../pong/javascript/pong_tournament.js?' + new Date().getTime(); // Ajoute un horodatage à l'URL
-	console.log('loadingTournament');
 	scriptTournament.setAttribute('data-pong', 'dynamic');  // Marqueur pour identifier les scripts chargés dynamiquement
 	document.body.appendChild(scriptTournament);
-	console.log(document.body.appendChild(scriptTournament));
 }

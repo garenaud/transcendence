@@ -1,7 +1,8 @@
 @import url('https://fonts.googleapis.com/css?family=Quantico:400');
 
-#error {
+#errorGameInputPrivate {
     margin-left: 35px;
+    display: none;
 }
 
 .menugrid {
