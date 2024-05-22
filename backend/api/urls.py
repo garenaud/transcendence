@@ -22,6 +22,7 @@ urlpatterns = [
 	path("deny_friend", views.deny_friend_request),
 	path("friendlist", views.get_friend_request_list),
 	path("get_image/<int:userid>", views.get_picture),
-	path("post_image/<int:userid>", views.post_picture)
+	path("post_image/<int:userid>", views.post_picture),
+	path("get_friend/<int:userid>", views.get_friend_info)
 ]
 
