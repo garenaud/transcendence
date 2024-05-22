@@ -393,6 +393,17 @@ def get_friend_info(request, userid):
 				else:
 					friendinfo[f'game_{game + 1}'] = 'NULL'
 
+				friendinfo['winrate'] = profile.winrate
+				friendinfo['total_games'] = profile.game_lost + profile.game_won
+				if profile.in_game == True:
+					friendinfo['state'] = 'In Game'
+				elif profile.online == True:
+					friendinfo['state'] = 'Online'
+				else:
+					friendinfo['state'] = 'Offline'
+				friendinfo['username'] = user.username
+				friendinfo['alias'] = profile.tournament_alias
+
 			return JsonResponse({'message' : friendinfo}, status=200)
 		except:
 			return JsonResponse({'message': 'User does not exists'}, status=404)	
