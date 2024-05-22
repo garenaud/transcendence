@@ -17,7 +17,9 @@ export function showUserList() {
             if (user.id === appState.userId) {
                 return;
             }
-
+            if (appState.userProfile.friendlist.includes(user.id)) {
+                return;
+            }
             const userProfile = appState.usersProfile.find(profile => profile.user === user.id);
             const row = document.createElement('tr');
             const nameCell = document.createElement('td');
@@ -38,7 +40,12 @@ export function showUserList() {
             } else {
                 buttonComponent = createButtonComponent('+', 'addFriendButton', '+', (event) => {
                     sendFriendRequest(appState.userId, user.username);
+                    event.target.parentNode.removeChild(event.target);
                 });
+/*                 const pElement = document.createElement('p');
+                pElement.textContent = 'En attente de la confirmation';
+                pElement.setAttribute('data-lang-key', 'waitConfirmFriend');
+                buttonCell.appendChild(pElement); */
             }
 
             idCell.textContent = user.id;

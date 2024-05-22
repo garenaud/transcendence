@@ -30,23 +30,48 @@ export function showFriendsList() {
         profileEmail.textContent = friend.email;
         profileRow.appendChild(profileEmail);
 
-        addRow(friend, friendProfile, table, null, null, null, profileRow);
+        addRow(friend, friendProfile, table, 'Voir le profil', null, null, profileRow);
         table.appendChild(profileRow); // Déplacer cette ligne ici
     }
   });
 
   // Afficher les demandes d'amis
   getFriendRequestList().then(requests => {
-      requests.forEach(request => {
-          if (request.to_user === appState.userId) {
-              const fromUser = users.find(user => user.id === request.from_user);
-              if (fromUser) {
-                  const fromUserProfile = appState.usersProfile.find(profile => profile.user === fromUser.id);
-                  addRow(fromUser, fromUserProfile, table, 'Accepter', 'Refuser', request.id);
-              }
-          }
-      });
-  });
+    requests.forEach(request => {
+        if (request.to_user === appState.userId) {
+            const fromUser = users.find(user => user.id === request.from_user);
+            if (fromUser) {
+                const fromUserProfile = appState.usersProfile.find(profile => profile.user === fromUser.id);
+                // Vérifier si l'utilisateur est déjà un ami
+                const isFriend = appState.userProfile.friendlist.includes(fromUser.id);
+                if (isFriend) {
+                  // Créer un row supplémentaire pour le profil
+                  const profileRow = document.createElement('tr');
+                  profileRow.style.display = 'none';
+                  const profileUsername = document.createElement('td');
+                  profileUsername.textContent = fromUser.username;
+                  profileRow.appendChild(profileUsername);
+                  const profileFirstName = document.createElement('td');
+                  profileFirstName.textContent = fromUser.first_name;
+                  profileRow.appendChild(profileFirstName);
+                  const profileLastName = document.createElement('td');
+                  profileLastName.textContent = fromUser.last_name;
+                  profileRow.appendChild(profileLastName);
+                  const profileEmail = document.createElement('td');
+                  profileEmail.textContent = fromUser.email;
+                  profileRow.appendChild(profileEmail);
+                
+                  // Ajouter le bouton "Voir le profil" si l'utilisateur est déjà un ami
+                  addRow(fromUser, fromUserProfile, table, 'Voir le profil', null, request.id, profileRow);
+                  table.appendChild(profileRow);
+                } else {
+                    // Sinon, ajouter les boutons "Accepter" et "Refuser"
+                    addRow(fromUser, fromUserProfile, table, 'Accepter', 'Refuser', request.id);
+                }
+            }
+        }
+    });
+});
 
   modalBody.appendChild(table);
 }
@@ -59,17 +84,41 @@ function addRow(user, userProfile, table, buttonText1, buttonText2, requestId, p
   const buttonCell2 = buttonText2 ? document.createElement('td') : null;
 
   const photoComponent = createPhotoComponent(getProfilePicture(user.id) ? userProfile.profile_picture : './Design/User/Max-R_Headshot.jpg', 100);
-  const buttonComponent1 = createButtonComponent('Voir profil', 'viewProfileButton', 'Voir profil', (event) => {
-      // Toggle l'affichage du profil
-      profileRow.style.display = profileRow.style.display === 'none' ? '' : 'none';
-  });
+  
+  let buttonComponent1;
+  if (buttonText1) {
+    buttonComponent1 = createButtonComponent(buttonText1, 'viewProfileButton', buttonText1, (event) => {
+      if (buttonText1 === 'Accepter') {
+        acceptFriendRequest(user.id, requestId);
+        // Remplacer les boutons "Accepter" et "Refuser" par le bouton "Voir le profil"
+        buttonCell1.innerHTML = '';
+        buttonCell1.appendChild(createButtonComponent('Voir le profil', 'viewProfileButton', 'Voir le profil', (event) => {
+          profileRow.style.display = '';
+        }));
+        if (buttonCell2) {
+          row.removeChild(buttonCell2);
+        }
+      } else if (buttonText1 === 'Voir le profil') {
+        // Afficher le profil si le texte du bouton est "Voir le profil"
+        profileRow.style.display = '';
+      } else {
+        // Toggle l'affichage du profil
+        profileRow.style.display = profileRow.style.display === 'none' ? '' : 'none';
+      }
+    });
+  }
+
   const buttonComponent2 = buttonText2 ? createButtonComponent(buttonText2, 'denyFriendButton', buttonText2, (event) => {
       denyFriendRequest(appState.userId, requestId);
+      // Supprimer la ligne si le bouton "Refuser" est pressé
+      table.removeChild(row);
   }) : null;
 
   nameCell.textContent = user.username;
   photoCell.appendChild(photoComponent);
-  buttonCell1.appendChild(buttonComponent1);
+  if (buttonComponent1) {
+    buttonCell1.appendChild(buttonComponent1);
+  }
   if (buttonCell2) {
       buttonCell2.appendChild(buttonComponent2);
   }

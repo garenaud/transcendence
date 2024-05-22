@@ -348,7 +348,8 @@ def get_friend_request_list(request):
 def get_picture(request, userid):
 	if request.method == 'GET':
 		try:
-			profile = userProfile.objects.get(id=userid)
+			user = User.objects.get(id=userid)
+			profile = userProfile.objects.get(user=user)
 			image_path = os.path.join(settings.MEDIA_ROOT, 'media/images', profile.profile_picture.url)
 			print(image_path)
 			with open(f'media/{image_path}', 'rb') as f:

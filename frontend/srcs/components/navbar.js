@@ -58,7 +58,7 @@ function displayUserInfo(user) {
     const userMenuHTML = `
         <div id="user-menu" class="user-menu-hidden">
 
-            <div class="user-menu-img">
+            <div class="user-menu-img" id="profile-picture">
                 <button type="button" class="close close-menu-button" aria-label="Close"> <span aria-hidden="true">&times;</span> </button>
                 <button type="button" class="edit edit-menu-button btn btn-primary" aria-label="Edit" data-bs-toggle="modal" data-bs-target="#editPicture"> <span aria-hidden="true">&#9998;</span> </button>
             </div>
