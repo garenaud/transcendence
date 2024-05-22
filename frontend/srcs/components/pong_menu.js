@@ -1,6 +1,6 @@
 import { loadMultiPong } from "./pongComponent.js";
 
-const errorLink = document.getElementById('error');
+const errorLink = document.getElementById('errorGameID');
 let gameid;
 let privategame = false;
 
@@ -37,36 +37,45 @@ export function Multiplayer() {
   }
 
 export function joinGame(gameid) {
-	errorLink.textContent = "";
-	errorLink.style.display = "block";
-	let url = '/api/game/' + gameid;
-	if (!isNaN(gameid) && gameid > 0 && gameid <= 9999) {	
-		console.log(url);
-		fetch(url, {
-			method: 'GET',
-			credentials: 'same-origin'
-		})
-		.then(response => response.json())
-		.then(data => {
-			console.log('Success:', data);
-			if (data['message'] == "Not found") {
-				errorLink.textContent = `La partie ${gameid} n'existe pas, veuillez reessayer`;
-			} else{
-				privategame = true;
-				sessionStorage.setItem("privategame", privategame);
-				sessionStorage.setItem("gameid", gameid);
-				loadMultiPong();
-			}
-		})
-		.catch((error) => {
-			console.error('Error:', error);
-		});
-	} else {
-		errorLink.textContent = `La partie ${gameid} n'existe pas, veuillez reessayer`;
-	}
-	setTimeout(function() {
-		errorLink.style.display = "none";
-	}, 4000);
+	return new Promise((resolve, reject) => {
+		let url = '/api/game/' + gameid;
+		if (!isNaN(gameid) && gameid > 0 && gameid <= 9999) {	
+			console.log(url);
+			fetch(url, {
+				method: 'GET',
+				credentials: 'same-origin'
+			})
+			.then(response => response.json())
+			.then(data => {
+				console.log('Success:', data);
+				if (data['message'] == "Not found") {
+					errorLink.style.display = "block";
+					errorLink.textContent = `La partie ${gameid} n'existe pas, veuillez reessayer`;
+					setTimeout(() => {
+						errorLink.style.display = "none";
+					}, 4000);
+					reject(`La partie ${gameid} n'existe pas, veuillez reessayer`);
+				} else {
+					privategame = true;
+					sessionStorage.setItem("privategame", privategame);
+					sessionStorage.setItem("gameid", gameid);
+					loadMultiPong();
+					resolve(true);
+				}
+			})
+			.catch((error) => {
+				console.error('Error:', error);
+				reject(error);
+			});
+		} else {
+			errorLink.style.display = "block";
+			errorLink.textContent = `La partie ${gameid} n'existe pas, veuillez reessayer`;
+			setTimeout(() => {
+				errorLink.style.display = "none";
+			}, 4000);
+			reject(`La partie ${gameid} n'existe pas, veuillez reessayer`);
+		}
+	});
 }
 
 export function onlineMatchmaking() {
