@@ -102,15 +102,13 @@ export function renderPong() {
 							<div id="countdown"></div>
 							<div class="scoreboard">
 								<div class="row">
-									<div class="col col-display" id="scoreHome">0</div>
-								</div>
-								<div class="row">
-									<div class="col col-display" id="scoreGuest">0</div>
+									<div class="col col-display" id="scoreHomeTour">0</div>
+									<div class="col col-display" id="scoreGuestTour">0</div>
 								</div>
 							</div>
 							<div class="load-3">
 								<div class="loading">							
-								<p id="loading_txt">[TOURNAMENT DOESN'T EXIST]</p>
+								<p id="loading_txt_tournament">[TOURNAMENT DOESN'T EXIST]</p>
 									<ul id="userList"></ul>
 									<div class="line"></div>
 									<div class="line"></div>

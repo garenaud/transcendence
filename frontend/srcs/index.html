@@ -17,12 +17,20 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css">
 	<a id="error"></a>
     <script type="importmap">
-    {
-        "imports": {
-            "three": "https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js",
-            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.161.0/examples/jsm/"
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.161.0/examples/jsm/"
+            }
         }
-    }
+    </script>
+    <script>
+        document.addEventListener('keydown', function(event) {
+            const keys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"];
+            if (keys.includes(event.key)) {
+                event.preventDefault();
+            }
+        });
     </script>
 </head>
 <body>

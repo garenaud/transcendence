@@ -75,7 +75,6 @@ export function showUserList() {
     }
     const table = document.createElement('table');
     table.className = 'game-list-table';
-  
     for (const game of games) {
         try {
             const row = document.createElement('tr');
