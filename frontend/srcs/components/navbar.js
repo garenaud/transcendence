@@ -38,9 +38,7 @@ export function renderNavbar(user){
 function displayUserInfo(user) {
       //let currentUser = user[0];
       const userInfoDiv = document.getElementById('nav-user');
-      user.profilePicture = getProfilePicture(user.id);
-      console.log('(((((((((((((((((((((dans displayUserInfo user.profilePicture:', user.profilePicture);
-      console.log('(((((((((((((((((((((dans displayUserInfo user:', user)
+    //   user.profilePicture = getProfilePicture(user.id);
       if (userInfoDiv) {
           userInfoDiv.innerHTML = `
           <div class="nav-user-info d-md-block">
@@ -49,7 +47,7 @@ function displayUserInfo(user) {
           </div>
           <div id="user-menu-button" class="nav-user-img d-md-block">
                   <div id="user-menu-button" class="img_cont_nav">
-                  <img src="${user.userProfile.profile_picture}" alt="User Image">
+                  <img id="profile-picture" alt="User Image1">
                   </div>
           </div>
           `;
@@ -57,12 +55,10 @@ function displayUserInfo(user) {
   }
   
   function renderUserMenu(user) {
-    console.log('??????????????????User dans rendrUserMenu:', user);
     const userMenuHTML = `
         <div id="user-menu" class="user-menu-hidden">
 
             <div class="user-menu-img">
-                <img src="${user.profilePicture}" alt="User Image">
                 <button type="button" class="close close-menu-button" aria-label="Close"> <span aria-hidden="true">&times;</span> </button>
                 <button type="button" class="edit edit-menu-button btn btn-primary" aria-label="Edit" data-bs-toggle="modal" data-bs-target="#editPicture"> <span aria-hidden="true">&#9998;</span> </button>
             </div>
@@ -194,7 +190,6 @@ function displayUserInfo(user) {
     document.body.insertAdjacentHTML('afterbegin', navbarHTML);
   }
   insertNavbarHTML();
-  console.log('users navbar:', appState.users);
   displayUserInfo(user);
   renderUserMenu(user);
   setupButtonListener();
@@ -252,7 +247,6 @@ function    setupButtonListener() {
     const userInfoDiv = document.getElementById('nav-user');
     if (userInfoDiv) {
         let escapedUsername = escapeHTML(user.username);
-        console.log('***********************Image profile =', user.userProfile.profile_picture)
         userInfoDiv.innerHTML = `
         <div class="nav-user-info">
         <h4>${user.user.username}</h4>
@@ -260,7 +254,7 @@ function    setupButtonListener() {
         </div>
         <div id="user-menu-button" class="nav-user-img">
                 <div id="user-menu-button-inner" class="img_cont_nav">
-                <img src="${user.userProfile.profile_picture}" alt="User Image">
+                <img id="profile-picture" alt="User Image">
                 </div>
         </div>
         `;

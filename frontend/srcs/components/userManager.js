@@ -36,7 +36,7 @@ function updateUserOnServer(user) {
         password: user.user.password  // Vous devez vous assurer que le mot de passe est correctement géré
     };
     console.log('Updating user:', userForBackend);
-    fetch('https://localhost/api/user/' + user.user.id, {
+    fetch('https://localhost/api/user/' + appState.userId, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -53,7 +53,7 @@ function updateUserOnServer(user) {
     })
     .then(data => {
         console.log('User updated:', data);
-        getUserFromServer(user.user.id);
+        getUserFromServer(appState.userId);
     })
     .catch((error) => {
         console.error('Error:', error);
@@ -67,19 +67,23 @@ export function getCookie(name) {
 }
 
 export function getProfilePicture(userId) {
-    fetch(`/api/get_image/${appState.userId}`)
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.blob();
-    })
-    .then(imageBlob => {
-        appState.user.profilePicture = URL.createObjectURL(imageBlob);
-    })
-    .catch(error => {
-        console.error('Erreur lors du chargement de l\'image de l\'utilisateur:', error);
-    });
+	fetch(`/api/get_image/${appState.userId}`)
+	.then(response => {
+		if (!response.ok) {
+			throw new Error(`HTTP error! status: ${response.status}`);
+		}
+		return response.blob();
+	})
+	.then(imageBlob => {
+        const imageUrl = URL.createObjectURL(imageBlob);
+        appState.user.profilePicture = imageUrl;
+
+        // Mettre à jour l'attribut src de l'image
+        document.getElementById('profile-picture').src = imageUrl;
+	})
+	.catch(error => {
+		console.error('Erreur lors du chargement de l\'image de l\'utilisateur:', error.message);
+	});
 }
 
 /* export function getProfilePicture(userId) {
@@ -141,7 +145,7 @@ export async function getUserFromServer(userId) {
     }
     const user = await response.json();
     console.log('User fetched:', user);
-    console.log('appState.user:', appState.Id);
+    console.log('appState.user:', appState.userId);
     return user;
 }
 
@@ -201,12 +205,9 @@ export async function loadUser() {
         await loadUserProfile();
         appState.users = users;
         appState.userId = Number(sessionStorage.getItem('userId'));
-        console.log('userId:', appState.userId);
         appState.isLogged = true;
         appState.user = users.find(user => user.id === appState.userId);
-        console.log('appState usersProfile', appState.usersProfile);
         appState.userProfile = appState.usersProfile.find(usersProfile => usersProfile.user === appState.userId);
-        console.log('***********^^^^^^^^^^^^^^$$$$ userprofile =', appState.userProfile, ' user id', appState.userId);
 /*         if (!appState.userProfile.profile_picture) {
             appState.user.profilePicture = 'Design/User/Max-R_Headshot.jpg';
         }
@@ -230,7 +231,6 @@ export function loadUserProfile() {
     })
     .then(usersProfile => {
         appState.usersProfile = usersProfile;
-        console.log('Userprofile chargées avec succès:', usersProfile);
     })
     .catch(error => {
         console.error('Erreur lors du chargement des données utilisateur:', error);
@@ -258,6 +258,5 @@ export function loadGameList() {
 }
 
 window.onload = function() {
-    console.log('window.onload');
     loadUser();
 };

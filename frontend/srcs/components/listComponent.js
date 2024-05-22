@@ -122,7 +122,6 @@ export function showUserList() {
 }
 
 export async function showRanking() {
-    loadRanking();
     let players = appState.players;
     if (!Array.isArray(players)) {
         players = [];

@@ -20,15 +20,12 @@ export function LanguageBtn() {
     document.querySelectorAll('.dropdown-item').forEach(item => {
         item.addEventListener('click', (event) => {
             event.preventDefault();
-            console.log('click on language');
             const lang = event.currentTarget.getAttribute('data-lang');
             dropdownButton.innerHTML = event.currentTarget.innerHTML;
             appState.language = lang;
-            console.log('Language changed:', lang);
             sessionStorage.setItem('language', lang);
             sessionStorage.setItem('appState', JSON.stringify(appState));
             loadLanguage(lang);
-            console.log("dans click:", appState);
             renderApp();
         });
     });

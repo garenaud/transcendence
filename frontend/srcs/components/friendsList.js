@@ -3,70 +3,85 @@ import { appState } from "./stateManager.js";
 import { createPhotoComponent, createButtonComponent, createToastComponent } from "./globalComponent.js";
 
 export function showFriendsList() {
-    const users = appState.users;
-    const modalBody = document.querySelector('#friendList .modal-body');
-    const table = document.createElement('table');
-    table.className = 'userlist-table';
+  const users = appState.users;
+  const modalBody = document.querySelector('#friendList .modal-body');
+  const table = document.createElement('table');
+  table.className = 'userlist-table';
 
-    // Afficher les amis
-    appState.userProfile.friendlist.forEach(friendId => {
-        const friend = users.find(user => user.id === friendId);
-        if (friend) {
-            const friendProfile = appState.usersProfile.find(profile => profile.user === friend.id);
-            addRow(friend, friendProfile, table, 'Ami');
-        }
-    });
+  // Afficher les amis
+  appState.userProfile.friendlist.forEach(friendId => {
+    const friend = users.find(user => user.id === friendId);
+    if (friend) {
+        const friendProfile = appState.usersProfile.find(profile => profile.user === friend.id);
 
-    // Afficher les demandes d'amis
-    getFriendRequestList().then(requests => {
-        requests.forEach(request => {
-            if (request.to_user === appState.userId) {
-                const fromUser = users.find(user => user.id === request.from_user);
-                if (fromUser) {
-                    const fromUserProfile = appState.usersProfile.find(profile => profile.user === fromUser.id);
-                    addRow(fromUser, fromUserProfile, table, 'Accepter', 'Refuser', request.id);
-                }
-            }
-        });
-    });
+        // Créer un row supplémentaire pour le profil
+        const profileRow = document.createElement('tr');
+        profileRow.style.display = 'none'; // Ajouter cette ligne
+        const profileUsername = document.createElement('td');
+        profileUsername.textContent = friend.username;
+        profileRow.appendChild(profileUsername);
+        const profileFirstName = document.createElement('td');
+        profileFirstName.textContent = friend.first_name;
+        profileRow.appendChild(profileFirstName);
+        const profileLastName = document.createElement('td');
+        profileLastName.textContent = friend.last_name;
+        profileRow.appendChild(profileLastName);
+        const profileEmail = document.createElement('td');
+        profileEmail.textContent = friend.email;
+        profileRow.appendChild(profileEmail);
 
-    modalBody.appendChild(table);
+        addRow(friend, friendProfile, table, null, null, null, profileRow);
+        table.appendChild(profileRow); // Déplacer cette ligne ici
+    }
+  });
+
+  // Afficher les demandes d'amis
+  getFriendRequestList().then(requests => {
+      requests.forEach(request => {
+          if (request.to_user === appState.userId) {
+              const fromUser = users.find(user => user.id === request.from_user);
+              if (fromUser) {
+                  const fromUserProfile = appState.usersProfile.find(profile => profile.user === fromUser.id);
+                  addRow(fromUser, fromUserProfile, table, 'Accepter', 'Refuser', request.id);
+              }
+          }
+      });
+  });
+
+  modalBody.appendChild(table);
 }
 
-function addRow(user, userProfile, table, buttonText1, buttonText2, requestId) {
-    const row = document.createElement('tr');
-    const nameCell = document.createElement('td');
-    const photoCell = document.createElement('td');
-    const buttonCell1 = document.createElement('td');
-    const buttonCell2 = buttonText2 ? document.createElement('td') : null;
+function addRow(user, userProfile, table, buttonText1, buttonText2, requestId, profileRow) {
+  const row = document.createElement('tr');
+  const nameCell = document.createElement('td');
+  const photoCell = document.createElement('td');
+  const buttonCell1 = document.createElement('td');
+  const buttonCell2 = buttonText2 ? document.createElement('td') : null;
 
-    const photoComponent = createPhotoComponent(getProfilePicture(user.id) ? userProfile.profile_picture : './Design/User/Max-R_Headshot.jpg', 100);
-    const buttonComponent1 = createButtonComponent(buttonText1, 'addFriendButton', buttonText1, (event) => {
-        if (buttonText1 === 'Accepter') {
-            acceptFriendRequest(user.id, requestId);
-        } else {
-            sendFriendRequest(appState.userId, user.username);
-        }
-    });
-    const buttonComponent2 = buttonText2 ? createButtonComponent(buttonText2, 'denyFriendButton', buttonText2, (event) => {
-        denyFriendRequest(appState.userId, requestId);
-    }) : null;
+  const photoComponent = createPhotoComponent(getProfilePicture(user.id) ? userProfile.profile_picture : './Design/User/Max-R_Headshot.jpg', 100);
+  const buttonComponent1 = createButtonComponent('Voir profil', 'viewProfileButton', 'Voir profil', (event) => {
+      // Toggle l'affichage du profil
+      profileRow.style.display = profileRow.style.display === 'none' ? '' : 'none';
+  });
+  const buttonComponent2 = buttonText2 ? createButtonComponent(buttonText2, 'denyFriendButton', buttonText2, (event) => {
+      denyFriendRequest(appState.userId, requestId);
+  }) : null;
 
-    nameCell.textContent = user.username;
-    photoCell.appendChild(photoComponent);
-    buttonCell1.appendChild(buttonComponent1);
-    if (buttonCell2) {
-        buttonCell2.appendChild(buttonComponent2);
-    }
+  nameCell.textContent = user.username;
+  photoCell.appendChild(photoComponent);
+  buttonCell1.appendChild(buttonComponent1);
+  if (buttonCell2) {
+      buttonCell2.appendChild(buttonComponent2);
+  }
 
-    row.appendChild(photoCell);
-    row.appendChild(nameCell);
-    row.appendChild(buttonCell1);
-    if (buttonCell2) {
-        row.appendChild(buttonCell2);
-    }
+  row.appendChild(photoCell);
+  row.appendChild(nameCell);
+  row.appendChild(buttonCell1);
+  if (buttonCell2) {
+      row.appendChild(buttonCell2);
+  }
 
-    table.appendChild(row);
+  table.appendChild(row);
 }
 
 export function sendFriendRequest(fromId, toUsername) {
@@ -89,9 +104,7 @@ export function sendFriendRequest(fromId, toUsername) {
   }
 
   export function acceptFriendRequest(userId, requestId) {
-    console.log('&&&&&&&&&&&&&&&&&&&&&&&&&&&userId:', userId, ' requestId:', requestId);
     const data = { username: userId, password: requestId };
-    console.log('acceptFriendRequest data:', data);
     const csrfToken = getCookie('csrftoken');
     fetch('/api/accept_friend', {
       method: 'POST',
