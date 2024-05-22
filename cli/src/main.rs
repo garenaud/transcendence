@@ -17,7 +17,6 @@ use signal_hook::{consts::{SIGHUP, SIGINT, SIGQUIT, SIGTERM}, iterator::Signals}
 fn main() {
 	title();
 	
-	let mut max_try = 3;
 	// Ask for the server and try to ping it
 	let srv = loop {
 		let mut srv: String = String::new();
@@ -80,6 +79,7 @@ fn main() {
 
 	// Login
 	let user: user::User;
+	let mut max_try = 3;
 	loop {
 		match login::login(srv.clone()) {
 			Some(user_logged) => {
