@@ -12,6 +12,7 @@ from django.contrib import messages, auth
 from django.shortcuts import render
 from django.contrib.auth.models import User
 from django.conf import settings
+from django.db.models import Q
 import random, os
 from itertools import chain
 
@@ -374,4 +375,39 @@ def post_picture(request, userid):
 	else:
 		return JsonResponse({'message': 'Méthode non autorisée'}, status=405)
 
+def get_friend_info(request, userid):
+	if request.method == 'GET':
+		try:
+			friendinfo = {}
+			
+			user = User.objects.get(id=userid)
+			profile = userProfile.objects.get(user=user)
+			
+			games = Games.objects.filter(Q(p1_id=userid) | Q(p2_id=userid)).order_by('date')
+			serializer = GamesSerializer(games, many=True)
+			
+			for game in range(0, 3):
+				if game >= 3:
+					break
+				if games.count() > game:
+					serializer = GamesSerializer(games[game], many=False)
+					friendinfo[f'game_{game + 1}'] = serializer.data
+				else:
+					friendinfo[f'game_{game + 1}'] = 'NULL'
 
+				friendinfo['winrate'] = profile.winrate
+				friendinfo['total_games'] = profile.game_lost + profile.game_won
+				if profile.in_game == True:
+					friendinfo['state'] = 'In Game'
+				elif profile.online == True:
+					friendinfo['state'] = 'Online'
+				else:
+					friendinfo['state'] = 'Offline'
+				friendinfo['username'] = user.username
+				friendinfo['alias'] = profile.tournament_alias
+
+			return JsonResponse({'message' : friendinfo}, status=200)
+		except:
+			return JsonResponse({'message': 'User does not exists'}, status=404)	
+	else:
+		return JsonResponse({'message': 'Méthode non autorisée'}, status=405)

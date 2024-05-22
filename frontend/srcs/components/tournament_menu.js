@@ -23,41 +23,40 @@ export function Tournament()
 }
 
 export function joinTournament(tournamentid) {
-	let userid = appState.userId;
-	let csrf = getCookie("csrftoken");
-	if (!isNaN(tournamentid) && tournamentid > 0 && tournamentid <= 9999)
-	{
-		fetch(`/api/tournament/join/${tournamentid}/${userid}`, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				'X-CSRFToken': csrf,
-			},
-			body: JSON.stringify({ tournamentid, userid }),
-			credentials: 'same-origin' 
-		})
-		.then(response => response.json())
-		.then(data => {
-			if(data['message'] == 'ok')
-			{
-				sessionStorage.setItem("tournament_id", tournamentid);
-				sessionStorage.setItem("playernb", data['playernb']);
-				loadTournamentPong();
-			}
-			else
-			{
-				errorLink.textContent = `La partie ${tournamentid} n'existe pas, veuillez reessayer`;
-				console.log("l'homme methode post :(");
-				setTimeout(function() {
-					errorLink.style.display = "none";
-				}, 4000);
-			}
-		})
-		.catch((error) => {
-			console.error('Error:', error);
-		});
-		
-	}
+	return new Promise((resolve, reject) => {
+		let userid = appState.userId;
+		let csrf = getCookie("csrftoken");
+		if (!isNaN(tournamentid) && tournamentid > 0 && tournamentid <= 9999)
+		{
+			fetch(`/api/tournament/join/${tournamentid}/${userid}`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'X-CSRFToken': csrf,
+				},
+				body: JSON.stringify({ tournamentid, userid }),
+				credentials: 'same-origin' 
+			})
+			.then(response => response.json())
+			.then(data => {
+				if(data['message'] == 'ok')
+				{
+					sessionStorage.setItem("tournament_id", tournamentid);
+					sessionStorage.setItem("playernb", data['playernb']);
+					loadTournamentPong();
+					resolve(true);
+				}
+				else
+				{
+					reject(`Le tournoi ${tournamentid} n'existe pas, veuillez reessayer`);
+				}
+			})
+			.catch((error) => {
+				console.error('Error:', error);
+			});
+			
+		}
+	});
 }
 
 function getCookie(name) {

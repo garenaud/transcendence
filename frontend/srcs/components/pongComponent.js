@@ -10,149 +10,141 @@ export let scriptStarted;
 
 export function renderPong() {
 	const pongHTML = `
-		<div class="card-game-wrapper glowing">
-			<div class="card-game-test" style="background-image: url(Design/PongCoverImage.webp);">
-				<div class="goldTitle">
-					<div class="bg">Pong</div>
-					<div class="fg">Pong</div>
-				</div>
-				<button type="button" class="btn btn-primary glowing-btn center mx-auto d-block button" data-bs-toggle="modal" data-bs-target="#pong">
-				<span id="playBtnPong" class='glowing-txt' data-lang-key='playBtn'>JOUER</span></button>
-			</div>
-		</div>
-
-			<!-- Modal -->
-		<div class="modal" id="pong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-			<div class="modal-dialog modal-fullscreen" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h5 class="modal-title" id="exampleModalLabel">Pong</h5>
-						<button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-						</button>
-					</div>
-					<div class="modal-body">
-						<div class="card-game-wrapper glowing inside-card-modal">
-
-						<!-- origPongContent -->
-						<div id="origPong" class="card-game-inside">
-							<div class="d-flex flex-row justify-content-between pong-glowing-btn">
-							<link rel="stylesheet" type="text/css" href="../pong/css/pong_menu.css">
-								<div class="menugrid">
-									<nav class="nav">
-								  		<a id="localPongBtn" class="nav-link"  data-lang-key="localGame">Local</a>
-								  		<a id="multiPongBtn" class="nav-link" data-lang-key="createPriv">Create Private</a>
-										  <div class="nav-link">
-										  <a  id="joinPongBtn"  data-lang-key="joinPriv">Join Private</a>
-										  <input type="text" id="gameCodeInputPrivate" class="inputGame" placeholder="Game ID">
-										  </div>
-								  		<a id="searchBtn" class="nav-link"  data-lang-key="onlineMatchmaking">Online Matchmaking</a>
-										<a id="createTournament" class="nav-link" data-lang-key="createTourn">Create Tournament</a>
-										<div class="nav-link">
-											<a id="joinTournamentBtn"  data-lang-key="joinTourn">Join Tournament</a>
-												<input type="text" id="gameCodeInputTournament" class="inputGame" placeholder="Tournament ID">
-											</div>
-								  		<a onclick="window.location.reload();" target="_blank" class="nav-link">Exit</a>
-									</nav>
-								</div>
-							</div>
-						</div>
-						
-						<!-- pongLocalContent -->
-						<div id="pongLocal" class="h-100 align-items-center d-none">
-						<canvas id="backgroundLocal" class="h-100 w-100"></canvas>
-							<div id="countdownPong"></div>
-							<div id="displayscore"></div>
-							<div id ="displayvictory"></div>
-						</div>
-
-						<!-- multiplayerModalContent -->
-						<div id="pongMulti" class="h-100 align-items-center d-none" style="position: relative;">
-							<div class="container2" style="position: absolute; top: 5; right: 5">
-								<div class="load-3">
-									<!-- <p id="loading" data-lang-key="waitOpponent">[WAITING FOR OPPONENT]</p> -->
-								</div>
-							</div>
-							<div id="loading_txt" style="position: absolute; top: 15px; left: 15px;"></div>
-							<div id="countdown" style="position: absolute; top: 0;"></div>
-							<div class="container3" style="position: absolute; top: 0; right: 0;">
-								<div class="row">
-									<div class="col col-display" id="scoreHome">0</div>
-								</div>
-								<div class="row">
-									<div class="col col-display" id="scoreGuest">0</div>
-								</div>
-							</div>
-							<canvas id="background" class="h-100 w-100"></canvas>
-						</div>
-							
-							<!-- joinPongContent -->
-							<div id="joinPong" class="h-100 align-items-center d-none">
-							<input id="chat-message-input" type="text" size="20"><br>
-							<input id="chat-message-submit" type="button" value="Send">
-							</div>
-							
-							<!-- onlineMatchmaking --!>
-							<div id="matchmaking" class="h-100 align-items-center d-none">
-							</div>
-
-							<!-- tournamentModalContent -->
-							<div id="pongTournament" class="h-100 align-items-center d-none">
-							<canvas id="backgroundTournament" class="h-100 w-100"></canvas>
-							<div id="countdown"></div>
-							<div class="scoreboard">
-								<div class="row">
-									<div class="col col-display" id="scoreHome">0</div>
-								</div>
-								<div class="row">
-									<div class="col col-display" id="scoreGuest">0</div>
-								</div>
-							</div>
-							<div class="load-3">
-								<div class="loading">							
-								<p id="loading_txttournament"></p>
-									<ul id="userList"></ul>
-									<div class="line"></div>
-									<div class="line"></div>
-									<div class="line"></div>
-								</div>
-							</div>
-							<div id="myModal" class="modal">
-								<div class="modal-content">
-									<p>DEFAITE</p>
-									<p id="error"></p>
-									<button onclick="window.location.reload();">Revenir au menu</button>
-								</div>
-							</div>
-							<div id="myModal2" class="modal2">
-								<div id="startBtnDiv" class="startBtn">
-									<p data-lang-key="wonTourn">VOUS AVEZ REMPORTEZ LE TOURNOI, FELICITATIONS</p>
-									<button id="winnerBtn" onclick="window.location.reload();">Revenir au menu</button>
-								</div>
-							</div>
-							<div id="myModal3" class="modal3">
-								<div id="nextBtnDiv" class="nextBtn">
-									<p  data-lang-key="win">VICTOIRE</p>
-									<p id="score"></p>
-									<button id="nextGameBtn"  data-lang-key="nextGame">Prochaine partie</button>
-								</div>
-							</div>
-							</div>
-
-							<div class="modal-footer">
-							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-							<button type="button" class="btn btn-primary">Save changes</button>
-							</div>
-							</div>
-							</div>
-							</div>
-							</div>
-							`;
-							const pongElement = document.createElement('div');
-							pongElement.classList.add('col-12', 'col-md-6');
-							pongElement.innerHTML = pongHTML;
-							
-							addEventListeners(pongElement);
+	<div class="card-game-wrapper glowing">
+    <div class="card-game-test" style="background-image: url(Design/PongCoverImage.webp);">
+        <div class="goldTitle">
+            <div class="bg">Pong</div>
+            <div class="fg">Pong</div>
+        </div>
+        <button type="button" class="btn btn-primary glowing-btn center mx-auto d-block button" data-bs-toggle="modal" data-bs-target="#pong">
+        <span id="playBtnPong" class='glowing-txt' data-lang-key='playBtn'>JOUER</span></button>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal" id="pong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog modal-fullscreen" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Pong</h5>
+            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="card-game-wrapper glowing inside-card-modal">
+                <!-- origPongContent -->
+                <div id="origPong" class="card-game-inside">
+                    <div class="d-flex flex-row justify-content-between pong-glowing-btn">
+                        <link rel="stylesheet" type="text/css" href="../pong/css/pong_menu.css">
+                        <div class="menugrid">
+                            <nav class="nav">
+                                <a id="localPongBtn" class="nav-link"  data-lang-key="localGame">Local</a>
+                                <a id="multiPongBtn" class="nav-link" data-lang-key="createPriv">Create Private</a>
+                                <div class="nav-link">
+                                    <a  id="joinPongBtn"  data-lang-key="joinPriv">Join Private</a>
+                                    <input type="text" id="gameCodeInputPrivate" class="inputGame" placeholder="Game ID">
+                                </div>
+                                <a class="errorGameInput" id="errorGameInputPrivate"></a>
+                                <a id="searchBtn" class="nav-link"  data-lang-key="onlineMatchmaking">Online Matchmaking</a>
+                                <a id="createTournament" class="nav-link" data-lang-key="createTourn">Create Tournament</a>
+                                <div class="nav-link">
+                                    <a id="joinTournamentBtn"  data-lang-key="joinTourn">Join Tournament</a>
+                                    <input type="text" id="gameCodeInputTournament" class="inputGame" placeholder="Tournament ID">
+                                </div>
+                                <a class="errorGameInput" id="errorGameInputTournament"></a>
+                                <a class="nav-link" data-bs-dismiss="modal">Exit</a>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+                <!-- pongLocalContent -->
+                <div id="pongLocal" class="h-100 align-items-center d-none">
+                    <canvas id="backgroundLocal" class="h-100 w-100"></canvas>
+                    <div id="countdownPong"></div>
+                    <div id="displayscore"></div>
+                    <div id ="displayvictory"></div>
+                </div>
+                <!-- multiplayerModalContent -->
+                <div id="pongMulti" class="h-100 align-items-center d-none" style="position: relative;">
+                    <div class="container2" style="position: absolute; top: 5; right: 5">
+                        <div class="load-3">
+                            <!-- <p id="loading" data-lang-key="waitOpponent">[WAITING FOR OPPONENT]</p> -->
+                        </div>
+                    </div>
+                    <div id="loading_txt" style="position: absolute; top: 15px; left: 15px;"></div>
+                    <div id="countdown" style="position: absolute; top: 0;"></div>
+                    <div class="container3" style="position: absolute; top: 0; right: 0;">
+                        <div class="row">
+                            <div class="col col-display" id="scoreHome">0</div>
+                        </div>
+                        <div class="row">
+                            <div class="col col-display" id="scoreGuest">0</div>
+                        </div>
+                    </div>
+                    <canvas id="background" class="h-100 w-100"></canvas>
+                </div>
+                <!-- joinPongContent -->
+                <div id="joinPong" class="h-100 align-items-center d-none">
+                    <input id="chat-message-input" type="text" size="20"><br>
+                    <input id="chat-message-submit" type="button" value="Send">
+                </div>
+                <!-- onlineMatchmaking --!>
+                    <div id="matchmaking" class="h-100 align-items-center d-none">
+                    </div>
+                    
+                    <!-- tournamentModalContent -->
+                <div id="pongTournament" class="h-100 align-items-center d-none">
+                    <canvas id="backgroundTournament" class="h-100 w-100"></canvas>
+                    <div id="countdown"></div>
+                    <div class="scoreboard">
+                        <div class="row">
+                            <div class="col col-display" id="scoreHomeTour">0</div>
+                            <div class="col col-display" id="scoreGuestTour">0</div>
+                        </div>
+                    </div>
+                    <div class="load-3">
+                        <div class="loading">
+                            <p id="loading_txt_tournament">[TOURNAMENT DOESN'T EXIST]</p>
+                            <ul id="userList"></ul>
+                            <div class="line"></div>
+                            <div class="line"></div>
+                            <div class="line"></div>
+                        </div>
+                    </div>
+                    <div id="myModal" class="modal">
+                        <div class="modal-content">
+                            <p>DEFAITE</p>
+                            <p id="error"></p>
+                            <button onclick="window.location.reload();">Revenir au menu</button>
+                        </div>
+                    </div>
+                    <div id="myModal2" class="modal2">
+                        <div id="startBtnDiv" class="startBtn">
+                            <p data-lang-key="wonTourn">VOUS AVEZ REMPORTEZ LE TOURNOI, FELICITATIONS</p>
+                            <button id="winnerBtn" onclick="window.location.reload();">Revenir au menu</button>
+                        </div>
+                    </div>
+                    <div id="myModal3" class="modal3">
+                        <div id="nextBtnDiv" class="nextBtn">
+                            <p  data-lang-key="win">VICTOIRE</p>
+                            <p id="score"></p>
+                            <button id="nextGameBtn"  data-lang-key="nextGame">Prochaine partie</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>`;
+	const pongElement = document.createElement('div');
+	pongElement.classList.add('col-12', 'col-md-6');
+	pongElement.innerHTML = pongHTML;
+	
+	addEventListeners(pongElement);
 							
 function addEventListeners(element) {
 		const origPong = element.querySelector('#origPong');
@@ -166,7 +158,7 @@ function addEventListeners(element) {
 		const matchmakingBtn = element.querySelector('#searchBtn');
 		const pongTournament = element.querySelector('#pongTournament');
 		const joinTournamentBtn = element.querySelector('#joinTournamentBtn');
-		const createTournament = element.querySelector('#createTournament')
+		const createTournament = element.querySelector('#createTournament');
 
 		// * TOURNAMENTPONG
 		createTournament.addEventListener('click', toggleVisibility);
@@ -186,22 +178,39 @@ function addEventListeners(element) {
 		//* JOINTOURNAMENT
 		joinTournamentBtn.addEventListener('click', toggleVisibility);
 		joinTournamentBtn.addEventListener('click', function() {
-			const tournamentid = element.querySelector('#gameCodeInputTournament').value;
-			if (tournamentid)
-			{
-				joinTournament(tournamentid);
-				pongLocal.classList.add('d-none');
-				origPong.classList.add('d-none');
-				pongMulti.classList.add('d-none');
-				document.querySelectorAll('.card-game-inside > div').forEach(div => {
-					div.classList.add('d-none');
-				});
-				pongTournament.classList.remove('d-none');
-				var data = document.querySelector('#pongTournament').innerHTML;
-				document.querySelector('#pongTournament').innerHTML = data;
+		const tournamentid = element.querySelector('#gameCodeInputTournament').value;
+		const errorInputTour = document.getElementById('errorGameInputTournament');
+		if (!isNaN(tournamentid) && tournamentid > 0 && tournamentid <= 9999)
+		{
+			joinTournament(tournamentid)
+			.then(success => {
+				if (success) {
+					pongLocal.classList.add('d-none');
+					origPong.classList.add('d-none');
+					pongMulti.classList.add('d-none');
+					document.querySelectorAll('.card-game-inside > div').forEach(div => {
+						div.classList.add('d-none');
+					});
+					pongTournament.classList.remove('d-none');
+					var data = document.querySelector('#pongTournament').innerHTML;
+					document.querySelector('#pongTournament').innerHTML = data;
+				}
+			})
+			.catch(error => {
+				console.log(error);
+				errorInputTour.textContent = error;
+				errorInputTour.style.display = "block";
+				setTimeout(function() {
+					errorInputTour.style.display = "none";
+				}, 4000);
+			});
 		}
 		else {
-			console.error('Please insert a ID');
+			errorInputTour.textContent = `Le tournoi ${tournamentid} n'existe pas, veuillez reessayer`;
+			errorInputTour.style.display = "block";
+			setTimeout(function() {
+				errorInputTour.style.display = "none";
+			}, 4000);
 		}
 		});
 
@@ -223,23 +232,38 @@ function addEventListeners(element) {
 		// * JoinBtn
 		multiPongBtn.addEventListener('click', toggleVisibility);
 		joinPongBtn.addEventListener('click', function() {
-			const gameIdInput = document.getElementById('gameCodeInputPrivate').value;
-			if (gameIdInput) {
-				joinGame(gameIdInput);
-				pongLocal.classList.add('d-none');
-				pongTournament.classList.add('d-none');
-				origPong.classList.add('d-none');
-				document.querySelectorAll('.card-game-inside > div').forEach(div => {
-					div.classList.add('d-none');
+		const gameIdInput = document.getElementById('gameCodeInputPrivate').value;
+		const errorInput = document.getElementById('errorGameInputPrivate');
+		if (!isNaN(gameIdInput) && gameIdInput > 0 && gameIdInput <= 9999) {	
+			joinGame(gameIdInput)
+				.then(success => {
+					if (success) {
+						pongLocal.classList.add('d-none');
+						pongTournament.classList.add('d-none');
+						origPong.classList.add('d-none');
+						document.querySelectorAll('.card-game-inside > div').forEach(div => {
+							div.classList.add('d-none');
+						});
+						pongMulti.classList.remove('d-none');
+						var data = document.querySelector('#pongMulti').innerHTML;
+						document.querySelector('#pongMulti').innerHTML = data;
+					}
+				})
+				.catch(error => {
+					errorInput.textContent = error;
+					errorInput.style.display = "block";
+					setTimeout(function() {
+						errorInput.style.display = "none";
+					}, 4000);
 				});
-				pongMulti.classList.remove('d-none');
-				var data = document.querySelector('#pongMulti').innerHTML;
-				document.querySelector('#pongMulti').innerHTML = data;
-			} else {
-				console.error('Please insert a ID');
-			}
-		});
-
+		} else {
+			errorInput.textContent = `La partie ${gameIdInput} n'existe pas, veuillez reessayer`;
+			errorInput.style.display = "block";
+			setTimeout(function() {
+				errorInput.style.display = "none";
+			}, 4000);
+		}
+});
 		//* MULTIPONG
 		multiPongBtn.addEventListener('click', toggleVisibility);		
 		multiPongBtn.addEventListener('click', function() {
@@ -279,6 +303,7 @@ function addEventListeners(element) {
 			});
 			origPong.classList.remove('d-none');
 		});
+
 		pongModal.addEventListener('hidden.bs.modal', function () {
 			unloadScript();
 			scriptStarted = false;
@@ -302,8 +327,6 @@ function addEventListeners(element) {
 
 	return pongElement;
 }
-
-
 
 // Change le contenu de la modale.
 function changeDivContent(newContent) {
