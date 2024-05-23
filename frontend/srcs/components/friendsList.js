@@ -5,6 +5,7 @@ import { createPhotoComponent, createButtonComponent, createToastComponent } fro
 export async function showFriendsList() {
   const users = appState.users;
   const modalBody = document.querySelector('#friendList .modal-body');
+  modalBody.innerHTML = '';
   const table = document.createElement('table');
   table.className = 'userlist-table';
 
@@ -105,8 +106,9 @@ async function addRow(user, userProfile, table, buttonText1, buttonText2, reques
   const photoCell = document.createElement('td');
   const buttonCell1 = document.createElement('td');
   const buttonCell2 = buttonText2 ? document.createElement('td') : null;
-
-  const photoComponent = await createPhotoComponent(getProfilePicture(user.id) ? userProfile.profile_picture : './Design/User/Max-R_Headshot.jpg', 100);
+  
+  const photoComponent = await createPhotoComponent(user.id, 100);
+  console.log('photoComponent:', photoComponent);
   
   let buttonComponent1;
   if (buttonText1) {

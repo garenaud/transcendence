@@ -8,6 +8,7 @@ let gameList = [];
 export async function showUserList() {
     const users = appState.users;
     const modalBody = document.querySelector('#addFriend .modal-body');
+    modalBody.innerHTML = '';
     const table = document.createElement('table');
     table.className = 'userlist-table';
 
