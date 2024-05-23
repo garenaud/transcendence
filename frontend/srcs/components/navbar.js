@@ -1,5 +1,5 @@
 import { changeView, appState} from './stateManager.js';
-import { getUser, setProfilePicture, setUsername, logoutUser, getProfilePicture } from './userManager.js';
+import { getUser, setProfilePicture, setUsername, logoutUser, getProfilePicture, setAlias, setEmail, setFirstName, setLastName } from './userManager.js';
 import { createButtonComponent, createPhotoComponent } from './globalComponent.js';
 import { showGameList, showUserList } from './listComponent.js';
 import { showFriendsList, updateFriendRequestsNotification } from './friendsList.js';
@@ -306,6 +306,10 @@ document.querySelector('#userSaveChange').addEventListener('click', function() {
   console.log('Click on save changes')
   const newProfilePictureFile = document.querySelector('#newProfilePicture').files[0];
   const newUsername = document.querySelector('#newUsername').value;
+  let newAlias = document.querySelector('#newAlias').value;
+  let newFirstName = document.querySelector('#newFirstName').value;
+  let newLastName = document.querySelector('#newLastName').value;
+  let newEmail = document.querySelector('#newEmail').value;
   if (newProfilePictureFile) {
     setProfilePicture(newProfilePictureFile);
     const displayedProfilePicture = document.querySelector('.user-menu-img img');
@@ -319,6 +323,29 @@ document.querySelector('#userSaveChange').addEventListener('click', function() {
     displayedUsername.textContent = escapedUsername;
     updateUserInfoInNavbar(appState);
   }
+	function updateUserInfo(field, value) {
+		if (value) {
+			let escapedValue = escapeHTML(value);
+			switch(field) {
+				case 'email':
+					setEmail(escapedValue);
+					break;
+				case 'first_name':
+					setFirstName(escapedValue);
+					break;
+				case 'last_name':
+					setLastName(escapedValue);
+					break;
+				default:
+					console.error('Invalid field');
+			}
+		}
+	}
+
+	// updateUserInfo('alias', newAlias);
+	updateUserInfo('email', newEmail);
+	updateUserInfo('first_name', newFirstName);
+	updateUserInfo('last_name', newLastName);
 });
 }
 

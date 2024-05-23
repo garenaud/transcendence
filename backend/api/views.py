@@ -56,8 +56,8 @@ def user_by_id(request, id):
 			user.last_name = serializer.data['last_name']
 			user.username = serializer.data['username']
 			user.email = serializer.data['email']
-			user.password = serializer.data['password']
-			user.save(update_fields=['first_name', 'last_name', 'username', 'email', 'password'])
+			# user.password = serializer.data['password']
+			user.save(update_fields=['first_name', 'last_name', 'username', 'email'])
 			return Response(serializer.data, status=status.HTTP_200_OK)
 	else:
 		return Response("Method not allowed", status=status.HTTP_405_METHOD_NOT_ALLOWED)

@@ -30,8 +30,9 @@ function updateUserOnServer(user) {
         first_name: user.user.first_name,
         last_name: user.user.last_name,
         username: user.user.username,  // Assumant que 'username' est le nom d'utilisateur
-        email: user.user.email,  // Assumant que 'email' est le login
-        password: user.user.password  // Vous devez vous assurer que le mot de passe est correctement géré
+        email: user.user.email
+		// alias: user.user.alias  // Assumant que 'email' est le login
+        // password: user.user.password  // Vous devez vous assurer que le mot de passe est correctement géré
     };
     fetch('https://localhost/api/user/' + appState.userId, {
         method: 'PUT',
@@ -140,6 +141,30 @@ function setUsername(username) {
     updateUserOnServer(appState);
 }
 
+function setAlias(alias) {
+    appState.user.alias = alias;
+    sessionStorage.setItem('user', JSON.stringify(appState.user));
+    updateUserOnServer(appState);
+}
+
+function setEmail(email) {
+    appState.user.email = email;
+    sessionStorage.setItem('user', JSON.stringify(appState.user));
+    updateUserOnServer(appState);
+}
+
+function setFirstName(firstName) {
+    appState.user.first_name = firstName;
+    sessionStorage.setItem('user', JSON.stringify(appState.user));
+    updateUserOnServer(appState);
+}
+
+function setLastName(lastName) {
+    appState.user.last_name = lastName;
+    sessionStorage.setItem('user', JSON.stringify(appState.user));
+    updateUserOnServer(appState);
+}
+
 function setUserPoints(pts){
     appState.user.pts = pts;
     sessionStorage.setItem('user', JSON.stringify(appState.user));
@@ -157,7 +182,7 @@ function getUser() {
     }
 }
 
-export { getUser, setUsername, setUserPoints, setUserProfilePicture };
+export { getUser, setUsername, setUserPoints, setUserProfilePicture, setAlias, setEmail, setFirstName, setLastName};
 
 export async function loadUser() {
     try {
