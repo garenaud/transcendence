@@ -66,7 +66,7 @@ export function getCookie(name) {
 	if (parts.length === 2) return parts.pop().split(';').shift();
 }
 export function getProfilePicture(userId) {
-	return fetch(`/api/get_image/${appState.userId}`)
+	return fetch(`/api/get_image/${userId}`)
 	.then(response => {
 		if (!response.ok) {
 			throw new Error(`HTTP error! status: ${response.status}`);
@@ -75,36 +75,12 @@ export function getProfilePicture(userId) {
 	})
 	.then(imageBlob => {
         const imageUrl = URL.createObjectURL(imageBlob);
-        appState.user.profilePicture = imageUrl;
-
-        // Mettre à jour l'attribut src de l'image
-        //document.getElementById('profile-picture').src = imageUrl;
         return imageUrl;
 	})
 	.catch(error => {
 		console.error('Erreur lors du chargement de l\'image de l\'utilisateur:', error.message);
 	});
 }
-
-/* export function getProfilePicture(userId) {
-    fetch(`/api/get_image/${appState.userId}`)
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.blob();
-    })
-    .then(imageBlob => {
-        let reader = new FileReader();
-        reader.onload = function() {
-            appState.user.profilePicture = reader.result;
-        }
-        reader.readAsDataURL(imageBlob);
-    })
-    .catch(error => {
-        console.error('Erreur lors du chargement de l\'image de l\'utilisateur:', error);
-    });
-} */
 
 export function setProfilePicture(file) {
     let formData = new FormData();
