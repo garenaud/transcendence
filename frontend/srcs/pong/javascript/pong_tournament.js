@@ -543,7 +543,7 @@ let namelist = [];
 
 tournamentSocket.onmessage = function(e) {
 	tournament_data = JSON.parse(e.data);
-	console.log(tournament_data);
+	console.log(e.data);
 	if (tournament_data.message == 'tournamentIdNotFound')
 	{
 		window.location.reload(); //= "https://localhost/pong/tournament_menu.html";
@@ -563,19 +563,11 @@ tournamentSocket.onmessage = function(e) {
 		`;
 	}
 	if (tournament_data.action == 'connect')
-	{
-		console.log(tournament_data.connected);
 		loadingElement.innerHTML = "[WAITING FOR OPPONENT]<br> " + tournament_id + '<br>' + 'Currently connected : ' + tournament_data.connected + '/4';
-	}
 	else if (tournament_data.action == 'playernb')
-	{
 		playernb = tournament_data['playernb'];
-	}
 	else if (tournament_data.action == 'startTournament')
 	{
-		console.log('starting tournament');
-		console.log(typeof(playernb));
-		console.log('ici');
 		tournamentSocket.send(JSON.stringify({
 			'message' : 'getGameId',
 			'playernb' : playernb
