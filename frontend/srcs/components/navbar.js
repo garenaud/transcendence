@@ -197,7 +197,7 @@ async  function renderUserMenu(user) {
   await displayUserInfo(user);
   await renderUserMenu(user);
   await setupButtonListener();
-  //showUserList();
+//   showUserList();
   //showFriendsList();
 }
 

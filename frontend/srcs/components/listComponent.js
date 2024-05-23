@@ -5,60 +5,75 @@ import { sendFriendRequest, acceptFriendRequest, denyFriendRequest, getFriendReq
 
 let gameList = [];
 
+let isLoadingUserList = false;
+
 export async function showUserList() {
+    if (isLoadingUserList) {
+        console.log("showUserList is already in progress");
+        return;
+    }
+    isLoadingUserList = true;
+    
+    console.log("showUserList called");
     const users = appState.users;
     const modalBody = document.querySelector('#addFriend .modal-body');
+
+    // Vider le contenu actuel de la modale
     modalBody.innerHTML = '';
+    console.log("Modal content cleared");
+
     const table = document.createElement('table');
     table.className = 'userlist-table';
 
-    getFriendRequestList().then(async (requests) => {
-        for (const user of users) {
-            if (user.id === appState.userId) {
-                continue;
-            }
-            if (appState.userProfile.friendlist.includes(user.id)) {
-                continue;
-            }
-            const userProfile = appState.usersProfile.find(profile => profile.user === user.id);
-            const row = document.createElement('tr');
-            const nameCell = document.createElement('td');
-            const idCell = document.createElement('td');
-            const emailCell = document.createElement('td');
-            const buttonCell = document.createElement('td');
-            const photoCell = document.createElement('td');
-            const photoComponent = await createPhotoComponent(user.id, userProfile.winrate);
+    const requests = await getFriendRequestList();
+    console.log("Friend requests fetched", requests);
 
-            const pendingRequest = requests.find(request => request.from_user === appState.userId && request.to_user === user.id);
-            let buttonComponent;
-            if (pendingRequest) {
-                const pElement = document.createElement('p');
-                pElement.textContent = 'En attente de la confirmation';
-                pElement.setAttribute('data-lang-key', 'waitConfirmFriend');
-                buttonComponent = pElement;
-            } else {
-                buttonComponent = createButtonComponent('+', 'addFriendButton', '+', (event) => {
-                    sendFriendRequest(appState.userId, user.username);
-                    event.target.parentNode.removeChild(event.target);
-                });
-            }
+    for (const user of users) {
+        if (user.id === appState.userId) continue;
+        if (appState.userProfile.friendlist.includes(user.id)) continue;
 
-            idCell.textContent = user.id;
-            nameCell.textContent = user.username;
-            emailCell.textContent = user.email;
-            photoCell.appendChild(photoComponent);
-            buttonCell.appendChild(buttonComponent);
-            row.appendChild(photoCell);
-            row.appendChild(idCell);
-            row.appendChild(nameCell);
-            row.appendChild(emailCell);
-            row.appendChild(buttonCell);
-            table.appendChild(row);
+        const userProfile = appState.usersProfile.find(profile => profile.user === user.id);
+        const row = document.createElement('tr');
+        const nameCell = document.createElement('td');
+        const idCell = document.createElement('td');
+        const emailCell = document.createElement('td');
+        const buttonCell = document.createElement('td');
+        const photoCell = document.createElement('td');
+
+        const photoComponent = await createPhotoComponent(user.id, userProfile.winrate);
+        const pendingRequest = requests.find(request => request.from_user === appState.userId && request.to_user === user.id);
+        let buttonComponent;
+        if (pendingRequest) {
+            const pElement = document.createElement('p');
+            pElement.textContent = 'En attente de la confirmation';
+            pElement.setAttribute('data-lang-key', 'waitConfirmFriend');
+            buttonComponent = pElement;
+        } else {
+            buttonComponent = createButtonComponent('+', 'addFriendButton', '+', (event) => {
+                sendFriendRequest(appState.userId, user.username);
+                event.target.parentNode.removeChild(event.target);
+            });
         }
 
-        modalBody.appendChild(table);
-    });
+        idCell.textContent = user.id;
+        nameCell.textContent = user.username;
+        emailCell.textContent = user.email;
+        photoCell.appendChild(photoComponent);
+        buttonCell.appendChild(buttonComponent);
+        row.appendChild(photoCell);
+        row.appendChild(idCell);
+        row.appendChild(nameCell);
+        row.appendChild(emailCell);
+        row.appendChild(buttonCell);
+        table.appendChild(row);
+    }
+
+    modalBody.appendChild(table);
+    console.log("Table added to modal");
+
+    isLoadingUserList = false;
 }
+
 
   async function updateGameList() {
     const newGameList = await loadGameList();
