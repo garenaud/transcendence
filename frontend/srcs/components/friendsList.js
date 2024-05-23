@@ -108,7 +108,6 @@ async function addRow(user, userProfile, table, buttonText1, buttonText2, reques
   const buttonCell2 = buttonText2 ? document.createElement('td') : null;
   
   const photoComponent = await createPhotoComponent(user.id, 100);
-  console.log('photoComponent:', photoComponent);
   
   let buttonComponent1;
   if (buttonText1) {
