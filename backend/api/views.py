@@ -363,7 +363,8 @@ def get_picture(request, userid):
 @csrf_exempt
 def post_picture(request, userid):
 	if request.method == 'POST':
-		profile = userProfile.objects.get(id=userid)
+		user = User.objects.get(id=userid)
+		profile = userProfile.objects.get(user=user)
 		image = request.FILES.get('filename')
 		if image:
 			profile.profile_picture = image

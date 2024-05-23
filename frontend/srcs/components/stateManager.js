@@ -207,7 +207,7 @@ async function renderGameView() {
         }
         const game = await renderPong();
         const game2 = await renderRun();
-        const gameListHTML = await showRanking();
+        const gameListHTML = await showGameList();
         const cardHistory = createListCardComponent('pongPlayed', 'Games', gameListHTML);
         await renderDiv([cardHistory, game], 'row');
         await LanguageBtn();
