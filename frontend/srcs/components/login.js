@@ -241,21 +241,3 @@ document.body.addEventListener('keydown', function(event) {
         }
     }
 });
-
-/* document.addEventListener('DOMContentLoaded', (event) => {
-    const loginForm = document.querySelector('.login-form');
-    loginForm.addEventListener('keydown', function(event) {
-        if (event.key === 'Enter') {
-            event.preventDefault();
-            document.getElementById('loginBtn').click();
-        }
-    });
-
-    const signupForm = document.querySelector('.signup');
-    signupForm.addEventListener('keydown', function(event) {
-        if (event.key === 'Enter') {
-            event.preventDefault();
-            document.getElementById('signupBtn').click();
-        }
-    });
-}); */

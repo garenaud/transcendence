@@ -1,6 +1,6 @@
 import { getCookie, getProfilePicture } from "./userManager.js";
 import { appState } from "./stateManager.js";
-import { createPhotoComponent, createButtonComponent, createToastComponent, createSmallButtonComponent } from "./globalComponent.js";
+import { createPhotoComponent, createButtonComponent, createSmallButtonComponent } from "./globalComponent.js";
 
 let isLoadingFriendsList = false;
 

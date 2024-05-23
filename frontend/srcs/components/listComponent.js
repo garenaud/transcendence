@@ -1,12 +1,10 @@
-import { createButtonComponent, createToastComponent, renderDiv, createPhotoComponent, createPhotoComponentUrl } from "./globalComponent.js";
+import { createButtonComponent, renderDiv, createPhotoComponent, createPhotoComponentUrl } from "./globalComponent.js";
 import { loadGameList, getUserFromServer, getProfilePicture } from "./userManager.js";
 import { appState } from "./stateManager.js";
 import { sendFriendRequest, acceptFriendRequest, denyFriendRequest, getFriendRequestList } from "./friendsList.js";
 
-let gameList = [];
-
 let isLoadingUserList = false;
-let isLoadingGameList = false;
+
 export async function showUserList() {
     if (isLoadingUserList) {
         return;
@@ -69,14 +67,6 @@ export async function showUserList() {
     isLoadingUserList = false;
 }
 
-async function updateGameList() {
-    const newGameList = await loadGameList();
-    if (JSON.stringify(newGameList) !== JSON.stringify(gameList)) {
-        gameList = newGameList;
-        // Define and implement showGameList function here
-        showGameList();
-    }
-}
 export async function showGameList() {
     loadGameList();
     let games = appState.games;
@@ -127,41 +117,6 @@ export async function showGameList() {
             table.appendChild(row);
         } catch (error) {
             console.error('Error fetching user:', error);
-        }
-    }
-  
-    return table.outerHTML;
-}
-
-export async function showRanking() {
-    let players = appState.players;
-    if (!Array.isArray(players)) {
-        players = [];
-    }
-    players.sort((a, b) => b.userProfile.winrate - a.userProfile.winrate)
-    const table = document.createElement('table');
-    table.className = 'ranking-table';
-  
-    for (const player of players) {
-        try {
-            const row = document.createElement('tr');
-            const nameCell = document.createElement('td');
-            const scoreCell = document.createElement('td');
-  
-            const user = await getUserFromServer(player.id);
-  
-            const photoComponent = createPhotoComponent('./Design/User/Max-R_Headshot.jpg', user.username);
-  
-            nameCell.appendChild(photoComponent);
-            nameCell.appendChild(document.createTextNode(user.username));
-            scoreCell.appendChild(document.createTextNode(`Score: ${player.score}`));
-  
-            row.appendChild(nameCell);
-            row.appendChild(scoreCell);
-  
-            table.appendChild(row);
-        } catch (error) {
-            console.error('Failed to create row for player', player, error);
         }
     }
   
