@@ -9,24 +9,20 @@ let isLoadingUserList = false;
 
 export async function showUserList() {
     if (isLoadingUserList) {
-        console.log("showUserList is already in progress");
         return;
     }
     isLoadingUserList = true;
     
-    console.log("showUserList called");
     const users = appState.users;
     const modalBody = document.querySelector('#addFriend .modal-body');
 
     // Vider le contenu actuel de la modale
     modalBody.innerHTML = '';
-    console.log("Modal content cleared");
 
     const table = document.createElement('table');
     table.className = 'userlist-table';
 
     const requests = await getFriendRequestList();
-    console.log("Friend requests fetched", requests);
 
     for (const user of users) {
         if (user.id === appState.userId) continue;
@@ -69,7 +65,6 @@ export async function showUserList() {
     }
 
     modalBody.appendChild(table);
-    console.log("Table added to modal");
 
     isLoadingUserList = false;
 }

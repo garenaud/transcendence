@@ -4,6 +4,7 @@ import { createPhotoComponent, createButtonComponent, createToastComponent } fro
 
 export async function showFriendsList() {
   const users = appState.users;
+  const modalBody = document.querySelector('#friendList .modal-body');
   const table = document.createElement('table');
   table.className = 'userlist-table';
 
