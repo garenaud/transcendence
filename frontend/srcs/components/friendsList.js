@@ -2,63 +2,99 @@ import { getCookie, getProfilePicture } from "./userManager.js";
 import { appState } from "./stateManager.js";
 import { createPhotoComponent, createButtonComponent, createToastComponent } from "./globalComponent.js";
 
+let isLoadingFriendsList = false;
+
 export async function showFriendsList() {
+  if (isLoadingFriendsList) {
+    return;
+  }
+  isLoadingFriendsList = true;
   const users = appState.users;
   const modalBody = document.querySelector('#friendList .modal-body');
   modalBody.innerHTML = '';
   const table = document.createElement('table');
   table.className = 'userlist-table';
 
-  // Afficher les amis
-  for (const friendId of appState.userProfile.friendlist) {
-    const friend = users.find(user => user.id === friendId);
-    if (friend) {
-        const friendProfile = appState.usersProfile.find(profile => profile.user === friend.id);
+// Afficher les amis
+for (const friendId of appState.userProfile.friendlist) {
+  const friend = users.find(user => user.id === friendId);
+  if (friend) {
+    const friendProfile = appState.usersProfile.find(profile => profile.user === friend.id);
 
-        // Créer un row supplémentaire pour le profil
-        const profileRow = document.createElement('tr');
-        profileRow.style.display = 'none'; // Ajouter cette ligne
-        const profileUsername = document.createElement('td');
-        profileUsername.textContent = friend.username;
-        profileRow.appendChild(profileUsername);
-        const profileFirstName = document.createElement('td');
-        profileFirstName.textContent = friend.first_name;
-        profileRow.appendChild(profileFirstName);
-        const profileLastName = document.createElement('td');
-        profileLastName.textContent = friend.last_name;
-        profileRow.appendChild(profileLastName);
-        const profileEmail = document.createElement('td');
-        profileEmail.textContent = friend.email;
-        profileRow.appendChild(profileEmail);
-        const data = await getFriendHistory(friend.id);
-        // Si game_1, game_2, ou game_3 ne sont pas null, créer une nouvelle ligne pour chaque jeu
-        ['game_1', 'game_2', 'game_3'].forEach(gameKey => {
-          const game = data.message[gameKey];
-          if (game !== "NULL") {
-            const gameRow = document.createElement('tr');
-            gameRow.style.display = 'none';
-      
-            const gameId = document.createElement('td');
-            gameId.textContent = game.id;
-            gameRow.appendChild(gameId);
-      
-            const gameDate = document.createElement('td');
-            gameDate.textContent = game.date;
-            gameRow.appendChild(gameDate);
-      
-            const gameScore = document.createElement('td');
-            gameScore.textContent = `Score: ${game.p1_score} - ${game.p2_score}`;
-            gameRow.appendChild(gameScore);
-      
-            // Ajouter la ligne de jeu à profileRow
-            profileRow.appendChild(gameRow);
-          }
-        });
-      
-        await addRow(friend, friendProfile, table, 'Voir le profil', null, null, profileRow);
-        table.appendChild(profileRow); // Déplacer cette ligne ici
-    }
+    // Créer un row supplémentaire pour le profil
+    const profileRow = document.createElement('tr');
+    profileRow.style.display = 'none';
+    const profileUsername = document.createElement('td');
+    profileUsername.textContent = friend.username;
+    profileRow.appendChild(profileUsername);
+    const profileFirstName = document.createElement('td');
+    profileFirstName.textContent = friend.first_name;
+    profileRow.appendChild(profileFirstName);
+    const profileLastName = document.createElement('td');
+    profileLastName.textContent = friend.last_name;
+    profileRow.appendChild(profileLastName);
+    const profileEmail = document.createElement('td');
+    profileEmail.textContent = friend.email;
+    profileRow.appendChild(profileEmail);
+    const data = await getFriendHistory(friend.id);
+
+    // Ajouter des titres de colonnes pour l'historique des matchs
+    const gameHeaderRow = document.createElement('tr');
+    ['ID du jeu', 'Date du jeu', 'Score', 'Adversaire', 'Résultat'].forEach(header => {
+      const th = document.createElement('th');
+      th.textContent = header;
+      gameHeaderRow.appendChild(th);
+    });
+    profileRow.appendChild(gameHeaderRow);
+
+    // Si game_1, game_2, ou game_3 ne sont pas null, créer une nouvelle ligne pour chaque jeu
+    ['game_1', 'game_2', 'game_3'].forEach(gameKey => {
+      const game = data.message[gameKey];
+      console.log('game:', game);
+      if (game !== "NULL") {
+        const gameRow = document.createElement('tr');
+        gameRow.style.display = 'none';
+
+        const gameId = document.createElement('td');
+        gameId.textContent = game.id;
+        gameRow.appendChild(gameId);
+
+        const gameDate = document.createElement('td');
+        gameDate.textContent = game.date;
+        gameRow.appendChild(gameDate);
+
+        const gameScore = document.createElement('td');
+        gameScore.textContent = `Score: ${game.p1_score} - ${game.p2_score}`;
+        gameRow.appendChild(gameScore);
+
+        // Trouver l'adversaire
+        console.log('p1 =', game.p1_id, 'p2 =', game.p2_id);
+        const opponentId = game.p1_id === friend.id ? game.p2_id : game.p1_id;
+        console.log('opponentId:', opponentId);
+        const opponent = users.find(user => user.id === opponentId);
+        console.log('opponent:', opponent);
+        const opponentUsername = document.createElement('td');
+        opponentUsername.textContent = opponent ? opponent.username : 'Inconnu';
+        gameRow.appendChild(opponentUsername);
+
+        // Indiquer si le match a été gagné ou perdu
+        const gameResult = document.createElement('td');
+        const isWinner = (game.p1_id === friend.id && game.p1_score > game.p2_score) || (game.p2_id === friend.id && game.p2_score > game.p1_score);
+        console.log('isWinner:', isWinner, 'p1 =', game.p1_score, 'p2 =', game.p2_score, 'p1_score =', game.p1_score, 'p2_score =', game.p2_score)
+        gameResult.textContent = isWinner ? 'Gagné' : 'Perdu';
+        gameRow.style.backgroundColor = isWinner ? 'green' : 'red';
+        gameRow.appendChild(gameResult);
+
+        // Ajouter la ligne de jeu à profileRow
+        profileRow.appendChild(gameRow);
+      }
+    });
+
+    await addRow(friend, friendProfile, table, 'Voir le profil', null, null, profileRow);
+    table.appendChild(profileRow);
   }
+  isLoadingFriendsList = false;
+}
 
   // Afficher les demandes d'amis
   const requests = await getFriendRequestList();
@@ -176,7 +212,6 @@ export function sendFriendRequest(fromId, toUsername) {
     })
     .then(response => response.json())
     .then(data => console.log(data))
-    .then(createToastComponent('toast', 'FriendList', data))
     .catch((error) => {
       console.error('Error:', error);
     });
