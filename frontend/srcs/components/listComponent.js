@@ -5,20 +5,19 @@ import { sendFriendRequest, acceptFriendRequest, denyFriendRequest, getFriendReq
 
 let gameList = [];
 
-export function showUserList() {
+export async function showUserList() {
     const users = appState.users;
     const modalBody = document.querySelector('#addFriend .modal-body');
     const table = document.createElement('table');
     table.className = 'userlist-table';
 
-    getFriendRequestList().then(requests => {
-        users.forEach(user => {
-            // Ne pas afficher l'utilisateur courant
+    getFriendRequestList().then(async (requests) => {
+        for (const user of users) {
             if (user.id === appState.userId) {
-                return;
+                continue;
             }
             if (appState.userProfile.friendlist.includes(user.id)) {
-                return;
+                continue;
             }
             const userProfile = appState.usersProfile.find(profile => profile.user === user.id);
             const row = document.createElement('tr');
@@ -27,9 +26,8 @@ export function showUserList() {
             const emailCell = document.createElement('td');
             const buttonCell = document.createElement('td');
             const photoCell = document.createElement('td');
-            const photoComponent = createPhotoComponent(getProfilePicture(user.id) ? userProfile.profile_picture : './Design/User/Max-R_Headshot.jpg', 100);
+            const photoComponent = await createPhotoComponent(user.id, userProfile.winrate);
 
-            // Vérifier si une demande d'ami est en attente
             const pendingRequest = requests.find(request => request.from_user === appState.userId && request.to_user === user.id);
             let buttonComponent;
             if (pendingRequest) {
@@ -42,10 +40,6 @@ export function showUserList() {
                     sendFriendRequest(appState.userId, user.username);
                     event.target.parentNode.removeChild(event.target);
                 });
-/*                 const pElement = document.createElement('p');
-                pElement.textContent = 'En attente de la confirmation';
-                pElement.setAttribute('data-lang-key', 'waitConfirmFriend');
-                buttonCell.appendChild(pElement); */
             }
 
             idCell.textContent = user.id;
@@ -59,7 +53,7 @@ export function showUserList() {
             row.appendChild(emailCell);
             row.appendChild(buttonCell);
             table.appendChild(row);
-        });
+        }
 
         modalBody.appendChild(table);
     });
@@ -91,8 +85,8 @@ export function showUserList() {
   
             const p1User = await getUserFromServer(game.p1_id);
             const p2User = await getUserFromServer(game.p2_id);
-  
-            const p1PhotoComponent = createPhotoComponent('./Design/User/Max-R_Headshot.jpg', p1User.username);
+            const p1PhotoUrl = await getProfilePicture(game.p1_id)
+            const p1PhotoComponent = createPhotoComponent(p1PhotoUrl, p1User.username);
             const p2PhotoComponent = createPhotoComponent('./Design/User/Max-R_Headshot.jpg', p2User.username);
   
             p1Cell.appendChild(p1PhotoComponent);

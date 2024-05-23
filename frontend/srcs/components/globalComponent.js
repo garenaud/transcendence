@@ -1,5 +1,5 @@
 import { showGameList } from "./listComponent.js";
-import { getUserFromServer } from "./userManager.js";
+import { getProfilePicture, getUserFromServer } from "./userManager.js";
 
 export async function createListCardComponent(dataLangKey, titre, listHTML) {
   const listCardHTML = `
@@ -101,11 +101,12 @@ export async function renderDiv(components, className) {
   }
 }
 
-export function createPhotoComponent(imageSrc, points) {
+export async function createPhotoComponent(userId, points) {
+  const photoUrl = await getProfilePicture(userId);
   const profileHeaderHTML = `
   <div class="profile-header-container">   
       <div class="profile-header-img">
-          <img class="rounded-circle" src="//lh3.googleusercontent.com/-6V8xOA6M7BA/AAAAAAAAAAI/AAAAAAAAAAA/rzlHcD0KYwo/photo.jpg?sz=120" />
+          <img class="rounded-circle" src="${photoUrl}" />
           <!-- badge -->
           <div class="rank-label-container">
               <span class="label label-default rank-label">100 pts</span>
@@ -116,7 +117,7 @@ export function createPhotoComponent(imageSrc, points) {
   const photoContainer = document.createElement('div');
   const profileHeader = document.createElement('div');
   profileHeader.innerHTML = profileHeaderHTML;
-  profileHeader.querySelector('.profile-header-img img').src = imageSrc;
+/*   profileHeader.querySelector('.profile-header-img img').src = imageSrc; */
   profileHeader.querySelector('.rank-label-container .rank-label').textContent = points;
   photoContainer.appendChild(profileHeader);
   return photoContainer;

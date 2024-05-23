@@ -28,15 +28,16 @@ function encodeImage(file) {
   });
 }
 
-export function renderNavbar(user){
+export async function renderNavbar(user){
   //const user = getUser();
   if (!user) {
     console.error('Aucun utilisateur n\'a été trouvé');
     return;
   }  
   
-function displayUserInfo(user) {
+async function displayUserInfo(user) {
       //let currentUser = user[0];
+      const pictureUrl = await getProfilePicture(user.userId);
       const userInfoDiv = document.getElementById('nav-user');
     //   user.profilePicture = getProfilePicture(user.id);
       if (userInfoDiv) {
@@ -47,21 +48,24 @@ function displayUserInfo(user) {
           </div>
           <div id="user-menu-button" class="nav-user-img d-md-block">
                   <div id="user-menu-button" class="img_cont_nav">
-                  <img id="profile-picture" alt="User Image1">
+                  <img src="${pictureUrl}" alt="User Image">
                   </div>
           </div>
           `;
       }
   }
   
-  function renderUserMenu(user) {
+async  function renderUserMenu(user) {
+    const pictureUrl = await getProfilePicture(user.userId);
     const userMenuHTML = `
         <div id="user-menu" class="user-menu-hidden">
 
-            <div class="user-menu-img" id="profile-picture">
-                <button type="button" class="close close-menu-button" aria-label="Close"> <span aria-hidden="true">&times;</span> </button>
-                <button type="button" class="edit edit-menu-button btn btn-primary" aria-label="Edit" data-bs-toggle="modal" data-bs-target="#editPicture"> <span aria-hidden="true">&#9998;</span> </button>
-            </div>
+
+        <div class="user-menu-img">
+        <img src="${pictureUrl}" alt="User Image">
+        <button type="button" class="close close-menu-button" aria-label="Close"> <span aria-hidden="true">&times;</span> </button>
+        <button type="button" class="edit edit-menu-button btn btn-primary" aria-label="Edit" data-bs-toggle="modal" data-bs-target="#editPicture"> <span aria-hidden="true">&#9998;</span> </button>
+        </div>
             <div class="user-menu-title">
                 <h3>${user.user.username}</h3>
                 <h4>${user.userProfile.game_won} matchs gagnés</h4>
@@ -162,7 +166,7 @@ function displayUserInfo(user) {
     document.body.insertAdjacentHTML('beforeend', userMenuHTML);
 }  
 
-    function insertNavbarHTML() {
+    async function insertNavbarHTML() {
         const navbarHTML = `
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
       <div class="container-fluid">
@@ -190,11 +194,11 @@ function displayUserInfo(user) {
     document.body.insertAdjacentHTML('afterbegin', navbarHTML);
   }
   insertNavbarHTML();
-  displayUserInfo(user);
-  renderUserMenu(user);
-  setupButtonListener();
-  showUserList();
-  showFriendsList();
+  await displayUserInfo(user);
+  await renderUserMenu(user);
+  await setupButtonListener();
+  //showUserList();
+  //showFriendsList();
 }
 
 function    setupButtonListener() {
@@ -206,13 +210,20 @@ function    setupButtonListener() {
       changeView('game');
   });
 
-  document.getElementById('user-menu-button').addEventListener('click', function() {
-    updateFriendRequestsNotification();
+  document.getElementById('user-menu-button').addEventListener('click', async function() {
+    try {
+      await updateFriendRequestsNotification();
+      await showFriendsList();
+      await showUserList();
+    } catch (error) {
+      console.error('An error occurred:', error);
+    }
+  
     const userMenu = document.getElementById('user-menu');
-    if (userMenu.style.display === 'block') {
-      userMenu.style.display = 'none';
-    } else {
+    if (userMenu) {
       userMenu.style.display = 'block';
+    } else {
+      console.error('No element with ID "user-menu" found');
     }
   });
 
@@ -264,6 +275,7 @@ function    setupButtonListener() {
             if (userMenu.style.display === 'block') {
                 userMenu.style.display = 'none';
             } else {
+              getProfilePicture(appState.userId);
                 userMenu.style.display = 'block';
             }
         });

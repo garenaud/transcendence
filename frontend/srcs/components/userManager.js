@@ -65,9 +65,8 @@ export function getCookie(name) {
 	const parts = value.split(`; ${name}=`);
 	if (parts.length === 2) return parts.pop().split(';').shift();
 }
-
 export function getProfilePicture(userId) {
-	fetch(`/api/get_image/${appState.userId}`)
+	return fetch(`/api/get_image/${appState.userId}`)
 	.then(response => {
 		if (!response.ok) {
 			throw new Error(`HTTP error! status: ${response.status}`);
@@ -79,7 +78,8 @@ export function getProfilePicture(userId) {
         appState.user.profilePicture = imageUrl;
 
         // Mettre à jour l'attribut src de l'image
-        document.getElementById('profile-picture').src = imageUrl;
+        //document.getElementById('profile-picture').src = imageUrl;
+        return imageUrl;
 	})
 	.catch(error => {
 		console.error('Erreur lors du chargement de l\'image de l\'utilisateur:', error.message);
