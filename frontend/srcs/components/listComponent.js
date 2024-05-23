@@ -92,8 +92,8 @@ export async function showGameList() {
             const p2Cell = document.createElement('td');
             const statusCell = document.createElement('td');
   
-            const p1User = await getUserFromServer(game.p1_id);
-            const p2User = await getUserFromServer(game.p2_id);
+            const p1User = appState.users.find(user => user.id === game.p1_id);
+            const p2User = appState.users.find(user => user.id === game.p2_id);
             
             const p1PhotoUrl = await getProfilePicture(game.p1_id);
             const p2PhotoUrl = await getProfilePicture(game.p2_id);
