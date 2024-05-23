@@ -2276,3 +2276,14 @@ div.modal-footer, div.modal-body, div.modal-header{
 .userlist-table td {
   border: none;
 }
+
+.game-list-table {
+  border-collapse: separate;
+  border-spacing: 0 10px; /* Cela ajoute un espace de 10px entre les lignes */
+}
+
+.game-list-table tr {
+  background-color: rgba(26, 36, 77, 0.8);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}

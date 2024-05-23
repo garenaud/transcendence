@@ -150,11 +150,6 @@ function setUsername(username) {
     updateUserOnServer(appState);
 }
 
-function setUserPoints(pts){
-    appState.user.pts = pts;
-    sessionStorage.setItem('user', JSON.stringify(appState.user));
-}
-
 function setUserProfilePicture(profilePicture){
     console.log('je commence le set picture');
     appState.user.profilePicture = profilePicture;
@@ -169,7 +164,7 @@ function getUser() {
     }
 }
 
-export { getUser, setUsername, setUserPoints, setUserProfilePicture };
+export { getUser, setUsername, setUserProfilePicture };
 
 export async function loadUser() {
     try {
@@ -190,7 +185,6 @@ export async function loadUser() {
         else {
             getProfilePicture(appState.userId);
         } */
-        appState.user.pts = 100;
         sessionStorage.setItem('user', JSON.stringify(appState.user));
     } catch (error) {
         console.error('Erreur lors du chargement des données utilisateur:', error);

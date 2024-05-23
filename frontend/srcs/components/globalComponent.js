@@ -125,7 +125,7 @@ export async function createPhotoComponent(userId, points) {
           <img class="rounded-circle" src="${photoUrl}" />
           <!-- badge -->
           <div class="rank-label-container">
-              <span class="label label-default rank-label">100 pts</span>
+              <span class="label label-default rank-label">100%</span>
           </div>
       </div>
   </div>
@@ -134,6 +134,26 @@ export async function createPhotoComponent(userId, points) {
   const profileHeader = document.createElement('div');
   profileHeader.innerHTML = profileHeaderHTML;
 /*   profileHeader.querySelector('.profile-header-img img').src = imageSrc; */
+  profileHeader.querySelector('.rank-label-container .rank-label').textContent = points;
+  photoContainer.appendChild(profileHeader);
+  return photoContainer;
+}
+
+export async function createPhotoComponentUrl(photoUrl, points) {
+  const profileHeaderHTML = `
+  <div class="profile-header-container">   
+      <div class="profile-header-img">
+          <img class="rounded-circle" src="${photoUrl}" />
+          <!-- badge -->
+          <div class="rank-label-container">
+              <span class="label label-default rank-label">100 pts</span>
+          </div>
+      </div>
+  </div>
+  `;
+  const photoContainer = document.createElement('div');
+  const profileHeader = document.createElement('div');
+  profileHeader.innerHTML = profileHeaderHTML;
   profileHeader.querySelector('.rank-label-container .rank-label').textContent = points;
   photoContainer.appendChild(profileHeader);
   return photoContainer;

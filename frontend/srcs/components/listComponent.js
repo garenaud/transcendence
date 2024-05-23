@@ -1,4 +1,4 @@
-import { createButtonComponent, createToastComponent, renderDiv, createPhotoComponent } from "./globalComponent.js";
+import { createButtonComponent, createToastComponent, renderDiv, createPhotoComponent, createPhotoComponentUrl } from "./globalComponent.js";
 import { loadGameList, getUserFromServer, getProfilePicture } from "./userManager.js";
 import { appState } from "./stateManager.js";
 import { sendFriendRequest, acceptFriendRequest, denyFriendRequest, getFriendRequestList } from "./friendsList.js";
@@ -69,67 +69,7 @@ export async function showUserList() {
     isLoadingUserList = false;
 }
 
-
-/* export async function showUserList() {
-    if (isLoadingUserList) {
-        return;
-    }
-    isLoadingUserList = true;
-    const users = appState.users;
-    const modalBody = document.querySelector('#addFriend .modal-body');
-    modalBody.innerHTML = '';
-    const table = document.createElement('table');
-    table.className = 'userlist-table';
-
-    getFriendRequestList().then(async (requests) => {
-        for (const user of users) {
-            if (user.id === appState.userId) {
-                continue;
-            }
-            if (appState.userProfile.friendlist.includes(user.id)) {
-                continue;
-            }
-            const userProfile = appState.usersProfile.find(profile => profile.user === user.id);
-            const row = document.createElement('tr');
-            const nameCell = document.createElement('td');
-            const idCell = document.createElement('td');
-            const emailCell = document.createElement('td');
-            const buttonCell = document.createElement('td');
-            const photoCell = document.createElement('td');
-            const photoComponent = await createPhotoComponent(user.id, userProfile.winrate);
-
-            const pendingRequest = requests.find(request => request.from_user === appState.userId && request.to_user === user.id);
-            let buttonComponent;
-            if (pendingRequest) {
-                const pElement = document.createElement('p');
-                pElement.textContent = 'En attente de la confirmation';
-                pElement.setAttribute('data-lang-key', 'waitConfirmFriend');
-                buttonComponent = pElement;
-            } else {
-                buttonComponent = createButtonComponent('+', 'addFriendButton', '+', (event) => {
-                    sendFriendRequest(appState.userId, user.username);
-                    event.target.parentNode.removeChild(event.target);
-                });
-            }
-
-            idCell.textContent = user.id;
-            nameCell.textContent = user.username;
-            emailCell.textContent = user.email;
-            photoCell.appendChild(photoComponent);
-            buttonCell.appendChild(buttonComponent);
-            row.appendChild(photoCell);
-            row.appendChild(idCell);
-            row.appendChild(nameCell);
-            row.appendChild(emailCell);
-            row.appendChild(buttonCell);
-            table.appendChild(row);
-        }
-
-        modalBody.appendChild(table);
-    });
-} */
-
-  async function updateGameList() {
+async function updateGameList() {
     const newGameList = await loadGameList();
     if (JSON.stringify(newGameList) !== JSON.stringify(gameList)) {
         gameList = newGameList;
@@ -137,12 +77,7 @@ export async function showUserList() {
         showGameList();
     }
 }
-
 export async function showGameList() {
-    if (isLoadingGameList) {
-        return;
-    }
-    isLoadingGameList = true;
     loadGameList();
     let games = appState.games;
     if (!Array.isArray(games)) {
@@ -159,10 +94,11 @@ export async function showGameList() {
   
             const p1User = await getUserFromServer(game.p1_id);
             const p2User = await getUserFromServer(game.p2_id);
-            const p1PhotoUrl = await getProfilePicture(game.p1_id)
-            const p1PhotoComponent = await createPhotoComponent(p1PhotoUrl, p1User.username);
-            const p2PhotoUrl = await getProfilePicture(game.p2_id)
-            const p2PhotoComponent = await createPhotoComponent(p2PhotoUrl, p2User.username);
+            
+            const p1PhotoUrl = await getProfilePicture(game.p1_id);
+            const p2PhotoUrl = await getProfilePicture(game.p2_id);
+            const p1PhotoComponent = await createPhotoComponentUrl(p1PhotoUrl, p1User.username);
+            const p2PhotoComponent = await createPhotoComponentUrl(p2PhotoUrl, p2User.username);
   
             p1Cell.appendChild(p1PhotoComponent);
             p1Cell.appendChild(document.createTextNode(`Score: ${game.p1_score}`));
@@ -194,8 +130,7 @@ export async function showGameList() {
         }
     }
   
-    document.getElementById('game').insertAdjacentElement('beforeend', table);
-    isLoadingGameList = false;
+    return table.outerHTML;
 }
 
 export async function showRanking() {

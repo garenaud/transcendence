@@ -261,7 +261,7 @@ function    setupButtonListener() {
         userInfoDiv.innerHTML = `
         <div class="nav-user-info">
         <h4>${user.user.username}</h4>
-        <h6>${user.user.pts} pts</h6>
+        <h6>${user.userId} </h6>
         </div>
         <div id="user-menu-button" class="nav-user-img">
                 <div id="user-menu-button-inner" class="img_cont_nav">
