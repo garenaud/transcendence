@@ -110,9 +110,29 @@ async  function renderUserMenu(user) {
                           <div class="form-group">
                           <label for="formGroupExampleInput"  class="text-white" data-lang-key='newUsername'>Nouveau username</label>
                           <input type="text" class="form-control" id="newUsername" placeholder="Username">
-                        </div>
-                      </form>
-                    </div>
+						      <div class="form-group">
+							<label for="newAlias" class="text-white" data-lang-key='newAlias'>Nouvel alias</label>
+							<input type="text" class="form-control" id="newAlias" placeholder="Alias">
+							</div>
+							<div class="form-group">
+							<label for="newFirstName" class="text-white" data-lang-key='newFirstName'>Nouveau prénom</label>
+							<input type="text" class="form-control" id="newFirstName" placeholder="Prénom">
+							</div>
+							<div class="form-group">
+							<label for="newLastName" class="text-white" data-lang-key='newLastName'>Nouveau nom</label>
+							<input type="text" class="form-control" id="newLastName" placeholder="Nom">
+							</div>
+							<div class="form-group">
+							<label for="newEmail" class="text-white" data-lang-key='newEmail'>Nouveau email</label>
+							<input type="email" class="form-control" id="newEmail" placeholder="Email">
+							</div>
+							<div class="form-group">
+							<label for="newPassword" class="text-white" data-lang-key='newPassword'>Nouveau mot de passe</label>
+							<input type="password" class="form-control" id="newPassword" placeholder="Mot de passe">
+							</div>
+							</form>
+							</div>
+							
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-lang-key='close'>Close</button>
                         <button id="userSaveChange" type="button" class="btn btn-primary"  data-bs-dismiss="modal" data-lang-key='saveChanges'>Save changes</button>
