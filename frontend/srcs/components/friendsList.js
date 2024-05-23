@@ -40,9 +40,14 @@ for (const friendId of appState.userProfile.friendlist) {
 
     // Ajouter des titres de colonnes pour l'historique des matchs
     const gameHeaderRow = document.createElement('tr');
-    ['ID du jeu', 'Date du jeu', 'Score', 'Adversaire', 'Résultat'].forEach(header => {
+    ['ID du jeu', 'Date du jeu', 'Score', 'Adversaire', 'Résultat'].forEach((header, index) => {
       const th = document.createElement('th');
-      th.textContent = header;
+      th.setAttribute('data-lang-key', `headerUserHistory${index}`);
+      
+      const h6 = document.createElement('h6');
+      h6.textContent = header;
+      th.appendChild(h6);
+      
       gameHeaderRow.appendChild(th);
     });
     profileRow.appendChild(gameHeaderRow);
@@ -50,7 +55,6 @@ for (const friendId of appState.userProfile.friendlist) {
     // Si game_1, game_2, ou game_3 ne sont pas null, créer une nouvelle ligne pour chaque jeu
     ['game_1', 'game_2', 'game_3'].forEach(gameKey => {
       const game = data.message[gameKey];
-      console.log('game:', game);
       if (game !== "NULL") {
         const gameRow = document.createElement('tr');
         gameRow.style.display = 'none';
@@ -68,11 +72,8 @@ for (const friendId of appState.userProfile.friendlist) {
         gameRow.appendChild(gameScore);
 
         // Trouver l'adversaire
-        console.log('p1 =', game.p1_id, 'p2 =', game.p2_id);
         const opponentId = game.p1_id === friend.id ? game.p2_id : game.p1_id;
-        console.log('opponentId:', opponentId);
         const opponent = users.find(user => user.id === opponentId);
-        console.log('opponent:', opponent);
         const opponentUsername = document.createElement('td');
         opponentUsername.textContent = opponent ? opponent.username : 'Inconnu';
         gameRow.appendChild(opponentUsername);
@@ -80,7 +81,6 @@ for (const friendId of appState.userProfile.friendlist) {
         // Indiquer si le match a été gagné ou perdu
         const gameResult = document.createElement('td');
         const isWinner = (game.p1_id === friend.id && game.p1_score > game.p2_score) || (game.p2_id === friend.id && game.p2_score > game.p1_score);
-        console.log('isWinner:', isWinner, 'p1 =', game.p1_score, 'p2 =', game.p2_score, 'p1_score =', game.p1_score, 'p2_score =', game.p2_score)
         gameResult.textContent = isWinner ? 'Gagné' : 'Perdu';
         gameRow.style.backgroundColor = isWinner ? 'green' : 'red';
         gameRow.appendChild(gameResult);

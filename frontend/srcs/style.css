@@ -2277,6 +2277,10 @@ div.modal-footer, div.modal-body, div.modal-header{
   border: none;
 }
 
+.userlist-table tr:hover {
+  background-color: rgba(255,255,255,0.3);
+}
+
 .game-list-table {
   border-collapse: separate;
   border-spacing: 0 10px; /* Cela ajoute un espace de 10px entre les lignes */

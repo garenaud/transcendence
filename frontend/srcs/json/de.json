@@ -53,5 +53,10 @@
     "confirmLogout": "Wenn Sie zu dieser Seite zurückkehren, werden Sie abgemeldet. Sind Sie sicher, dass Sie fortfahren möchten?",
     "error-404": "404 - Seite nicht gefunden",
     "waitConfirmFriend": "en attente de la confirmation - in deutsch",
-    "alreadyFriend": "Benutzer bereits in Ihrer Freundesliste."
+    "alreadyFriend": "Benutzer bereits in Ihrer Freundesliste.",
+    "headerUserHistory0": "Spiel-ID",
+    "headerUserHistory1": "Datum",
+    "headerUserHistory2": "Punktzahl",
+    "headerUserHistory3": "Gegner",
+    "headerUserHistory4": "Ergebnis"
 }
