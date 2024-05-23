@@ -1,6 +1,6 @@
 import { getCookie, getProfilePicture } from "./userManager.js";
 import { appState } from "./stateManager.js";
-import { createPhotoComponent, createButtonComponent, createToastComponent } from "./globalComponent.js";
+import { createPhotoComponent, createButtonComponent, createToastComponent, createSmallButtonComponent } from "./globalComponent.js";
 
 let isLoadingFriendsList = false;
 
@@ -147,12 +147,12 @@ async function addRow(user, userProfile, table, buttonText1, buttonText2, reques
   
   let buttonComponent1;
   if (buttonText1) {
-    buttonComponent1 = createButtonComponent(buttonText1, 'viewProfileButton', buttonText1, (event) => {
+    buttonComponent1 = createSmallButtonComponent(buttonText1, 'viewProfileButton', buttonText1, (event) => {
       if (buttonText1 === 'Accepter') {
         acceptFriendRequest(user.id, requestId);
         // Remplacer les boutons "Accepter" et "Refuser" par le bouton "Voir le profil"
         buttonCell1.innerHTML = '';
-        buttonCell1.appendChild(createButtonComponent('Voir le profil', 'viewProfileButton', 'Voir le profil', (event) => {
+        buttonCell1.appendChild(createSmallButtonComponent('Voir le profil', 'viewProfileButton', 'Voir le profil', (event) => {
           profileRow.style.display = '';
         }));
         if (buttonCell2) {
@@ -174,7 +174,7 @@ async function addRow(user, userProfile, table, buttonText1, buttonText2, reques
     });
   }
 
-  const buttonComponent2 = buttonText2 ? createButtonComponent(buttonText2, 'denyFriendButton', buttonText2, (event) => {
+  const buttonComponent2 = buttonText2 ? createSmallButtonComponent(buttonText2, 'denyFriendButton', buttonText2, (event) => {
       denyFriendRequest(appState.userId, requestId);
       // Supprimer la ligne si le bouton "Refuser" est pressé
       table.removeChild(row);

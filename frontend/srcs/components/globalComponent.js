@@ -71,6 +71,22 @@ export function createButtonComponent(text, buttonId, dataLangKey, onClickFuncti
   return div;
 }
 
+export function createSmallButtonComponent(text, buttonId, dataLangKey, onClickFunction) {
+  const glowingBtnHTML = `
+    <button id='${buttonId}' type="button" class="btn btn-primary btn-sm btn-sm-component" data-lang-key='${dataLangKey}'>${text}</button>
+  `;
+  const div = document.createElement('div');
+  div.className = 'd-flex justify-content-center align-items-center';
+  div.innerHTML = glowingBtnHTML;
+  const button = div.querySelector('button');
+  button.addEventListener('click', function(event) {
+    if (onClickFunction) {
+      onClickFunction(event);
+    }
+  });
+  return div;
+}
+
 // Fonction pour créer et ajouter un div avec des composants spécifiques à la page
 export async function renderDiv(components, className) {
   const existingDiv = document.querySelector(`.${className}`);

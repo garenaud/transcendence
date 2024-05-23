@@ -2259,3 +2259,20 @@ div.modal-footer, div.modal-body, div.modal-header{
   border: 1px solid #f5f6fa;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
 }
+
+.btn-sm-component {
+  background-color: #F6428E;
+  border-color: white;
+}
+
+.btn-sm-component:hover {
+  background-color: #f83788;
+}
+
+.userlist-table tr {
+  border-bottom: 0px solid #ddd;
+}
+
+.userlist-table td {
+  border: none;
+}
