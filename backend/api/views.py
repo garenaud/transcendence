@@ -15,9 +15,11 @@ from django.conf import settings
 from django.db.models import Q
 import random, os
 from itertools import chain
+from django.contrib.auth.decorators import login_required
 
 
 #Returns all user in the database
+
 @api_view(['GET'])
 def get_user_list(request):
 	print('##########')
@@ -261,6 +263,8 @@ def update_user_info(request, userid):
 				user.last_name = last_name
 			else:
 				error = 1
+			if alias != '':
+				profile.tournament_alias = alias
 
 			if error == 0:
 				user.save()
@@ -278,6 +282,7 @@ def cursed(request):
 	return HttpResponse("", status=200)
 
 def send_friend_request(request):
+	print(request.user.is_anonymous)
 	try:
 		data = json.loads(request.body)
 		from_id = data['username']
