@@ -45,7 +45,7 @@ export async function showUserList() {
         } else {
             buttonComponent = createButtonComponent('+', 'addFriendButton', '+', (event) => {
                 sendFriendRequest(appState.userId, user.username);
-                event.target.parentNode.removeChild(event.target);
+                event.target.parentNode.parentNode.removeChild(event.target.parentNode);
             });
         }
 
