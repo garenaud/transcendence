@@ -341,11 +341,13 @@ export function unloadScript() {
 		script.removeAttribute('type');
 		if (window.gameSocket) {
 			window.gameSocket.close();
+			console.log(window.gameSocket);
 		}
-		// if (window.tournamentSocket) {
-		// 	console.log('JE CLOSE TOURNAMENT');
-		// 	window.tournamentSocket.close();
-		// }
+		// TODO trouvé une soluce pour fermer les tournois.
+		if (window.tournamentSocket) {
+			window.tournamentSocket.close();
+			console.log(window.tournamentSocket);
+		}
 		script.remove(); // Supprimer le script du DOM
 	});
 }
