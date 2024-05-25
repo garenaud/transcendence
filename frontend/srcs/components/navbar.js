@@ -126,9 +126,15 @@ async  function renderUserMenu(user) {
 							<label for="newEmail" class="text-white" data-lang-key='newEmail'>Nouveau email</label>
 							<input type="email" class="form-control" id="newEmail" placeholder="Email">
 							</div>
-							<div class="form-group">
-							<label for="newPassword" class="text-white" data-lang-key='newPassword'>Nouveau mot de passe</label>
-							<input type="password" class="form-control" id="newPassword" placeholder="Mot de passe">
+								<div class="form-group">
+									<label for="newPassword" class="text-white" data-lang-key='newPassword'>Nouveau mot de passe</label>
+									<input type="password" class="form-control" id="newPassword" placeholder="Mot de passe">
+								</div>
+								<div class="form-group">
+									<label for="confirmPassword" class="text-white" data-lang-key='confirmPassword'>Confirmer le mot de passe</label>
+									<input type="password" class="form-control" id="confirmPassword" placeholder="Confirmer le mot de passe">
+								</div>
+								<button id="changePasswordBtn" type="button" class="btn btn-primary">Changer le mot de passe</button>
 							</div>
 							</form>
 							</div>
@@ -231,48 +237,94 @@ function    setupButtonListener() {
   });
 
   document.getElementById('user-menu-button').addEventListener('click', async function() {
-    try {
+	  try {
       await updateFriendRequestsNotification();
       await showFriendsList();
       await showUserList();
     } catch (error) {
-      console.error('An error occurred:', error);
+		console.error('An error occurred:', error);
     }
-  
+	
     const userMenu = document.getElementById('user-menu');
     if (userMenu) {
-      userMenu.style.display = 'block';
+		userMenu.style.display = 'block';
     } else {
-      console.error('No element with ID "user-menu" found');
+		console.error('No element with ID "user-menu" found');
     }
-  });
+});
 
-  document.getElementById('logoutBtn').addEventListener('click', logoutUser);
+document.getElementById('logoutBtn').addEventListener('click', logoutUser);
 
-  document.querySelector('.close-menu-button').addEventListener('click', function() {
-    document.getElementById('user-menu').style.display = 'none';
-  });
+document.querySelector('.close-menu-button').addEventListener('click', function() {
+	document.getElementById('user-menu').style.display = 'none';
+});
 
-  document.querySelector('input[type=file]').addEventListener('change', function(event) {
-    const file = event.target.files[0];
+document.querySelector('input[type=file]').addEventListener('change', function(event) {
+	const file = event.target.files[0];
     encodeImage(file).then(function(dataUrl) {
-        document.querySelector('img').src = dataUrl;
+		document.querySelector('img').src = dataUrl;
     });
-  });
+});
 
-  document.querySelector('#newProfilePicture').addEventListener('change', function() {
-    var file = this.files[0];
+document.querySelector('#newProfilePicture').addEventListener('change', function() {
+	var file = this.files[0];
     if (file) {
-        setProfilePicture(file);
+		setProfilePicture(file);
         var reader = new FileReader();
         reader.onload = function(e) {
-            var preview = document.querySelector('#preview');
+			var preview = document.querySelector('#preview');
             preview.src = e.target.result;
             preview.style.display = 'block';
         };
         reader.readAsDataURL(file);
     }
 });
+// TODO, faire en sorte que ca marche
+// function getCookie(name) {
+// 	let cookieValue = null;
+// 	if (document.cookie && document.cookie !== '') {
+// 		const cookies = document.cookie.split(';');
+// 		for (let i = 0; i < cookies.length; i++) {
+// 			const cookie = cookies[i].trim();
+// 			if (cookie.substring(0, name.length + 1) === (name + '=')) {
+// 				cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+// 				break;
+// 			}
+// 		}
+// 	}
+// 	return cookieValue;
+// }
+
+// document.getElementById('changePasswordBtn').addEventListener('click', function() {
+	// 	const newPassword = document.getElementById('newPassword').value;
+	// 	const confirmPassword = document.getElementById('confirmPassword').value;
+
+// 	if (newPassword !== confirmPassword) {
+// 		alert('Les mots de passe ne correspondent pas.');
+// 		return;
+// 	}
+
+// 	const data = new FormData();
+// 	data.append('old_password', ''); // Vous devez obtenir l'ancien mot de passe de l'utilisateur
+// 	data.append('new_password1', newPassword);
+// 	data.append('new_password2', confirmPassword);
+
+// 	fetch('/api/change_password/', {
+// 		method: 'POST',
+// 		body: data,
+// 		headers: {
+// 			'X-CSRFToken': getCookie('csrftoken') // Vous devez obtenir le cookie CSRF de Django
+// 		}
+// 	})
+// 	.then(response => response.json())
+// 	.then(data => {
+// 		if (data.status === 'success') {
+// 			alert('Mot de passe changé avec succès.');
+// 		} else {
+// 			alert('Erreur lors du changement de mot de passe.');
+// 		}
+// 	});
+// });
 
   function updateUserInfoInNavbar(user) {
     const userInfoDiv = document.getElementById('nav-user');
