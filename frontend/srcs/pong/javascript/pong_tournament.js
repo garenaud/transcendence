@@ -80,8 +80,7 @@ function startBtnFunction(){
 }
 
 nextBtn.addEventListener('click', nextBtnFunction);
-
-window.tournamentSocket = new WebSocket(
+tournamentSocket = new WebSocket(
 	'wss://'
 	+ window.location.host
 	+ '/ws/'
@@ -90,8 +89,7 @@ window.tournamentSocket = new WebSocket(
 	+ tournament_id
 	+ '/'
 );
-
-window.tournamentSocket.onerror = function(e) {
+tournamentSocket.onerror = function(e) {
 	window.location.reload();;
 }
 
@@ -480,7 +478,7 @@ function onMessageHandler(e) {
 		if (finalid == -1)
 		{
 			myModal3.style.display = "block";
-			window.tournamentSocket.send(JSON.stringify({
+			tournamentSocket.send(JSON.stringify({
 				'message' : 'winner',
 				'finalid' : finalid
 			}))
@@ -541,7 +539,7 @@ function sleep(delay) {
 const userList = document.getElementById('userList');
 let namelist = [];
 
-window.tournamentSocket.onmessage = function(e) {
+tournamentSocket.onmessage = function(e) {
 	tournament_data = JSON.parse(e.data);
 	console.log(e.data);
 	if (tournament_data.message == 'tournamentIdNotFound')
@@ -567,7 +565,7 @@ window.tournamentSocket.onmessage = function(e) {
 		playernb = tournament_data['playernb'];
 	else if (tournament_data.action == 'startTournament')
 	{
-		window.tournamentSocket.send(JSON.stringify({
+		tournamentSocket.send(JSON.stringify({
 			'message' : 'getGameId',
 			'playernb' : playernb
 			}));
@@ -602,7 +600,7 @@ window.tournamentSocket.onmessage = function(e) {
 	{
 		const errorElement = document.getElementById('error');
 		errorElement.textContent = "VOUS AVEZ REMPORTEZ LE TOURNOI, FELICITATIONS";
-		window.tournamentSocket.close();
+		tournamentSocket.close();
 	}
 }
 
