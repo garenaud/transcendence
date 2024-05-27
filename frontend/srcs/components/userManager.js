@@ -13,7 +13,6 @@ export function logoutUser() {
         },
     })
     .then(response => {
-        console.log('Server response:', response);
         if (response.ok) {
             sessionStorage.clear();
             appState.isLogged = false;
@@ -26,16 +25,15 @@ export function logoutUser() {
 }
 
 function updateUserOnServer(user) {
-    console.log('%&%&%&%&%&%&%&% user =', user);
     let csrfToken = getCookie('csrftoken');
     let userForBackend = {
         first_name: user.user.first_name,
         last_name: user.user.last_name,
         username: user.user.username,  // Assumant que 'username' est le nom d'utilisateur
-        email: user.user.email,  // Assumant que 'email' est le login
-        password: user.user.password  // Vous devez vous assurer que le mot de passe est correctement géré
+        email: user.user.email
+		// alias: user.user.alias  // Assumant que 'email' est le login
+        // password: user.user.password  // Vous devez vous assurer que le mot de passe est correctement géré
     };
-    console.log('Updating user:', userForBackend);
     fetch('https://localhost/api/user/' + appState.userId, {
         method: 'PUT',
         headers: {
@@ -45,14 +43,12 @@ function updateUserOnServer(user) {
         body: JSON.stringify(userForBackend),
     })
     .then(response => {
-        console.log('Server response:', response);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         return response.json();
     })
     .then(data => {
-        console.log('User updated:', data);
         getUserFromServer(appState.userId);
     })
     .catch((error) => {
@@ -67,7 +63,7 @@ export function getCookie(name) {
 }
 
 export function getProfilePicture(userId) {
-	fetch(`/api/get_image/${appState.userId}`)
+	return fetch(`/api/get_image/${userId}`)
 	.then(response => {
 		if (!response.ok) {
 			throw new Error(`HTTP error! status: ${response.status}`);
@@ -76,35 +72,12 @@ export function getProfilePicture(userId) {
 	})
 	.then(imageBlob => {
         const imageUrl = URL.createObjectURL(imageBlob);
-        appState.user.profilePicture = imageUrl;
-
-        // Mettre à jour l'attribut src de l'image
-        document.getElementById('profile-picture').src = imageUrl;
+        return imageUrl;
 	})
 	.catch(error => {
 		console.error('Erreur lors du chargement de l\'image de l\'utilisateur:', error.message);
 	});
 }
-
-/* export function getProfilePicture(userId) {
-    fetch(`/api/get_image/${appState.userId}`)
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.blob();
-    })
-    .then(imageBlob => {
-        let reader = new FileReader();
-        reader.onload = function() {
-            appState.user.profilePicture = reader.result;
-        }
-        reader.readAsDataURL(imageBlob);
-    })
-    .catch(error => {
-        console.error('Erreur lors du chargement de l\'image de l\'utilisateur:', error);
-    });
-} */
 
 export function setProfilePicture(file) {
     let formData = new FormData();
@@ -119,14 +92,12 @@ export function setProfilePicture(file) {
         body: formData
     })
     .then(response => {
-        console.log('+++++++++++++++++++++++++Server response:', response)
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         return response.json();
     })
     .then(json => {
-        console.log(json.message);
         if (json.image_url) {
             appState.user.profilePicture = json.image_url;
             sessionStorage.setItem('user', JSON.stringify(appState.user));
@@ -138,14 +109,11 @@ export function setProfilePicture(file) {
 }
 
 export async function getUserFromServer(userId) {
-    console.log('Fetching user with id:', userId);
     const response = await fetch('/api/user/' + userId);
     if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
     }
     const user = await response.json();
-    console.log('User fetched:', user);
-    console.log('appState.user:', appState.userId);
     return user;
 }
 
@@ -169,7 +137,30 @@ export function setCurrentUser(user) {
 
 function setUsername(username) {
     appState.user.username = username;
-    console.log('######%%%%%%%%%######username = ', username);
+    sessionStorage.setItem('user', JSON.stringify(appState.user));
+    updateUserOnServer(appState);
+}
+
+function setAlias(alias) {
+    appState.user.alias = alias;
+    sessionStorage.setItem('user', JSON.stringify(appState.user));
+    updateUserOnServer(appState);
+}
+
+function setEmail(email) {
+    appState.user.email = email;
+    sessionStorage.setItem('user', JSON.stringify(appState.user));
+    updateUserOnServer(appState);
+}
+
+function setFirstName(firstName) {
+    appState.user.first_name = firstName;
+    sessionStorage.setItem('user', JSON.stringify(appState.user));
+    updateUserOnServer(appState);
+}
+
+function setLastName(lastName) {
+    appState.user.last_name = lastName;
     sessionStorage.setItem('user', JSON.stringify(appState.user));
     updateUserOnServer(appState);
 }
@@ -180,10 +171,8 @@ function setUserPoints(pts){
 }
 
 function setUserProfilePicture(profilePicture){
-    console.log('je commence le set picture');
     appState.user.profilePicture = profilePicture;
     sessionStorage.setItem('user', JSON.stringify(appState.user));
-    console.log('appState.user apres setProfilePicture:', appState.user);
 }
 
 function getUser() {
@@ -193,7 +182,7 @@ function getUser() {
     }
 }
 
-export { getUser, setUsername, setUserPoints, setUserProfilePicture };
+export { getUser, setUsername, setUserPoints, setUserProfilePicture, setAlias, setEmail, setFirstName, setLastName};
 
 export async function loadUser() {
     try {
@@ -246,11 +235,8 @@ export function loadGameList() {
             return response.json();
         })
         .then(games => {
-            console.log('Données de jeu chargées avec succès:', games);
             appState.games = Array.isArray(games) ? games : [];
-            console.log('appState.games:', appState.games);
             return "";
-            //console.log('appState.games:', appState.games);
         })
         .catch(error => {
             console.error('Erreur lors du chargement des données de jeu:', error);

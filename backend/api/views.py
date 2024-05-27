@@ -15,8 +15,26 @@ from django.conf import settings
 from django.db.models import Q
 import random, os
 from itertools import chain
-from django.contrib.auth.decorators import login_required
+# TODO, pour le mdp
+# from django.contrib.auth.forms import PasswordChangeForm
+# from django.contrib.auth import update_session_auth_hash
+# from django.contrib import messages
 
+# def change_password(request):
+# 	if request.method == 'POST':
+# 		form = PasswordChangeForm(request.user, request.POST)
+# 		if form.is_valid():
+# 			user = form.save()
+# 			update_session_auth_hash(request, user)  # Important, to update the session with the new password
+# 			messages.success(request, 'Your password was successfully updated!')
+# 			return redirect('change_password')
+# 		else:
+# 			messages.error(request, 'Please correct the error below.')
+# 	else:
+# 		form = PasswordChangeForm(request.user)
+# 	return render(request, 'change_password.html', {
+# 		'form': form
+# 	})
 
 #Returns all user in the database
 
@@ -58,8 +76,8 @@ def user_by_id(request, id):
 			user.last_name = serializer.data['last_name']
 			user.username = serializer.data['username']
 			user.email = serializer.data['email']
-			user.password = serializer.data['password']
-			user.save(update_fields=['first_name', 'last_name', 'username', 'email', 'password'])
+			# user.password = serializer.data['password']
+			user.save(update_fields=['first_name', 'last_name', 'username', 'email'])
 			return Response(serializer.data, status=status.HTTP_200_OK)
 	else:
 		return Response("Method not allowed", status=status.HTTP_405_METHOD_NOT_ALLOWED)
@@ -368,7 +386,8 @@ def get_picture(request, userid):
 @csrf_exempt
 def post_picture(request, userid):
 	if request.method == 'POST':
-		profile = userProfile.objects.get(id=userid)
+		user = User.objects.get(id=userid)
+		profile = userProfile.objects.get(user=user)
 		image = request.FILES.get('filename')
 		if image:
 			profile.profile_picture = image
