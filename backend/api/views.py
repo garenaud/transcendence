@@ -15,6 +15,7 @@ from django.conf import settings
 from django.db.models import Q
 import random, os
 from itertools import chain
+from django.contrib.auth.decorators import login_required
 # TODO, pour le mdp
 # from django.contrib.auth.forms import PasswordChangeForm
 # from django.contrib.auth import update_session_auth_hash
@@ -246,9 +247,10 @@ def get_user_history(request, userid):
 		return Response({'message' : 'OK', 'data' : serializer1.data + serializer2.data}, status=200)
 	else:
 		return Response("Unauthorized method", status=status.HTTP_401_UNAUTHORIZED)
-	
+
+@api_view(['PUT'])
 def update_user_info(request, userid):
-	if request.method == 'POST':
+	if request.method == 'PUT':
 		error = 0 
 		try:
 			data = json.loads(request.body)
@@ -259,30 +261,33 @@ def update_user_info(request, userid):
 			username = data['username']
 			email = data['email']
 			first_name = data['first_name']
-			last_name = data['last_name']
-
-			if username != user.username:
-				if User.objects.filter(username=username).count == 0 and username != '':
+			last_name = data['last_name'] 
+			if username != user.username and username != '':
+				if not User.objects.filter(username=username).exists():
 					user.username = username
 				else:
 					error = 1
-			if alias != profile.tournament_alias:
-				if userProfile.objects.filter(tournament_alias=alias).count == 0 and alias != '':
+			if alias != profile.tournament_alias and alias != '':
+				if not userProfile.objects.filter(tournament_alias=alias).exists():
 					profile.tournament_alias = alias
 				else:
 					error = 1
-			if email != user.email:
-				if User.objects.filter(email=email).count == 0:
+			if email != user.email and email != '':
+				if not User.objects.filter(email=email).exists():
 					user.email = email
 				else:
 					error = 1
+
+
 			if last_name != '' and first_name != '':
 				user.first_name = first_name
 				user.last_name = last_name
-			else:
-				error = 1
-			if alias != '':
-				profile.tournament_alias = alias
+
+			if alias != '' and alias != profile.tournament_alias:
+				if not userProfile.objects.filter(tournament_alias=alias).exists():
+					profile.tournament_alias = alias
+				else:
+					error = 1
 
 			if error == 0:
 				user.save()
@@ -290,9 +295,10 @@ def update_user_info(request, userid):
 				return Response({'message' : 'OK'}, status=200)
 			else:
 				return Response({'message' : 'KO'}, status=400)
-
 		except:
 			return Response({'message' : 'KO'}, status=400)
+	else:
+		return Response({'message' 'KO'}, status=405)
 		
 
 @ensure_csrf_cookie

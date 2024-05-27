@@ -24,6 +24,6 @@ urlpatterns = [
 	path("get_image/<int:userid>", views.get_picture),
 	path("post_image/<int:userid>", views.post_picture),
 	path("get_friend/<int:userid>", views.get_friend_info),
-	path('change_password/', views.change_password)
+	# path('change_password/', views.change_password)
 ]
 
