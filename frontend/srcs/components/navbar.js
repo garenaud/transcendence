@@ -3,6 +3,7 @@ import { getUser, setProfilePicture, setUsername, logoutUser, getProfilePicture,
 import { createButtonComponent, createPhotoComponent } from './globalComponent.js';
 import { showGameList, showUserList } from './listComponent.js';
 import { showFriendsList, updateFriendRequestsNotification } from './friendsList.js';
+import { loadLanguage } from './languageManager.js';
 
 function escapeHTML(unsafeText) {
   let div = document.createElement('div');
@@ -44,7 +45,7 @@ async function displayUserInfo(user) {
           userInfoDiv.innerHTML = `
           <div class="nav-user-info d-md-block">
           <h4>${user.user.username}</h4>
-          <h6>${user.user.id}</h6>
+          <h6>${user.userProfile.winrate} %</h6>
           </div>
           <div id="user-menu-button" class="nav-user-img d-md-block">
                   <div id="user-menu-button" class="img_cont_nav">
@@ -68,8 +69,8 @@ async  function renderUserMenu(user) {
         </div>
             <div class="user-menu-title">
                 <h3>${user.user.username}</h3>
-                <h4>${user.userProfile.game_won} matchs gagnés</h4>
-                <h4>${user.userProfile.game_lost} matchs perdus</h4>
+                <h4>${user.userProfile.game_won} <span data-lang-key="matchesWon">matchs gagnés</span></h4>
+                <h4>${user.userProfile.game_lost} <span data-lang-key="matchesLost">matchs perdus</span></h4>
                 <h4>${user.userProfile.winrate} %</h4>
             </div>
             <div class="user-menu-info">
@@ -209,7 +210,7 @@ async  function renderUserMenu(user) {
         </li>
       </ul>
     </div>
-    <div class="collapse navbar-collapse navbar-logo" href="#"><img src="Design/LogoTranscendance3.png" alt=""></div>
+    <div class="collapse navbar-collapse navbar-logo" href="logoProject"><img id="logo-img" src="Design/LogoTranscendance3.png" alt=""></div>
       <div class="nav-user" id="nav-user">
 
         </div>
@@ -223,6 +224,7 @@ async  function renderUserMenu(user) {
   await displayUserInfo(user);
   await renderUserMenu(user);
   await setupButtonListener();
+  await loadLanguage(appState.language);
 //   showUserList();
   //showFriendsList();
 }
@@ -241,6 +243,7 @@ function    setupButtonListener() {
       await updateFriendRequestsNotification();
       await showFriendsList();
       await showUserList();
+      loadLanguage();
     } catch (error) {
 		console.error('An error occurred:', error);
     }
@@ -333,7 +336,7 @@ document.querySelector('#newProfilePicture').addEventListener('change', function
         userInfoDiv.innerHTML = `
         <div class="nav-user-info">
         <h4>${user.user.username}</h4>
-        <h6>${user.userId} </h6>
+        <h6>${user.userProfile.winrate} % </h6>
         </div>
         <div id="user-menu-button" class="nav-user-img">
                 <div id="user-menu-button-inner" class="img_cont_nav">

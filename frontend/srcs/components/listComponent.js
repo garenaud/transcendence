@@ -2,6 +2,7 @@ import { createButtonComponent, renderDiv, createPhotoComponent, createPhotoComp
 import { loadGameList, getUserFromServer, getProfilePicture } from "./userManager.js";
 import { appState } from "./stateManager.js";
 import { sendFriendRequest, acceptFriendRequest, denyFriendRequest, getFriendRequestList } from "./friendsList.js";
+import { loadLanguage } from "./languageManager.js";
 
 let isLoadingUserList = false;
 
@@ -29,7 +30,7 @@ export async function showUserList() {
         const userProfile = appState.usersProfile.find(profile => profile.user === user.id);
         const row = document.createElement('tr');
         const nameCell = document.createElement('td');
-        const idCell = document.createElement('td');
+/*         const idCell = document.createElement('td'); */
         const emailCell = document.createElement('td');
         const buttonCell = document.createElement('td');
         const photoCell = document.createElement('td');
@@ -49,13 +50,13 @@ export async function showUserList() {
             });
         }
 
-        idCell.textContent = user.id;
+        //idCell.textContent = user.id;
         nameCell.textContent = user.username;
         emailCell.textContent = user.email;
         photoCell.appendChild(photoComponent);
         buttonCell.appendChild(buttonComponent);
         row.appendChild(photoCell);
-        row.appendChild(idCell);
+        //row.appendChild(idCell);
         row.appendChild(nameCell);
         row.appendChild(emailCell);
         row.appendChild(buttonCell);
@@ -63,7 +64,7 @@ export async function showUserList() {
     }
 
     modalBody.appendChild(table);
-
+    loadLanguage(appState.language);
     isLoadingUserList = false;
 }
 

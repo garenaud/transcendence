@@ -58,5 +58,12 @@
     "headerUserHistory1": "Game Date",
     "headerUserHistory2": "Score",
     "headerUserHistory3": "Opponent",
-    "headerUserHistory4": "Result"
+    "headerUserHistory4": "Result",
+    "FriendList": "Friends list",
+    "matchesWon": "matches won",
+    "matchesLost": "matches lost",
+    "Accepter": "Accept",
+    "Refuser": "Deny",
+    "Voir le profil": "View profile",
+    "noGamePlayed": "no game played"
 }
