@@ -579,7 +579,7 @@ fn print_score(term: &Console, score: &Score, data_player: &Player) {
  * 		paddle: &Paddle - Ref to paddle struct to print
  */
 fn print_paddle(paddle: &Paddle, term: &Console) {
-	let paddle_height = PADDLE_HEIGHT / 19.0 * (term.height - (0 as f64));
+	let paddle_height = PADDLE_HEIGHT * 2.0 / 19.0 * (term.height - (1 as f64));
 	for i in 0..paddle_height as i32 {
 		mvaddch((paddle.old_y + i as f64) as i32 + 1, paddle.x as i32, ' ' as u32);
 	}
