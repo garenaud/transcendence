@@ -67,6 +67,20 @@ export async function showUserList() {
     isLoadingUserList = false;
 }
 
+
+  async function updateGameList() {
+    const newGameList = await loadGameList();
+    if (JSON.stringify(newGameList) !== JSON.stringify(gameList)) {
+        gameList = newGameList;
+        // Define and implement showGameList function here
+        showGameList();
+    }
+
+    modalBody.appendChild(table);
+
+    isLoadingUserList = false;
+}
+
 export async function showGameList() {
     loadGameList();
     let games = appState.games;

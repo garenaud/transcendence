@@ -220,7 +220,7 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
                 await sync_to_async(self.saveGame)(self.game.dbgame)
             if self.game.dbgame.full == True:
                 self.game.started = True 
-        if message == 'userid':
+        elif message == 'userid':
             user = await sync_to_async(User.objects.get)(id=jsondata['userid'])
             print(user.username)
             if self.game.p1id == self.channel_name:
@@ -238,19 +238,19 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
                 {"type": "update", "message": {'action' : 'playerid', 'p1' : self.game.dbgame.p1_id, 'p2' : self.game.dbgame.p2_id}}
                 )
             await sync_to_async(self.saveGame)(self.game.dbgame)
-        if message == 'ball_update':
+        elif message == 'ball_update':
             await self.channel_layer.group_send(
             self.room_group_name,
             {"type": "update", "message": {'action' : 'game', 'bx' : self.game.bpx, 'bz' : self.game.bpz, 'plx' : self.game.plx ,'plz' : self.game.plz, 'prx' : self.game.prx ,'prz' : self.game.prz}}
             )
-        if message == 'getWinner':
+        elif message == 'getWinner':
             if self.game.scorep1 > self.game.scorep2 and self.channel_name == self.game.p1id:
                 await self.send(text_data=json.dumps({'action' : 'winner'}))
             elif self.game.scorep1 < self.game.scorep2 and self.channel_name == self.game.p2id:
                 await self.send(text_data=json.dumps({'action' : 'winner'}))
             else:
                 await self.send(text_data=json.dumps({'action' : 'looser'}))
-        if message == 'mdr':
+        elif message == 'mdr':
                 user1 = await sync_to_async(User.objects.get)(id=self.game.dbgame.p1_id)
                 user2 = await sync_to_async(User.objects.get)(id=self.game.dbgame.p2_id)
                 profile_p1 = await sync_to_async(userProfile.objects.get)(user=user1)
@@ -287,18 +287,18 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             {"type": "update", "message": {'action' : 'game', 'bx' : self.game.bpx, 'bz' : self.game.bpz, 'plx' : self.game.plx ,'plz' : self.game.plz, 'prx' : self.game.prx ,'prz' : self.game.prz}}
             )
         elif self.game.p1id == self.channel_name:
-            if (message == 'Up' or message == 'o' or message == 'O') and self.game.prz - self.game.ms > -6.5:
+            if (message == 'W' or message == 'w' or message == 'Up') and self.game.prz - self.game.ms > -6.5:
                 self.game.prz -= self.game.ms
-            elif (message == 'Down' or message == 'l' or message == 'L') and self.game.prz + self.game.ms < 6.5:
+            elif (message == 'S' or message == 's' or message == 'Down') and self.game.prz + self.game.ms < 6.5:
                 self.game.prz += self.game.ms
             await self.channel_layer.group_send(
                 self.room_group_name,
                 {"type": "update", "message": {'action' : 'paddle1', 'prx' : self.game.prx ,'prz' : self.game.prz }}
             )
         elif self.game.p2id == self.channel_name:
-            if (message == 'W' or message == 'w') and self.game.plz - self.game.ms > -6.5:
+            if (message == 'W' or message == 'w' or message == 'Up') and self.game.plz - self.game.ms > -6.5:
                 self.game.plz -= self.game.ms
-            elif (message == 'S' or message == 's')and self.game.plz + self.game.ms < 6.5:
+            elif (message == 'S' or message == 's' or message == 'Down') and self.game.plz + self.game.ms < 6.5:
                 self.game.plz += self.game.ms
             await self.channel_layer.group_send(
                 self.room_group_name,

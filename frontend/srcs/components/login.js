@@ -24,6 +24,7 @@ export function renderLogin() {
 									<input type="text" id="typeUsername" class="form-control form-control-lg" required />
 									<label class="form-label" data-lang-key="username">Username</label>
 								</div>
+
 								<div class="form-outline form-white mb-2">
 									<input type="password" id="typePasswordX" class="form-control form-control-lg" required />
 									<label class="form-label" for="typePasswordX" data-lang-key="password">Password</label>
@@ -60,6 +61,10 @@ export function renderLogin() {
 								<div class="form-outline form-white mb-2">
 									<input type="username" id="signupLastName" class="form-control form-control-lg" required />
 									<label class="form-label" for="signupLastName" data-lang-key="lastName">Last name</label>
+								</div>
+								<div class="form-outline form-white mb-2">
+    							<input type="text" id="signupAlias" class="form-control form-control-lg" required />
+    								<label class="form-label" for="typeAlias" data-lang-key="alias">Alias</label>
 								</div>
 								<div class="form-outline form-white mb-2">
 									<input type="email" id="signupEmail" class="form-control form-control-lg" required />
@@ -149,6 +154,7 @@ function    setupButtonListener() {
 	document.getElementById('signupBtn').addEventListener('click', function() {
 		const username = document.getElementById('signupUsername').value;
 		const firstName = document.getElementById('signupFirstName').value;
+		const alias = document.getElementById('signupAlias').value; // Pour l'inscription
 		const lastName = document.getElementById('signupLastName').value;
 		const email = document.getElementById('signupEmail').value;
 		const password1 = document.getElementById('signupPassword1').value;
@@ -159,6 +165,7 @@ function    setupButtonListener() {
 			formData.append('username', username);
 			formData.append('first_name', firstName);
 			formData.append('last_name', lastName);
+			formData.append('alias', alias);
 			formData.append('email', email);
 			formData.append('password1', password1);
 			formData.append('password2', password2);
