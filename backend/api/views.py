@@ -41,7 +41,7 @@ from django.contrib.auth.decorators import login_required
 
 @api_view(['GET'])
 def get_user_list(request):
-	print('##########')
+	#print('##########')
 	# A RAJOUTER AU MOMENT DU RENDU
 	# if request.user.is_anonymous == True:
 	# 	return HttpResponse('Forbidden', status=403)
@@ -256,8 +256,8 @@ def update_user_info(request, userid):
 			data = json.loads(request.body)
 			user = User.objects.get(id=userid)
 			profile = userProfile.objects.get(user=user)
-
-			alias = data['alias']
+			#print(data)
+			alias = ''
 			username = data['username']
 			email = data['email']
 			first_name = data['first_name']
@@ -306,13 +306,13 @@ def cursed(request):
 	return HttpResponse("", status=200)
 
 def send_friend_request(request):
-	print(request.user.is_anonymous)
+	#print(request.user.is_anonymous)
 	try:
 		data = json.loads(request.body)
 		from_id = data['username']
 		to_username = data['password']
-		print(from_id)
-		print(to_username)
+		#print(from_id)
+		#print(to_username)
 		from_user = User.objects.get(id=from_id)
 		to_user = User.objects.get(username=to_username)
 
@@ -327,16 +327,16 @@ def send_friend_request(request):
 def accept_friend_request(request):
 	try:
 		data = json.loads(request.body)
-		print(data)
+		#print(data)
 		userid = int(data['username'])
 		requestid = int(data['password'])
-		print('#####################')
-		print(userid)
-		print(requestid)
+		#print('#####################')
+		#print(userid)
+		#print(requestid)
 		# verify that friend request is not from same user that sent it
 		friend_request = FriendRequest.objects.get(id=requestid)
-		print(friend_request.to_user)
-		print(friend_request.to_user.id)
+		#print(friend_request.to_user)
+		#print(friend_request.to_user.id)
 		if friend_request.from_user.id == userid:
 			from_user = userProfile.objects.get(user=friend_request.from_user)
 			to_user = userProfile.objects.get(user=friend_request.to_user)
@@ -354,8 +354,8 @@ def deny_friend_request(request):
 		data = json.loads(request.body)
 		userid = int(data['username'])
 		requestid = int(data['password'])
-		print(requestid)
-		print(userid)
+		#print(requestid)
+		#print(userid)
 		friend_request = FriendRequest.objects.get(id=requestid)
 		if friend_request.to_user.id == userid:
 			friend_request.delete()
@@ -381,7 +381,7 @@ def get_picture(request, userid):
 			user = User.objects.get(id=userid)
 			profile = userProfile.objects.get(user=user)
 			image_path = os.path.join(settings.MEDIA_ROOT, 'media/images', profile.profile_picture.url)
-			print(image_path)
+			#print(image_path)
 			with open(f'media/{image_path}', 'rb') as f:
 				return HttpResponse(f.read(), content_type='image/jpeg')  # Assurez-vous d'ajuster le type MIME en fonction du type d'image que vous stockez
 		except IOError:

@@ -23,7 +23,7 @@ class ChatConsumer(WebsocketConsumer):
     }
     def printlol(self):
         while True:
-            print("lol")
+            # print("lol")
             time.sleep(1)
 
     def connect(self):

@@ -97,7 +97,7 @@ def logout(request, id):
 def login_form(request):
 	form = LoginForm()
 	if request.method == 'POST':
-		print(request.POST)
+		# print(request.POST)
 		form = LoginForm(request, data=request.POST)
 		if form.is_valid():
 			username = request.POST['username']
