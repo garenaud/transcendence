@@ -11,7 +11,7 @@ cli:
 	@if ! docker ps --format '{{.Names}}' | grep -q "cli"; then \
 		echo "You must start the project before by using the command 'make'"; \
 	else \
-		docker exec -it cli /bin/bash; \
+		docker exec -it cli /usr/local/cargo/bin/cli; \
 	fi
 
 # nginx-ip:
