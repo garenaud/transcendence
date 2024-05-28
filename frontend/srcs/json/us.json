@@ -69,5 +69,6 @@
     "noGamePlayed": "no game played",
     "inGame": "in game",
     "online": "online",
-    "offline": "offline"
+    "offline": "offline",
+    "waitYourConfirmFriend": "Awaiting your confirmation"
 }

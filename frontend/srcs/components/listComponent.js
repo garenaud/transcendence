@@ -30,7 +30,6 @@ export async function showUserList() {
         const userProfile = appState.usersProfile.find(profile => profile.user === user.id);
         const row = document.createElement('tr');
         const nameCell = document.createElement('td');
-        const emailCell = document.createElement('td');
         const buttonCell = document.createElement('td');
         const photoCell = document.createElement('td');
         const onlineStatusCell = document.createElement('td'); // Ajout de la nouvelle cellule
@@ -53,8 +52,14 @@ export async function showUserList() {
 
         const photoComponent = await createPhotoComponent(user.id, userProfile.winrate);
         const pendingRequest = requests.find(request => request.from_user === appState.userId && request.to_user === user.id);
+        const incomingRequest = requests.find(request => request.to_user === appState.userId && request.from_user === user.id);
         let buttonComponent;
-        if (pendingRequest) {
+        if (incomingRequest) {
+            const pElement = document.createElement('p');
+            pElement.textContent = 'En attente de votre confirmation';
+            pElement.setAttribute('data-lang-key', 'waitYourConfirmFriend');
+            buttonComponent = pElement;
+        } else if (pendingRequest) {
             const pElement = document.createElement('p');
             pElement.textContent = 'En attente de la confirmation';
             pElement.setAttribute('data-lang-key', 'waitConfirmFriend');
@@ -67,13 +72,11 @@ export async function showUserList() {
         }
 
         nameCell.textContent = user.username;
-        emailCell.textContent = user.email;
         photoCell.appendChild(photoComponent);
         buttonCell.appendChild(buttonComponent);
         row.appendChild(photoCell);
         row.appendChild(nameCell);
         row.appendChild(onlineStatusCell);
-        row.appendChild(emailCell);
         row.appendChild(buttonCell);
         table.appendChild(row);
     }

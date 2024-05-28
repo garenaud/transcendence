@@ -68,5 +68,6 @@
     "noGamePlayed": "aucune partie jouée",
     "inGame": "en partie",
     "online": "en ligne",
-    "offline": "hors ligne"
+    "offline": "hors ligne",
+    "waitYourConfirmFriend": "En attente de votre confirmation"
 }

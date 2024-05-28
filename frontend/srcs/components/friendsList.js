@@ -35,9 +35,6 @@ for (const friendId of appState.userProfile.friendlist) {
     const profileLastName = document.createElement('td');
     profileLastName.textContent = friend.last_name;
     profileRow.appendChild(profileLastName);
-    const profileEmail = document.createElement('td');
-    profileEmail.textContent = friend.email;
-    profileRow.appendChild(profileEmail);
     const data = await getFriendHistory(friend.id);
 
 
