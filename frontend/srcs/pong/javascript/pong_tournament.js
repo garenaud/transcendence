@@ -556,9 +556,6 @@ tournamentSocket.onmessage = function(e) {
 		var users = tournament_data.users; // This will get the list of users
 		
 		// Create tournament tree
-		var tournamentTree = document.getElementById('userList');
-		tournamentTree.style.display = "flex";
-		tournamentTree.innerHTML = '';
 		tournamentTree.innerHTML = `
 			<p class="userList1">
 				<span class="userTournament0">${users[0]}</span>
