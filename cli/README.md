@@ -12,7 +12,7 @@ make cli
 
 ### From sources
 Pour compiler l'application depuis les sources, il faut avoir [cargo](https://doc.rust-lang.org/cargo/getting-started/installation.html) installé.
-* Se deplacer a la racine du dossier [cli](/cli)
+* Se rendre a la racine du dossier [cli](/cli)
 * Lancer la commande
 ```bash
 cargo install --path .
@@ -27,16 +27,16 @@ Lors du lancement de l'application, l'adresse du serveur nous est demandée. Auc
 Il est important de noter que si l'application est dockerizée sur le même ordinateur que le serveur, l'adresse du serveur sera **nginx**
 
 ## Utilisation
-Une fois le serveur entre, l'app demande un user + password. Il n'est **PAS** possible de créer un user ou de le modifier depuis le CLI.
+Une fois le serveur entré, l'app demande un user + password. Il n'est **PAS** possible de créer un user ou de le modifier depuis le CLI.
 
 ### Menu
 Il existe 3 menu:
 
 **->** le menu principal (apparaît après la connexion de l'utilisateur)
 
-**->** le menu Pong (permet de rejoindre le matchmaking, creer une partie privee ou en rejoindre une)
+**->** le menu Pong (permet de rejoindre le matchmaking, créer une partie privée ou d'en rejoindre une)
 
-**->** le menu Tournament (permet de rejoindre ou de creer un tournoi)
+**->** le menu Tournament (permet de rejoindre ou de créer un tournoi)
 	
 ### Jouer
 * W - Monter le paddle
@@ -46,7 +46,6 @@ Il existe 3 menu:
 > Il est vivement recommandé de réduire au minimum le delai entre la répetition des touches du clavier pour une meilleur expérience utilisateur lors des parties
 
 ## Uninstall
-* Se deplacer a la racine du dosser [cli]()
 * Lancer la commande
 ```bash
 cargo uninstall cli
