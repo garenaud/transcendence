@@ -16,6 +16,9 @@ from django.db.models import Q
 import random, os
 from itertools import chain
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.hashers import make_password
+import re
+
 # TODO, pour le mdp
 # from django.contrib.auth.forms import PasswordChangeForm
 # from django.contrib.auth import update_session_auth_hash
@@ -266,6 +269,7 @@ def update_user_info(request, userid):
 			email = data['email']
 			first_name = data['first_name']
 			last_name = data['last_name'] 
+			password = ''
 			if username != user.username and username != '':
 				if not User.objects.filter(username=username).exists():
 					user.username = username
@@ -292,7 +296,12 @@ def update_user_info(request, userid):
 					profile.tournament_alias = alias
 				else:
 					error = 1
-
+			if password != '' and make_password(password) != user.password:
+				password_regex = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d\W_]{8,20}$'
+				if not re.match(password_regex, request.POST['password1']):
+					error = 1
+				else:
+					user.password = make_password(password)
 			if error == 0:
 				user.save()
 				profile.save()
@@ -393,7 +402,6 @@ def get_picture(request, userid):
 	else:
 		return JsonResponse({'message': 'Méthode non autorisée'}, status=405)
 
-@csrf_exempt
 def post_picture(request, userid):
 	if request.method == 'POST':
 		user = User.objects.get(id=userid)

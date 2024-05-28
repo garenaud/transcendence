@@ -198,7 +198,7 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             self.game.dbgame.finished = True
             self.game.dbgame.p1_score = self.game.scorep1
             self.game.dbgame.p2_score = self.game.scorep2
-            self.game.dbgame.looser_id = self.channel_name # A TESTER f sadfdsafsd afads  f asd fad f  ds f ads f ads fasdf ads  f ads f  ads f as f  ads f ad s f asd fads f
+            self.game.dbgame.looser = self.channel_name # A TESTER f sadfdsafsd afads  f asd fad f  ds f ads f ads fasdf ads  f ads f  ads f as f  ads f ad s f asd fads f
             await sync_to_async(self.saveGame)(self.game.dbgame)
             self.game.finished = True
             user1 = await sync_to_async(User.objects.get)(id=self.game.dbgame.p1_id)
@@ -279,12 +279,21 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             {"type": "update", "message": {'action' : 'game', 'bx' : self.game.bpx, 'bz' : self.game.bpz, 'plx' : self.game.plx ,'plz' : self.game.plz, 'prx' : self.game.prx ,'prz' : self.game.prz}}
             )
         elif message == 'getWinner':
+            self.game.dbgame = await sync_to_async(Games.objects.get)(room_id=self.room_id) 
             print(f'self == {self.channel_name}') 
             print(f'looser == {self.game.dbgame.looser}') # A TESTEER BORDEL
-            if self.game.dbgame.looser == self.channel_name:
-                await self.send(text_data=json.dumps({'action' : 'looser'}))
+            if self.game.dbgame.looser != '' :
+                if self.game.dbgame.looser == self.channel_name:
+                    await self.send(text_data=json.dumps({'action' : 'looser'}))
+                else:
+                    await self.send(text_data=json.dumps({'action' : 'winner'}))
             else:
-                await self.send(text_data=json.dumps({'action' : 'winner'}))
+                if self.game.scorep1 > self.game.scorep2 and self.channel_name == self.game.p1id:
+                    await self.send(text_data=json.dumps({'action' : 'winner'}))
+                elif self.game.scorep1 < self.game.scorep2 and self.channel_name == self.game.p2id:
+                    await self.send(text_data=json.dumps({'action' : 'winner'}))
+                else:
+                    await self.send(text_data=json.dumps({'action' : 'looser'}))
         elif message == 'mdr':
                 user1 = await sync_to_async(User.objects.get)(id=self.game.dbgame.p1_id)
                 user2 = await sync_to_async(User.objects.get)(id=self.game.dbgame.p2_id)
