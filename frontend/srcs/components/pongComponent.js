@@ -3,6 +3,7 @@ import { Multiplayer } from "./pong_menu.js";
 import { joinGame } from "./pong_menu.js";
 import { Tournament } from "./tournament_menu.js";
 import { joinTournament } from "./tournament_menu.js";
+import { changeView } from "./stateManager.js";
 // import { makeid } from "../pong/javascript/pong.js" 
 //import * as PongMenu from "./pong_menu.js";
 
@@ -115,13 +116,13 @@ export function renderPong() {
                         <div class="modal-content">
                             <p>DEFAITE</p>
                             <p id="error"></p>
-                            <button onclick="window.location.reload();">Revenir au menu</button>
+                            <button id="defaiteBtn">Revenir au menu</button>
                         </div>
                     </div>
                     <div id="myModal2" class="modal2">
                         <div id="startBtnDiv" class="startBtn">
                             <p data-lang-key="wonTourn">VOUS AVEZ REMPORTEZ LE TOURNOI, FELICITATIONS</p>
-                            <button id="winnerBtn" onclick="window.location.reload();">Revenir au menu</button>
+                            <button id="winnerBtn">Revenir au menu</button>
                         </div>
                     </div>
                     <div id="myModal3" class="modal3">
@@ -143,7 +144,19 @@ export function renderPong() {
 	const pongElement = document.createElement('div');
 	pongElement.classList.add('col-12', 'col-md-6');
 	pongElement.innerHTML = pongHTML;
-	
+
+	let defeatButton = document.getElementById('defaiteBtn'); // Remplacez 'defeatButtonId' par l'ID réel de votre bouton
+	let winnerButton = document.getElementById('winnerBtn'); // Remplacez 'winnerButtonId' par l'ID réel de votre bouton
+	console.log(defeatButton);
+	// Ajoutez un gestionnaire d'événements click à chaque bouton
+	defeatButton.addEventListener('click', function() {
+		changeView('hero');
+	});
+
+	winnerButton.addEventListener('click', function() {
+		changeView('hero');
+	});
+		
 	addEventListeners(pongElement);
 							
 function addEventListeners(element) {
