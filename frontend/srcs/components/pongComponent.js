@@ -297,6 +297,7 @@ function addEventListeners(element) {
 
 		
 		pongModal.addEventListener('show.bs.modal', function () {
+			document.getElementById("userList").innerHTML = "";
 			scriptStarted = true;
 			document.querySelectorAll('.card-game-inside > div').forEach(div => {
 				div.classList.remove('d-none');
@@ -305,6 +306,7 @@ function addEventListeners(element) {
 		});
 
 		pongModal.addEventListener('hidden.bs.modal', function () {
+			document.getElementById("userList").innerHTML = "";
 			unloadScript();
 			scriptStarted = false;
 			const pongLocal = element.querySelector('#pongLocal');

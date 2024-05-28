@@ -21,7 +21,6 @@ const div_scoreboard = document.querySelector('.scoreboard');
 const div_scoreboardTour = document.querySelector('.scoreboardTour');
 const loadingElement = document.getElementById('loading_txt');
 const loadingDot = document.getElementsByClassName('loading');
-const tournamentTree = document.getElementById('userList');
 let game_data;
 let renderer;
 let scene;
@@ -154,7 +153,7 @@ function init() {
 			gameSocket.send(JSON.stringify({
 				'message' : 'load'
 			}));
-			tournamentTree.innerHTML = "";
+			document.getElementById("userList").innerHTML = "";
 			if (div_scoreboard) {
 				div_scoreboard.style.display = 'flex';
 			}
