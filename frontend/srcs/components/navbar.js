@@ -1,5 +1,5 @@
 import { changeView, appState} from './stateManager.js';
-import { getUser, setProfilePicture, setUsername, logoutUser, getProfilePicture, setAlias, setEmail, setFirstName, setLastName } from './userManager.js';
+import { getUser, setProfilePicture, setUsername, logoutUser, getProfilePicture, setAlias, setEmail, setFirstName, setLastName, setPassword } from './userManager.js';
 import { createButtonComponent, createPhotoComponent } from './globalComponent.js';
 import { showGameList, showUserList } from './listComponent.js';
 import { showFriendsList, updateFriendRequestsNotification } from './friendsList.js';
@@ -134,7 +134,6 @@ async  function renderUserMenu(user) {
 									<label for="confirmPassword" class="text-white" data-lang-key='confirmPassword'>Confirmer le mot de passe</label>
 									<input type="password" class="form-control" id="confirmPassword" placeholder="Confirmer le mot de passe">
 								</div>
-								<button id="changePasswordBtn" type="button" class="btn btn-primary">Changer le mot de passe</button>
 							</div>
 							</form>
 							</div>
@@ -279,52 +278,6 @@ document.querySelector('#newProfilePicture').addEventListener('change', function
         reader.readAsDataURL(file);
     }
 });
-// TODO, faire en sorte que ca marche
-// function getCookie(name) {
-// 	let cookieValue = null;
-// 	if (document.cookie && document.cookie !== '') {
-// 		const cookies = document.cookie.split(';');
-// 		for (let i = 0; i < cookies.length; i++) {
-// 			const cookie = cookies[i].trim();
-// 			if (cookie.substring(0, name.length + 1) === (name + '=')) {
-// 				cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-// 				break;
-// 			}
-// 		}
-// 	}
-// 	return cookieValue;
-// }
-
-// document.getElementById('changePasswordBtn').addEventListener('click', function() {
-	// 	const newPassword = document.getElementById('newPassword').value;
-	// 	const confirmPassword = document.getElementById('confirmPassword').value;
-
-// 	if (newPassword !== confirmPassword) {
-// 		alert('Les mots de passe ne correspondent pas.');
-// 		return;
-// 	}
-
-// 	const data = new FormData();
-// 	data.append('old_password', ''); // Vous devez obtenir l'ancien mot de passe de l'utilisateur
-// 	data.append('new_password1', newPassword);
-// 	data.append('new_password2', confirmPassword);
-
-// 	fetch('/api/change_password/', {
-// 		method: 'POST',
-// 		body: data,
-// 		headers: {
-// 			'X-CSRFToken': getCookie('csrftoken') // Vous devez obtenir le cookie CSRF de Django
-// 		}
-// 	})
-// 	.then(response => response.json())
-// 	.then(data => {
-// 		if (data.status === 'success') {
-// 			alert('Mot de passe changé avec succès.');
-// 		} else {
-// 			alert('Erreur lors du changement de mot de passe.');
-// 		}
-// 	});
-// });
 
   function updateUserInfoInNavbar(user) {
     const userInfoDiv = document.getElementById('nav-user');
@@ -362,6 +315,8 @@ document.querySelector('#userSaveChange').addEventListener('click', function() {
   let newFirstName = document.querySelector('#newFirstName').value;
   let newLastName = document.querySelector('#newLastName').value;
   let newEmail = document.querySelector('#newEmail').value;
+  let newPassword = document.querySelector('#newPassword').value;
+  let confirmPassword = document.querySelector('#confirmPassword').value;
   if (newProfilePictureFile) {
     setProfilePicture(newProfilePictureFile);
     const displayedProfilePicture = document.querySelector('.user-menu-img img');
@@ -375,9 +330,9 @@ document.querySelector('#userSaveChange').addEventListener('click', function() {
     displayedUsername.textContent = escapedUsername;
     updateUserInfoInNavbar(appState);
   }
+
 	function updateUserInfo(field, value) {
 		if (value) {
-			console.log(value);
 			let escapedValue = escapeHTML(value);
 			switch(field) {
 				case 'email':
@@ -392,13 +347,18 @@ document.querySelector('#userSaveChange').addEventListener('click', function() {
 				case 'alias':
 					setAlias(escapedValue);
 					break;
+				case 'password':
+					setPassword(escapedValue);
+					break;
 				default:
 					console.error('Invalid field');
 			}
 		}
 	}
 
-	// updateUserInfo('alias', newAlias);
+	if (newPassword === confirmPassword) {
+		updateUserInfo('password', confirmPassword);
+	}
 	updateUserInfo('email', newEmail);
 	updateUserInfo('first_name', newFirstName);
 	updateUserInfo('last_name', newLastName);

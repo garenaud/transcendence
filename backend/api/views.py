@@ -1,10 +1,12 @@
 from django.shortcuts import render, redirect
+from django.contrib.auth.hashers import make_password
 from django.http import HttpResponse, JsonResponse
 from database.models import  Games, Tournament, userProfile, FriendRequest
 from database.serializers import UserSerializer, GamesSerializer, UserProfileSerializer, TournamentSerializer, FriendSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+import re
 import json
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.contrib.auth.forms import UserCreationForm
@@ -16,28 +18,6 @@ from django.db.models import Q
 import random, os
 from itertools import chain
 from django.contrib.auth.decorators import login_required
-# TODO, pour le mdp
-# from django.contrib.auth.forms import PasswordChangeForm
-# from django.contrib.auth import update_session_auth_hash
-# from django.contrib import messages
-
-# def change_password(request):
-# 	if request.method == 'POST':
-# 		form = PasswordChangeForm(request.user, request.POST)
-# 		if form.is_valid():
-# 			user = form.save()
-# 			update_session_auth_hash(request, user)  # Important, to update the session with the new password
-# 			messages.success(request, 'Your password was successfully updated!')
-# 			return redirect('change_password')
-# 		else:
-# 			messages.error(request, 'Please correct the error below.')
-# 	else:
-# 		form = PasswordChangeForm(request.user)
-# 	return render(request, 'change_password.html', {
-# 		'form': form
-# 	})
-
-#Returns all user in the database
 
 @api_view(['GET'])
 def get_user_list(request):
@@ -77,7 +57,7 @@ def user_by_id(request, id):
 			user.last_name = serializer.data['last_name']
 			user.username = serializer.data['username']
 			user.email = serializer.data['email']
-			# user.password = serializer.data['password']
+			user.password = serializer.data['password']
 			user.save(update_fields=['first_name', 'last_name', 'username', 'email'])
 			return Response(serializer.data, status=status.HTTP_200_OK)
 	else:
@@ -251,7 +231,7 @@ def get_user_history(request, userid):
 @api_view(['PUT'])
 def update_user_info(request, userid):
 	if request.method == 'PUT':
-		error = 0 
+		error = 0
 		try:
 			data = json.loads(request.body)
 			user = User.objects.get(id=userid)
@@ -260,7 +240,8 @@ def update_user_info(request, userid):
 			username = data['username']
 			email = data['email']
 			first_name = data['first_name']
-			last_name = data['last_name'] 
+			last_name = data['last_name']
+			password = data['password']
 			if username != user.username and username != '':
 				if not User.objects.filter(username=username).exists():
 					user.username = username
@@ -272,13 +253,17 @@ def update_user_info(request, userid):
 				else:
 					error = 1
 			if email != user.email and email != '':
-				if not User.objects.filter(email=email).exists():
+				email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+				if not User.objects.filter(email=email).exists() and re.match(email_regex, email):
 					user.email = email
 				else:
 					error = 1
-			print(profile.tournament_alias)
-
-
+			if password != '' and make_password(password) != user.password:
+				password_regex = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d\W_]{8,20}$'
+				if not re.match(password_regex, password):
+					error = 1
+				else:
+					user.password = make_password(password)
 			if last_name != '' and first_name != '':
 				user.first_name = first_name
 				user.last_name = last_name
@@ -290,7 +275,6 @@ def update_user_info(request, userid):
 			else:
 				return Response({'message' : 'KO'}, status=400)
 		except:
-			print('except')
 			return Response({'message' : 'KO'}, status=400)
 	else:
 		return Response({'message' 'KO'}, status=405)

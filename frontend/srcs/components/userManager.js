@@ -31,11 +31,9 @@ function updateUserOnServer(user) {
         last_name: user.user.last_name,
         username: user.user.username,  // Assumant que 'username' est le nom d'utilisateur
         email: user.user.email,
-		alias: user.user.alias  // Vous devez vous assurer que le mot de passe est correctement géré
+		alias: user.userProfile.tournament_alias,
+		password: user.user.password  // Vous devez vous assurer que le mot de passe est correctement géré
     };
-	console.log(user.user.alias);
-	console.log(user.user.email);
-	console.log(userForBackend);
     fetch('https://localhost/api/update/' + appState.userId, {
         method: 'PUT',
         headers: {
@@ -144,6 +142,7 @@ function setUsername(username) {
 }
 
 function setAlias(alias) {
+	console.log(alias);
     appState.user.alias = alias;
     sessionStorage.setItem('user', JSON.stringify(appState.user));
     updateUserOnServer(appState);
@@ -157,6 +156,12 @@ function setEmail(email) {
 
 function setFirstName(firstName) {
     appState.user.first_name = firstName;
+    sessionStorage.setItem('user', JSON.stringify(appState.user));
+    updateUserOnServer(appState);
+}
+
+function setPassword(password) {
+    appState.user.password = password;
     sessionStorage.setItem('user', JSON.stringify(appState.user));
     updateUserOnServer(appState);
 }
@@ -184,7 +189,7 @@ function getUser() {
     }
 }
 
-export { getUser, setUsername, setUserPoints, setUserProfilePicture, setAlias, setEmail, setFirstName, setLastName};
+export { getUser, setUsername, setUserPoints, setUserProfilePicture, setAlias, setEmail, setFirstName, setLastName, setPassword};
 
 export async function loadUser() {
     try {
