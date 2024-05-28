@@ -79,7 +79,7 @@ def login(request):
 			# 	return JsonResponse({"message" : 'KO'}, status=403)	
 			userprofile.online = True
 			userprofile.save()
-			return JsonResponse({"message" : "OK", "id" : user.id, "username" : user.username, "first_name" : user.first_name, "last_name" : user.last_name, "email" : user.email}, status=201)
+			return JsonResponse({"message" : "OK", "id" : user.id, "username" : user.username, "first_name" : user.first_name, "last_name" : user.last_name, "email" : user.email, "language" : userprofile.language}, status=201)
 		else:
 			return JsonResponse({"message" : 'KO'}, status=404)
 	else:
