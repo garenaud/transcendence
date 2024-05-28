@@ -25,13 +25,17 @@ export function LanguageBtn() {
             appState.language = lang;
             sessionStorage.setItem('language', lang);
             sessionStorage.setItem('appState', JSON.stringify(appState));
-            loadLanguage(lang);
+            loadLanguage(appState.language);
             renderApp();
         });
     });
 }
 
 export function loadLanguage(lang) {
+    if (!lang) {
+        console.error('No language specified');
+        return;
+    }
     fetch('../json/' + lang + '.json')
         .then(response => response.json())
         .then(data => {

@@ -65,5 +65,8 @@
     "Accepter": "Akzeptieren",
     "Refuser": "Ablehnen",
     "Voir le profil": "Profil anzeigen",
-    "noGamePlayed": "kein Spiel gespielt"
+    "noGamePlayed": "kein Spiel gespielt",
+    "inGame": "im Spiel",
+    "online": "online",
+    "offline": "offline"
 }

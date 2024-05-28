@@ -11,7 +11,7 @@ export async function showUserList() {
         return;
     }
     isLoadingUserList = true;
-    
+
     const users = appState.users;
     const modalBody = document.querySelector('#addFriend .modal-body');
 

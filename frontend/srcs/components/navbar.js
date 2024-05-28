@@ -1,5 +1,5 @@
 import { changeView, appState} from './stateManager.js';
-import { getUser, setProfilePicture, setUsername, logoutUser, getProfilePicture, setAlias, setEmail, setFirstName, setLastName } from './userManager.js';
+import { getUser, setProfilePicture, setUsername, logoutUser, getProfilePicture, setAlias, setEmail, setFirstName, setLastName, loadUser } from './userManager.js';
 import { createButtonComponent, createPhotoComponent } from './globalComponent.js';
 import { showGameList, showUserList } from './listComponent.js';
 import { showFriendsList, updateFriendRequestsNotification } from './friendsList.js';
@@ -243,7 +243,7 @@ function    setupButtonListener() {
       await updateFriendRequestsNotification();
       await showFriendsList();
       await showUserList();
-      loadLanguage();
+      loadLanguage(appState.language);
     } catch (error) {
 		console.error('An error occurred:', error);
     }

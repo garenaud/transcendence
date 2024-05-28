@@ -65,5 +65,8 @@
     "Accepter": "Accept",
     "Refuser": "Deny",
     "Voir le profil": "View profile",
-    "noGamePlayed": "no game played"
+    "noGamePlayed": "no game played",
+    "inGame": "in game",
+    "online": "online",
+    "offline": "offline"
 }

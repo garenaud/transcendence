@@ -10,6 +10,7 @@ export async function showFriendsList() {
     return;
   }
   isLoadingFriendsList = true;
+      
   const users = appState.users;
   const modalBody = document.querySelector('#friendList .modal-body');
   const table = document.createElement('table');
@@ -92,7 +93,7 @@ for (const friendId of appState.userProfile.friendlist) {
       // Indiquer si le match a été gagné ou perdu
       const gameResult = document.createElement('td');
       const isWinner = (game.p1_id === friend.id && game.p1_score > game.p2_score) || (game.p2_id === friend.id && game.p2_score > game.p1_score);
-      gameResult.textContent = isWinner ? 'Gagné' : 'Perdu';
+      gameResult.textContent = isWinner ? 'Won' : 'Lost';
       gameRow.style.backgroundColor = isWinner ? 'green' : 'red';
       gameRow.appendChild(gameResult);
   
@@ -155,6 +156,19 @@ async function addRow(user, userProfile, table, buttonText1, buttonText2, reques
   const buttonCell2 = buttonText2 ? document.createElement('td') : null;
   const profilePicture = await getProfilePicture(user.id);
   const photoComponent = await createPhotoComponentUrl(profilePicture, userProfile.winrate);
+  const onlineStatusCell = document.createElement('td');
+  if (userProfile.online) {
+    if (userProfile.inGame) {
+      onlineStatusCell.textContent = 'in game';
+      onlineStatusCell.style.backgroundColor = 'orange';
+    } else {
+      onlineStatusCell.textContent = 'online';
+      onlineStatusCell.style.backgroundColor = 'green';
+    }
+  } else {
+    onlineStatusCell.textContent = 'offline';
+    onlineStatusCell.style.backgroundColor = 'red';
+  }
   
   let buttonComponent1;
   if (buttonText1) {
@@ -194,6 +208,7 @@ async function addRow(user, userProfile, table, buttonText1, buttonText2, reques
 
   row.appendChild(photoCell);
   row.appendChild(nameCell);
+  row.appendChild(onlineStatusCell);
   row.appendChild(buttonCell1);
   if (buttonCell2) {
       row.appendChild(buttonCell2);
