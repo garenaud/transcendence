@@ -51,8 +51,8 @@ def register(request):
 			password_regex = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d\W_]{8,20}$'
 			if not re.match(password_regex, request.POST['password1']):
 				return JsonResponse({ "message" : "KO", "info" : "passwordSyntaxError"}, status=422)
-		if User.objects.filter(username=username).exists() or User.objects.filter(email=email).exists():
-			return JsonResponse({ "message" : "KO", "info" : "usernameExistError"}, status=409)
+		if User.objects.filter(username=username).exists() or User.objects.filter(email=email).exists() or userProfile.objects.filter(tournament_alias=alias_tournament).exists():
+			return JsonResponse({ "message" : "KO", "info" : "account wiht same username / alias / email alread exists"}, status=409)
 		else:
 			user = User.objects.filter(username=username)
 			password = make_password(request.POST['password1'])
@@ -75,8 +75,8 @@ def login(request):
 			auth.login(request, user)
 			user = User.objects.get(username=username)
 			userprofile = userProfile.objects.get(user=user)
-			# if userprofile.online == True:
-			# 	return JsonResponse({"message" : 'KO'}, status=403)	
+			if userprofile.online == True:
+				return JsonResponse({"message" : 'KO'}, status=403)	
 			userprofile.online = True
 			userprofile.save()
 			return JsonResponse({"message" : "OK", "id" : user.id, "username" : user.username, "first_name" : user.first_name, "last_name" : user.last_name, "email" : user.email, "language" : userprofile.language}, status=201)

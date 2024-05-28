@@ -345,6 +345,10 @@ export function unloadScript() {
 			window.gameSocket.close();
 			console.log(window.gameSocket.readyState);
 		}
+		if (window.tournamentSocket) {
+			window.tournamentSocket.close();
+			console.log(window.tournamentSocket.readyState);
+		}
 		console.log(script);
 		script.remove(); // Supprimer le script du DOM
 	});

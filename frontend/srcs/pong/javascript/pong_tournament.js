@@ -40,7 +40,6 @@ const deltaTime = 30;
 let scoreLeft;
 let scoreRight;
 let ballVelocity;
-let tournamentSocket;
 let currentNum = 7;
 let connected;
 let playernb = sessionStorage.getItem('playernb');
@@ -83,7 +82,7 @@ function startBtnFunction(){
 }
 
 nextBtn.addEventListener('click', nextBtnFunction);
-tournamentSocket = new WebSocket(
+window.tournamentSocket = new WebSocket(
 	'wss://'
 	+ window.location.host
 	+ '/ws/'
@@ -92,7 +91,7 @@ tournamentSocket = new WebSocket(
 	+ tournament_id
 	+ '/'
 );
-tournamentSocket.onerror = function(e) {
+window.tournamentSocket.onerror = function(e) {
 	window.location.reload();;
 }
 
@@ -486,7 +485,7 @@ function onMessageHandler(e) {
 		if (finalid == -1)
 		{
 			myModal3.style.display = "block";
-			tournamentSocket.send(JSON.stringify({
+			window.tournamentSocket.send(JSON.stringify({
 				'message' : 'winner',
 				'finalid' : finalid
 			}))
@@ -547,7 +546,7 @@ function sleep(delay) {
 
 let namelist = [];
 
-tournamentSocket.onmessage = function(e) {
+window.tournamentSocket.onmessage = function(e) {
 	tournament_data = JSON.parse(e.data);
 	console.log(e.data);
 	if (tournament_data.message == 'tournamentIdNotFound')
@@ -571,7 +570,7 @@ tournamentSocket.onmessage = function(e) {
 		playernb = tournament_data['playernb'];
 	else if (tournament_data.action == 'startTournament')
 	{
-		tournamentSocket.send(JSON.stringify({
+		window.tournamentSocket.send(JSON.stringify({
 			'message' : 'getGameId',
 			'playernb' : playernb
 			}));
@@ -603,7 +602,7 @@ tournamentSocket.onmessage = function(e) {
 	{
 		const errorElement = document.getElementById('error');
 		errorElement.textContent = "VOUS AVEZ REMPORTEZ LE TOURNOI, FELICITATIONS";
-		tournamentSocket.close();
+		window.tournamentSocket.close();
 	}
 }
 
