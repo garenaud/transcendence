@@ -1,3 +1,4 @@
+import { loadLanguage } from './languageManager.js';
 import { renderNavbar } from './navbar.js';
 import { renderApp, appState, changeView} from './stateManager.js';
 
@@ -190,6 +191,9 @@ export async function loadUser() {
         appState.users = users;
         appState.userId = Number(sessionStorage.getItem('userId'));
         appState.isLogged = true;
+/*         const languageMap = {1: 'fr', 2: 'us', 3: 'de'};
+        appState.language = languageMap[user.language];
+        loadLanguage(appState.language); */
         appState.user = users.find(user => user.id === appState.userId);
         appState.userProfile = appState.usersProfile.find(usersProfile => usersProfile.user === appState.userId);
         sessionStorage.setItem('user', JSON.stringify(appState.user));

@@ -156,7 +156,7 @@ async function addRow(user, userProfile, table, buttonText1, buttonText2, reques
   const photoComponent = await createPhotoComponentUrl(profilePicture, userProfile.winrate);
   const onlineStatusCell = document.createElement('td');
   if (userProfile.online) {
-    if (userProfile.inGame) {
+    if (userProfile.in_game) {
       onlineStatusCell.textContent = 'in game';
       onlineStatusCell.dataset.langKey = 'inGame';
       onlineStatusCell.style.backgroundColor = 'orange';

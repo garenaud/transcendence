@@ -35,7 +35,7 @@ export async function showUserList() {
         const onlineStatusCell = document.createElement('td'); // Ajout de la nouvelle cellule
 
         if (userProfile.online) {
-            if (userProfile.inGame) {
+            if (userProfile.in_game) {
                 onlineStatusCell.textContent = 'in game';
                 onlineStatusCell.dataset.langKey = 'inGame';
                 onlineStatusCell.style.backgroundColor = 'orange';
