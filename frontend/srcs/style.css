@@ -2275,6 +2275,7 @@ div.modal-footer, div.modal-body, div.modal-header{
 
 .userlist-table td {
   border: none;
+  width: auto;
 }
 
 .userlist-table tr:hover {
@@ -2296,10 +2297,29 @@ div.modal-footer, div.modal-body, div.modal-header{
   font-size: 0.8em; /* Adjust as needed */
 }
 
+.profileRow th {
+  text-align: center;
+}
+
 .gameRow {
   width: 100%; /* Adjust as needed */
 }
 
 .gameRow tr {
   padding: 20px;
+  text-align: center;
+}
+
+.gameRow td {
+  text-align: center;
+}
+
+.gameRow th {
+  text-align: center;
+}
+
+th {
+  text-align: center;
+  padding-left: 20px;
+  padding-right: 20px;
 }

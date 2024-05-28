@@ -192,12 +192,6 @@ export async function loadUser() {
         appState.isLogged = true;
         appState.user = users.find(user => user.id === appState.userId);
         appState.userProfile = appState.usersProfile.find(usersProfile => usersProfile.user === appState.userId);
-/*         if (!appState.userProfile.profile_picture) {
-            appState.user.profilePicture = 'Design/User/Max-R_Headshot.jpg';
-        }
-        else {
-            getProfilePicture(appState.userId);
-        } */
         sessionStorage.setItem('user', JSON.stringify(appState.user));
     } catch (error) {
         console.error('Erreur lors du chargement des données utilisateur:', error);

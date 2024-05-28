@@ -159,6 +159,14 @@ function addEventListeners(element) {
 		const pongTournament = element.querySelector('#pongTournament');
 		const joinTournamentBtn = element.querySelector('#joinTournamentBtn');
 		const createTournament = element.querySelector('#createTournament');
+		const gameIdInputElem = element.querySelector('#gameCodeInputPrivate');
+
+		gameIdInputElem.addEventListener('keyup', function(event) {
+			if (event.code === 'Enter') {
+				event.preventDefault();
+				joinPongBtn.click();
+			}
+		});
 
 		// * TOURNAMENTPONG
 		createTournament.addEventListener('click', toggleVisibility);
@@ -231,6 +239,7 @@ function addEventListeners(element) {
 
 		// * JoinBtn
 		multiPongBtn.addEventListener('click', toggleVisibility);
+
 		joinPongBtn.addEventListener('click', function() {
 		const gameIdInput = document.getElementById('gameCodeInputPrivate').value;
 		const errorInput = document.getElementById('errorGameInputPrivate');

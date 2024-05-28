@@ -42,6 +42,7 @@
     "pongPlayed": "Spielverlauf",
     "waitOpponent": "[WARTE AUF GEGNER]",
     "win": "Sieg",
+    "lost": "Niederlage",
     "nextGame": "nächstes Spiel",
     "localGame": "Lokal",
     "createPriv": "private Partie erstellen",

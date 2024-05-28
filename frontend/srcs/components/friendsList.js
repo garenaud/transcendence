@@ -93,7 +93,8 @@ for (const friendId of appState.userProfile.friendlist) {
       // Indiquer si le match a été gagné ou perdu
       const gameResult = document.createElement('td');
       const isWinner = (game.p1_id === friend.id && game.p1_score > game.p2_score) || (game.p2_id === friend.id && game.p2_score > game.p1_score);
-      gameResult.textContent = isWinner ? 'Won' : 'Lost';
+      gameResult.setAttribute('data-lang-key', isWinner ? 'win' : 'lost');
+      gameResult.textContent = isWinner ? 'win' : 'lost';
       gameRow.style.backgroundColor = isWinner ? 'green' : 'red';
       gameRow.appendChild(gameResult);
   

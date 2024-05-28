@@ -42,6 +42,7 @@
     "pongPlayed": "Historique des parties",
     "waitOpponent": "[EN ATTENTE DE L'ADVERSAIRE]",
     "win": "Victoire",
+    "lost": "défaite",
     "nextGame": "prochaine partie",
     "localGame": "Local",
     "createPriv": "créer une partie privée",
