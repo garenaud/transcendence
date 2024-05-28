@@ -45,7 +45,7 @@ let currentNum = 7;
 let connected;
 let playernb = sessionStorage.getItem('playernb');
 let playernumber = 0;
-
+const tournamentTree = document.getElementById('userList');
 const startBtn = document.getElementById('startGameBtn');
 const nextBtn = document.getElementById('nextGameBtn');
 const myModal2 = document.getElementById('myModal2');
@@ -207,7 +207,7 @@ function init() {
 				'message' : 'load'
 			}));
 			loadingElement.style.display = 'none';
-			loadingDot[1].style.display = 'block';
+			loadingDot[1].style.display = 'none';
 			if (div_scoreboardTour) {
 				div_scoreboardTour.style.display = 'flex';
 			}
@@ -546,7 +546,6 @@ function sleep(delay) {
 		console.log('*******************' + 'waiting');
 }
 
-const userList = document.getElementById('userList');
 let namelist = [];
 
 window.tournamentSocket.onmessage = function(e) {
@@ -558,8 +557,6 @@ window.tournamentSocket.onmessage = function(e) {
 		var users = tournament_data.users; // This will get the list of users
 		
 		// Create tournament tree
-		var tournamentTree = document.getElementById('userList');
-		tournamentTree.innerHTML = '';
 		tournamentTree.innerHTML = `
 			<p class="userList1">
 				<span class="userTournament0">${users[0]}</span>

@@ -69,7 +69,6 @@ export function renderPong() {
 					<div class="load-3">
                         <div class="loading">
                             <p id="loading_txt">[GAME DOESN'T EXIST]</p>
-                            <ul id="userList"></ul>
                             <div class="line"></div>
                             <div class="line"></div>
                             <div class="line"></div>
@@ -106,7 +105,7 @@ export function renderPong() {
                     <div class="load-3">
                         <div class="loading">
                             <p id="loading_txt_tournament">[TOURNAMENT DOESN'T EXIST]</p>
-                            <ul id="userList"></ul>
+							<ul id="userList"></ul>
                             <div class="line"></div>
                             <div class="line"></div>
                             <div class="line"></div>
