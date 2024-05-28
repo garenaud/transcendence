@@ -24,7 +24,7 @@ cli
 
 ## Lancement
 Lors du lancement de l'application, l'adresse du serveur nous est demandée. Aucun port n'est requis.
-Il est important de noter que si l'application est dockerizée sur le même ordinateur que le serveur, l'adresse du serveur sera **nginx**
+Il est important de noter que si l'application est dockerizée sur le même ordinateur que le serveur, l'adresse du serveur sera **nginx** (l'IP du poste fonctionnerai aussi, mais pas *localhost*)
 
 ## Utilisation
 Une fois le serveur entré, l'app demande un user + password. Il n'est **PAS** possible de créer un user ou de le modifier depuis le CLI.
