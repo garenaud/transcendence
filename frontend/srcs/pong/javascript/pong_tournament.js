@@ -40,7 +40,6 @@ const deltaTime = 30;
 let scoreLeft;
 let scoreRight;
 let ballVelocity;
-let gameSocket;
 let tournamentSocket;
 let currentNum = 7;
 let connected;
@@ -62,7 +61,7 @@ const loadingDot = document.getElementsByClassName('loading');
 // si on a gagner le match, le bouton pour acceder a la finale apparait
 // , sinon, retour au menu apparait
 function nextBtnFunction(){
-	gameSocket = new WebSocket(
+	window.gameSocket = new WebSocket(
 		'wss://'
 		+ window.location.host
 		+ '/ws/'
@@ -508,6 +507,7 @@ function onMessageHandler(e) {
 		const errorElement = document.getElementById('error');
 		errorElement.textContent = "A user left the game";
 		document.getElementById("myModal").style.display = "block";
+		gameSocket.close();
 		unloadScript();
 	} else if (game_data.action == 'score') {
 		if (game_data.scorep1 != undefined && game_data.scorep2 != undefined) {
@@ -584,7 +584,7 @@ window.tournamentSocket.onmessage = function(e) {
 	{
 		gameid = tournament_data['gameid'];
 		console.log(`game id for player ${playernb} is ${gameid}`);
-		gameSocket = new WebSocket(
+		window.gameSocket = new WebSocket(
 			'wss://'
 			+ window.location.host
 			+ '/ws/'

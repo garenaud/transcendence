@@ -376,6 +376,7 @@ gameSocket.onmessage = function(e) {
 		errorElement.textContent = "Final score : " + game_data.scorep2 + " - " + game_data.scorep1;
 		document.getElementById("myModal").style.display = "block";
 		sessionStorage.setItem("gameid", null);
+		gameSocket.close();
 	} else if (game_data.action == "userleave") {
 		const errorElement = document.getElementById('error');
 		errorElement.textContent = "A user left the game";
@@ -410,9 +411,8 @@ gameSocket.onmessage = function(e) {
 		} else if (game_data.action == 'ball' && ball) {
 			ball.position.x = parseFloat(game_data.bx);
 			ball.position.z = parseFloat(game_data.bz);
-		} else if (game_data.action == 'Stop') {
-			sessionStorage.setItem("gameid", null);
-		} else if (game_data.action == 'score') {
+		}
+		else if (game_data.action == 'score') {
 			if (game_data.scorep1 != undefined && game_data.scorep2 != undefined) {
 				const scoreElement = document.getElementById("score");
 				scoreElement.textContent = game_data.scorep2 + " - " + game_data.scorep1;

@@ -179,6 +179,7 @@ def create_tournament(request, userid):
 		game2id = create_random_game_id(1, 9999)
 		game3id = create_random_game_id(1, 9999)
 		tournoi = Tournament(p1_id=userid, p1_alias=profile.tournament_alias, game1_id=game1id, game2_id=game2id, game3_id=game3id, tournament_id=tournamentid)
+		tournoi.connected += 1
 		tournoi.save()
 		return Response({'tournamentid' : tournamentid, 'game1id' : game1id, 'game2id' : game2id, 'game3id' : game3id, 'playernb' : 1})
 	else:
@@ -192,7 +193,11 @@ def join_tournament(request, tournamentid, userid):
 		try:
 			qs = Tournament.objects.filter(tournament_id=tournamentid, full=False, finished=False)
 			tournoi = qs[0]
-			if tournoi.p2_id == -1:
+			if tournoi.p1_id == -1:
+				tournoi.p1_id = userid
+				tournoi.p1_alias = profile.tournament_alias
+				playernb = 1
+			elif tournoi.p2_id == -1:
 				tournoi.p2_id = userid
 				tournoi.p2_alias = profile.tournament_alias
 				playernb = 2
@@ -205,10 +210,9 @@ def join_tournament(request, tournamentid, userid):
 				playernb = 4
 				tournoi.p4_id = userid
 				tournoi.p4_alias = profile.tournament_alias
-			
+			tournoi.connected += 1
 			tournoi.save()
 			return Response({'message' : 'ok', 'game1id' : tournoi.game1_id, 'game2id' : tournoi.game2_id, 'game3id' : tournoi.game3_id, 'playernb' : playernb})
-
 		except:
 			return Response({'message' : 'ko'}, status=status.HTTP_404_NOT_FOUND)
 	else:

@@ -21,6 +21,7 @@ class Games(models.Model):
 	room_group_name = models.CharField(max_length=100, default="")
 	room_id = models.IntegerField(default=-1)
 	tournament_id = models.IntegerField(default=-1)
+	looser = models.CharField(default="")
 	date = models.DateField(auto_now_add=True)
 	def __str__(self):
 		return self.code
