@@ -343,13 +343,9 @@ export function unloadScript() {
 		script.removeAttribute('type');
 		if (window.gameSocket) {
 			window.gameSocket.close();
-			console.log(window.gameSocket);
+			console.log(window.gameSocket.readyState);
 		}
-		// TODO trouvé une soluce pour fermer les tournois.
-		if (window.tournamentSocket) {
-			window.tournamentSocket.close();
-			console.log(window.tournamentSocket);
-		}
+		console.log(script);
 		script.remove(); // Supprimer le script du DOM
 	});
 }
