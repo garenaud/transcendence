@@ -16,6 +16,10 @@ export function logoutUser() {
     .then(response => {
         if (response.ok) {
             sessionStorage.clear();
+            appState.user = null;
+            appState.userId = null;
+            appState.users = [];
+            appState.userProfile = [];
             appState.isLogged = false;
             changeView('login');
             window.location.reload();

@@ -163,10 +163,10 @@ function addEventListeners(element) {
 		const gameIdInputElem = element.querySelector('#gameCodeInputPrivate');
 		const defeatButton = element.querySelector('#defaiteBtn'); // Remplacez 'defeatButtonId' par l'ID réel de votre bouton
 		const winnerButton = element.querySelector('#winnerBtn'); // Remplacez 'winnerButtonId' par l'ID réel de votre bouton
-
 		defeatButton.addEventListener('click', function() {
 			changeView('hero');
 		});
+
 	
 		winnerButton.addEventListener('click', function() {
 			changeView('hero');
