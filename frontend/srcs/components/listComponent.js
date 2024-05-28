@@ -30,10 +30,26 @@ export async function showUserList() {
         const userProfile = appState.usersProfile.find(profile => profile.user === user.id);
         const row = document.createElement('tr');
         const nameCell = document.createElement('td');
-/*         const idCell = document.createElement('td'); */
         const emailCell = document.createElement('td');
         const buttonCell = document.createElement('td');
         const photoCell = document.createElement('td');
+        const onlineStatusCell = document.createElement('td'); // Ajout de la nouvelle cellule
+
+        if (userProfile.online) {
+            if (userProfile.inGame) {
+                onlineStatusCell.textContent = 'in game';
+                onlineStatusCell.dataset.langKey = 'inGame';
+                onlineStatusCell.style.backgroundColor = 'orange';
+            } else {
+                onlineStatusCell.textContent = 'online';
+                onlineStatusCell.dataset.langKey = 'online';
+                onlineStatusCell.style.backgroundColor = 'green';
+            }
+        } else {
+            onlineStatusCell.textContent = 'offline';
+            onlineStatusCell.dataset.langKey = 'offline';
+            onlineStatusCell.style.backgroundColor = 'red';
+        }
 
         const photoComponent = await createPhotoComponent(user.id, userProfile.winrate);
         const pendingRequest = requests.find(request => request.from_user === appState.userId && request.to_user === user.id);
@@ -50,14 +66,13 @@ export async function showUserList() {
             });
         }
 
-        //idCell.textContent = user.id;
         nameCell.textContent = user.username;
         emailCell.textContent = user.email;
         photoCell.appendChild(photoComponent);
         buttonCell.appendChild(buttonComponent);
         row.appendChild(photoCell);
-        //row.appendChild(idCell);
         row.appendChild(nameCell);
+        row.appendChild(onlineStatusCell);
         row.appendChild(emailCell);
         row.appendChild(buttonCell);
         table.appendChild(row);
