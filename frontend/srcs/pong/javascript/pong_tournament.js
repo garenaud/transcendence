@@ -53,6 +53,10 @@ const myModal2 = document.getElementById('myModal2');
 const myModal3 = document.getElementById('myModal3');
 const scoreL = document.getElementById("scoreHomeTour");
 const scoreR = document.getElementById("scoreGuestTour");
+const div_scoreboardTour = document.querySelector('.scoreboardTour');
+const div_scoreboard = document.querySelector('.scoreboard');
+const loadingElement = document.getElementById('loading_txt_tournament');
+const loadingDot = document.getElementsByClassName('loading');
 
 // rajouter condition pour faire apparaitre le bon bouton, 
 // si on a gagner le match, le bouton pour acceder a la finale apparait
@@ -116,7 +120,10 @@ function makeid(length) {
     return result;
 }
 
-const loadingElement = document.getElementById('loading_txt_tournament');
+div_scoreboardTour.style.display = 'none';
+div_scoreboard.style.display = 'none';
+loadingElement.style.display = 'flex';
+loadingDot[1].style.display = 'block';
 loadingElement.innerHTML = "[WAITING FOR OPPONENT]<br>Tournament ID : " + tournament_id + '<br>' + 'Currently connected : ' + connected + '/4';
 
 //console.log(privategame);
@@ -200,9 +207,10 @@ function init() {
 			gameSocket.send(JSON.stringify({
 				'message' : 'load'
 			}));
-			const div_scoreboard = document.querySelector('.scoreboard');
-			if (div_scoreboard) {
-				div_scoreboard.style.display = 'flex';
+			loadingElement.style.display = 'none';
+			loadingDot[1].style.display = 'block';
+			if (div_scoreboardTour) {
+				div_scoreboardTour.style.display = 'flex';
 			}
 			// checkPortraitMode();
 			// createScoreTexts();
@@ -448,7 +456,7 @@ function onMessageHandler(e) {
 		}));
 	} 
 	else if (game_data.action == "allin") {
-		// loadingElement.innerHTML = "[LOADING GAME ...]";
+		loadingElement.innerHTML = "[LOADING GAME ...]";
 		init();
 	}
 	else if (game_data.action == "playernumber")

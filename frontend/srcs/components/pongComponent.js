@@ -66,18 +66,19 @@ export function renderPong() {
                 </div>
                 <!-- multiplayerModalContent -->
                 <div id="pongMulti" class="h-100 align-items-center d-none" style="position: relative;">
-                    <div class="container2" style="position: absolute; top: 5; right: 5">
-                        <div class="load-3">
-                            <!-- <p id="loading" data-lang-key="waitOpponent">[WAITING FOR OPPONENT]</p> -->
+					<div class="load-3">
+                        <div class="loading">
+                            <p id="loading_txt">[GAME DOESN'T EXIST]</p>
+                            <ul id="userList"></ul>
+                            <div class="line"></div>
+                            <div class="line"></div>
+                            <div class="line"></div>
                         </div>
                     </div>
-                    <div id="loading_txt" style="position: absolute; top: 15px; left: 15px;"></div>
-                    <div id="countdown" style="position: absolute; top: 0;"></div>
-                    <div class="container3" style="position: absolute; top: 0; right: 0;">
+                    <div id="countdown"></div>
+                    <div class="scoreboard">
                         <div class="row">
                             <div class="col col-display" id="scoreHome">0</div>
-                        </div>
-                        <div class="row">
                             <div class="col col-display" id="scoreGuest">0</div>
                         </div>
                     </div>
@@ -96,7 +97,7 @@ export function renderPong() {
                 <div id="pongTournament" class="h-100 align-items-center d-none">
                     <canvas id="backgroundTournament" class="h-100 w-100"></canvas>
                     <div id="countdown"></div>
-                    <div class="scoreboard">
+                    <div class="scoreboardTour">
                         <div class="row">
                             <div class="col col-display" id="scoreHomeTour">0</div>
                             <div class="col col-display" id="scoreGuestTour">0</div>
