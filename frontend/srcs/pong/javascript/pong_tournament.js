@@ -70,7 +70,7 @@ function nextBtnFunction(){
 		+ finalid
 		+ '/'
 	);
-	gameSocket.onmessage = function(event) {
+	window.gameSocket.onmessage = function(event) {
 		onMessageHandler(event);
 	};
 	myModal3.style.display = 'none';
@@ -83,8 +83,7 @@ function startBtnFunction(){
 }
 
 nextBtn.addEventListener('click', nextBtnFunction);
-
-window.tournamentSocket = new WebSocket(
+tournamentSocket = new WebSocket(
 	'wss://'
 	+ window.location.host
 	+ '/ws/'
@@ -93,8 +92,7 @@ window.tournamentSocket = new WebSocket(
 	+ tournament_id
 	+ '/'
 );
-
-window.tournamentSocket.onerror = function(e) {
+tournamentSocket.onerror = function(e) {
 	window.location.reload();;
 }
 
@@ -178,7 +176,10 @@ function init() {
 	});
 	renderer.setSize(window.innerWidth, window.innerHeight);
 	renderer.shadowMap.enabled = true;
-
+	const div_loading = document.querySelector('.loading');
+	if (div_loading) {
+		div_loading.style.display = 'flex';
+	}
 	// Scene
 	scene = new THREE.Scene();
 	scene.background = new THREE.Color('purple');
@@ -195,7 +196,7 @@ function init() {
 	// Load the GLTF model and handle the PaddleRight
 	LoadGLTFByPath(scene)
 		.then(() => {
-			const div_loading = document.querySelector('.loading');
+			// const div_loading = document.querySelector('.loading');
 			if (div_loading) {
 				div_loading.style.display = 'none';
 			}
@@ -203,7 +204,7 @@ function init() {
 			handleGround();
 			handleLight();
 			handleText();
-			gameSocket.send(JSON.stringify({
+			window.gameSocket.send(JSON.stringify({
 				'message' : 'load'
 			}));
 			loadingElement.style.display = 'none';
@@ -220,7 +221,6 @@ function init() {
 		scene.castShadow = true;
 		scene.receiveShadow = true;
 		// Animation loop
-		console.log('help');
 		animate();
 }
 
@@ -315,38 +315,38 @@ function handleKeyDown(event) {
 		if (event.code == 'ArrowUp')
 		{
 			event.preventDefault();
-			gameSocket.send(JSON.stringify({
+			window.gameSocket.send(JSON.stringify({
 			'message' : 'Up'
 			}));
 		}
 		else if (event.code == 'ArrowDown')
 		{
 			event.preventDefault();
-			gameSocket.send(JSON.stringify({
+			window.gameSocket.send(JSON.stringify({
 			'message' : 'Down'
 			}));
 		}
 		else if (event.code == 'KeyW')
 		{
-			gameSocket.send(JSON.stringify({
+			window.gameSocket.send(JSON.stringify({
 				'message' : 'W'
 			}));
 		}
 		else if (event.code == 'KeyS')
 		{
-			gameSocket.send(JSON.stringify({
+			window.gameSocket.send(JSON.stringify({
 				'message' : 'S'
 			}));
 		}
 		else if (event.code == 'Enter')
 		{
-			gameSocket.send(JSON.stringify({
+			window.gameSocket.send(JSON.stringify({
 				'message' : 'Start'
 			}));
 		}
 		else if (event.code == 'Escape')
 		{
-			gameSocket.send(JSON.stringify({
+			window.gameSocket.send(JSON.stringify({
 			'message' : 'Stop'
 			}));
 		}
@@ -449,7 +449,7 @@ function anim() {
 function onMessageHandler(e) {	
 	game_data = JSON.parse(e.data);
 	if (game_data.action == "userid") {
-		gameSocket.send(JSON.stringify({
+		window.gameSocket.send(JSON.stringify({
 			'message' : 'userid',
 			'userid' : appState.userId
 		}));
@@ -464,7 +464,7 @@ function onMessageHandler(e) {
 	}
 	else if (game_data.action == "private")
 	{
-		gameSocket.send(JSON.stringify({
+		window.gameSocket.send(JSON.stringify({
 		'message' : 'private'
 		}));
 	} else if (game_data.action == 'Stop') 
@@ -477,31 +477,30 @@ function onMessageHandler(e) {
 		// myModal3.style.display = "block";
 		// startBtn.style.display = "block";
 		sessionStorage.setItem("game_id", null);
-		gameSocket.send(JSON.stringify({
+		window.gameSocket.send(JSON.stringify({
 			'message' : 'getWinner'
 			}));
 	} 
 	else if (game_data.action == 'winner')
 	{
-		console.log('jai gagner');
 		if (finalid == -1)
 		{
 			myModal3.style.display = "block";
-			window.tournamentSocket.send(JSON.stringify({
+			tournamentSocket.send(JSON.stringify({
 				'message' : 'winner',
 				'finalid' : finalid
 			}))
 		}
 		else
-		{
 			myModal2.style.display = "block";
-		}
 	}
 	else if (game_data.action == 'looser')
 	{
 		// console.log('jai perdu');
 		unloadScript();
 		document.getElementById("myModal").style.display = "block";
+		var tournamentTree = document.getElementById('userList');
+		tournamentTree.style.display = "none";
 	}
 	else if (game_data.action == "userleave") {
 		const errorElement = document.getElementById('error');
@@ -548,7 +547,7 @@ function sleep(delay) {
 
 let namelist = [];
 
-window.tournamentSocket.onmessage = function(e) {
+tournamentSocket.onmessage = function(e) {
 	tournament_data = JSON.parse(e.data);
 	console.log(e.data);
 	if (tournament_data.message == 'tournamentIdNotFound')
@@ -557,6 +556,9 @@ window.tournamentSocket.onmessage = function(e) {
 		var users = tournament_data.users; // This will get the list of users
 		
 		// Create tournament tree
+		var tournamentTree = document.getElementById('userList');
+		tournamentTree.style.display = "flex";
+		tournamentTree.innerHTML = '';
 		tournamentTree.innerHTML = `
 			<p class="userList1">
 				<span class="userTournament0">${users[0]}</span>
@@ -572,7 +574,7 @@ window.tournamentSocket.onmessage = function(e) {
 		playernb = tournament_data['playernb'];
 	else if (tournament_data.action == 'startTournament')
 	{
-		window.tournamentSocket.send(JSON.stringify({
+		tournamentSocket.send(JSON.stringify({
 			'message' : 'getGameId',
 			'playernb' : playernb
 			}));
@@ -580,7 +582,6 @@ window.tournamentSocket.onmessage = function(e) {
 	else if (tournament_data.action == 'gameid')
 	{
 		gameid = tournament_data['gameid'];
-		console.log(`game id for player ${playernb} is ${gameid}`);
 		window.gameSocket = new WebSocket(
 			'wss://'
 			+ window.location.host
@@ -590,24 +591,22 @@ window.tournamentSocket.onmessage = function(e) {
 			+ gameid
 			+ '/'
 		);
-		gameSocket.onmessage = function(event) {
+		window.gameSocket.onmessage = function(event) {
 			onMessageHandler(event);
 		};
 	}
 	else if (tournament_data.action == 'finalid')
 	{
-		console.log('je suis en finale');
 		//clearThreeJS();
-		gameSocket.close();
-		gameSocket = null;
+		window.gameSocket.close();
+		window.gameSocket = null;
 		finalid = tournament_data['finalid'];
-		console.log(`game id for player ${playernb} is ${gameid}`);
 	}
 	else if (tournament_data.action == 'wonTournament')
 	{
 		const errorElement = document.getElementById('error');
 		errorElement.textContent = "VOUS AVEZ REMPORTEZ LE TOURNOI, FELICITATIONS";
-		window.tournamentSocket.close();
+		tournamentSocket.close();
 	}
 }
 
@@ -635,7 +634,7 @@ function clearThreeJS() {
     player1Score = 0;
     player2Score = 0;
     ballVelocity = null;
-    gameSocket = null;
+    window.gameSocket = null;
     currentNum = 7;
 }
 
