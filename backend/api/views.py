@@ -314,6 +314,22 @@ def update_user_info(request, userid):
 		return Response({'message' 'KO'}, status=405)
 		
 
+def update_language(request, userid):
+	if request.method == 'POST':
+		try:
+			data = json.loads(request.body)
+			newlanguage = int(data['language'])
+			user = User.objects.get(id=userid)
+			profile = userProfile.objects.get(user=user)
+			profile.language = newlanguage
+			profile.save()
+			return JsonResponse({"message" : "OK"}, status=201)
+		except:
+			return JsonResponse({"message" : "KO"}, status=405)	
+	else:
+		return JsonResponse({"message" : "KO"}, status=405)
+
+
 @ensure_csrf_cookie
 def cursed(request):
 	return HttpResponse("", status=200)
