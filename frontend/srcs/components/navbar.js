@@ -377,6 +377,7 @@ document.querySelector('#userSaveChange').addEventListener('click', function() {
   }
 	function updateUserInfo(field, value) {
 		if (value) {
+			console.log(value);
 			let escapedValue = escapeHTML(value);
 			switch(field) {
 				case 'email':
@@ -388,6 +389,9 @@ document.querySelector('#userSaveChange').addEventListener('click', function() {
 				case 'last_name':
 					setLastName(escapedValue);
 					break;
+				case 'alias':
+					setAlias(escapedValue);
+					break;
 				default:
 					console.error('Invalid field');
 			}
@@ -398,6 +402,7 @@ document.querySelector('#userSaveChange').addEventListener('click', function() {
 	updateUserInfo('email', newEmail);
 	updateUserInfo('first_name', newFirstName);
 	updateUserInfo('last_name', newLastName);
+	updateUserInfo('alias', newAlias);
 });
 }
 

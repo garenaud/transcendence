@@ -256,8 +256,7 @@ def update_user_info(request, userid):
 			data = json.loads(request.body)
 			user = User.objects.get(id=userid)
 			profile = userProfile.objects.get(user=user)
-			#print(data)
-			alias = ''
+			alias = data['alias']
 			username = data['username']
 			email = data['email']
 			first_name = data['first_name']
@@ -277,17 +276,12 @@ def update_user_info(request, userid):
 					user.email = email
 				else:
 					error = 1
+			print(profile.tournament_alias)
 
 
 			if last_name != '' and first_name != '':
 				user.first_name = first_name
 				user.last_name = last_name
-
-			if alias != '' and alias != profile.tournament_alias:
-				if not userProfile.objects.filter(tournament_alias=alias).exists():
-					profile.tournament_alias = alias
-				else:
-					error = 1
 
 			if error == 0:
 				user.save()
@@ -296,6 +290,7 @@ def update_user_info(request, userid):
 			else:
 				return Response({'message' : 'KO'}, status=400)
 		except:
+			print('except')
 			return Response({'message' : 'KO'}, status=400)
 	else:
 		return Response({'message' 'KO'}, status=405)

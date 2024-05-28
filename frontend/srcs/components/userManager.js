@@ -31,9 +31,11 @@ function updateUserOnServer(user) {
         last_name: user.user.last_name,
         username: user.user.username,  // Assumant que 'username' est le nom d'utilisateur
         email: user.user.email,
-		alias: user.user.alias, // Assumant que 'email' est le login
-        password: user.user.password  // Vous devez vous assurer que le mot de passe est correctement géré
+		alias: user.user.alias  // Vous devez vous assurer que le mot de passe est correctement géré
     };
+	console.log(user.user.alias);
+	console.log(user.user.email);
+	console.log(userForBackend);
     fetch('https://localhost/api/update/' + appState.userId, {
         method: 'PUT',
         headers: {
