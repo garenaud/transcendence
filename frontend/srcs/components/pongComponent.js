@@ -144,18 +144,6 @@ export function renderPong() {
 	const pongElement = document.createElement('div');
 	pongElement.classList.add('col-12', 'col-md-6');
 	pongElement.innerHTML = pongHTML;
-
-	let defeatButton = document.getElementById('defaiteBtn'); // Remplacez 'defeatButtonId' par l'ID réel de votre bouton
-	let winnerButton = document.getElementById('winnerBtn'); // Remplacez 'winnerButtonId' par l'ID réel de votre bouton
-	console.log(defeatButton);
-	// Ajoutez un gestionnaire d'événements click à chaque bouton
-	defeatButton.addEventListener('click', function() {
-		changeView('hero');
-	});
-
-	winnerButton.addEventListener('click', function() {
-		changeView('hero');
-	});
 		
 	addEventListeners(pongElement);
 							
@@ -173,6 +161,16 @@ function addEventListeners(element) {
 		const joinTournamentBtn = element.querySelector('#joinTournamentBtn');
 		const createTournament = element.querySelector('#createTournament');
 		const gameIdInputElem = element.querySelector('#gameCodeInputPrivate');
+		const defeatButton = element.querySelector('#defaiteBtn'); // Remplacez 'defeatButtonId' par l'ID réel de votre bouton
+		const winnerButton = element.querySelector('#winnerBtn'); // Remplacez 'winnerButtonId' par l'ID réel de votre bouton
+
+		defeatButton.addEventListener('click', function() {
+			changeView('hero');
+		});
+	
+		winnerButton.addEventListener('click', function() {
+			changeView('hero');
+		}); 
 
 		gameIdInputElem.addEventListener('keyup', function(event) {
 			if (event.code === 'Enter') {

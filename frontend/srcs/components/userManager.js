@@ -185,7 +185,7 @@ function getUser() {
     }
 }
 
-export { getUser, setUsername, setUserPoints, setUserProfilePicture, setAlias, setEmail, setFirstName, setLastName, setPassword};
+export { getUser, setUsername, setUserProfilePicture, setAlias, setEmail, setFirstName, setLastName, setPassword};
 
 export async function loadUser() {
     try {
