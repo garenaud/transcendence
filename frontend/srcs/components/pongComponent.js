@@ -74,7 +74,7 @@ export function renderPong() {
                             <div class="line"></div>
                         </div>
                     </div>
-                    <div id="countdown"></div>
+                    <div id="countdownNorm" class="countdown"></div>
                     <div class="scoreboard">
                         <div class="row">
                             <div class="col col-display" id="scoreHome">0</div>
@@ -95,7 +95,7 @@ export function renderPong() {
                     <!-- tournamentModalContent -->
                 <div id="pongTournament" class="h-100 align-items-center d-none">
                     <canvas id="backgroundTournament" class="h-100 w-100"></canvas>
-                    <div id="countdown"></div>
+                    <div id="countdownTour" class="countdown"></div>
                     <div class="scoreboardTour">
                         <div class="row">
                             <div class="col col-display" id="scoreHomeTour">0</div>

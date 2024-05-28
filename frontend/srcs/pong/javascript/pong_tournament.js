@@ -428,18 +428,18 @@ function handleBackground() {
 
 function anim() {
     if (currentNum >= 0) {
-        addClassDelayed(document.getElementById("countdown"), "puffer", 600);
+        addClassDelayed(document.getElementById("countdownTour"), "puffer", 600);
 		currentNum--;
         if (currentNum > 0) {
-            document.getElementById("countdown").innerHTML = currentNum;
+            document.getElementById("countdownTour").innerHTML = currentNum;
         } else if (currentNum == 0) {
-            document.getElementById("countdown").innerHTML = "GO !";
+            document.getElementById("countdownTour").innerHTML = "GO !";
         } else {
-            document.getElementById("countdown").innerHTML = "";
-            document.getElementById("countdown").classList.remove("puffer");
+            document.getElementById("countdownTour").innerHTML = "";
+            document.getElementById("countdownTour").classList.remove("puffer");
             return;
         }
-        document.getElementById("countdown").classList.remove("puffer");
+        document.getElementById("countdownTour").classList.remove("puffer");
     } else {
         return;
     }

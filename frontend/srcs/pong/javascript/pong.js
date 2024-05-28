@@ -324,18 +324,18 @@ function handleBackground() {
 
 function anim() {
     if (currentNum >= 0) {
-        addClassDelayed(document.getElementById("countdown"), "puffer", 600);
+        addClassDelayed(document.getElementById("countdownNorm"), "puffer", 600);
 		currentNum--;
         if (currentNum > 0) {
-            document.getElementById("countdown").innerHTML = currentNum;
+            document.getElementById("countdownNorm").innerHTML = currentNum;
         } else if (currentNum == 0) {
-            document.getElementById("countdown").innerHTML = "GO !";
+            document.getElementById("countdownNorm").innerHTML = "GO !";
         } else {
-            document.getElementById("countdown").innerHTML = "";
-            document.getElementById("countdown").classList.remove("puffer");
+            document.getElementById("countdownNorm").innerHTML = "";
+            document.getElementById("countdownNorm").classList.remove("puffer");
             return;
         }
-        document.getElementById("countdown").classList.remove("puffer");
+        document.getElementById("countdownNorm").classList.remove("puffer");
     } else {
         return;
     }

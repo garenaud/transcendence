@@ -254,7 +254,7 @@ function handlePaddleLeft() {
 		if (KeyState['KeyW'] && PaddleLeft.position.z - mooveSpeed > -wallLimit && finished == false) {
 			PaddleLeft.position.z -= mooveSpeed;
 		}
-		if (KeyState['KeyS'] && PaddleLeft.position.z + mooveSpeed < -wallLimit && finished == false) {
+		if (KeyState['KeyS'] && PaddleLeft.position.z + mooveSpeed < wallLimit && finished == false) {
 			PaddleLeft.position.z += mooveSpeed;
 		}
 	} 
@@ -295,7 +295,7 @@ function handlePaddleCollision() {
 			isColliding = false;
 	}
 
-const finalScore = 1;
+const finalScore = 5;
 	
 function handleWallColision() {
 		if (ball.position.z > ballLimit || ball.position.z < -ballLimit) {
