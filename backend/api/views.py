@@ -16,6 +16,9 @@ from django.db.models import Q
 import random, os
 from itertools import chain
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.hashers import make_password
+import re
+
 # TODO, pour le mdp
 # from django.contrib.auth.forms import PasswordChangeForm
 # from django.contrib.auth import update_session_auth_hash
@@ -41,7 +44,7 @@ from django.contrib.auth.decorators import login_required
 
 @api_view(['GET'])
 def get_user_list(request):
-	print('##########')
+	#print('##########')
 	# A RAJOUTER AU MOMENT DU RENDU
 	# if request.user.is_anonymous == True:
 	# 	return HttpResponse('Forbidden', status=403)
@@ -179,6 +182,7 @@ def create_tournament(request, userid):
 		game2id = create_random_game_id(1, 9999)
 		game3id = create_random_game_id(1, 9999)
 		tournoi = Tournament(p1_id=userid, p1_alias=profile.tournament_alias, game1_id=game1id, game2_id=game2id, game3_id=game3id, tournament_id=tournamentid)
+		tournoi.connected += 1
 		tournoi.save()
 		return Response({'tournamentid' : tournamentid, 'game1id' : game1id, 'game2id' : game2id, 'game3id' : game3id, 'playernb' : 1})
 	else:
@@ -192,7 +196,11 @@ def join_tournament(request, tournamentid, userid):
 		try:
 			qs = Tournament.objects.filter(tournament_id=tournamentid, full=False, finished=False)
 			tournoi = qs[0]
-			if tournoi.p2_id == -1:
+			if tournoi.p1_id == -1:
+				tournoi.p1_id = userid
+				tournoi.p1_alias = profile.tournament_alias
+				playernb = 1
+			elif tournoi.p2_id == -1:
 				tournoi.p2_id = userid
 				tournoi.p2_alias = profile.tournament_alias
 				playernb = 2
@@ -205,10 +213,9 @@ def join_tournament(request, tournamentid, userid):
 				playernb = 4
 				tournoi.p4_id = userid
 				tournoi.p4_alias = profile.tournament_alias
-			
+			tournoi.connected += 1
 			tournoi.save()
 			return Response({'message' : 'ok', 'game1id' : tournoi.game1_id, 'game2id' : tournoi.game2_id, 'game3id' : tournoi.game3_id, 'playernb' : playernb})
-
 		except:
 			return Response({'message' : 'ko'}, status=status.HTTP_404_NOT_FOUND)
 	else:
@@ -256,12 +263,13 @@ def update_user_info(request, userid):
 			data = json.loads(request.body)
 			user = User.objects.get(id=userid)
 			profile = userProfile.objects.get(user=user)
-
-			alias = data['alias']
+			#print(data)
+			alias = ''
 			username = data['username']
 			email = data['email']
 			first_name = data['first_name']
 			last_name = data['last_name'] 
+			password = ''
 			if username != user.username and username != '':
 				if not User.objects.filter(username=username).exists():
 					user.username = username
@@ -288,7 +296,12 @@ def update_user_info(request, userid):
 					profile.tournament_alias = alias
 				else:
 					error = 1
-
+			if password != '' and make_password(password) != user.password:
+				password_regex = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d\W_]{8,20}$'
+				if not re.match(password_regex, request.POST['password1']):
+					error = 1
+				else:
+					user.password = make_password(password)
 			if error == 0:
 				user.save()
 				profile.save()
@@ -301,18 +314,34 @@ def update_user_info(request, userid):
 		return Response({'message' 'KO'}, status=405)
 		
 
+def update_language(request, userid):
+	if request.method == 'POST':
+		try:
+			data = json.loads(request.body)
+			newlanguage = int(data['language'])
+			user = User.objects.get(id=userid)
+			profile = userProfile.objects.get(user=user)
+			profile.language = newlanguage
+			profile.save()
+			return JsonResponse({"message" : "OK"}, status=201)
+		except:
+			return JsonResponse({"message" : "KO"}, status=405)	
+	else:
+		return JsonResponse({"message" : "KO"}, status=405)
+
+
 @ensure_csrf_cookie
 def cursed(request):
 	return HttpResponse("", status=200)
 
 def send_friend_request(request):
-	print(request.user.is_anonymous)
+	#print(request.user.is_anonymous)
 	try:
 		data = json.loads(request.body)
 		from_id = data['username']
 		to_username = data['password']
-		print(from_id)
-		print(to_username)
+		#print(from_id)
+		#print(to_username)
 		from_user = User.objects.get(id=from_id)
 		to_user = User.objects.get(username=to_username)
 
@@ -327,16 +356,16 @@ def send_friend_request(request):
 def accept_friend_request(request):
 	try:
 		data = json.loads(request.body)
-		print(data)
+		#print(data)
 		userid = int(data['username'])
 		requestid = int(data['password'])
-		print('#####################')
-		print(userid)
-		print(requestid)
+		#print('#####################')
+		#print(userid)
+		#print(requestid)
 		# verify that friend request is not from same user that sent it
 		friend_request = FriendRequest.objects.get(id=requestid)
-		print(friend_request.to_user)
-		print(friend_request.to_user.id)
+		#print(friend_request.to_user)
+		#print(friend_request.to_user.id)
 		if friend_request.from_user.id == userid:
 			from_user = userProfile.objects.get(user=friend_request.from_user)
 			to_user = userProfile.objects.get(user=friend_request.to_user)
@@ -354,8 +383,8 @@ def deny_friend_request(request):
 		data = json.loads(request.body)
 		userid = int(data['username'])
 		requestid = int(data['password'])
-		print(requestid)
-		print(userid)
+		#print(requestid)
+		#print(userid)
 		friend_request = FriendRequest.objects.get(id=requestid)
 		if friend_request.to_user.id == userid:
 			friend_request.delete()
@@ -381,7 +410,7 @@ def get_picture(request, userid):
 			user = User.objects.get(id=userid)
 			profile = userProfile.objects.get(user=user)
 			image_path = os.path.join(settings.MEDIA_ROOT, 'media/images', profile.profile_picture.url)
-			print(image_path)
+			#print(image_path)
 			with open(f'media/{image_path}', 'rb') as f:
 				return HttpResponse(f.read(), content_type='image/jpeg')  # Assurez-vous d'ajuster le type MIME en fonction du type d'image que vous stockez
 		except IOError:
@@ -389,7 +418,6 @@ def get_picture(request, userid):
 	else:
 		return JsonResponse({'message': 'Méthode non autorisée'}, status=405)
 
-@csrf_exempt
 def post_picture(request, userid):
 	if request.method == 'POST':
 		user = User.objects.get(id=userid)

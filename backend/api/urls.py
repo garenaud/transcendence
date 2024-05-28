@@ -24,6 +24,7 @@ urlpatterns = [
 	path("get_image/<int:userid>", views.get_picture),
 	path("post_image/<int:userid>", views.post_picture),
 	path("get_friend/<int:userid>", views.get_friend_info),
+	path("update_language/<int:userid>", views.update_language)
 	# path('change_password/', views.change_password)
 ]
 

@@ -21,6 +21,7 @@ class Games(models.Model):
 	room_group_name = models.CharField(max_length=100, default="")
 	room_id = models.IntegerField(default=-1)
 	tournament_id = models.IntegerField(default=-1)
+	looser = models.CharField(default="")
 	date = models.DateField(auto_now_add=True)
 	def __str__(self):
 		return self.code
@@ -55,6 +56,7 @@ class userProfile(models.Model):
 	tournament_alias = models.CharField(max_length=100, default='joueur')
 	profile_picture = models.ImageField(upload_to='images/', default='images/base.jpeg')
 	friendlist = models.ManyToManyField(User, blank=True)
+	language = models.IntegerField(default=1)
 
 class FriendRequest(models.Model):
 	from_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='from_user')
