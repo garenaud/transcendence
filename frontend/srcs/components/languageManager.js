@@ -1,4 +1,5 @@
 import { appState, renderApp } from "./stateManager.js";
+import { getCookie } from "./login.js";
 
 export function LanguageBtn() {
     const languageBtnHTML = `
@@ -26,6 +27,9 @@ export function LanguageBtn() {
             sessionStorage.setItem('language', lang);
             sessionStorage.setItem('appState', JSON.stringify(appState));
             loadLanguage(appState.language);
+            if (appState.user) {
+                updateUserLanguageOnServer(lang);
+            }
             renderApp();
         });
     });
@@ -56,4 +60,30 @@ export function loadLanguage(lang) {
                 }
             }
         });
+}
+
+function updateUserLanguageOnServer(language) {
+    let languageMap = {
+        'fr': 1,
+        'us': 2,
+        'de': 3
+    };
+    let csrfToken = getCookie('csrftoken');
+    fetch('https://localhost/api/update_language/' + appState.userId, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken,
+        },
+        body: JSON.stringify({language: languageMap[language]}),
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
 }

@@ -191,11 +191,15 @@ export async function loadUser() {
         appState.users = users;
         appState.userId = Number(sessionStorage.getItem('userId'));
         appState.isLogged = true;
-/*         const languageMap = {1: 'fr', 2: 'us', 3: 'de'};
-        appState.language = languageMap[user.language];
-        loadLanguage(appState.language); */
         appState.user = users.find(user => user.id === appState.userId);
         appState.userProfile = appState.usersProfile.find(usersProfile => usersProfile.user === appState.userId);
+        if (appState.user) {
+            const languageMap = {1: 'fr', 2: 'us', 3: 'de'};
+            appState.language = languageMap[appState.userProfile.language];
+        } else {
+            appState.language = 'fr';
+        }
+        loadLanguage(appState.language);
         sessionStorage.setItem('user', JSON.stringify(appState.user));
     } catch (error) {
         console.error('Erreur lors du chargement des données utilisateur:', error);
@@ -236,5 +240,7 @@ export function loadGameList() {
 }
 
 window.onload = function() {
-    loadUser();
+    if (appState.user){
+        loadUser();
+    }
 };
