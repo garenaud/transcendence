@@ -160,13 +160,16 @@ async function addRow(user, userProfile, table, buttonText1, buttonText2, reques
   if (userProfile.online) {
     if (userProfile.inGame) {
       onlineStatusCell.textContent = 'in game';
+      onlineStatusCell.dataset.langKey = 'inGame';
       onlineStatusCell.style.backgroundColor = 'orange';
     } else {
       onlineStatusCell.textContent = 'online';
+      onlineStatusCell.dataset.langKey = 'online';
       onlineStatusCell.style.backgroundColor = 'green';
     }
   } else {
     onlineStatusCell.textContent = 'offline';
+    onlineStatusCell.dataset.langKey = 'offline';
     onlineStatusCell.style.backgroundColor = 'red';
   }
   
