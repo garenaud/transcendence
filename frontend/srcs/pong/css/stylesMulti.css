@@ -25,6 +25,31 @@
     color: #f94f6d;
 }
 
+.scoreboardTour {
+    top: 15px;
+	width: 100%;
+    position: absolute;
+    display: none;
+    padding: 12px 14px;
+}
+.scoreboardTour .row {
+	margin: auto;
+}
+.scoreboardTour .col-display {
+	margin: 15px;
+    width: 54px;
+    height: 40px;
+    background: #080001;
+    border-radius: 5px;
+    border: 2px solid white;
+    font-family: "Silkscreen", cursive;
+    font-style: normal;
+    font-weight: 67;
+    font-size: 35px;
+    line-height: 35px;
+    color: #f94f6d;
+}
+
 .modal {
     display: none;
     position: fixed;
@@ -94,12 +119,11 @@
 .loading {
 	font-family: 'Roboto Condensed', sans-serif;
 	position: absolute;
-	color: black;
-	top: 50%;
+    display: block;
+	color: white;
 	left: 50%;
+    top: 50%;
 	transform: translate(-50%, -50%);
-	width: 900px;
-	height: 1000px;
 }
 
 .load-3 {

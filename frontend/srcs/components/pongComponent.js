@@ -3,6 +3,7 @@ import { Multiplayer } from "./pong_menu.js";
 import { joinGame } from "./pong_menu.js";
 import { Tournament } from "./tournament_menu.js";
 import { joinTournament } from "./tournament_menu.js";
+import { changeView } from "./stateManager.js";
 // import { makeid } from "../pong/javascript/pong.js" 
 //import * as PongMenu from "./pong_menu.js";
 
@@ -66,18 +67,18 @@ export function renderPong() {
                 </div>
                 <!-- multiplayerModalContent -->
                 <div id="pongMulti" class="h-100 align-items-center d-none" style="position: relative;">
-                    <div class="container2" style="position: absolute; top: 5; right: 5">
-                        <div class="load-3">
-                            <!-- <p id="loading" data-lang-key="waitOpponent">[WAITING FOR OPPONENT]</p> -->
+					<div class="load-3">
+                        <div class="loading">
+                            <p id="loading_txt">[GAME DOESN'T EXIST]</p>
+                            <div class="line"></div>
+                            <div class="line"></div>
+                            <div class="line"></div>
                         </div>
                     </div>
-                    <div id="loading_txt" style="position: absolute; top: 15px; left: 15px;"></div>
-                    <div id="countdown" style="position: absolute; top: 0;"></div>
-                    <div class="container3" style="position: absolute; top: 0; right: 0;">
+                    <div id="countdownNorm" class="countdown"></div>
+                    <div class="scoreboard">
                         <div class="row">
                             <div class="col col-display" id="scoreHome">0</div>
-                        </div>
-                        <div class="row">
                             <div class="col col-display" id="scoreGuest">0</div>
                         </div>
                     </div>
@@ -95,8 +96,8 @@ export function renderPong() {
                     <!-- tournamentModalContent -->
                 <div id="pongTournament" class="h-100 align-items-center d-none">
                     <canvas id="backgroundTournament" class="h-100 w-100"></canvas>
-                    <div id="countdown"></div>
-                    <div class="scoreboard">
+                    <div id="countdownTour" class="countdown"></div>
+                    <div class="scoreboardTour">
                         <div class="row">
                             <div class="col col-display" id="scoreHomeTour">0</div>
                             <div class="col col-display" id="scoreGuestTour">0</div>
@@ -105,7 +106,7 @@ export function renderPong() {
                     <div class="load-3">
                         <div class="loading">
                             <p id="loading_txt_tournament">[TOURNAMENT DOESN'T EXIST]</p>
-                            <ul id="userList"></ul>
+							<ul id="userList"></ul>
                             <div class="line"></div>
                             <div class="line"></div>
                             <div class="line"></div>
@@ -115,13 +116,13 @@ export function renderPong() {
                         <div class="modal-content">
                             <p>DEFAITE</p>
                             <p id="error"></p>
-                            <button onclick="window.location.reload();">Revenir au menu</button>
+                            <button id="defaiteBtn">Revenir au menu</button>
                         </div>
                     </div>
                     <div id="myModal2" class="modal2">
                         <div id="startBtnDiv" class="startBtn">
                             <p data-lang-key="wonTourn">VOUS AVEZ REMPORTEZ LE TOURNOI, FELICITATIONS</p>
-                            <button id="winnerBtn" onclick="window.location.reload();">Revenir au menu</button>
+                            <button id="winnerBtn">Revenir au menu</button>
                         </div>
                     </div>
                     <div id="myModal3" class="modal3">
@@ -143,7 +144,19 @@ export function renderPong() {
 	const pongElement = document.createElement('div');
 	pongElement.classList.add('col-12', 'col-md-6');
 	pongElement.innerHTML = pongHTML;
-	
+
+	let defeatButton = document.getElementById('defaiteBtn'); // Remplacez 'defeatButtonId' par l'ID réel de votre bouton
+	let winnerButton = document.getElementById('winnerBtn'); // Remplacez 'winnerButtonId' par l'ID réel de votre bouton
+	console.log(defeatButton);
+	// Ajoutez un gestionnaire d'événements click à chaque bouton
+	defeatButton.addEventListener('click', function() {
+		changeView('hero');
+	});
+
+	winnerButton.addEventListener('click', function() {
+		changeView('hero');
+	});
+		
 	addEventListeners(pongElement);
 							
 function addEventListeners(element) {
@@ -306,6 +319,7 @@ function addEventListeners(element) {
 
 		
 		pongModal.addEventListener('show.bs.modal', function () {
+			document.getElementById("userList").innerHTML = "";
 			scriptStarted = true;
 			document.querySelectorAll('.card-game-inside > div').forEach(div => {
 				div.classList.remove('d-none');
@@ -314,6 +328,7 @@ function addEventListeners(element) {
 		});
 
 		pongModal.addEventListener('hidden.bs.modal', function () {
+			document.getElementById("userList").innerHTML = "";
 			unloadScript();
 			scriptStarted = false;
 			const pongLocal = element.querySelector('#pongLocal');
@@ -350,13 +365,13 @@ export function unloadScript() {
 		script.removeAttribute('type');
 		if (window.gameSocket) {
 			window.gameSocket.close();
-			console.log(window.gameSocket);
+			console.log(window.gameSocket.readyState);
 		}
-		// TODO trouvé une soluce pour fermer les tournois.
 		if (window.tournamentSocket) {
 			window.tournamentSocket.close();
-			console.log(window.tournamentSocket);
+			console.log(window.tournamentSocket.readyState);
 		}
+		console.log(script);
 		script.remove(); // Supprimer le script du DOM
 	});
 }

@@ -186,7 +186,7 @@ fn connect_ws_tournament(user: User, tournament_id: String) -> Result<tungstenit
  * 		socket: &mut tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<std::net::TcpStream>> - The websocket connection to the server
  */
 fn handle_tournament(user: User, socket: &mut tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<std::net::TcpStream>>, player_nb: String) {
-	let mut game_id = -1;
+	let mut _game_id = -1;
 
 	'selection: loop {
 		match socket.read() {
@@ -217,7 +217,7 @@ fn handle_tournament(user: User, socket: &mut tungstenite::WebSocket<tungstenite
 														let json = json::parse(msg).unwrap();
 														match json["action"].as_str().unwrap() {
 															"gameid" => {
-																game_id = json["gameid"].as_i32().unwrap();
+																_game_id = json["gameid"].as_i32().unwrap();
 																break 'selection;
 															},
 															_ => {}
@@ -234,7 +234,7 @@ fn handle_tournament(user: User, socket: &mut tungstenite::WebSocket<tungstenite
 									}
 								},
 								"gameid" => {
-									game_id = json["gameid"].as_i32().unwrap();
+									_game_id = json["gameid"].as_i32().unwrap();
 									continue;
 								},
 								"connect" => {
@@ -250,9 +250,8 @@ fn handle_tournament(user: User, socket: &mut tungstenite::WebSocket<tungstenite
 				}
 			},
 			Err(err) => {
-				eprintln!("CRASHED HERE");
 				eprintln!("{}", format!("{:#?}", err).red());
-				break;
+				return;
 			}
 		};
 	}
@@ -260,7 +259,7 @@ fn handle_tournament(user: User, socket: &mut tungstenite::WebSocket<tungstenite
 
 
 
-	match pong::connect_game(user.clone(), game_id.to_string(), true) {
+	match pong::connect_game(user.clone(), _game_id.to_string(), true) {
 		Some(res) => {
 			if res {
 				println!("{}", format!("You won the game").green().bold());
@@ -285,9 +284,9 @@ fn handle_tournament(user: User, socket: &mut tungstenite::WebSocket<tungstenite
 						let json = json::parse(msg).unwrap();
 						match json["action"].as_str().unwrap() {
 							"finalid" => {
-								game_id = json["finalid"].as_i32().unwrap();
-								eprintln!("FINAL ID IS {}", game_id);
-								match pong::connect_game(user.clone(), game_id.to_string(), false) {
+								_game_id = json["finalid"].as_i32().unwrap();
+								eprintln!("FINAL ID IS {}", _game_id);
+								match pong::connect_game(user.clone(), _game_id.to_string(), false) {
 									Some(res) => {
 										if res {
 											println!("{}", format!("You won the tournament").green().bold());

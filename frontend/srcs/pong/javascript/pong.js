@@ -17,6 +17,10 @@ let userid = sessionStorage.getItem('userId');
 let privategame = sessionStorage.getItem('privategame');
 const scoreR = document.getElementById("scoreGuest");
 const scoreL = document.getElementById("scoreHome");
+const div_scoreboard = document.querySelector('.scoreboard');
+const div_scoreboardTour = document.querySelector('.scoreboardTour');
+const loadingElement = document.getElementById('loading_txt');
+const loadingDot = document.getElementsByClassName('loading');
 let game_data;
 let renderer;
 let scene;
@@ -58,8 +62,18 @@ gameSocket.onerror = function(e) {
 	window.location.reload();
 }
 
-const loadingElement = document.getElementById('loading_txt');
-loadingElement.innerHTML = "[WAITING FOR OPPONENT]<br>Game ID : " + gameid;
+div_scoreboard.style.display = 'none';
+div_scoreboardTour.style.display = 'none';
+loadingDot[0].style.display = 'block';
+loadingElement.style.display = 'flex';
+if (privategame === "true")
+{
+	loadingElement.innerHTML = "[WAITING FOR OPPONENT]<br>Game ID : " + gameid;
+}
+else 
+{
+	loadingElement.textContent = "[WAITING FOR OPPONENT]";
+}
 
 //console.log(privategame);
 
@@ -132,10 +146,6 @@ function init() {
 	// Load the GLTF model and handle the PaddleRight
 	LoadGLTFByPath(scene)
 		.then(() => {
-			const div_loading = document.querySelector('.loading');
-			if (div_loading) {
-				div_loading.style.display = 'none';
-			}
 			handleBackground();
 			handleGround();
 			handleLight();
@@ -143,10 +153,12 @@ function init() {
 			gameSocket.send(JSON.stringify({
 				'message' : 'load'
 			}));
-			const div_scoreboard = document.querySelector('.scoreboard');
+			document.getElementById("userList").innerHTML = "";
 			if (div_scoreboard) {
 				div_scoreboard.style.display = 'flex';
 			}
+			loadingElement.style.display = 'none';
+			loadingDot[0].style.display = 'none';
 			// checkPortraitMode();
 			// createScoreTexts();
 		})
@@ -312,18 +324,18 @@ function handleBackground() {
 
 function anim() {
     if (currentNum >= 0) {
-        addClassDelayed(document.getElementById("countdown"), "puffer", 600);
+        addClassDelayed(document.getElementById("countdownNorm"), "puffer", 600);
 		currentNum--;
         if (currentNum > 0) {
-            document.getElementById("countdown").innerHTML = currentNum;
+            document.getElementById("countdownNorm").innerHTML = currentNum;
         } else if (currentNum == 0) {
-            document.getElementById("countdown").innerHTML = "GO !";
+            document.getElementById("countdownNorm").innerHTML = "GO !";
         } else {
-            document.getElementById("countdown").innerHTML = "";
-            document.getElementById("countdown").classList.remove("puffer");
+            document.getElementById("countdownNorm").innerHTML = "";
+            document.getElementById("countdownNorm").classList.remove("puffer");
             return;
         }
-        document.getElementById("countdown").classList.remove("puffer");
+        document.getElementById("countdownNorm").classList.remove("puffer");
     } else {
         return;
     }
@@ -340,7 +352,7 @@ gameSocket.onmessage = function(e) {
 		}));
 	} 
 	else if (game_data.action == "allin") {
-		loadingElement.innerHTML = "[LOADING GAME ...]";
+		loadingElement.textContent = "[LOADING GAME ...]";
 		init();
 	}
 	else if (game_data.action == "private")
@@ -447,6 +459,3 @@ function animate() {
 document.addEventListener('keydown', handleKeyDown);
 document.addEventListener('keyup', handleKeyUp);
 window.addEventListener('resize', onWindowResize);
-
-// Appel de la fonction d'initialisation
-init();
