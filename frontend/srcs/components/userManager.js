@@ -30,11 +30,11 @@ function updateUserOnServer(user) {
         first_name: user.user.first_name,
         last_name: user.user.last_name,
         username: user.user.username,  // Assumant que 'username' est le nom d'utilisateur
-        email: user.user.email
-		// alias: user.user.alias  // Assumant que 'email' est le login
-        // password: user.user.password  // Vous devez vous assurer que le mot de passe est correctement géré
+        email: user.user.email,
+		alias: user.user.alias, // Assumant que 'email' est le login
+        password: user.user.password  // Vous devez vous assurer que le mot de passe est correctement géré
     };
-    fetch('https://localhost/api/user/' + appState.userId, {
+    fetch('https://localhost/api/update/' + appState.userId, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
