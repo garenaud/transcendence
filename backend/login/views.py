@@ -37,6 +37,8 @@ def register(request):
 		if first_name == False:
 			return JsonResponse({ "message" : "KO", "info" : "firstNameError"}, status=422)
 		last_name = parse_and_validate(request.POST['last_name'])
+		alias_tournament = parse_and_validate(request.POST['alias'])
+		# ['alias']
 		if last_name == False:
 			return JsonResponse({ "message" : "KO", "info" : "lastNameError"}, status=422)
 		email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
@@ -56,7 +58,7 @@ def register(request):
 			password = make_password(request.POST['password1'])
 			user = User(username=username, first_name=first_name,  last_name=last_name, email=email, password=password)
 			user.save()
-			userprofile = userProfile(user=user)
+			userprofile = userProfile(user=user, tournament_alias=alias_tournament)
 			userprofile.save()
 			return JsonResponse({ "message" : "OK", "info" : "signupOk"}, status=201)
 	else:
@@ -95,7 +97,7 @@ def logout(request, id):
 def login_form(request):
 	form = LoginForm()
 	if request.method == 'POST':
-		print(request.POST)
+		# print(request.POST)
 		form = LoginForm(request, data=request.POST)
 		if form.is_valid():
 			username = request.POST['username']

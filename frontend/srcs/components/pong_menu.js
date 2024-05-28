@@ -49,11 +49,6 @@ export function joinGame(gameid) {
 			.then(data => {
 				console.log('Success:', data);
 				if (data['message'] == "Not found") {
-					errorLink.style.display = "block";
-					errorLink.textContent = `La partie ${gameid} n'existe pas, veuillez reessayer`;
-					setTimeout(() => {
-						errorLink.style.display = "none";
-					}, 4000);
 					reject(`La partie ${gameid} n'existe pas, veuillez reessayer`);
 				} else {
 					privategame = true;
@@ -72,7 +67,7 @@ export function joinGame(gameid) {
 			errorLink.textContent = `La partie ${gameid} n'existe pas, veuillez reessayer`;
 			setTimeout(() => {
 				errorLink.style.display = "none";
-			}, 4000);
+			}, 3000);
 			reject(`La partie ${gameid} n'existe pas, veuillez reessayer`);
 		}
 	});

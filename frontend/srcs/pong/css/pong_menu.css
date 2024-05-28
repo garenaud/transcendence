@@ -1,77 +1,80 @@
 @import url('https://fonts.googleapis.com/css?family=Quantico:400');
 
-#errorGameInputPrivate {
-    margin-left: 35px;
-    display: none;
+.errorGameInput {
+  margin-left: 35px;
+  display: none;
+  text-decoration: none;
+  color: var(--txt-base);
+  font-family: "Quantico", sans-serif;
 }
 
 .menugrid {
-    align-items: start;
-    display: grid;
-    background-color: black;
-    grid-template-areas: "stack";
-    height: 100vh;
-    overflow: hidden;
-    width: 100vw;
-    color: var(--txt-base);
-    font-family: "Quantico", sans-serif;
-    font-size: 1.5rem;
-    letter-spacing: 0.1em;
+  align-items: start;
+  display: grid;
+  background-color: black;
+  grid-template-areas: "stack";
+  height: 100vh;
+  overflow: hidden;
+  width: 100vw;
+  color: var(--txt-base);
+  font-family: "Quantico", sans-serif;
+  font-size: 1.5rem;
+  letter-spacing: 0.1em;
   }
   
   
-  .nav {
-    align-items: flex-start;
-    display: flex;
-    flex-direction: column;
-    flex-wrap: nowrap;
-    grid-area: stack;
-    justify-content: flex-start;
-    padding: 3em;
-  }
-  
-  .nav-link {
-    align-items: center;
-    border-color: transparent;
-    border-style: solid;
-    border-width: 2px;
-    color: var(--txt-base);
-    display: flex;
-    flex-basis: auto;
-    justify-content: flex-start;
-    line-height: 26px;
-    /* height: 40px; */
-    margin-bottom: -1px;
-    margin-top: -1px;
-    overflow: hidden;
-    padding: 4px 0;
-    position: relative;
-    text-decoration: none;
-    text-shadow: -1px -0.5px 0 rgba(255, 0, 0, 0.5),
-                 1px -0.5px 0 rgba(0, 255, 0, 0.5),
-                 0.5px 1px 0 rgba(0, 0, 255, 0.5);
-    text-transform: uppercase;
-    transition: all 200ms;
-    /* width: 500px; */
-    z-index: 101;
-  }
-  
-  .nav-link:focus,
-  .nav-link:hover {
-    animation-direction: normal;
-    animation-duration: 20s;
-    animation-fill-mode: both;
-    animation-name: bg-anim;
-    animation-iteration-count: infinite;
-    animation-timing-function: linear;
-    background-image: repeating-linear-gradient(-45deg, var(--btn-bg-1), var(--btn-bg-1) 8px, var(--btn-bg-2) 8px, var(--btn-bg-2) 16px);
-    background-position: -100% 25%;
-    background-size: 200% 150%;
-    color: var(--txt-hover);
-    outline: none;
-    padding-left: 24px;
-    z-index: 102;
-  }
+.nav {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  grid-area: stack;
+  justify-content: flex-start;
+  padding: 3em;
+}
+
+.nav-link {
+  align-items: center;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 2px;
+  color: var(--txt-base);
+  display: flex;
+  flex-basis: auto;
+  justify-content: flex-start;
+  line-height: 26px;
+  /* height: 40px; */
+  margin-bottom: -1px;
+  margin-top: -1px;
+  overflow: hidden;
+  padding: 4px 0;
+  position: relative;
+  text-decoration: none;
+  text-shadow: -1px -0.5px 0 rgba(255, 0, 0, 0.5),
+                1px -0.5px 0 rgba(0, 255, 0, 0.5),
+                0.5px 1px 0 rgba(0, 0, 255, 0.5);
+  text-transform: uppercase;
+  transition: all 200ms;
+  /* width: 500px; */
+  z-index: 101;
+}
+
+.nav-link:focus,
+.nav-link:hover {
+  animation-direction: normal;
+  animation-duration: 20s;
+  animation-fill-mode: both;
+  animation-name: bg-anim;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  background-image: repeating-linear-gradient(-45deg, var(--btn-bg-1), var(--btn-bg-1) 8px, var(--btn-bg-2) 8px, var(--btn-bg-2) 16px);
+  background-position: -100% 25%;
+  background-size: 200% 150%;
+  color: var(--txt-hover);
+  outline: none;
+  padding-left: 24px;
+  z-index: 102;
+}
   
 .soon:hover::before {
     content: "Coming soon";

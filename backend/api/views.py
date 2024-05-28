@@ -15,12 +15,33 @@ from django.conf import settings
 from django.db.models import Q
 import random, os
 from itertools import chain
+from django.contrib.auth.decorators import login_required
+# TODO, pour le mdp
+# from django.contrib.auth.forms import PasswordChangeForm
+# from django.contrib.auth import update_session_auth_hash
+# from django.contrib import messages
 
+# def change_password(request):
+# 	if request.method == 'POST':
+# 		form = PasswordChangeForm(request.user, request.POST)
+# 		if form.is_valid():
+# 			user = form.save()
+# 			update_session_auth_hash(request, user)  # Important, to update the session with the new password
+# 			messages.success(request, 'Your password was successfully updated!')
+# 			return redirect('change_password')
+# 		else:
+# 			messages.error(request, 'Please correct the error below.')
+# 	else:
+# 		form = PasswordChangeForm(request.user)
+# 	return render(request, 'change_password.html', {
+# 		'form': form
+# 	})
 
 #Returns all user in the database
+
 @api_view(['GET'])
 def get_user_list(request):
-	print('##########')
+	#print('##########')
 	# A RAJOUTER AU MOMENT DU RENDU
 	# if request.user.is_anonymous == True:
 	# 	return HttpResponse('Forbidden', status=403)
@@ -56,8 +77,8 @@ def user_by_id(request, id):
 			user.last_name = serializer.data['last_name']
 			user.username = serializer.data['username']
 			user.email = serializer.data['email']
-			user.password = serializer.data['password']
-			user.save(update_fields=['first_name', 'last_name', 'username', 'email', 'password'])
+			# user.password = serializer.data['password']
+			user.save(update_fields=['first_name', 'last_name', 'username', 'email'])
 			return Response(serializer.data, status=status.HTTP_200_OK)
 	else:
 		return Response("Method not allowed", status=status.HTTP_405_METHOD_NOT_ALLOWED)
@@ -226,41 +247,47 @@ def get_user_history(request, userid):
 		return Response({'message' : 'OK', 'data' : serializer1.data + serializer2.data}, status=200)
 	else:
 		return Response("Unauthorized method", status=status.HTTP_401_UNAUTHORIZED)
-	
+
+@api_view(['PUT'])
 def update_user_info(request, userid):
-	if request.method == 'POST':
+	if request.method == 'PUT':
 		error = 0 
 		try:
 			data = json.loads(request.body)
 			user = User.objects.get(id=userid)
 			profile = userProfile.objects.get(user=user)
-
-			alias = data['alias']
+			#print(data)
+			alias = ''
 			username = data['username']
 			email = data['email']
 			first_name = data['first_name']
-			last_name = data['last_name']
-
-			if username != user.username:
-				if User.objects.filter(username=username).count == 0 and username != '':
+			last_name = data['last_name'] 
+			if username != user.username and username != '':
+				if not User.objects.filter(username=username).exists():
 					user.username = username
 				else:
 					error = 1
-			if alias != profile.tournament_alias:
-				if userProfile.objects.filter(tournament_alias=alias).count == 0 and alias != '':
+			if alias != profile.tournament_alias and alias != '':
+				if not userProfile.objects.filter(tournament_alias=alias).exists():
 					profile.tournament_alias = alias
 				else:
 					error = 1
-			if email != user.email:
-				if User.objects.filter(email=email).count == 0:
+			if email != user.email and email != '':
+				if not User.objects.filter(email=email).exists():
 					user.email = email
 				else:
 					error = 1
+
+
 			if last_name != '' and first_name != '':
 				user.first_name = first_name
 				user.last_name = last_name
-			else:
-				error = 1
+
+			if alias != '' and alias != profile.tournament_alias:
+				if not userProfile.objects.filter(tournament_alias=alias).exists():
+					profile.tournament_alias = alias
+				else:
+					error = 1
 
 			if error == 0:
 				user.save()
@@ -268,9 +295,10 @@ def update_user_info(request, userid):
 				return Response({'message' : 'OK'}, status=200)
 			else:
 				return Response({'message' : 'KO'}, status=400)
-
 		except:
 			return Response({'message' : 'KO'}, status=400)
+	else:
+		return Response({'message' 'KO'}, status=405)
 		
 
 @ensure_csrf_cookie
@@ -278,12 +306,13 @@ def cursed(request):
 	return HttpResponse("", status=200)
 
 def send_friend_request(request):
+	#print(request.user.is_anonymous)
 	try:
 		data = json.loads(request.body)
 		from_id = data['username']
 		to_username = data['password']
-		print(from_id)
-		print(to_username)
+		#print(from_id)
+		#print(to_username)
 		from_user = User.objects.get(id=from_id)
 		to_user = User.objects.get(username=to_username)
 
@@ -298,16 +327,16 @@ def send_friend_request(request):
 def accept_friend_request(request):
 	try:
 		data = json.loads(request.body)
-		print(data)
+		#print(data)
 		userid = int(data['username'])
 		requestid = int(data['password'])
-		print('#####################')
-		print(userid)
-		print(requestid)
+		#print('#####################')
+		#print(userid)
+		#print(requestid)
 		# verify that friend request is not from same user that sent it
 		friend_request = FriendRequest.objects.get(id=requestid)
-		print(friend_request.to_user)
-		print(friend_request.to_user.id)
+		#print(friend_request.to_user)
+		#print(friend_request.to_user.id)
 		if friend_request.from_user.id == userid:
 			from_user = userProfile.objects.get(user=friend_request.from_user)
 			to_user = userProfile.objects.get(user=friend_request.to_user)
@@ -325,8 +354,8 @@ def deny_friend_request(request):
 		data = json.loads(request.body)
 		userid = int(data['username'])
 		requestid = int(data['password'])
-		print(requestid)
-		print(userid)
+		#print(requestid)
+		#print(userid)
 		friend_request = FriendRequest.objects.get(id=requestid)
 		if friend_request.to_user.id == userid:
 			friend_request.delete()
@@ -352,7 +381,7 @@ def get_picture(request, userid):
 			user = User.objects.get(id=userid)
 			profile = userProfile.objects.get(user=user)
 			image_path = os.path.join(settings.MEDIA_ROOT, 'media/images', profile.profile_picture.url)
-			print(image_path)
+			#print(image_path)
 			with open(f'media/{image_path}', 'rb') as f:
 				return HttpResponse(f.read(), content_type='image/jpeg')  # Assurez-vous d'ajuster le type MIME en fonction du type d'image que vous stockez
 		except IOError:
@@ -363,7 +392,8 @@ def get_picture(request, userid):
 @csrf_exempt
 def post_picture(request, userid):
 	if request.method == 'POST':
-		profile = userProfile.objects.get(id=userid)
+		user = User.objects.get(id=userid)
+		profile = userProfile.objects.get(user=user)
 		image = request.FILES.get('filename')
 		if image:
 			profile.profile_picture = image

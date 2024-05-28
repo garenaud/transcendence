@@ -39,7 +39,7 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             await sync_to_async(self.saveGame)(self.game.dbgame)
             await self.send(text_data=json.dumps({'action' : 'playernumber', 'playernumber' : 1}))
             await self.send(text_data=json.dumps({'action' : 'userid'}))
-            print("GAME P1")
+            #print("GAME P1")
         else:
             self.game = gameTab[self.room_id]
             self.game.p2id = self.channel_name
@@ -47,7 +47,7 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             await sync_to_async(self.saveGame)(self.game.dbgame)
             await self.send(text_data=json.dumps({'action' : 'playernumber', 'playernumber' : 2}))
             await self.send(text_data=json.dumps({'action' : 'userid'}))
-            print("GAME P2")
+            #print("GAME P2")
         
             
         await self.channel_layer.group_add(
@@ -115,7 +115,7 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
         self.room_group_name,
         {"type": "update", "message": {'action' : 'start'}}
         )
-        print("GAME STARTED")
+        #print("GAME STARTED")
         while self.game.finished == False:
             if self.game.scorep1 == 5 or self.game.scorep2 == 5:
                 self.game.finished = True
@@ -140,7 +140,7 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
                 self.game.bv.x *= -1
                 self.game.sif += 0.1
                 is_colliding = True
-                # print("collision detectee a gauche")
+                # #print("collision detectee a gauche")
             #verifier la collision avec le paddle droit
             if (self.game.bpx - self.game.bradius < self.game.prx + paddle_size_x / 2 and
                 self.game.bpx + self.game.bradius > self.game.prx - paddle_size_x / 2 and
@@ -151,7 +151,7 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
                 self.game.sif += 0.1
                 is_colliding = True
                 #self.game.sif += 0.1
-                # print("collision detectee a droite")
+                # #print("collision detectee a droite")
             is_colliding = False
             balllimit = 8.5
             if self.game.bpz > balllimit or self.game.bpz < -balllimit:
@@ -193,7 +193,7 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
         try:
             self.task.cancel()
         except:
-            print('ca arrive hein')
+            pass
         try:
             user1 = await sync_to_async(User.objects.get)(id=self.game.dbgame.p1_id)
             user2 = await sync_to_async(User.objects.get)(id=self.game.dbgame.p2_id)
@@ -220,9 +220,9 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
                 await sync_to_async(self.saveGame)(self.game.dbgame)
             if self.game.dbgame.full == True:
                 self.game.started = True 
-        if message == 'userid':
+        elif message == 'userid':
             user = await sync_to_async(User.objects.get)(id=jsondata['userid'])
-            print(user.username)
+            #print(user.username)
             if self.game.p1id == self.channel_name:
                 self.game.dbgame.p1_id = jsondata['userid']
                 profile_p1 = await sync_to_async(userProfile.objects.get)(user=user)
@@ -238,19 +238,19 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
                 {"type": "update", "message": {'action' : 'playerid', 'p1' : self.game.dbgame.p1_id, 'p2' : self.game.dbgame.p2_id}}
                 )
             await sync_to_async(self.saveGame)(self.game.dbgame)
-        if message == 'ball_update':
+        elif message == 'ball_update':
             await self.channel_layer.group_send(
             self.room_group_name,
             {"type": "update", "message": {'action' : 'game', 'bx' : self.game.bpx, 'bz' : self.game.bpz, 'plx' : self.game.plx ,'plz' : self.game.plz, 'prx' : self.game.prx ,'prz' : self.game.prz}}
             )
-        if message == 'getWinner':
+        elif message == 'getWinner':
             if self.game.scorep1 > self.game.scorep2 and self.channel_name == self.game.p1id:
                 await self.send(text_data=json.dumps({'action' : 'winner'}))
             elif self.game.scorep1 < self.game.scorep2 and self.channel_name == self.game.p2id:
                 await self.send(text_data=json.dumps({'action' : 'winner'}))
             else:
                 await self.send(text_data=json.dumps({'action' : 'looser'}))
-        if message == 'mdr':
+        elif message == 'mdr':
                 user1 = await sync_to_async(User.objects.get)(id=self.game.dbgame.p1_id)
                 user2 = await sync_to_async(User.objects.get)(id=self.game.dbgame.p2_id)
                 profile_p1 = await sync_to_async(userProfile.objects.get)(user=user1)
@@ -287,18 +287,18 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             {"type": "update", "message": {'action' : 'game', 'bx' : self.game.bpx, 'bz' : self.game.bpz, 'plx' : self.game.plx ,'plz' : self.game.plz, 'prx' : self.game.prx ,'prz' : self.game.prz}}
             )
         elif self.game.p1id == self.channel_name:
-            if (message == 'Up' or message == 'o' or message == 'O') and self.game.prz - self.game.ms > -6.5:
+            if (message == 'W' or message == 'w' or message == 'Up') and self.game.prz - self.game.ms > -6.5:
                 self.game.prz -= self.game.ms
-            elif (message == 'Down' or message == 'l' or message == 'L') and self.game.prz + self.game.ms < 6.5:
+            elif (message == 'S' or message == 's' or message == 'Down') and self.game.prz + self.game.ms < 6.5:
                 self.game.prz += self.game.ms
             await self.channel_layer.group_send(
                 self.room_group_name,
                 {"type": "update", "message": {'action' : 'paddle1', 'prx' : self.game.prx ,'prz' : self.game.prz }}
             )
         elif self.game.p2id == self.channel_name:
-            if (message == 'W' or message == 'w') and self.game.plz - self.game.ms > -6.5:
+            if (message == 'W' or message == 'w' or message == 'Up') and self.game.plz - self.game.ms > -6.5:
                 self.game.plz -= self.game.ms
-            elif (message == 'S' or message == 's')and self.game.plz + self.game.ms < 6.5:
+            elif (message == 'S' or message == 's' or message == 'Down') and self.game.plz + self.game.ms < 6.5:
                 self.game.plz += self.game.ms
             await self.channel_layer.group_send(
                 self.room_group_name,
@@ -329,7 +329,7 @@ class AsyncTournamentConsumer(AsyncWebsocketConsumer):
         try :
             self.tournoi = await sync_to_async(Tournament.objects.get)(tournament_id=self.tournament_id)
             if self.tournoi.p2_id == -1:
-                print(self.tournoi.p1_id)
+                #print(self.tournoi.p1_id)
                 self.playernb = 1
                 user = await sync_to_async(User.objects.get)(id=self.tournoi.p1_id)
                 await self.channel_layer.group_send(
@@ -340,7 +340,7 @@ class AsyncTournamentConsumer(AsyncWebsocketConsumer):
                 }
                 )
             elif self.tournoi.p3_id == -1:
-                print('yes')
+                #print('yes')
                 self.playernb = 2
                 user = await sync_to_async(User.objects.get)(id=self.tournoi.p2_id)
                 await self.channel_layer.group_send(
@@ -351,7 +351,7 @@ class AsyncTournamentConsumer(AsyncWebsocketConsumer):
                 }
                 )
             elif self.tournoi.p4_id == -1:
-                print('yes')
+                #print('yes')
                 self.playernb = 3
                 user = await sync_to_async(User.objects.get)(id=self.tournoi.p3_id)
                 await self.channel_layer.group_send(
@@ -362,7 +362,7 @@ class AsyncTournamentConsumer(AsyncWebsocketConsumer):
                 }
                 )
             elif self.tournoi.p4_id != -1:
-                print('All users connected')
+                #print('All users connected')
                 users = []
                 self.playernb = 4
                 for player_id in [self.tournoi.p1_id, self.tournoi.p2_id, self.tournoi.p3_id, self.tournoi.p4_id]:
@@ -378,7 +378,7 @@ class AsyncTournamentConsumer(AsyncWebsocketConsumer):
             await self.send(text_data=json.dumps({'message' : self.tournament_id}))
             if self.tournoi.full == True:
                 self.playernb = 4
-                print('TOURNAMENT P4')
+                #print('TOURNAMENT P4')
                 user = await sync_to_async(User.objects.get)(id=self.tournoi.p1_id)
                 await self.channel_layer.group_send(
                 self.room_group_name,
@@ -407,7 +407,8 @@ class AsyncTournamentConsumer(AsyncWebsocketConsumer):
             await self.close()
 
     async def disconnect(self, close_code):
-        print(f'player {self.playernb} disconnected from tournament {close_code}')
+        pass
+        #print(f'player {self.playernb} disconnected from tournament {close_code}')
 
     async def receive(self, text_data):
         jsondata = json.loads(text_data)
@@ -415,23 +416,23 @@ class AsyncTournamentConsumer(AsyncWebsocketConsumer):
         if message == 'getGameId':
             playernb = jsondata['playernb']
             if playernb == '1' or playernb == '3':
-                # print(f'playernb is {playernb}')
+                # #print(f'playernb is {playernb}')
                 gameid = self.tournoi.game1_id
                 await self.send(text_data=json.dumps({'action' : 'gameid', 'gameid' : gameid}))
             elif playernb == '2' or playernb == '4':
                 gameid = self.tournoi.game2_id
                 await self.send(text_data=json.dumps({'action' : 'gameid', 'gameid' : gameid}))
         elif message == 'winner':
-            print(jsondata['finalid'])
-            print(type(jsondata['finalid']))
+            #print(jsondata['finalid'])
+            #print(type(jsondata['finalid']))
             if jsondata['finalid'] == -1:
-                print(f'{self.playernb} has won and can play the final')
+                #print(f'{self.playernb} has won and can play the final')
                 await self.send(text_data=json.dumps({'action' : 'finalid', 'finalid' : self.tournoi.game3_id}))
             else:
-                print(f'tournament is finished, player {self.playernb} has won')
+                #print(f'tournament is finished, player {self.playernb} has won')
                 await self.send(text_data=json.dumps({'action' : 'wonTournament'}))
         elif message == 'looser':
-            print(f'{self.playernb} has lost and cannot play the final')
+            #print(f'{self.playernb} has lost and cannot play the final')
             await self.disconnect(1)
 
     async def update(self, event):
@@ -529,7 +530,7 @@ class GameConsumer(WebsocketConsumer):
         balllimit = 8.5
         if self.game.bpz > balllimit or self.game.bpz < -balllimit:
             self.game.bvz *= -1
-            # print("mur")
+            # #print("mur")
         elif self.game.bpx > 18 or self.game.bpx < -18:
             if self.game.bpx > 18:
                 self.game.scorep2 += 1
@@ -559,7 +560,7 @@ class GameConsumer(WebsocketConsumer):
             self.game.bvx = math.cos(angle) * (0.2 * self.game.sif)
             self.game.bvz = math.sin(angle) * (0.2 * self.game.sif)
             self.game.sif += 0.1
-            # print("collision detectee a gauche")
+            # #print("collision detectee a gauche")
         #verifier la collision avec le paddle droit
         if (self.game.bpx - self.game.bradius < self.game.prx + paddle_size_x / 2 and
             self.game.bpx + self.game.bradius > self.game.prx - paddle_size_x / 2 and
@@ -573,7 +574,7 @@ class GameConsumer(WebsocketConsumer):
             self.game.bvx = (math.cos(angle) * -1) * (0.2 * self.game.sif)
             self.game.bvz = (math.sin(angle) * -1) * (0.2 * self.game.sif)
             self.game.sif += 0.1
-            # print("collision detectee a droite")
+            # #print("collision detectee a droite")
 
     def update_ball_pos(self):
         while self.game_values['finished'] == False:
@@ -584,7 +585,7 @@ class GameConsumer(WebsocketConsumer):
             self.game.bvz = self.game.bvz
             self.game.bpx += self.game.bvx
             self.game.bpz += self.game.bvz
-            # print(self.game.bpx)
+            # #print(self.game.bpx)
             #self.send(text_data=json.dumps(self.game_values))
             # async_to_sync(self.channel_layer.group_send)(self.randname, {"type" : "testsend", "game_data" : self.game_values})
             async_to_sync(channel_layer.group_send)(
@@ -643,7 +644,7 @@ class GameConsumer(WebsocketConsumer):
         #while self.game_values['finished'] == False:
         text_data_json = json.loads(text_data)
         message = text_data_json["message"]
-        #print(message)
+        ##print(message)
         if message == 'Stop':
             self.game_values['finished'] = True
         elif message == 'IA':

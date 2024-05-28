@@ -193,7 +193,7 @@ async function renderHeroView() {
     if (!document.querySelector('.navbar')) {
         await LanguageBtn();
         await renderHero();
-        renderNavbar(appState);
+        await renderNavbar(appState);
         appState.renderedComponents.hero = true;
         appState.renderedComponents.navbar = true;
     }
@@ -203,11 +203,11 @@ async function renderGameView() {
     if (!appState.renderedComponents.game) {
         await LanguageBtn();
         if (!document.querySelector('.navbar')) {
-            renderNavbar(appState);
+            await renderNavbar(appState);
         }
         const game = await renderPong();
         const game2 = await renderRun();
-        const gameListHTML = await showRanking();
+        const gameListHTML = await showGameList();
         const cardHistory = createListCardComponent('pongPlayed', 'Games', gameListHTML);
         await renderDiv([cardHistory, game], 'row');
         await LanguageBtn();
