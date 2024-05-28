@@ -10,7 +10,7 @@ class UserSerializer(serializers.ModelSerializer):
 class GamesSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Games
-		fields = ['id', 'p1_id', 'p2_id', 'finished', 'p1_score', 'p2_score','room_group_name', 'room_id', 'date']
+		fields = [ 'p1_id', 'p2_id', 'finished', 'p1_score', 'p2_score','room_group_name', 'room_id', 'date']
 
 class UserProfileSerializer(serializers.ModelSerializer):
 	class Meta:
@@ -20,7 +20,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 class TournamentSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Tournament
-		fields = ['p1_id', 'p2_id','p3_id', 'p4_id','p1_alias', 'p2_alias','p3_alias', 'p4_alias', 'game1_id', 'game2_id', 'game3_id', 'full', 'finished', 'connected']
+		fields = ['id', 'tournament_id','p1_id', 'p2_id','p3_id', 'p4_id','p1_alias', 'p2_alias','p3_alias', 'p4_alias', 'game1_id', 'game2_id', 'game3_id', 'full', 'finished', 'connected']
 
 class FriendSerializer(serializers.ModelSerializer):
 	class Meta:
