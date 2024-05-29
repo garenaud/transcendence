@@ -3,12 +3,12 @@ import { Multiplayer } from "./pong_menu.js";
 import { joinGame } from "./pong_menu.js";
 import { Tournament } from "./tournament_menu.js";
 import { joinTournament } from "./tournament_menu.js";
+import { logoutUser } from "./userManager.js";
 // import { makeid } from "../pong/javascript/pong.js" 
 //import * as PongMenu from "./pong_menu.js";
 
 export let scriptStarted;
 
-let isTabHidden = false;
 
 export function renderPong() {
 	const pongHTML = `
@@ -417,19 +417,6 @@ export function loadTournamentPong() {
 
 window.addEventListener('unload', function (e) {
     console.log('***&&&%%%$$$&&***$$$***%^^%');
-    if (isTabHidden)
-    {
-        fetch('auth/logout/' + appState.userId, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-    }
-});
+	logoutUser();
 
-document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'hidden') {
-        isTabHidden = true;
-    }
 });
