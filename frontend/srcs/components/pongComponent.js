@@ -4,6 +4,7 @@ import { joinGame } from "./pong_menu.js";
 import { Tournament } from "./tournament_menu.js";
 import { joinTournament } from "./tournament_menu.js";
 import { logoutUser } from "./userManager.js";
+import { appState } from "./stateManager.js";
 // import { makeid } from "../pong/javascript/pong.js" 
 //import * as PongMenu from "./pong_menu.js";
 
@@ -320,6 +321,7 @@ function addEventListeners(element) {
 
 		
 		pongModal.addEventListener('show.bs.modal', function () {
+			appState.inModalGame = true;
 			document.getElementById("userList").innerHTML = "";
 			scriptStarted = true;
 			document.querySelectorAll('.card-game-inside > div').forEach(div => {
@@ -329,6 +331,7 @@ function addEventListeners(element) {
 		});
 
 		pongModal.addEventListener('hidden.bs.modal', function () {
+			appState.inModalGame = false;
 			document.getElementById("userList").innerHTML = "";
 			unloadScript();
 			scriptStarted = false;

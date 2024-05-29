@@ -1,8 +1,9 @@
-import { createButtonComponent, renderDiv, createPhotoComponent, createPhotoComponentUrl } from "./globalComponent.js";
+import { createListCardComponent, createButtonComponent, renderDiv, createPhotoComponent, createPhotoComponentUrl } from "./globalComponent.js";
 import { loadGameList, getUserFromServer, getProfilePicture } from "./userManager.js";
 import { appState } from "./stateManager.js";
 import { sendFriendRequest, acceptFriendRequest, denyFriendRequest, getFriendRequestList } from "./friendsList.js";
 import { loadLanguage } from "./languageManager.js";
+import { renderPong } from './pongComponent.js';
 
 let isLoadingUserList = false;
 
@@ -84,20 +85,6 @@ export async function showUserList() {
 
     modalBody.appendChild(table);
     loadLanguage(appState.language);
-    isLoadingUserList = false;
-}
-
-
-  async function updateGameList() {
-    const newGameList = await loadGameList();
-    if (JSON.stringify(newGameList) !== JSON.stringify(gameList)) {
-        gameList = newGameList;
-        // Define and implement showGameList function here
-        showGameList();
-    }
-
-    modalBody.appendChild(table);
-
     isLoadingUserList = false;
 }
 

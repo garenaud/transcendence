@@ -25,8 +25,19 @@ export let appState = {
     renderedComponents: {},
     language: 'fr',
     newViewAdded: false,
-    isLogged: false
+    isLogged: false,
+    inModalGame: false
 };
+
+async function updateGameList() {
+    if (appState.currentView == 'game' && appState.inModalGame == false) {
+        const game = renderPong();
+        const gameListHTML = await showGameList();
+        const cardHistory = createListCardComponent('pongPlayed', 'Games', gameListHTML);
+        await renderDiv([cardHistory, game], 'row');
+    }
+    setTimeout(updateGameList, 5000);
+}
 
 // Fonction pour changer la vue actuelle de l'application
 export function changeView(newView) {
@@ -215,3 +226,4 @@ window.addEventListener('unload', function (e) {
 
 
 renderApp();
+updateGameList();
