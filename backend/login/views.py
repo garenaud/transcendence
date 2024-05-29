@@ -88,11 +88,14 @@ def login(request):
 def logout(request, id):
 	user = User.objects.get(id=id)
 	if user.is_authenticated:
+		print("ihgsdfuisdgfuharsgvrvauhcguaecgjesabcjawebrj awebfbasdjfbsadj fvbjsd  vfjasdfvasdjfvhasd vfhasdvfhasd vfhasdvfh asdvhgf vasdhgvfhgsa fhasd ajsdfchdsc hashjwh fhgaf hav hfwveh fbv qwhbfwqehf wehqbf wheqbf whqekb fhqbkwe fhkqwe fkhqw fhkqwe fqwehk fqwhek fhqwe fhkbqwe fhkbqwe fhkbqwe fhkbqwe fhkbqwe fhbqwe fkhbqwe fkhbqw efhbqw  hfbqw  fhbqw e hfbqw e hfb qweh bf qweh fqweh bfqwehb fwqehb fhb")
 		userprofile = userProfile.objects.get(user=user)
 		userprofile.online = False
 		userprofile.save()
 		auth.logout(request)
 		return JsonResponse({"message" : "OK"})
+	else:
+		return JsonResponse({"message" : "KO"})
 
 def login_form(request):
 	form = LoginForm()

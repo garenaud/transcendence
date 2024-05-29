@@ -8,6 +8,8 @@ import { joinTournament } from "./tournament_menu.js";
 
 export let scriptStarted;
 
+let isTabHidden = false;
+
 export function renderPong() {
 	const pongHTML = `
 	<div class="card-game-wrapper glowing">
@@ -413,11 +415,21 @@ export function loadTournamentPong() {
 	document.body.appendChild(scriptTournament);
 }
 
-window.addEventListener('beforeunload', function (e) {
-    fetch('auth/logout/' + appState.userId, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    })
+window.addEventListener('unload', function (e) {
+    console.log('***&&&%%%$$$&&***$$$***%^^%');
+    if (isTabHidden)
+    {
+        fetch('auth/logout/' + appState.userId, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+    }
+});
+
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') {
+        isTabHidden = true;
+    }
 });

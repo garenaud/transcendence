@@ -8,6 +8,8 @@ import { LanguageBtn, loadLanguage } from './languageManager.js';
 import { createListCardComponent, renderDiv } from './globalComponent.js';
 import { showGameList, } from './listComponent.js';
 
+let isTabHidden = false;
+
 let currentIndex = -1;
 
 // Initialisation de l'état de l'application et du current user
@@ -208,13 +210,23 @@ async function renderGameView() {
     loadLanguage(appState.language);
 }
 
-window.addEventListener('beforeunload', function (e) {
-    fetch('auth/logout/' + appState.userId, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    })
+window.addEventListener('unload', function (e) {
+    console.log('***&&&%%%$$$&&***$$$***%^^%');
+    if (isTabHidden)
+    {
+        fetch('auth/logout/' + appState.userId, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+    }
+});
+
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') {
+        isTabHidden = true;
+    }
 });
 
 renderApp();
