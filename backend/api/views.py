@@ -23,8 +23,8 @@ from django.contrib.auth.decorators import login_required
 def get_user_list(request):
 	#print('##########')
 	# A RAJOUTER AU MOMENT DU RENDU
-	# if request.user.is_anonymous == True:
-	# 	return HttpResponse('Forbidden', status=403)
+	if request.user.is_anonymous == True:
+		return HttpResponse('Forbidden', status=403)
 	if (request.method == 'GET'):
 		users = User.objects.all()
 		serializer = UserSerializer(users, many=True)
@@ -34,8 +34,8 @@ def get_user_list(request):
 
 @api_view(['GET'])
 def get_user_profile_list(request):
-	# if request.user.is_anonymous == True:
-	# 	return HttpResponse('Forbidden', status=403)
+	if request.user.is_anonymous == True:
+		return HttpResponse('Forbidden', status=403)
 	if (request.method == 'GET'):
 		profiles = userProfile.objects.all()
 		serializer = UserProfileSerializer(profiles, many=True)
