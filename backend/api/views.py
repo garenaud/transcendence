@@ -23,8 +23,8 @@ from django.contrib.auth.decorators import login_required
 def get_user_list(request):
 	#print('##########')
 	# A RAJOUTER AU MOMENT DU RENDU
-	if request.user.is_anonymous == True:
-		return HttpResponse('Forbidden', status=403)
+	# if request.user.is_anonymous == True:
+	# 	return HttpResponse('Forbidden', status=403)
 	if (request.method == 'GET'):
 		users = User.objects.all()
 		serializer = UserSerializer(users, many=True)
@@ -265,6 +265,7 @@ def update_user_info(request, userid):
 			data = json.loads(request.body)
 			user = User.objects.get(id=userid)
 			profile = userProfile.objects.get(user=user)
+			print(data)
 			alias = data['alias']
 			username = data['username']
 			email = data['email']
@@ -293,10 +294,10 @@ def update_user_info(request, userid):
 					error = 1
 				else:
 					user.password = make_password(password)
-			if last_name != '' and first_name != '':
-				user.first_name = first_name
+			if last_name != '':
 				user.last_name = last_name
-
+			if  first_name != '':
+				user.first_name = first_name
 			if error == 0:
 				user.save()
 				profile.save()

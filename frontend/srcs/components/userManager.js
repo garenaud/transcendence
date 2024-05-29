@@ -28,7 +28,7 @@ export function logoutUser() {
     });
 }
 
-function updateUserOnServer(user) {
+export function updateUserOnServer(user) {
     let csrfToken = getCookie('csrftoken');
     let userForBackend = {
         first_name: user.user.first_name,
@@ -38,7 +38,7 @@ function updateUserOnServer(user) {
 		alias: user.userProfile.tournament_alias,
 		password: user.user.password  // Vous devez vous assurer que le mot de passe est correctement géré
     };
-    fetch('https://localhost/api/update/' + appState.userId, {
+    fetch('api/update/' + appState.userId, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -54,6 +54,14 @@ function updateUserOnServer(user) {
     })
     .then(data => {
         getUserFromServer(appState.userId);
+        console.log(appState.user.username);
+        const displayedUsername = document.querySelector('.user-menu-title');
+        
+        const displayedUsername2 = document.querySelector('.nav-user-info d-md-block');
+        
+        displayedUsername.textContent = appState.user.username;
+        updateUserInfoInNavbar(appState);
+
     })
     .catch((error) => {
         console.error('Error:', error);
@@ -142,38 +150,38 @@ export function setCurrentUser(user) {
 function setUsername(username) {
     appState.user.username = username;
     sessionStorage.setItem('user', JSON.stringify(appState.user));
-    updateUserOnServer(appState);
+    // updateUserOnServer(appState);
 }
 
 function setAlias(alias) {
-	console.log(alias);
-    appState.user.alias = alias;
+	console.log(appState.userProfile);
+    appState.userProfile.tournament_alias = alias;
     sessionStorage.setItem('user', JSON.stringify(appState.user));
-    updateUserOnServer(appState);
+    // updateUserOnServer(appState);
 }
 
 function setEmail(email) {
     appState.user.email = email;
     sessionStorage.setItem('user', JSON.stringify(appState.user));
-    updateUserOnServer(appState);
+    // updateUserOnServer(appState);
 }
 
 function setFirstName(firstName) {
     appState.user.first_name = firstName;
     sessionStorage.setItem('user', JSON.stringify(appState.user));
-    updateUserOnServer(appState);
+    // updateUserOnServer(appState);
 }
 
 function setPassword(password) {
     appState.user.password = password;
     sessionStorage.setItem('user', JSON.stringify(appState.user));
-    updateUserOnServer(appState);
+    // updateUserOnServer(appState);
 }
 
 function setLastName(lastName) {
     appState.user.last_name = lastName;
     sessionStorage.setItem('user', JSON.stringify(appState.user));
-    updateUserOnServer(appState);
+    // updateUserOnServer(appState);
 }
 
 function setUserProfilePicture(profilePicture){

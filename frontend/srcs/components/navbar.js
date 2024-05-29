@@ -4,7 +4,7 @@ import { createButtonComponent, createPhotoComponent } from './globalComponent.j
 import { showGameList, showUserList } from './listComponent.js';
 import { showFriendsList, updateFriendRequestsNotification } from './friendsList.js';
 import { loadLanguage } from './languageManager.js';
-
+import{ updateUserOnServer } from './userManager.js';
 function escapeHTML(unsafeText) {
   let div = document.createElement('div');
   div.textContent = unsafeText;
@@ -313,7 +313,7 @@ document.querySelector('#newProfilePicture').addEventListener('change', function
 document.querySelector('#userSaveChange').addEventListener('click', function() {
   console.log('Click on save changes')
   const newProfilePictureFile = document.querySelector('#newProfilePicture').files[0];
-  const newUsername = document.querySelector('#newUsername').value;
+  let newUsername = document.querySelector('#newUsername').value;
   let newAlias = document.querySelector('#newAlias').value;
   let newFirstName = document.querySelector('#newFirstName').value;
   let newLastName = document.querySelector('#newLastName').value;
@@ -326,37 +326,39 @@ document.querySelector('#userSaveChange').addEventListener('click', function() {
     displayedProfilePicture.src = URL.createObjectURL(newProfilePictureFile);
     updateUserInfoInNavbar(appState);
   }
-  if (newUsername) {
-    let escapedUsername = escapeHTML(newUsername);
-    setUsername(escapedUsername);
-    const displayedUsername = document.querySelector('.user-menu-title');
-    displayedUsername.textContent = escapedUsername;
-    updateUserInfoInNavbar(appState);
-  }
+  // if (newUsername) {
+  //   let escapedUsername = escapeHTML(newUsername);
+  //   setUsername(escapedUsername);
+  //   const displayedUsername = document.querySelector('.user-menu-title');
+  //   displayedUsername.textContent = escapedUsername;
+  //   updateUserInfoInNavbar(appState);
+  // }
 
 	function updateUserInfo(field, value) {
-		if (value) {
-			let escapedValue = escapeHTML(value);
-			switch(field) {
-				case 'email':
-					setEmail(escapedValue);
-					break;
-				case 'first_name':
-					setFirstName(escapedValue);
-					break;
-				case 'last_name':
-					setLastName(escapedValue);
-					break;
-				case 'alias':
-					setAlias(escapedValue);
-					break;
-				case 'password':
-					setPassword(escapedValue);
-					break;
-				default:
-					console.error('Invalid field');
-			}
-		}
+    value = value ? escapeHTML(value) : '';
+
+    switch(field) {
+      case 'email':
+        setEmail(value);
+        break;
+      case 'username':
+        setUsername(value);
+        break;
+      case 'first_name':
+        setFirstName(value);
+        break;
+      case 'last_name':
+        setLastName(value);
+        break;
+      case 'alias':
+        setAlias(value);
+        break;
+      case 'password':
+        setPassword(value);
+        break;
+      default:
+        console.error('Invalid field');
+    }
 	}
 
 	if (newPassword === confirmPassword) {
@@ -365,9 +367,11 @@ document.querySelector('#userSaveChange').addEventListener('click', function() {
 	updateUserInfo('email', newEmail);
 	updateUserInfo('first_name', newFirstName);
 	updateUserInfo('last_name', newLastName);
+	updateUserInfo('username', newUsername);
 	updateUserInfo('alias', newAlias);
+  updateUserOnServer(appState);
 });
-}
+ }
 
 window.onload = function() {
   updateFriendRequestsNotification();
