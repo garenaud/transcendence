@@ -263,6 +263,8 @@ document.getElementById('boutonamis').addEventListener('click', async function()
     if (test > 0)
     {
       await showFriendsList();
+      test *= -1;
+      changeView(appState.currentView);
     }
   } catch (error) {
   console.error('An error occurred:', error);

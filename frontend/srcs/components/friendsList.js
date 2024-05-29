@@ -48,7 +48,7 @@ for (const friendId of appState.userProfile.friendlist) {
 
 
     // Si game_1, game_2, ou game_3 ne sont pas null, créer une nouvelle ligne pour chaque jeu
-    const games = ['game_1', 'game_2', 'game_3']
+    const games = ['game_1', 'game_2', 'game_3','game_4', 'game_5', 'game_6','game_7', 'game_8', 'game_9', 'game_10']
     .map(gameKey => data.message[gameKey])
     .filter(game => game !== "NULL");
   
@@ -79,7 +79,7 @@ for (const friendId of appState.userProfile.friendlist) {
       const gameId = document.createElement('td');
       gameId.textContent = game.id;
       gameRow.appendChild(gameId);
-      console.log(game.winner_id);
+
       const gameDate = document.createElement('td');
       gameDate.textContent = game.date;
       gameRow.appendChild(gameDate);
@@ -97,7 +97,17 @@ for (const friendId of appState.userProfile.friendlist) {
   
       // Indiquer si le match a été gagné ou perdu
       const gameResult = document.createElement('td');
-      const isWinner = (game.p1_id === friend.id && game.p1_score > game.p2_score) || (game.p2_id === friend.id && game.p2_score > game.p1_score);
+      console.log('friend game');
+      console.log(game.winner_id);
+      let isWinner;
+      if (appState.userId == game.winner_id)
+      {
+        isWinner = false;
+      }
+      else
+      {
+        isWinner = true;
+      }
       gameResult.setAttribute('data-lang-key', isWinner ? 'win' : 'lost');
       gameResult.textContent = isWinner ? 'win' : 'lost';
       gameRow.style.backgroundColor = isWinner ? 'green' : 'red';

@@ -456,8 +456,8 @@ def get_friend_info(request, userid):
 			games = Games.objects.filter(Q(p1_id=userid) | Q(p2_id=userid)).order_by('date')
 			serializer = GamesSerializer(games, many=True)
 			
-			for game in range(0, 3):
-				if game >= 3:
+			for game in range(0, 10):
+				if game >= 10:
 					break
 				if games.count() > game:
 					serializer = GamesSerializer(games[game], many=False)
