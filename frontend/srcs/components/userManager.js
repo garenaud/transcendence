@@ -168,7 +168,6 @@ function setUsername(username) {
 }
 
 function setAlias(alias) {
-	console.log(appState.userProfile);
     appState.userProfile.tournament_alias = alias;
     sessionStorage.setItem('user', JSON.stringify(appState.user));
     // updateUserOnServer(appState);

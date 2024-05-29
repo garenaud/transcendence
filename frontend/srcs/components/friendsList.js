@@ -18,12 +18,8 @@ export async function showFriendsList() {
   while (modalBody.firstChild) {
     modalBody.removeChild(modalBody.firstChild);
   }
-  console.log("table");
-  console.log(table);
   table.className = 'userlist-table';
-  console.log(appState.usersProfile);
   loadUserProfile();
-  console.log(appState.usersProfile);
 // Afficher les amis
 for (const friendId of appState.userProfile.friendlist) {
   const friend = users.find(user => user.id === friendId);
@@ -97,8 +93,6 @@ for (const friendId of appState.userProfile.friendlist) {
   
       // Indiquer si le match a été gagné ou perdu
       const gameResult = document.createElement('td');
-      console.log('friend game');
-      console.log(game.winner_id);
       let isWinner;
       if (appState.userId == game.winner_id)
       {
@@ -126,8 +120,6 @@ for (const friendId of appState.userProfile.friendlist) {
 
   // Afficher les demandes d'amis
   const requests = await getFriendRequestList();
-  console.log("poioirte");
-  console.log(requests);
   // table.remove();
 
   await requests.forEach(async request => {
@@ -164,7 +156,6 @@ for (const friendId of appState.userProfile.friendlist) {
         }
     }
   });
-  console.log(table);
   modalBody.appendChild(table);
   loadLanguage(appState.language);
 }
@@ -319,8 +310,6 @@ export function getFriendHistory(friendId){
 export function updateFriendRequestsNotification() {
     getFriendRequestList().then(requests => {
         const pendingRequests = requests.filter(request => request.to_user === appState.userId);
-        console.log('update mes couilles');
-        console.log(pendingRequests);
         const notificationBubble = document.querySelector('.notification-bubble');
         if (pendingRequests.length > 0) {
             notificationBubble.textContent = pendingRequests.length;

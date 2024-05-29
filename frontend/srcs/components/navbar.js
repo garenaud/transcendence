@@ -257,7 +257,6 @@ function    setupButtonListener() {
 });
 
 document.getElementById('boutonamis').addEventListener('click', async function() {
-  console.log("boutonsamis");
   test *= -1;
   try {
     if (test > 0)
