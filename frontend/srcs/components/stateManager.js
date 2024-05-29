@@ -31,11 +31,14 @@ export let appState = {
 
 async function updateGameList() {
     if (appState.currentView == 'game' && appState.inModalGame == false) {
+		console.log("ton pere la chiennnnnng");
         const game = renderPong();
         const gameListHTML = await showGameList();
         const cardHistory = createListCardComponent('pongPlayed', 'Games', gameListHTML);
         await renderDiv([cardHistory, game], 'row');
     }
+	else
+		console.log("TA MERE");
     setTimeout(updateGameList, 5000);
 }
 

@@ -55,17 +55,17 @@ services:
       context: frontend
       dockerfile: Dockerfile
 
-  # cli:
-  #   container_name: cli
-  #   image: cli
-  #   networks:
-  #     - transcendence
-  #   ports:
-  #     - "3000"
-  #   restart: on-failure
-  #   build:
-  #     context: cli
-  #     dockerfile: Dockerfile
+  cli:
+    container_name: cli
+    image: cli
+    networks:
+      - transcendence
+    ports:
+      - "3000"
+    restart: on-failure
+    build:
+      context: cli
+      dockerfile: Dockerfile
 
 volumes:
   db:
