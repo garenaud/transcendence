@@ -56,11 +56,25 @@ export function updateUserOnServer(user) {
         getUserFromServer(appState.userId);
         console.log(appState.user.username);
         const displayedUsername = document.querySelector('.user-menu-title');
-        
-        const displayedUsername2 = document.querySelector('.nav-user-info d-md-block');
-        
+        const test = document.querySelector('.nav-user-info');
+        const test2 = test.querySelector('h4');
+        test2.textContent = appState.user.username;
+        //document.querySelector('.nav-user').find("h4")[0].textContent = appState.user.username;
+    //     let profilepicture = getProfilePicture(appState.userId);
+    //     if (userInfoDiv) {
+    //         userInfoDiv.innerHTML = `
+    //         <div class="nav-user-info">
+    //         <h4>${appState.user.username}</h4>
+    //         <h6>${appState.userProfile.winrate} % </h6>
+    //         </div>
+    //         <div id="user-menu-button" class="nav-user-img">
+    //                 <div id="user-menu-button-inner" class="img_cont_nav">
+    //                 <img src=""id="profile-picture" alt="User Image">
+    //                 </div>
+    //         </div>
+    //     `;
+    // }
         displayedUsername.textContent = appState.user.username;
-        updateUserInfoInNavbar(appState);
 
     })
     .catch((error) => {
