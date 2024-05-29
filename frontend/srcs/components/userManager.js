@@ -198,7 +198,7 @@ export async function loadUser() {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const users = await response.json();
-        await loadUserProfile();
+        // await loadUserProfile();
         appState.users = users;
         appState.userId = Number(sessionStorage.getItem('userId'));
         appState.isLogged = true;

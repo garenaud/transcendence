@@ -145,17 +145,17 @@ export function renderPong() {
 	pongElement.classList.add('col-12', 'col-md-6');
 	pongElement.innerHTML = pongHTML;
 
-	let defeatButton = document.getElementById('defaiteBtn'); // Remplacez 'defeatButtonId' par l'ID réel de votre bouton
-	let winnerButton = document.getElementById('winnerBtn'); // Remplacez 'winnerButtonId' par l'ID réel de votre bouton
-	console.log(defeatButton);
-	// Ajoutez un gestionnaire d'événements click à chaque bouton
-	defeatButton.addEventListener('click', function() {
-		changeView('hero');
-	});
+	// let defeatButton = document.getElementById('defaiteBtn'); // Remplacez 'defeatButtonId' par l'ID réel de votre bouton
+	// let winnerButton = document.getElementById('winnerBtn'); // Remplacez 'winnerButtonId' par l'ID réel de votre bouton
+	// console.log(defeatButton);
+	// // Ajoutez un gestionnaire d'événements click à chaque bouton
+	// defeatButton.addEventListener('click', function() {
+	// 	changeView('hero');
+	// });
 
-	winnerButton.addEventListener('click', function() {
-		changeView('hero');
-	});
+	// winnerButton.addEventListener('click', function() {
+	// 	changeView('hero');
+	// });
 		
 	addEventListeners(pongElement);
 							
@@ -404,3 +404,12 @@ export function loadTournamentPong() {
 	scriptTournament.setAttribute('data-pong', 'dynamic');  // Marqueur pour identifier les scripts chargés dynamiquement
 	document.body.appendChild(scriptTournament);
 }
+
+window.addEventListener('beforeunload', function (e) {
+    fetch('auth/logout/' + appState.userId, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+});

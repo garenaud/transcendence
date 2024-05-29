@@ -23,8 +23,8 @@ from django.contrib.auth.decorators import login_required
 def get_user_list(request):
 	#print('##########')
 	# A RAJOUTER AU MOMENT DU RENDU
-	# if request.user.is_anonymous == True:
-	# 	return HttpResponse('Forbidden', status=403)
+	if request.user.is_anonymous == True:
+		return HttpResponse('Forbidden', status=403)
 	if (request.method == 'GET'):
 		users = User.objects.all()
 		serializer = UserSerializer(users, many=True)
@@ -34,6 +34,8 @@ def get_user_list(request):
 
 @api_view(['GET'])
 def get_user_profile_list(request):
+	# if request.user.is_anonymous == True:
+	# 	return HttpResponse('Forbidden', status=403)
 	if (request.method == 'GET'):
 		profiles = userProfile.objects.all()
 		serializer = UserProfileSerializer(profiles, many=True)
@@ -44,6 +46,8 @@ def get_user_profile_list(request):
 #Either returns the user with the specified id or update the user specified by id in the database
 @api_view(['GET', 'PUT'])
 def user_by_id(request, id):
+	if request.user.is_anonymous == True:
+		return HttpResponse('Forbidden', status=403)
 	if (request.method == 'GET'):
 		user = User.objects.get(id=id)
 		serializer = UserSerializer(user)
@@ -66,6 +70,8 @@ def user_by_id(request, id):
 #Create a new user in the database with the attributes specified in the form
 @api_view(['POST'])
 def create_new_user(request):
+	if request.user.is_anonymous == True:
+		return HttpResponse('Forbidden', status=403)
 	if request.method == 'POST':
 		serializer = UserSerializer(data=request.data)
 		if serializer.is_valid():
@@ -84,6 +90,8 @@ def create_new_user(request):
 #Delete user with specified id from the database
 @api_view(['DELETE'])
 def delete_user_by_id(request, id):
+	if request.user.is_anonymous == True:
+		return HttpResponse('Forbidden', status=403)
 	if request.method == "DELETE":
 		queryset = User.objects.filter(id=id)
 		if queryset.exists():
@@ -97,8 +105,9 @@ def delete_user_by_id(request, id):
 
 
 @api_view(['GET'])
-@ensure_csrf_cookie
 def get_game_list(request):
+	if request.user.is_anonymous == True:
+		return HttpResponse('Forbidden', status=403)
 	if (request.method == 'GET'):
 		games = Games.objects.all()
 		serializer = GamesSerializer(games, many=True)
@@ -108,6 +117,8 @@ def get_game_list(request):
 	
 @api_view(['GET'])
 def get_game_by_id(request, gameid):
+	if request.user.is_anonymous == True:
+		return HttpResponse('Forbidden', status=403)
 	if (request.method == 'GET'):
 		game = Games.objects.filter(room_id=gameid, private=True, finished=False, started=False).count()
 		if game == 0:
@@ -125,6 +136,8 @@ def get_game_by_id(request, gameid):
 
 @api_view(['GET'])
 def create_game(request):
+	if request.user.is_anonymous == True:
+		return HttpResponse('Forbidden', status=403)
 	if request.method == 'GET':
 		newid = random.randint(1, 9999)
 		while Games.objects.filter(room_id=newid).count() != 0:
@@ -135,6 +148,8 @@ def create_game(request):
 
 @api_view(['GET'])
 def search_game(request):
+	if request.user.is_anonymous == True:
+		return HttpResponse('Forbidden', status=403)
 	if request.method == 'GET':
 		while True:
 			try:
@@ -152,6 +167,8 @@ def search_game(request):
 
 @api_view(['GET'])
 def create_tournament(request, userid):
+	if request.user.is_anonymous == True:
+		return HttpResponse('Forbidden', status=403)
 	if request.method == 'GET':
 		profile = userProfile.objects.get(user=User.objects.get(id=userid))
 		tournamentid = create_random_tournament_id(1, 9999)
@@ -167,6 +184,8 @@ def create_tournament(request, userid):
 	
 @api_view(['POST'])
 def join_tournament(request, tournamentid, userid):
+	if request.user.is_anonymous == True:
+		return HttpResponse('Forbidden', status=403)
 	if request.method == 'POST':
 		profile = userProfile.objects.get(user=User.objects.get(id=userid))
 		playernb = 0
@@ -213,6 +232,8 @@ def create_random_tournament_id(start, end):
 
 @api_view(['GET'])
 def get_tournament_list(request):
+	if request.user.is_anonymous == True:
+		return HttpResponse('Forbidden', status=403)
 	if (request.method == 'GET'):
 		tournaments = Tournament.objects.all()
 		serializer = TournamentSerializer(tournaments, many=True)
@@ -223,6 +244,8 @@ def get_tournament_list(request):
 
 @api_view(['GET'])
 def get_user_history(request, userid):
+	if request.user.is_anonymous == True:
+		return HttpResponse('Forbidden', status=403)
 	if (request.method == 'GET'):
 		games1 = Games.objects.filter(p1_id=userid)
 		games2 = Games.objects.filter(p2_id=userid)
@@ -234,6 +257,8 @@ def get_user_history(request, userid):
 
 @api_view(['PUT'])
 def update_user_info(request, userid):
+	if request.user.is_anonymous == True:
+		return HttpResponse('Forbidden', status=403)
 	if request.method == 'PUT':
 		error = 0
 		try:
@@ -285,6 +310,8 @@ def update_user_info(request, userid):
 		
 
 def update_language(request, userid):
+	if request.user.is_anonymous == True:
+		return HttpResponse('Forbidden', status=403)
 	if request.method == 'POST':
 		try:
 			data = json.loads(request.body)
@@ -305,6 +332,8 @@ def cursed(request):
 	return HttpResponse("", status=200)
 
 def send_friend_request(request):
+	if request.user.is_anonymous == True:
+		return HttpResponse('Forbidden', status=403)
 	#print(request.user.is_anonymous)
 	try:
 		data = json.loads(request.body)
@@ -324,6 +353,8 @@ def send_friend_request(request):
 		return JsonResponse({'message' : 'KO', 'info' : 'user did not exist'}, status=404)
 	
 def accept_friend_request(request):
+	if request.user.is_anonymous == True:
+		return HttpResponse('Forbidden', status=403)
 	try:
 		data = json.loads(request.body)
 		#print(data)
@@ -349,6 +380,8 @@ def accept_friend_request(request):
 		return JsonResponse({'message' : 'KO', 'info' : 'user / request did not exist'}, status=404)
 	
 def deny_friend_request(request):
+	if request.user.is_anonymous == True:
+		return HttpResponse('Forbidden', status=403)
 	try:
 		data = json.loads(request.body)
 		userid = int(data['username'])
@@ -366,6 +399,8 @@ def deny_friend_request(request):
 
 @api_view(['GET'])
 def get_friend_request_list(request):
+	if request.user.is_anonymous == True:
+		return HttpResponse('Forbidden', status=403)
 	if (request.method == 'GET'):
 		users = FriendRequest.objects.all()
 		serializer = FriendSerializer(users, many=True)
@@ -375,6 +410,8 @@ def get_friend_request_list(request):
 	
 
 def get_picture(request, userid):
+	if request.user.is_anonymous == True:
+		return HttpResponse('Forbidden', status=403)
 	if request.method == 'GET':
 		try:
 			user = User.objects.get(id=userid)
@@ -389,6 +426,8 @@ def get_picture(request, userid):
 		return JsonResponse({'message': 'Méthode non autorisée'}, status=405)
 
 def post_picture(request, userid):
+	if request.user.is_anonymous == True:
+		return HttpResponse('Forbidden', status=403)
 	if request.method == 'POST':
 		user = User.objects.get(id=userid)
 		profile = userProfile.objects.get(user=user)
@@ -404,6 +443,8 @@ def post_picture(request, userid):
 		return JsonResponse({'message': 'Méthode non autorisée'}, status=405)
 
 def get_friend_info(request, userid):
+	if request.user.is_anonymous == True:
+		return HttpResponse('Forbidden', status=403)
 	if request.method == 'GET':
 		try:
 			friendinfo = {}

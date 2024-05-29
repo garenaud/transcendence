@@ -172,6 +172,7 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
                 self.game.bpz = 0.0
                 self.game.sif = 1.05
                 self.game.bv = introcs.Vector3(math.cos(1) * 0.17, 0, math.sin(1) * 0.17)
+                await self.ball_update({'bpx' : self.game.bpx, 'bpz' : self.game.bpz})
                 await asyncio.sleep(1)
     
             self.game.bvx = self.game.bv.x
