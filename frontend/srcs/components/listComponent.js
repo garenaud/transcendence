@@ -1,9 +1,8 @@
-import { createButtonComponent, createToastComponent, renderDiv, createPhotoComponent } from "./globalComponent.js";
+import { createButtonComponent, renderDiv, createPhotoComponent, createPhotoComponentUrl } from "./globalComponent.js";
 import { loadGameList, getUserFromServer, getProfilePicture } from "./userManager.js";
 import { appState } from "./stateManager.js";
 import { sendFriendRequest, acceptFriendRequest, denyFriendRequest, getFriendRequestList } from "./friendsList.js";
-
-let gameList = [];
+import { loadLanguage } from "./languageManager.js";
 
 let isLoadingUserList = false;
 
@@ -12,7 +11,7 @@ export async function showUserList() {
         return;
     }
     isLoadingUserList = true;
-    
+
     const users = appState.users;
     const modalBody = document.querySelector('#addFriend .modal-body');
 
@@ -31,15 +30,36 @@ export async function showUserList() {
         const userProfile = appState.usersProfile.find(profile => profile.user === user.id);
         const row = document.createElement('tr');
         const nameCell = document.createElement('td');
-        const idCell = document.createElement('td');
-        const emailCell = document.createElement('td');
         const buttonCell = document.createElement('td');
         const photoCell = document.createElement('td');
+        const onlineStatusCell = document.createElement('td'); // Ajout de la nouvelle cellule
+
+        if (userProfile.online) {
+            if (userProfile.in_game) {
+                onlineStatusCell.textContent = 'in game';
+                onlineStatusCell.dataset.langKey = 'inGame';
+                onlineStatusCell.style.backgroundColor = 'orange';
+            } else {
+                onlineStatusCell.textContent = 'online';
+                onlineStatusCell.dataset.langKey = 'online';
+                onlineStatusCell.style.backgroundColor = 'green';
+            }
+        } else {
+            onlineStatusCell.textContent = 'offline';
+            onlineStatusCell.dataset.langKey = 'offline';
+            onlineStatusCell.style.backgroundColor = 'red';
+        }
 
         const photoComponent = await createPhotoComponent(user.id, userProfile.winrate);
         const pendingRequest = requests.find(request => request.from_user === appState.userId && request.to_user === user.id);
+        const incomingRequest = requests.find(request => request.to_user === appState.userId && request.from_user === user.id);
         let buttonComponent;
-        if (pendingRequest) {
+        if (incomingRequest) {
+            const pElement = document.createElement('p');
+            pElement.textContent = 'En attente de votre confirmation';
+            pElement.setAttribute('data-lang-key', 'waitYourConfirmFriend');
+            buttonComponent = pElement;
+        } else if (pendingRequest) {
             const pElement = document.createElement('p');
             pElement.textContent = 'En attente de la confirmation';
             pElement.setAttribute('data-lang-key', 'waitConfirmFriend');
@@ -47,25 +67,22 @@ export async function showUserList() {
         } else {
             buttonComponent = createButtonComponent('+', 'addFriendButton', '+', (event) => {
                 sendFriendRequest(appState.userId, user.username);
-                event.target.parentNode.removeChild(event.target);
+                event.target.parentNode.parentNode.removeChild(event.target.parentNode);
             });
         }
 
-        idCell.textContent = user.id;
         nameCell.textContent = user.username;
-        emailCell.textContent = user.email;
         photoCell.appendChild(photoComponent);
         buttonCell.appendChild(buttonComponent);
         row.appendChild(photoCell);
-        row.appendChild(idCell);
         row.appendChild(nameCell);
-        row.appendChild(emailCell);
+        row.appendChild(onlineStatusCell);
         row.appendChild(buttonCell);
         table.appendChild(row);
     }
 
     modalBody.appendChild(table);
-
+    loadLanguage(appState.language);
     isLoadingUserList = false;
 }
 
@@ -77,9 +94,13 @@ export async function showUserList() {
         // Define and implement showGameList function here
         showGameList();
     }
+
+    modalBody.appendChild(table);
+
+    isLoadingUserList = false;
 }
 
-  export async function showGameList() {
+export async function showGameList() {
     loadGameList();
     let games = appState.games;
     if (!Array.isArray(games)) {
@@ -94,11 +115,13 @@ export async function showUserList() {
             const p2Cell = document.createElement('td');
             const statusCell = document.createElement('td');
   
-            const p1User = await getUserFromServer(game.p1_id);
-            const p2User = await getUserFromServer(game.p2_id);
-            const p1PhotoUrl = await getProfilePicture(game.p1_id)
-            const p1PhotoComponent = createPhotoComponent(p1PhotoUrl, p1User.username);
-            const p2PhotoComponent = createPhotoComponent('./Design/User/Max-R_Headshot.jpg', p2User.username);
+            const p1User = appState.users.find(user => user.id === game.p1_id);
+            const p2User = appState.users.find(user => user.id === game.p2_id);
+            
+            const p1PhotoUrl = await getProfilePicture(game.p1_id);
+            const p2PhotoUrl = await getProfilePicture(game.p2_id);
+            const p1PhotoComponent = await createPhotoComponentUrl(p1PhotoUrl, p1User.username);
+            const p2PhotoComponent = await createPhotoComponentUrl(p2PhotoUrl, p2User.username);
   
             p1Cell.appendChild(p1PhotoComponent);
             p1Cell.appendChild(document.createTextNode(`Score: ${game.p1_score}`));
@@ -127,41 +150,6 @@ export async function showUserList() {
             table.appendChild(row);
         } catch (error) {
             console.error('Error fetching user:', error);
-        }
-    }
-  
-    return table.outerHTML;
-}
-
-export async function showRanking() {
-    let players = appState.players;
-    if (!Array.isArray(players)) {
-        players = [];
-    }
-    players.sort((a, b) => b.userProfile.winrate - a.userProfile.winrate)
-    const table = document.createElement('table');
-    table.className = 'ranking-table';
-  
-    for (const player of players) {
-        try {
-            const row = document.createElement('tr');
-            const nameCell = document.createElement('td');
-            const scoreCell = document.createElement('td');
-  
-            const user = await getUserFromServer(player.id);
-  
-            const photoComponent = createPhotoComponent('./Design/User/Max-R_Headshot.jpg', user.username);
-  
-            nameCell.appendChild(photoComponent);
-            nameCell.appendChild(document.createTextNode(user.username));
-            scoreCell.appendChild(document.createTextNode(`Score: ${player.score}`));
-  
-            row.appendChild(nameCell);
-            row.appendChild(scoreCell);
-  
-            table.appendChild(row);
-        } catch (error) {
-            console.error('Failed to create row for player', player, error);
         }
     }
   

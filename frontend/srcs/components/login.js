@@ -224,7 +224,7 @@ function clearInputSignup() {
 	});
 }
 
-function getCookie(name) {
+export function getCookie(name) {
 	const value = `; ${document.cookie}`;
 	const parts = value.split(`; ${name}=`);
 	if (parts.length === 2) return parts.pop().split(';').shift();
@@ -248,21 +248,3 @@ document.body.addEventListener('keydown', function(event) {
         }
     }
 });
-
-/* document.addEventListener('DOMContentLoaded', (event) => {
-    const loginForm = document.querySelector('.login-form');
-    loginForm.addEventListener('keydown', function(event) {
-        if (event.key === 'Enter') {
-            event.preventDefault();
-            document.getElementById('loginBtn').click();
-        }
-    });
-
-    const signupForm = document.querySelector('.signup');
-    signupForm.addEventListener('keydown', function(event) {
-        if (event.key === 'Enter') {
-            event.preventDefault();
-            document.getElementById('signupBtn').click();
-        }
-    });
-}); */

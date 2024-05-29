@@ -9,6 +9,7 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { appState } from '../../components/stateManager.js';
 import { unloadScript } from '../../components/pongComponent.js';
 import { getUser } from '../../components/userManager.js';
+import { changeView } from "../../components/stateManager.js";
 
 const PaddleRightName = 'RightPaddle';
 const PaddleLeftName = 'LeftPaddle';
@@ -472,13 +473,10 @@ function onMessageHandler(e) {
 		errorElement.textContent = "Final score : " + game_data.scorep2 + " - " + game_data.scorep1;
 		const scoreElement = document.getElementById('score');
 		scoreElement.textContent = "Final score : " + game_data.scorep2 + " - " + game_data.scorep1;
-		// document.getElementById("myModal").style.display = "block";
-		// myModal3.style.display = "block";
-		// startBtn.style.display = "block";
 		sessionStorage.setItem("game_id", null);
 		window.gameSocket.send(JSON.stringify({
 			'message' : 'getWinner'
-			}));
+			}));	
 	} 
 	else if (game_data.action == 'winner')
 	{
@@ -490,16 +488,24 @@ function onMessageHandler(e) {
 				'finalid' : finalid
 			}))
 		}
-		else
+		else {
 			myModal2.style.display = "block";
+			const winnerButton = document.getElementById('winnerBtn'); 
+			winnerButton.addEventListener('click', function() {
+				changeView('hero');
+			});
+		}
 	}
 	else if (game_data.action == 'looser')
 	{
-		// console.log('jai perdu');
 		unloadScript();
 		document.getElementById("myModal").style.display = "block";
 		var tournamentTree = document.getElementById('userList');
 		tournamentTree.style.display = "none";
+		const defeatButton = document.getElementById('defaiteBtn'); 
+		defeatButton.addEventListener('click', function() {
+			changeView('hero');
+		});
 	}
 	else if (game_data.action == "userleave") {
 		const errorElement = document.getElementById('error');

@@ -1,3 +1,4 @@
+import { loadLanguage } from './languageManager.js';
 import { renderNavbar } from './navbar.js';
 import { renderApp, appState, changeView} from './stateManager.js';
 
@@ -15,6 +16,10 @@ export function logoutUser() {
     .then(response => {
         if (response.ok) {
             sessionStorage.clear();
+            appState.user = null;
+            appState.userId = null;
+            appState.users = [];
+            appState.userProfile = [];
             appState.isLogged = false;
             changeView('login');
             window.location.reload();
@@ -172,11 +177,6 @@ function setLastName(lastName) {
     updateUserOnServer(appState);
 }
 
-function setUserPoints(pts){
-    appState.user.pts = pts;
-    sessionStorage.setItem('user', JSON.stringify(appState.user));
-}
-
 function setUserProfilePicture(profilePicture){
     appState.user.profilePicture = profilePicture;
     sessionStorage.setItem('user', JSON.stringify(appState.user));
@@ -189,7 +189,7 @@ function getUser() {
     }
 }
 
-export { getUser, setUsername, setUserPoints, setUserProfilePicture, setAlias, setEmail, setFirstName, setLastName, setPassword};
+export { getUser, setUsername, setUserProfilePicture, setAlias, setEmail, setFirstName, setLastName, setPassword};
 
 export async function loadUser() {
     try {
@@ -204,13 +204,13 @@ export async function loadUser() {
         appState.isLogged = true;
         appState.user = users.find(user => user.id === appState.userId);
         appState.userProfile = appState.usersProfile.find(usersProfile => usersProfile.user === appState.userId);
-/*         if (!appState.userProfile.profile_picture) {
-            appState.user.profilePicture = 'Design/User/Max-R_Headshot.jpg';
+        if (appState.user) {
+            const languageMap = {1: 'fr', 2: 'us', 3: 'de'};
+            appState.language = languageMap[appState.userProfile.language];
+        } else {
+            appState.language = 'fr';
         }
-        else {
-            getProfilePicture(appState.userId);
-        } */
-        appState.user.pts = 100;
+        loadLanguage(appState.language);
         sessionStorage.setItem('user', JSON.stringify(appState.user));
     } catch (error) {
         console.error('Erreur lors du chargement des données utilisateur:', error);
@@ -251,5 +251,7 @@ export function loadGameList() {
 }
 
 window.onload = function() {
-    loadUser();
+    if (appState.user){
+        loadUser();
+    }
 };

@@ -2,15 +2,11 @@ import { getUser, loadUser, getCurrentUser, loadGameList, logoutUser } from './u
 import { renderNavbar } from './navbar.js';
 import { renderHero } from './hero.js';
 import { renderPong } from './pongComponent.js';
-import { renderChat } from './chat.js';
-import { renderRoulette, setupRoulette, runRoulette } from './roulette.js';
 import { renderLogin } from './login.js';
 import { renderRun } from './runGame.js';
-import { renderUserMenu } from './userMenu.js';
 import { LanguageBtn, loadLanguage } from './languageManager.js';
-import { renderScratchGame } from './scratchGame.js';
-import { createToastComponent, createButtonComponent, createPhotoComponent, createListCardComponent, renderDiv } from './globalComponent.js';
-import { showUserList, showGameList, showRanking } from './listComponent.js';
+import { createListCardComponent, renderDiv } from './globalComponent.js';
+import { showGameList, } from './listComponent.js';
 
 let currentIndex = -1;
 
@@ -36,18 +32,13 @@ export let appState = {
 export function changeView(newView) {
     if (appState.currentView !== newView) {
         appState.currentView = newView;
-        /* // Supprimez les composants de la vue précédente de appState.renderedComponents
-        for (let component in appState.renderedComponents) {
-            if (component.startsWith(appState.currentView)) {
-                delete appState.renderedComponents[component];
-            }
-        }
-        sessionStorage.setItem('renderedComponents', JSON.stringify(appState.renderedComponents));*/
         }
     appState.newViewAdded = true;
     location.hash = newView;
     sessionStorage.setItem('appState', JSON.stringify(appState));
-loadUser();
+    if (newView !== 'login') {
+        loadUser();
+    }
 }
 
 // Écouteur d'événement pour changer la vue lorsque l'URL change (rajoute le # à l'URL lorsqu'on change de vue)

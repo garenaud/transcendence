@@ -866,7 +866,7 @@ margin-bottom: 15px !important;
 }
 
 .card-game-test {
-  height: 300px;
+  height: 500px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -884,7 +884,7 @@ margin-bottom: 15px !important;
 }
 
 .card-game-list {
-  height: 300px;
+  height: 500px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -2258,4 +2258,68 @@ div.modal-footer, div.modal-body, div.modal-header{
   font-size: 0.65em;
   border: 1px solid #f5f6fa;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+.btn-sm-component {
+  background-color: #F6428E;
+  border-color: white;
+}
+
+.btn-sm-component:hover {
+  background-color: #f83788;
+}
+
+.userlist-table tr {
+  border-bottom: 0px solid #ddd;
+}
+
+.userlist-table td {
+  border: none;
+  width: auto;
+}
+
+.userlist-table tr:hover {
+  background-color: rgba(255,255,255,0.3);
+}
+
+.game-list-table {
+  border-collapse: separate;
+  border-spacing: 0 10px; /* Cela ajoute un espace de 10px entre les lignes */
+}
+
+.game-list-table tr {
+  background-color: rgba(26, 36, 77, 0.8);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.profileRow td {
+  font-size: 0.8em; /* Adjust as needed */
+}
+
+.profileRow th {
+  text-align: center;
+}
+
+.gameRow {
+  width: 100%; /* Adjust as needed */
+}
+
+.gameRow tr {
+  padding: 20px;
+  text-align: center;
+}
+
+.gameRow td {
+  text-align: center;
+}
+
+.gameRow th {
+  text-align: center;
+}
+
+th {
+  text-align: center;
+  padding-left: 20px;
+  padding-right: 20px;
 }

@@ -15,7 +15,7 @@ class GamesSerializer(serializers.ModelSerializer):
 class UserProfileSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = userProfile
-		fields = ['user', 'game_won', 'game_lost', 'winrate', 'tournament_alias','tournament_won', 'tournament_lost', 'friendlist', 'online', 'in_game', 'profile_picture']
+		fields = ['user', 'language','game_won', 'game_lost', 'winrate', 'tournament_alias','tournament_won', 'tournament_lost', 'friendlist', 'online', 'in_game', 'profile_picture']
 
 class TournamentSerializer(serializers.ModelSerializer):
 	class Meta:
