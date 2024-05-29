@@ -94,6 +94,7 @@ export async function showGameList() {
     if (!Array.isArray(games)) {
         games = [];
     }
+    games = games.filter(game => game.p1_id === appState.userId || game.p2_id === appState.userId);
     const table = document.createElement('table');
     table.className = 'game-list-table';
     for (const game of games) {

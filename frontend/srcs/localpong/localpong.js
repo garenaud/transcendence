@@ -302,14 +302,12 @@ function handleWallColision() {
 			ballVelocity.z *= -1;
 		} else if (ball.position.x > 18) {
 			scoreRight += 1;
-			console.log(scoreRight);
 			displayScore();
 			ball.position.set(0, 0, 0);
 			speedIncreaseFactor = 0.6;
 			ballVelocity = new THREE.Vector3(Math.cos(initialAngle) * speed * -1, 0, Math.sin(initialAngle) * speed * -1);
 		} else if( ball.position.x < -18) {
 			scoreLeft += 1;
-			console.log(scoreLeft);
 			displayScore();
 			ball.position.set(0, 0, 0);
 			speedIncreaseFactor = 0.6;

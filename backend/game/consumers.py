@@ -191,7 +191,8 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             self.task.cancel()
         except:
             pass
-        if self.game.finished == False and self.game.started == True:
+        if self.game.finished == False and self.game.
+        == True:
             # await self.channel_layer.group_send(
             # self.room_group_name,
             # {"type": "update", "message": {'action' : 'userleave'}}

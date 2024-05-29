@@ -10,7 +10,7 @@ class UserSerializer(serializers.ModelSerializer):
 class GamesSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Games
-		fields = [ 'p1_id', 'p2_id', 'finished', 'p1_score', 'p2_score','room_group_name', 'room_id', 'date']
+		fields = [ 'p1_id', 'p2_id', 'finished', 'p1_score', 'p2_score','room_group_name', 'room_id', 'date', 'winner_id']
 
 class UserProfileSerializer(serializers.ModelSerializer):
 	class Meta:
