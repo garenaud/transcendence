@@ -225,7 +225,7 @@ async  function renderUserMenu(user) {
   await setupButtonListener();
   await loadLanguage(appState.language);
 //   showUserList();
-  //showFriendsList();
+  showFriendsList();
 }
 
 function    setupButtonListener() {
@@ -311,7 +311,7 @@ document.querySelector('#newProfilePicture').addEventListener('change', function
 }
 
 document.querySelector('#userSaveChange').addEventListener('click', function() {
-  console.log('Click on save changes')
+  // console.log('Click on save changes')
   const newProfilePictureFile = document.querySelector('#newProfilePicture').files[0];
   let newUsername = document.querySelector('#newUsername').value;
   let newAlias = document.querySelector('#newAlias').value;

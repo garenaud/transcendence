@@ -54,7 +54,7 @@ export function updateUserOnServer(user) {
     })
     .then(data => {
         getUserFromServer(appState.userId);
-        console.log(appState.user.username);
+        // console.log(appState.user.username);
         const displayedUsername = document.querySelector('.user-menu-title');
         const test = document.querySelector('.nav-user-info');
         const test2 = test.querySelector('h4');

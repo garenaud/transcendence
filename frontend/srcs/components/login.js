@@ -102,7 +102,7 @@ function    setupButtonListener() {
 		const username = document.getElementById('typeUsername').value;
 		const password = document.getElementById('typePasswordX').value;
 		let csrf = getCookie("csrftoken");
-		console.log(csrf);
+		// console.log(csrf);
 		fetch('/auth/login/', {
 			method: 'POST',
 			headers: {
@@ -170,7 +170,7 @@ function    setupButtonListener() {
 			formData.append('password1', password1);
 			formData.append('password2', password2);
 			formData.append('csrfmiddlewaretoken', getCookie("csrftoken"));
-			console.log('csrf signup:', getCookie("csrftoken"));
+			// console.log('csrf signup:', getCookie("csrftoken"));
 			fetch('auth/register/', {
 				method: 'POST',
 				headers: {

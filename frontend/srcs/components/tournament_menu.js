@@ -4,7 +4,7 @@ const errorLink = document.getElementById('error');
 
 export function Tournament()
 {
-	console.log(errorLink);
+	// console.log(errorLink);
 	let url = `/api/tournament/create/${appState.userId}`;
 	fetch(url, {
 		method: 'GET',
@@ -12,7 +12,7 @@ export function Tournament()
 	})
 	.then(response => response.json())
 	.then(data => {
-		console.log('Success:', data);
+		// console.log('Success:', data);
 		sessionStorage.setItem("tournament_id", data['tournamentid']);
 		sessionStorage.setItem("playernb", data['playernb']);
 		loadTournamentPong();

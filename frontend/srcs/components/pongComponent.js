@@ -219,7 +219,7 @@ function addEventListeners(element) {
 				}
 			})
 			.catch(error => {
-				console.log(error);
+				// console.log(error);
 				errorInputTour.textContent = error;
 				errorInputTour.style.display = "block";
 				setTimeout(function() {
@@ -366,13 +366,13 @@ export function unloadScript() {
 		script.removeAttribute('type');
 		if (window.gameSocket) {
 			window.gameSocket.close();
-			console.log(window.gameSocket.readyState);
+			// console.log(window.gameSocket.readyState);
 		}
 		if (window.tournamentSocket) {
 			window.tournamentSocket.close();
-			console.log(window.tournamentSocket.readyState);
+			// console.log(window.tournamentSocket.readyState);
 		}
-		console.log(script);
+		// console.log(script);
 		script.remove(); // Supprimer le script du DOM
 	});
 }
@@ -416,7 +416,6 @@ export function loadTournamentPong() {
 }
 
 window.addEventListener('unload', function (e) {
-    console.log('***&&&%%%$$$&&***$$$***%^^%');
+    // console.log('***&&&%%%$$$&&***$$$***%^^%');
 	logoutUser();
-
 });

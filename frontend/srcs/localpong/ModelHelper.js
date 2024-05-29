@@ -5,7 +5,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 const scenePath = '/localpong/scene.gltf'
 
-console.log("Le fichier JavaScript est correctement lié");
+// console.log("Le fichier JavaScript est correctement lié");
 
 export const LoadGLTFByPath = (scene) => {
     return new Promise((resolve, reject) => {

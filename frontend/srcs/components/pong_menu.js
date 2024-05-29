@@ -25,7 +25,7 @@ export function Multiplayer() {
 	})
 	.then(response => response.json())
 	.then(data => {
-		console.log('Success:', data);
+		// console.log('Success:', data);
 		privategame = true;
 		sessionStorage.setItem("privategame", privategame);
 		sessionStorage.setItem("gameid", data['id']);
@@ -40,14 +40,14 @@ export function joinGame(gameid) {
 	return new Promise((resolve, reject) => {
 		let url = '/api/game/' + gameid;
 		if (!isNaN(gameid) && gameid > 0 && gameid <= 9999) {	
-			console.log(url);
+			// console.log(url);
 			fetch(url, {
 				method: 'GET',
 				credentials: 'same-origin'
 			})
 			.then(response => response.json())
 			.then(data => {
-				console.log('Success:', data);
+				// console.log('Success:', data);
 				if (data['message'] == "Not found") {
 					reject(`La partie ${gameid} n'existe pas, veuillez reessayer`);
 				} else {
@@ -75,14 +75,14 @@ export function joinGame(gameid) {
 
 export function onlineMatchmaking() {
 	let url = '/api/game/search/';
-	console.log(url);
+	// console.log(url);
 	fetch(url, {
 		method: 'GET',
 		credentials: 'same-origin' 
 	})
 	.then(response => response.json())
 	.then(data => {
-		console.log('Success:', data);
+		// console.log('Success:', data);
 		if (data['message'] == "ok") {
 			gameid = data['id'];
 			privategame = false;
@@ -97,7 +97,7 @@ export function onlineMatchmaking() {
 			
 			console.log("L'homme methode GET") // IMPORTANT NE PAS ENLEVER!!!
 		}
-		console.log('id search' + gameid);
+		// console.log('id search' + gameid);
 	})
 	.catch((error) => {
 		console.error('Error:', error);

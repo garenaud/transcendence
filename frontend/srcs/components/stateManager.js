@@ -209,7 +209,7 @@ async function renderGameView() {
 }
 
 window.addEventListener('unload', function (e) {
-    console.log('***&&&%%%$$$&&***$$$***%^^%');
+    // console.log('***&&&%%%$$$&&***$$$***%^^%');
     logoutUser();
 });
 

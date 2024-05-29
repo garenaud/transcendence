@@ -44,7 +44,7 @@ const KeyState = {
 };
 
 if (gameid === "null" || gameid === undefined) {
-	window.location.reload();
+	return ;
 }
 
 window.gameSocket = new WebSocket(
@@ -58,8 +58,7 @@ window.gameSocket = new WebSocket(
 );
 
 gameSocket.onerror = function(e) {
-	console.log("salut");
-	window.location.reload();
+	return ;
 }
 
 div_scoreboard.style.display = 'none';

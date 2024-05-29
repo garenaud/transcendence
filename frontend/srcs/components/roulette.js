@@ -18,7 +18,7 @@ export function spinWheel(ballAnim) {
   
     // individual active classes on the number bets
     const bets = document.querySelectorAll(".active");
-    console.log(bets);
+    // console.log(bets);
     let betsMade = [];
   
     bets.forEach((bet) => {
@@ -35,7 +35,7 @@ export function spinWheel(ballAnim) {
     const checkWinner = (elt, arr, winnings = 1) => {
       if (elt.classList.contains("active")) {
         if (arr.includes(winNumber)) {
-          console.log("total money = " + totalMoney);
+          // conso÷le.log("total money = " + totalMoney);
           moneyWon === winnings;
           totalMoney += winnings;
           lostWon = totalMoney - oldMoney;
@@ -502,7 +502,7 @@ export function spinWheel(ballAnim) {
 }
   
   export function setupRoulette(rouletteElement) {
-    console.log("setupRoulette");
+    // console.log("setupRoulette");
     const ballAnim = rouletteElement.querySelector(".ballAnim");
     spinWheel(ballAnim);
         let nums = ["00", 27,10,25,29,12,8,19,31,18,6,21,33,16,4,23,35,14,2,0,28,9,26,30,11,7,20,32,17,5,22,34,15,3,24,36,13,1];

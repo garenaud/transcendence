@@ -93,7 +93,7 @@ window.tournamentSocket = new WebSocket(
 	+ '/'
 );
 window.tournamentSocket.onerror = function(e) {
-	window.location.reload();;
+	return ;
 }
 
 
@@ -544,19 +544,11 @@ function onMessageHandler(e) {
 	}
 };
 
-function sleep(delay) {
-    var start = new Date().getTime();
-	while (new Date().getTime() < start + delay)
-		console.log('*******************' + 'waiting');
-}
-
 let namelist = [];
 
 window.tournamentSocket.onmessage = function(e) {
 	tournament_data = JSON.parse(e.data);
-	console.log(e.data);
-	if (tournament_data.message == 'tournamentIdNotFound')
-		window.location.reload(); //= "https://localhost/pong/tournament_menu.html";
+	// console.log(e.data);
 	if (tournament_data.action == 'all_users') {
 		var users = tournament_data.users; // This will get the list of users
 		
