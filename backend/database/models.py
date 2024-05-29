@@ -22,6 +22,7 @@ class Games(models.Model):
 	room_id = models.IntegerField(default=-1)
 	tournament_id = models.IntegerField(default=-1)
 	looser = models.CharField(default="")
+	winner_id = models.IntegerField(default=-1)
 	date = models.DateField(auto_now_add=True)
 	def __str__(self):
 		return self.code

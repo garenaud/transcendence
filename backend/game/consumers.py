@@ -201,6 +201,7 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             self.game.dbgame.p1_score = self.game.scorep1
             self.game.dbgame.p2_score = self.game.scorep2
             self.game.dbgame.looser = self.channel_name # A TESTER f sadfdsafsd afads  f asd fad f  ds f ads f ads fasdf ads  f ads f  ads f as f  ads f ad s f asd fads f
+        
             await sync_to_async(self.saveGame)(self.game.dbgame)
             self.game.finished = True
             user1 = await sync_to_async(User.objects.get)(id=self.game.dbgame.p1_id)
@@ -214,15 +215,18 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             if self.channel_name == self.game.p1id:
                 profile_p1.game_lost += 1
                 profile_p2.game_won += 1
+                self.game.dbgame.winner_id = user2.id
             else:
                 profile_p1.game_won += 1
                 profile_p2.game_lost += 1
+                self.game.dbgame.winner_id = user1.id
             profile_p1.winrate = round(100 / (profile_p1.game_lost + profile_p1.game_won) * profile_p1.game_won, 2)
             profile_p2.winrate = round(100 / (profile_p2.game_lost + profile_p2.game_won) * profile_p2.game_won, 2)
             profile_p1.in_game = False
             profile_p2.in_game = False
             await sync_to_async(self.saveGame)(profile_p1)
             await sync_to_async(self.saveGame)(profile_p2)
+            await sync_to_async(self.saveGame)(self.game.dbgame)
             await self.channel_layer.group_send(
             self.room_group_name,
             {

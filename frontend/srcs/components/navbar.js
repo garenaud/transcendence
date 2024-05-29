@@ -10,7 +10,7 @@ function escapeHTML(unsafeText) {
   div.textContent = unsafeText;
   return div.innerHTML;
 }
-
+let test = 667;
 
 function encodeImage(file) {
   return new Promise((resolve, reject) => {
@@ -77,7 +77,7 @@ async  function renderUserMenu(user) {
             <button type="button" class="user-menu-li" aria-label="Edit" data-bs-toggle="modal" data-bs-target="#addFriend"> 
                 <i class="fas fa-user-plus"></i><h6 data-lang-key='addFriend'>ajouter un ami</h6>
             </button>
-            <button type="button" class="user-menu-li" aria-label="Edit" data-bs-toggle="modal" data-bs-target="#friendList">
+            <button id="boutonamis" type="button" class="user-menu-li" aria-label="Edit" data-bs-toggle="modal" data-bs-target="#friendList">
               <i class="fas fa-user-plus"></i>
               <h6 data-lang-key='FriendList'>Liste d'ami</h6>
               <div class="notification-bubble" style="display: none;"></div>
@@ -225,7 +225,7 @@ async  function renderUserMenu(user) {
   await setupButtonListener();
   await loadLanguage(appState.language);
 //   showUserList();
-  showFriendsList();
+  // await showFriendsList();
 }
 
 function    setupButtonListener() {
@@ -238,9 +238,10 @@ function    setupButtonListener() {
   });
 
   document.getElementById('user-menu-button').addEventListener('click', async function() {
-	  try {
+	
+    try {
       await updateFriendRequestsNotification();
-      await showFriendsList();
+      // await showFriendsList();
       await showUserList();
       loadLanguage(appState.language);
     } catch (error) {
@@ -253,6 +254,19 @@ function    setupButtonListener() {
     } else {
 		console.error('No element with ID "user-menu" found');
     }
+});
+
+document.getElementById('boutonamis').addEventListener('click', async function() {
+  console.log("boutonsamis");
+  test *= -1;
+  try {
+    if (test > 0)
+    {
+      await showFriendsList();
+    }
+  } catch (error) {
+  console.error('An error occurred:', error);
+  }
 });
 
 document.getElementById('logoutBtn').addEventListener('click', logoutUser);
@@ -373,6 +387,7 @@ document.querySelector('#userSaveChange').addEventListener('click', function() {
 });
  }
 
-window.onload = function() {
-  updateFriendRequestsNotification();
-};
+// window.onload = function() {
+//   updateFriendRequestsNotification();
+// };
+

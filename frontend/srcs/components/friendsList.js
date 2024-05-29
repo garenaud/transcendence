@@ -6,15 +6,20 @@ import { loadLanguage } from "./languageManager.js";
 let isLoadingFriendsList = false;
 
 export async function showFriendsList() {
-  getFriendRequestList();
-  if (isLoadingFriendsList) {
-    return;
-  }
-  isLoadingFriendsList = true;
+  // getFriendRequestList();
+  // if (isLoadingFriendsList) {
+  //   return;
+  // }
+  // isLoadingFriendsList = true;
       
   const users = appState.users;
   const modalBody = document.querySelector('#friendList .modal-body');
   const table = document.createElement('table');
+  while (modalBody.firstChild) {
+    modalBody.removeChild(modalBody.firstChild);
+  }
+  console.log("table");
+  console.log(table);
   table.className = 'userlist-table';
   console.log(appState.usersProfile);
   loadUserProfile();
@@ -74,7 +79,7 @@ for (const friendId of appState.userProfile.friendlist) {
       const gameId = document.createElement('td');
       gameId.textContent = game.id;
       gameRow.appendChild(gameId);
-  
+      console.log(game.winner_id);
       const gameDate = document.createElement('td');
       gameDate.textContent = game.date;
       gameRow.appendChild(gameDate);
@@ -106,11 +111,15 @@ for (const friendId of appState.userProfile.friendlist) {
     await addRow(friend, friendProfile, table, 'Voir le profil', null, null, profileRow);
     table.appendChild(profileRow);
   }
-  isLoadingFriendsList = false;
+  // isLoadingFriendsList = false;
 }
 
   // Afficher les demandes d'amis
   const requests = await getFriendRequestList();
+  console.log("poioirte");
+  console.log(requests);
+  // table.remove();
+
   await requests.forEach(async request => {
     if (request.to_user === appState.userId) {
         const fromUser = users.find(user => user.id === request.from_user);
@@ -145,6 +154,7 @@ for (const friendId of appState.userProfile.friendlist) {
         }
     }
   });
+  console.log(table);
   modalBody.appendChild(table);
   loadLanguage(appState.language);
 }
@@ -299,6 +309,8 @@ export function getFriendHistory(friendId){
 export function updateFriendRequestsNotification() {
     getFriendRequestList().then(requests => {
         const pendingRequests = requests.filter(request => request.to_user === appState.userId);
+        console.log('update mes couilles');
+        console.log(pendingRequests);
         const notificationBubble = document.querySelector('.notification-bubble');
         if (pendingRequests.length > 0) {
             notificationBubble.textContent = pendingRequests.length;
@@ -306,6 +318,7 @@ export function updateFriendRequestsNotification() {
         } else {
             notificationBubble.style.display = 'none';
         }
+        return pendingRequests;
     });
 }
 

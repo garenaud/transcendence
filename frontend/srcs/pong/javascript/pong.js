@@ -44,7 +44,7 @@ const KeyState = {
 };
 
 if (gameid === "null" || gameid === undefined) {
-	return ;
+	
 }
 
 window.gameSocket = new WebSocket(
