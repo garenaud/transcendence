@@ -1,4 +1,4 @@
-import { getCookie, getProfilePicture } from "./userManager.js";
+import { getCookie, getProfilePicture, loadUserProfile } from "./userManager.js";
 import { appState } from "./stateManager.js";
 import { createPhotoComponent, createButtonComponent, createSmallButtonComponent, createPhotoComponentUrl } from "./globalComponent.js";
 import { loadLanguage } from "./languageManager.js";
@@ -6,6 +6,7 @@ import { loadLanguage } from "./languageManager.js";
 let isLoadingFriendsList = false;
 
 export async function showFriendsList() {
+  getFriendRequestList();
   if (isLoadingFriendsList) {
     return;
   }
@@ -15,7 +16,9 @@ export async function showFriendsList() {
   const modalBody = document.querySelector('#friendList .modal-body');
   const table = document.createElement('table');
   table.className = 'userlist-table';
-
+  console.log(appState.usersProfile);
+  loadUserProfile();
+  console.log(appState.usersProfile);
 // Afficher les amis
 for (const friendId of appState.userProfile.friendlist) {
   const friend = users.find(user => user.id === friendId);

@@ -7,6 +7,7 @@ import { loadLanguage } from "./languageManager.js";
 let isLoadingUserList = false;
 
 export async function showUserList() {
+    getFriendRequestList();
     if (isLoadingUserList) {
         return;
     }
