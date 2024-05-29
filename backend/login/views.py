@@ -22,9 +22,11 @@ def home_page(request):
 
 def parse_and_validate(data):
 	data = data.strip()
-	if not data:
+	print(data)
+	data_regex = r'^(?!.*\s{2})(?!.*\b\w{26,}).{1,25}$';
+	if not data or not re.match(data_regex, data):
 		return False
-	return re.sub(r'\s+', ' ', data)
+	return data
 
 @ensure_csrf_cookie
 def register(request):
