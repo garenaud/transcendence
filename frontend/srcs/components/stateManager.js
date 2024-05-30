@@ -52,8 +52,6 @@ async function updateGameList() {
         const cardHistory = createListCardComponent('pongPlayed', text, gameListHTML);
         await renderDiv([cardHistory, game], 'row');
     }
-	else
-		// console.log("TA MERE");
     setTimeout(updateGameList, 5000);
 }
 

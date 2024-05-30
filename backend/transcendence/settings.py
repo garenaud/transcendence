@@ -27,7 +27,7 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SECRET_KEY = 'django-insecure-t9ip_b^g9epp0tadwc1d3#bz_88zutbmxc-3&hr9rl-g3r(q3%'
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
 '*'

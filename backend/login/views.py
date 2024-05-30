@@ -88,6 +88,8 @@ def login(request):
 		return JsonResponse({"message" : "KO"}, status=405)
 
 def logout(request, id):
+	if request.user.is_anonymous == True:
+		return HttpResponse('Forbidden', status=403)
 	user = User.objects.get(id=id)
 	if user.is_authenticated:
 		# print("ihgsdfuisdgfuharsgvrvauhcguaecgjesabcjawebrj awebfbasdjfbsadj fvbjsd  vfjasdfvasdjfvhasd vfhasdvfhasd vfhasdvfh asdvhgf vasdhgvfhgsa fhasd ajsdfchdsc hashjwh fhgaf hav hfwveh fbv qwhbfwqehf wehqbf wheqbf whqekb fhqbkwe fhkqwe fkhqw fhkqwe fqwehk fqwhek fhqwe fhkbqwe fhkbqwe fhkbqwe fhkbqwe fhkbqwe fhbqwe fkhbqwe fkhbqw efhbqw  hfbqw  fhbqw e hfbqw e hfb qweh bf qweh fqweh bfqwehb fwqehb fhb")
