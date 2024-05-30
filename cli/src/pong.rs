@@ -281,7 +281,7 @@ fn	get_username_by_id(user: User, id: i32) -> Option<String> {
  * 		Option<String> - The player number (p1 or p2)
  * 		None - If an error occured
  */
-fn waiting_game(socket: &mut tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<std::net::TcpStream>>, user: User, term: &Console, paddle_l: &Paddle, paddle_r: &Paddle, score: &Score) -> Option<(String, Player)> {
+fn waiting_game(socket: &mut tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<std::net::TcpStream>>, user: User, term: &Console, paddle_l: &Paddle, paddle_r: &Paddle, score: &Score) -> Option<(String, Player, bool)> {
 	_ = socket.send(Message::Text(r#"{"message":"load"}"#.to_string()));
 	let mut player: String = "default".to_string();
 	let mut data_player: Player = Player {
@@ -313,7 +313,7 @@ fn waiting_game(socket: &mut tungstenite::WebSocket<tungstenite::stream::MaybeTl
 									eprintln!("{}", format!("Error while getting the player number").red());
 									return None;
 								} else {
-									return Some((player, data_player));
+									return Some((player, data_player, false));
 								}
 							},
 							"playernumber" => {
@@ -373,8 +373,10 @@ fn waiting_game(socket: &mut tungstenite::WebSocket<tungstenite::stream::MaybeTl
 							"Stop" => {
 								_ = endwin();
 								println!("{}", format!("The other player left the game !").red());
-								return None;
+								return Some((player, data_player, true));
 							},
+							"paddle2" => {},
+							"paddle1" => {},
 							_ => {
 								_ = endwin();
 								eprintln!("Unknown action: {}", json["action"]);
@@ -421,7 +423,7 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
 	if let Some((w, h)) = term_size::dimensions() {
 		term = Console {
 			width: w as f64,
-		height: h as f64
+			height: h as f64
 		};
 	} else {
 		println!("Error\n");
@@ -436,13 +438,17 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
 	let mut score = Score { score1: 0, score2: 0 };
 
 	let player = waiting_game(&mut socket, user.clone(), &term, &paddle_l, &paddle_r, &score);
-	let (player, data_player) = match player {
-		Some((player, data_player)) => (player, data_player),
+	let (player, data_player, flag) = match player {
+		Some((player, data_player, flag)) => (player, data_player, flag),
 		None => {
 			return None;
 		}
 	};
 
+	if (flag == true)
+	{
+		return Some(true);
+	}
 	// game loop
 	loop {
 		// Handle the server's messages
@@ -506,6 +512,8 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
 							println!("{}", format!("The other player left the game").red().bold());
 							return Some(true);
 						},
+						"paddle1" => {},
+						"paddle2" => {},
 						_ => {
 							_ = endwin();
 							_ = clearscreen::clear();
@@ -544,6 +552,7 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
 			27 => {
 				endwin();
 				let _ = clearscreen::clear();
+				println!("{}" format!("You just left the game !").red());
 				break;
 			},
 			ch => {

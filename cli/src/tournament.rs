@@ -127,7 +127,7 @@ pub fn join_tournament(user: User) {
 	let mut socket = match connect_ws_tournament(user.clone(), tournament_id) {
 		Ok(socket) => socket,
 		Err(err) => {
-			eprintln!("{}", format!("{:#?}", err).red());
+			eprintln!("{}", format!("{:#?}", err).yellow());
 			return;
 		}
 	};
@@ -187,8 +187,10 @@ fn handle_tournament(user: User, socket: &mut tungstenite::WebSocket<tungstenite
 	let mut _game_id = -1;
 
 	'selection: loop {
+		println!("DEBUT LOOP selection game TOURNAMENT");
 		match socket.read() {
 			Ok(msg) => {
+				println!("READED");
 				match msg {
 					Message::Text(msg) => {
 						let msg = msg.as_str();
@@ -248,13 +250,13 @@ fn handle_tournament(user: User, socket: &mut tungstenite::WebSocket<tungstenite
 				}
 			},
 			Err(err) => {
-				eprintln!("{}", format!("{:#?}", err).red());
+				eprintln!("{}", format!("{:#?}", err).red().bold().italic());
+				eprintln!("gameid: {}\tpid: {}", _game_id, player_nb);
 				return;
 			}
 		};
 	}
 	println!("");
-
 
 
 	match pong::connect_game(user.clone(), _game_id.to_string(), true) {
@@ -305,7 +307,7 @@ fn handle_tournament(user: User, socket: &mut tungstenite::WebSocket<tungstenite
 				}
 			},
 			Err(err) => {
-				eprintln!("{}", format!("{:#?}", err).red());
+				eprintln!("{}", format!("{:#?}", err).yellow().bold());
 				return;
 			}
 		}
