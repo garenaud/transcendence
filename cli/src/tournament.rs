@@ -62,7 +62,7 @@ pub fn join_tournament(user: User) {
 
 	loop {
 		tournament_id.clear();
-		print!("Enter the tournament ID: ");
+		print!("Enter the tournament ID (q to quit): ");
 		_ = std::io::stdout().flush();
 
 		std::io::stdin()
@@ -112,8 +112,6 @@ pub fn join_tournament(user: User) {
 					break;
 				} else if res.status().is_client_error(){
 					eprintln!("{}", format!("Tournament not found or ID invalid").red().bold());
-					eprintln!("{:#?}", res);
-					eprintln!("{}", format!("{:#?}", res.text()).red().bold());
 					continue;
 				}
 			},
@@ -285,7 +283,6 @@ fn handle_tournament(user: User, socket: &mut tungstenite::WebSocket<tungstenite
 						match json["action"].as_str().unwrap() {
 							"finalid" => {
 								_game_id = json["finalid"].as_i32().unwrap();
-								eprintln!("FINAL ID IS {}", _game_id);
 								match pong::connect_game(user.clone(), _game_id.to_string(), false) {
 									Some(res) => {
 										if res {
