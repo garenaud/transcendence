@@ -309,15 +309,18 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
                     if self.game.dbgame.p1_score > self.game.dbgame.p2_score:
                         profile_p1.game_won += 1
                         profile_p2.game_lost += 1
+                        self.game.dbgame.winner_id = user1.id
                     else:
                         profile_p2.game_won += 1
                         profile_p1.game_lost += 1
+                        self.game.dbgame.winner_id = user2.id
                     profile_p1.winrate = round(100 / (profile_p1.game_lost + profile_p1.game_won) * profile_p1.game_won, 2)
                     profile_p2.winrate = round(100 / (profile_p2.game_lost + profile_p2.game_won) * profile_p2.game_won, 2)
                     profile_p1.in_game = False
                     profile_p2.in_game = False
                     await sync_to_async(self.saveGame)(profile_p1)
                     await sync_to_async(self.saveGame)(profile_p2)
+                    await sync_to_async(self.saveGame)(self.game.dbgame)
         elif message == "load":
             self.game.count += 1
             if self.game.count == 2:
