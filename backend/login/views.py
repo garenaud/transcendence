@@ -22,7 +22,7 @@ def home_page(request):
 
 def parse_and_validate(data):
 	data = data.strip()
-	print(data)
+	# print(data)
 	data_regex = r'^(?!.*\s{2})(?!.*\b\w{26,}).{1,25}$';
 	if not data or not re.match(data_regex, data):
 		return False
@@ -90,7 +90,7 @@ def login(request):
 def logout(request, id):
 	user = User.objects.get(id=id)
 	if user.is_authenticated:
-		print("ihgsdfuisdgfuharsgvrvauhcguaecgjesabcjawebrj awebfbasdjfbsadj fvbjsd  vfjasdfvasdjfvhasd vfhasdvfhasd vfhasdvfh asdvhgf vasdhgvfhgsa fhasd ajsdfchdsc hashjwh fhgaf hav hfwveh fbv qwhbfwqehf wehqbf wheqbf whqekb fhqbkwe fhkqwe fkhqw fhkqwe fqwehk fqwhek fhqwe fhkbqwe fhkbqwe fhkbqwe fhkbqwe fhkbqwe fhbqwe fkhbqwe fkhbqw efhbqw  hfbqw  fhbqw e hfbqw e hfb qweh bf qweh fqweh bfqwehb fwqehb fhb")
+		# print("ihgsdfuisdgfuharsgvrvauhcguaecgjesabcjawebrj awebfbasdjfbsadj fvbjsd  vfjasdfvasdjfvhasd vfhasdvfhasd vfhasdvfh asdvhgf vasdhgvfhgsa fhasd ajsdfchdsc hashjwh fhgaf hav hfwveh fbv qwhbfwqehf wehqbf wheqbf whqekb fhqbkwe fhkqwe fkhqw fhkqwe fqwehk fqwhek fhqwe fhkbqwe fhkbqwe fhkbqwe fhkbqwe fhkbqwe fhbqwe fkhbqwe fkhbqw efhbqw  hfbqw  fhbqw e hfbqw e hfb qweh bf qweh fqweh bfqwehb fwqehb fhb")
 		userprofile = userProfile.objects.get(user=user)
 		userprofile.online = False
 		userprofile.save()
