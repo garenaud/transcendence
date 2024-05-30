@@ -424,7 +424,7 @@ export function loadTournamentPong() {
 	document.body.appendChild(scriptTournament);
 }
 
-window.addEventListener('unload', function (e) {
+window.addEventListener('beforeunload', function (e) {
     // console.log('***&&&%%%$$$&&***$$$***%^^%');
 	logoutUser();
 });

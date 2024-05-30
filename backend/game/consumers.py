@@ -288,8 +288,8 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             )
         elif message == 'getWinner':
             self.game.dbgame = await sync_to_async(Games.objects.get)(room_id=self.room_id) 
-            print(f'self == {self.channel_name}') 
-            print(f'looser == {self.game.dbgame.looser}') # A TESTEER BORDEL
+            # print(f'self == {self.channel_name}') 
+            # print(f'looser == {self.game.dbgame.looser}') # A TESTEER BORDEL
             if self.game.dbgame.looser != '' :
                 if self.game.dbgame.looser == self.channel_name:
                     await self.send(text_data=json.dumps({'action' : 'looser'}))
@@ -379,12 +379,12 @@ class AsyncTournamentConsumer(AsyncWebsocketConsumer):
         await self.accept()
         try :
             self.tournoi = await sync_to_async(Tournament.objects.get)(tournament_id=self.tournament_id)
-            print("1")
+            # print("1")
             if self.tournoi.p2_id == -1:
                 #print(self.tournoi.p1_id)
                 self.playernb = 1
                 user = await sync_to_async(User.objects.get)(id=self.tournoi.p1_id)
-                print("2")
+                # print("2")
                 await self.channel_layer.group_send(
                 self.room_group_name,
                 {
@@ -396,7 +396,7 @@ class AsyncTournamentConsumer(AsyncWebsocketConsumer):
                 #print('yes')
                 self.playernb = 2
                 user = await sync_to_async(User.objects.get)(id=self.tournoi.p2_id)
-                print("3")
+                # print("3")
                 await self.channel_layer.group_send(
                 self.room_group_name,
                 {
@@ -408,7 +408,7 @@ class AsyncTournamentConsumer(AsyncWebsocketConsumer):
                 #print('yes')
                 self.playernb = 3
                 user = await sync_to_async(User.objects.get)(id=self.tournoi.p3_id)
-                print("4")
+                # print("4")
                 await self.channel_layer.group_send(
                 self.room_group_name,
                 {
@@ -421,7 +421,7 @@ class AsyncTournamentConsumer(AsyncWebsocketConsumer):
                 users = []
                 self.playernb = 4
                 for player_id in [self.tournoi.p1_id, self.tournoi.p2_id, self.tournoi.p3_id, self.tournoi.p4_id]:
-                    print("player_id")
+                    # print("player_id")
                     user = await sync_to_async(userProfile.objects.get)(id=player_id)
                     users.append(user.tournament_alias)
                     
@@ -437,7 +437,7 @@ class AsyncTournamentConsumer(AsyncWebsocketConsumer):
                 self.playernb = 4
                 #print('TOURNAMENT P4')
                 user = await sync_to_async(User.objects.get)(id=self.tournoi.p1_id)
-                print("6")
+                # print("6")
                 await self.channel_layer.group_send(
                 self.room_group_name,
                 {
@@ -465,16 +465,16 @@ class AsyncTournamentConsumer(AsyncWebsocketConsumer):
             await self.close()
 
     async def disconnect(self, close_code):
-        print(f'player {self.playernb} disconnected from tournament {self.tournoi.tournament_id}')
+        # print(f'player {self.playernb} disconnected from tournament {self.tournoi.tournament_id}')
         self.tournoi = await sync_to_async(Tournament.objects.get)(tournament_id=self.tournament_id)
         if (self.tournoi.full == False):
-            print(self.tournoi.connected)
+            # print(self.tournoi.connected)
             self.tournoi.connected -= 1
             if self.tournoi.connected == 0:
                 await sync_to_async(self.tournoi.delete)()
                 await self.close()
                 return
-            print(self.tournoi.connected)
+            # print(self.tournoi.connected)
             await sync_to_async(self.saveGame)(self.tournoi)
             await self.channel_layer.group_send(
             self.room_group_name,

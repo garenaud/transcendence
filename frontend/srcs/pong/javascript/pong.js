@@ -381,7 +381,7 @@ gameSocket.onmessage = function(e) {
 		const errorElement = document.getElementById('error');
 		errorElement.textContent = "Final score : " + game_data.scorep2 + " - " + game_data.scorep1;
 		if (game_data.winner != 0){
-			if (whoami == 1)
+			if (whoami == game_data.winner)
 				document.getElementById('myModalWin').style.display = "block";
 			else
 				document.getElementById('myModaldefeat').style.display = "block";

@@ -46,14 +46,14 @@ async function updateGameList() {
                 text = "HISTORIQUE DES PARTIES";
                 break;
         }
-		console.log("ton pere la chiennnnnng");
+		// console.log("ton pere la chiennnnnng");
         const game = renderPong();
         const gameListHTML = await showGameList();
         const cardHistory = createListCardComponent('pongPlayed', text, gameListHTML);
         await renderDiv([cardHistory, game], 'row');
     }
 	else
-		console.log("TA MERE");
+		// console.log("TA MERE");
     setTimeout(updateGameList, 5000);
 }
 
@@ -237,7 +237,7 @@ async function renderGameView() {
     loadLanguage(appState.language);
 }
 
-window.addEventListener('unload', function (e) {
+window.addEventListener('beforeunload', function (e) {
     // console.log('***&&&%%%$$$&&***$$$***%^^%');
     logoutUser();
 });

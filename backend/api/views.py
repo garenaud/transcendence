@@ -232,8 +232,8 @@ def create_random_tournament_id(start, end):
 
 @api_view(['GET'])
 def get_tournament_list(request):
-	if request.user.is_anonymous == True:
-		return HttpResponse('Forbidden', status=403)
+	# if request.user.is_anonymous == True:
+	# 	return HttpResponse('Forbidden', status=403)
 	if (request.method == 'GET'):
 		tournaments = Tournament.objects.all()
 		serializer = TournamentSerializer(tournaments, many=True)
@@ -265,7 +265,7 @@ def update_user_info(request, userid):
 			data = json.loads(request.body)
 			user = User.objects.get(id=userid)
 			profile = userProfile.objects.get(user=user)
-			print(data)
+			# print(data)
 			alias = data['alias']
 			username = data['username']
 			email = data['email']
