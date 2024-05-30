@@ -31,10 +31,25 @@ export let appState = {
 
 async function updateGameList() {
     if (appState.currentView == 'game' && appState.inModalGame == false) {
+        let text;
+        switch (appState.language) {
+            case 'fr':
+                text = "HISTORIQUE DES PARTIES";
+                break;
+            case 'de':
+                text = "SPIELVERLAUF";
+                break;
+            case 'us':
+                text = "GAME HISTORY";
+                break;
+            default:
+                text = "HISTORIQUE DES PARTIES";
+                break;
+        }
 		console.log("ton pere la chiennnnnng");
         const game = renderPong();
         const gameListHTML = await showGameList();
-        const cardHistory = createListCardComponent('pongPlayed', 'Games', gameListHTML);
+        const cardHistory = createListCardComponent('pongPlayed', text, gameListHTML);
         await renderDiv([cardHistory, game], 'row');
     }
 	else
