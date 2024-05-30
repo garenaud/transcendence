@@ -95,7 +95,7 @@ fn menu_game(user: User) {
 						}
 					},
 					None => {
-						println!("{}", format!("Error during the game").red());
+						// println!("{}", format!("Error during the game").red());
 					}
 				}
 			},
@@ -109,7 +109,7 @@ fn menu_game(user: User) {
 						}
 					},
 					None => {
-						println!("{}", format!("Error during the game").red());
+						// println!("{}", format!("Error during the game").red());
 					}
 				}
 			},
@@ -123,7 +123,7 @@ fn menu_game(user: User) {
 						}
 					},
 					None => {
-						println!("{}", format!("Error during the game").red());
+						// println!("{}", format!("Error during the game").red());
 					}
 				}
 			},

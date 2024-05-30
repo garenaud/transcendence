@@ -85,6 +85,7 @@ fn connection(srv: String, login: String, password: String) -> Option<User> {
 			match json::parse(&res) {
 				Ok(res) => {
 					if res["message"] == -1 {
+						eprintln!("ERROR HEREEEEEEE\n{:#?}", res);
 						return None;
 					}
 					user.set_id(res["id"].to_string());

@@ -66,7 +66,7 @@ pub fn matchmaking(user: User) -> Option<bool> {
 			}
 		},
 		Err(err) => {
-			eprintln!("{}", format!("{}", err).red());
+			eprintln!("{}", format!("{}", err).red().bold());
 			return None;
 		}
 	};
@@ -128,7 +128,7 @@ pub fn join_game(user: User) -> Option<bool> {
 	let mut room: String = String::new();
 	loop {
 		room.clear();
-		print!("Room ID: ");
+		print!("Room ID (q to quit): ");
 		let _ = std::io::stdout().flush();
 	
 		std::io::stdin()
@@ -140,6 +140,13 @@ pub fn join_game(user: User) -> Option<bool> {
 			eprintln!("{}", format!("Room ID is empty, please try again").red());
 			continue;
 		}
+
+		room = match room.as_str() {
+			"q" => {
+				return None;
+			},
+			id => id.to_string()
+		};
 
 		// Check if the room exists
 		let req = user.get_client().get("https://{server}/api/game/{room_id}".replace("{server}", user.get_server().as_str()).replace("{room_id}", room.as_str()));
@@ -295,11 +302,14 @@ fn waiting_game(socket: &mut tungstenite::WebSocket<tungstenite::stream::MaybeTl
 							"counter" => {
 								match json["num"].as_i32() {
 									Some(num) => print_counter(term, num, paddle_l, paddle_r, score, &data_player),
-									None => {}
+									None => {
+										eprintln!("{:#?}", json);
+									}
 								}
 							},
 							"start" => {
 								if player == "default" || data_player.p1id == -1 || data_player.p2id == -1 {
+									_ = endwin();
 									eprintln!("{}", format!("Error while getting the player number").red());
 									return None;
 								} else {
@@ -314,6 +324,7 @@ fn waiting_game(socket: &mut tungstenite::WebSocket<tungstenite::stream::MaybeTl
 										_ => "default".to_string()
 									},
 									None => {
+										_ = endwin();
 										eprintln!("{}", format!("Error while getting the player number").red());
 										return None;
 									}
@@ -329,6 +340,7 @@ fn waiting_game(socket: &mut tungstenite::WebSocket<tungstenite::stream::MaybeTl
 								data_player.p1_username = match get_username_by_id(user.clone(), data_player.p1id) {
 									Some(username) => username,
 									None => {
+										_ = endwin();
 										eprintln!("{}", format!("Error while getting the username").red());
 										return None;
 									}
@@ -336,20 +348,46 @@ fn waiting_game(socket: &mut tungstenite::WebSocket<tungstenite::stream::MaybeTl
 								data_player.p2_username = match get_username_by_id(user.clone(), data_player.p2id) {
 									Some(username) => username,
 									None => {
+										_ = endwin();
 										eprintln!("{}", format!("Error while getting the username").red());
 										return None;
 									}
 								};
-							}
+							},
+							"private" | "public" => {},
 							"userid" => _ = socket.send(Message::Text(r#"{"message":"userid", "userid": {id}}"#.replace("{id}", &user.get_id()).to_string())),
-							_ => {}
+							"allin" => {
+								_ = clear();
+
+								// Init ncurses to get the user's input
+								initscr();
+								keypad(stdscr(), true);
+								cbreak();
+								noecho();
+								nodelay(stdscr(), true);
+								curs_set(CURSOR_VISIBILITY::CURSOR_INVISIBLE);
+
+								mvprintw(0, 0, "Waiting for the game to start...");
+								refresh();
+							},
+							"Stop" => {
+								_ = endwin();
+								println!("{}", format!("The other player left the game !").red());
+								return None;
+							},
+							_ => {
+								_ = endwin();
+								eprintln!("Unknown action: {}", json["action"]);
+								return None;
+							}
 						}
 					},
 					_ => {}
 				}
 			},
 			Err(err) => {
-				eprintln!("{}", format!("{}", err).red());
+				_ = endwin();
+				eprintln!("ERROR\n{}", format!("{}", err).red());
 				return None;
 			}
 		}
@@ -391,34 +429,19 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
 	}
 
 	let paddle_offset: f64 = term.width / 12.0;
-
+ 
 	let mut paddle_l = Paddle { x: paddle_offset, y: (term.height / 2.0 - 1.0), old_y: 0.0 };
 	let mut paddle_r = Paddle { x: (term.width - paddle_offset), y: (term.height / 2.0 - 1.0), old_y: 0.0 };
 	let mut ball = Ball { x: 0.0, y: 0.0, old_x: 0.0, old_y: 0.0 };
 	let mut score = Score { score1: 0, score2: 0 };
 
-	// Init ncurses to get the user's input
-	initscr();
-	keypad(stdscr(), true);
-	cbreak();
-	noecho();
-	nodelay(stdscr(), true);
-	curs_set(CURSOR_VISIBILITY::CURSOR_INVISIBLE);
-	
-	_ = clear();
-	mvprintw(0, 0, "Waiting for the game to start...");
-	refresh();
-
 	let player = waiting_game(&mut socket, user.clone(), &term, &paddle_l, &paddle_r, &score);
 	let (player, data_player) = match player {
 		Some((player, data_player)) => (player, data_player),
 		None => {
-			endwin();
 			return None;
 		}
 	};
-
-	_ = clear();
 
 	// game loop
 	loop {
@@ -433,25 +456,25 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
 							ball.old_x = ball.x;
 							ball.old_y = ball.y;
 							ball.x = (json["bx"].as_f64().unwrap() + 18.0) / 36.0 * term.width;
-							ball.y = (json["bz"].as_f64().unwrap() + 9.5) / 19.0 * (term.height - (0 as f64));
+							ball.y = (json["bz"].as_f64().unwrap() + 9.5) / 19.0 * (term.height - (1 as f64));
 							paddle_l.old_y = paddle_l.y;
 							paddle_r.old_y = paddle_r.y;
-							paddle_l.y = (json["plz"].as_f64().unwrap() + 9.5) / 19.0 * term.height - (PADDLE_HEIGHT / 2.0);
-							paddle_r.y = (json["prz"].as_f64().unwrap() + 9.5) / 19.0 * (term.height - (0 as f64)) - (PADDLE_HEIGHT / 2.0);
+							paddle_l.y = (json["plz"].as_f64().unwrap() + 9.5) / 19.0 * term.height;
+							paddle_r.y = (json["prz"].as_f64().unwrap() + 9.5) / 19.0 * (term.height - (1 as f64));
 						},
 						"ball" => {
 							ball.old_x = ball.x;
 							ball.old_y = ball.y;
 							ball.x = (json["bx"].as_f64().unwrap() + 18.0) / 36.0 * term.width;
-							ball.y = (json["bz"].as_f64().unwrap() + 9.5) / 19.0 * (term.height - (0 as f64));
+							ball.y = (json["bz"].as_f64().unwrap() + 9.5) / 19.0 * (term.height - (1 as f64));
 						},
 						"paddle1" => { // RIGHT ONE
 							paddle_r.old_y = paddle_r.y;
-							paddle_r.y = (json["prz"].as_f64().unwrap() + 9.5) / 19.0 * (term.height - (0 as f64)) - (PADDLE_HEIGHT / 2.0);
+							paddle_r.y = (json["prz"].as_f64().unwrap() + 9.5) / 19.0 * (term.height - (1 as f64));
 						},
 						"paddle2" => { // LEFT ONE
 							paddle_l.old_y = paddle_l.y;
-							paddle_l.y = (json["plz"].as_f64().unwrap() + 9.5) / 19.0 * (term.height - (0 as f64)) - (PADDLE_HEIGHT / 2.0);
+							paddle_l.y = (json["plz"].as_f64().unwrap() + 9.5) / 19.0 * (term.height - (1 as f64));
 						},
 						"score" => {
 							score.score1 = json["scorep1"].as_i32().unwrap();
@@ -459,7 +482,7 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
 						},
 						// "private" => continue,
 						"Stop" => {
-							endwin();
+							_ = endwin();
 							_ = clearscreen::clear();
 							_ = socket.send(Message::Text(r#"{"message":"mdr"}"#.to_string()));
 							if score.score1 > score.score2 {
@@ -478,16 +501,16 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
 						},
 						"start" => continue,
 						"userleave" => {
-							endwin();
+							_ = endwin();
 							_ = clearscreen::clear();
 							println!("{}", format!("The other player left the game").red().bold());
-							break ;
+							return Some(true);
 						},
 						_ => {
-							endwin();
+							_ = endwin();
 							_ = clearscreen::clear();
 							println!("Unknown action: {}", json["action"]);
-							break ;
+							return None;
 						}
 					}
 					render(&term, &paddle_l, &paddle_r, &ball, &score, &data_player);
@@ -512,7 +535,7 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
 				_ => {
 					endwin();
 					eprintln!("{}", format!("{}", err).red().bold());
-					break;
+					return None;
 				}
 			}
 		}
@@ -580,12 +603,12 @@ fn print_score(term: &Console, score: &Score, data_player: &Player) {
  * 		paddle: &Paddle - Ref to paddle struct to print
  */
 fn print_paddle(paddle: &Paddle, term: &Console) {
-	let paddle_height = PADDLE_HEIGHT / 19.0 * (term.height - (1 as f64));
+	let paddle_height = PADDLE_HEIGHT / 19.0 * (term.height);
 	for i in 0..paddle_height as i32 {
-		mvaddch((paddle.old_y + i as f64) as i32 + 1, paddle.x as i32, ' ' as u32);
+		mvaddch((paddle.old_y + i as f64 - (PADDLE_HEIGHT / 2.0)) as i32, paddle.x as i32, ' ' as u32);
 	}
 	for i in 0..paddle_height as i32 {
-		mvaddch((paddle.y + i as f64) as i32 + 1, paddle.x as i32, '|' as u32);
+		mvaddch((paddle.y + i as f64 - (PADDLE_HEIGHT / 2.0)) as i32, paddle.x as i32, '|' as u32);
 	}
 }
 
