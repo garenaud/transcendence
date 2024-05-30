@@ -69,7 +69,7 @@ function updateUserLanguageOnServer(language) {
         'de': 3
     };
     let csrfToken = getCookie('csrftoken');
-    fetch('https://localhost/api/update_language/' + appState.userId, {
+    fetch('api/update_language/' + appState.userId, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
