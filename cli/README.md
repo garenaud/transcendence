@@ -44,6 +44,7 @@ Il existe 3 menu:
 
 > [!TIP]
 > Il est vivement recommandé de réduire au minimum le delai entre la répetition des touches du clavier pour une meilleur expérience utilisateur lors des parties
+> Il est déconseillé de quitter l'application en fermant le terminal (ou alt+f4) car votre utilisateur ne sera jamais déconnecté (impossible de s'y reconnecter donc). Il est néanmoins possible de quitter à tout moment avec ctrl+c
 
 ## Uninstall
 * Lancer la commande
