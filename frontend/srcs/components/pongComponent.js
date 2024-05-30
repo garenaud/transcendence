@@ -84,6 +84,12 @@ export function renderPong() {
                             <div class="col col-display" id="scoreGuest">0</div>
                         </div>
                     </div>
+					<div id="myModaldefeat" class="modaldeafeat">
+						<p>DEFAITE</p>
+					</div>
+					<div id="myModalWin" class="modalWin">
+						<p  data-lang-key="win">VICTOIRE</p>
+					</div>
                     <canvas id="background" class="h-100 w-100"></canvas>
                 </div>
                 <!-- joinPongContent -->

@@ -21,6 +21,8 @@ const div_scoreboard = document.querySelector('.scoreboard');
 const div_scoreboardTour = document.querySelector('.scoreboardTour');
 const loadingElement = document.getElementById('loading_txt');
 const loadingDot = document.getElementsByClassName('loading');
+document.getElementById('myModalWin').style.display = "none";
+document.getElementById('myModaldefeat').style.display = "none";
 let game_data;
 let renderer;
 let scene;
@@ -340,10 +342,11 @@ function anim() {
     }
 }
 
+let whoami;
+
 gameSocket.onmessage = function(e) {
 	
 	game_data = JSON.parse(e.data);
-	
 	if (game_data.action == "userid") {
 		gameSocket.send(JSON.stringify({
 			'message' : 'userid',
@@ -353,6 +356,9 @@ gameSocket.onmessage = function(e) {
 	else if (game_data.action == "allin") {
 		loadingElement.textContent = "[LOADING GAME ...]";
 		init();
+	}
+	else if(game_data.action == "playernumber") {
+		whoami = game_data.playernumber;
 	}
 	else if (game_data.action == "private")
 	{
@@ -374,6 +380,27 @@ gameSocket.onmessage = function(e) {
 			}));
 		const errorElement = document.getElementById('error');
 		errorElement.textContent = "Final score : " + game_data.scorep2 + " - " + game_data.scorep1;
+		if (game_data.winner != 0){
+			if (whoami == 1)
+				document.getElementById('myModalWin').style.display = "block";
+			else
+				document.getElementById('myModaldefeat').style.display = "block";
+		}
+		else
+		{
+			if (game_data.scorep1 > game_data.scorep2) {
+				if (whoami == 1)
+					document.getElementById('myModalWin').style.display = "block";
+				else
+					document.getElementById('myModaldefeat').style.display = "block";
+			}
+			else {
+				if (whoami == 2)
+					document.getElementById('myModalWin').style.display = "block";
+				else
+					document.getElementById('myModaldefeat').style.display = "block";
+			}
+		}
 		document.getElementById("myModal").style.display = "block";
 		sessionStorage.setItem("gameid", null);
 		gameSocket.close();

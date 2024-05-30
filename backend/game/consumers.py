@@ -94,7 +94,7 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             self.room_group_name,
             {
                 'type' : 'update',
-                "message": {'action' : 'Stop', 'scorep1' : self.game.scorep1, 'scorep2' : self.game.scorep2}
+                "message": {'action' : 'Stop', 'scorep1' : self.game.scorep1, 'scorep2' : self.game.scorep2, "winner" : 0}
             }
             )
 
@@ -201,7 +201,7 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             self.game.dbgame.p1_score = self.game.scorep1
             self.game.dbgame.p2_score = self.game.scorep2
             self.game.dbgame.looser = self.channel_name # A TESTER f sadfdsafsd afads  f asd fad f  ds f ads f ads fasdf ads  f ads f  ads f as f  ads f ad s f asd fads f
-        
+            winner = 0
             await sync_to_async(self.saveGame)(self.game.dbgame)
             self.game.finished = True
             user1 = await sync_to_async(User.objects.get)(id=self.game.dbgame.p1_id)
@@ -216,10 +216,12 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
                 profile_p1.game_lost += 1
                 profile_p2.game_won += 1
                 self.game.dbgame.winner_id = user2.id
+                winner = 2
             else:
                 profile_p1.game_won += 1
                 profile_p2.game_lost += 1
                 self.game.dbgame.winner_id = user1.id
+                winner = 1
             profile_p1.winrate = round(100 / (profile_p1.game_lost + profile_p1.game_won) * profile_p1.game_won, 2)
             profile_p2.winrate = round(100 / (profile_p2.game_lost + profile_p2.game_won) * profile_p2.game_won, 2)
             profile_p1.in_game = False
@@ -231,7 +233,7 @@ class AsyncGameConsumer(AsyncWebsocketConsumer):
             self.room_group_name,
             {
                 'type' : 'update',
-                "message": {'action' : 'Stop', 'scorep1' : self.game.scorep1, 'scorep2' : self.game.scorep2}
+                "message": {'action' : 'Stop', 'scorep1' : self.game.scorep1, 'scorep2' : self.game.scorep2, 'winner' : winner}
             }
             )
         else:
