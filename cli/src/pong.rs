@@ -445,7 +445,7 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
 		}
 	};
 
-	if (flag == true)
+	if flag == true
 	{
 		return Some(true);
 	}
@@ -552,7 +552,7 @@ fn game(mut socket: tungstenite::WebSocket<tungstenite::stream::MaybeTlsStream<s
 			27 => {
 				endwin();
 				let _ = clearscreen::clear();
-				println!("{}" format!("You just left the game !").red());
+				println!("{}", format!("You just left the game !").red());
 				break;
 			},
 			ch => {

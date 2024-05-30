@@ -187,10 +187,8 @@ fn handle_tournament(user: User, socket: &mut tungstenite::WebSocket<tungstenite
 	let mut _game_id = -1;
 
 	'selection: loop {
-		println!("DEBUT LOOP selection game TOURNAMENT");
 		match socket.read() {
 			Ok(msg) => {
-				println!("READED");
 				match msg {
 					Message::Text(msg) => {
 						let msg = msg.as_str();
